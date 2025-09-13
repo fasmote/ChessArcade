@@ -1,128 +1,212 @@
-# ChessArcade .gitignore
+# ChessArcade - Git Ignore Configuration
+# Última actualización: 2025-09-13
 
-# ===== DEPENDENCIAS =====
+# ===========================================
+# CARPETAS DE DESARROLLO Y DEBUG
+# ===========================================
+# Screenshots de errores y capturas de desarrollo
+screenshot_errores/
+screenshots_debug/
+debug_images/
+
+# Archivos temporales de desarrollo
+temp/
+tmp/
+*.tmp
+*.temp
+
+# Backups automáticos y versiones anteriores
+*_backup*
+*_BCK*
+*_anterior*
+*_old*
+*_copy*
+backup_*
+old_*
+
+# Carpetas de testing local
+test_local/
+testing/
+sandbox/
+
+# ===========================================
+# ARCHIVOS DE SISTEMA Y EDITORES
+# ===========================================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.directory
+
+# VSCode
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# WebStorm/IntelliJ
+.idea/
+*.iml
+*.iws
+
+# Vim
+*.swp
+*.swo
+*~
+
+# ===========================================
+# ARCHIVOS DE CONFIGURACIÓN LOCAL
+# ===========================================
+# Configuraciones de desarrollo local
+config.local.js
+.env.local
+.env.development
+.env.test
+local.properties
+
+# Archivos de configuración personal del desarrollador
+dev-settings.json
+personal-config.json
+
+# ===========================================
+# ARCHIVOS GENERADOS Y TEMPORALES
+# ===========================================
+# Node.js (si se usa en el futuro)
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
-yarn.lock
 
-# ===== BUILDS Y DIST =====
+# Build outputs (para futuras implementaciones)
 dist/
 build/
 out/
-.next/
-.nuxt/
-.vite/
+.output/
 
-# ===== CACHE =====
-.cache/
-.parcel-cache/
-.webpack/
-.rollup.cache/
-
-# ===== LOGS =====
+# Logs
 *.log
 logs/
-*.log.*
-*.tgz
 
-# ===== TEMPORALES =====
-.tmp/
-.temp/
-*.tmp
-*.temp
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# ===== EDITORES E IDEs =====
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.sublime-project
-.sublime-workspace
-
-# ===== CONFIGURACIÓN LOCAL =====
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# ===== DATOS DE USUARIO =====
-user-data/
-save-files/
-*.save
-*.backup
-
-# ===== DESARROLLO =====
-.eslintcache
-.stylelintcache
-coverage/
-.nyc_output/
-*.lcov
-
-# ===== ESPECÍFICOS DEL PROYECTO =====
-# Respaldos automáticos
-*_BCK.*
-*_backup.*
-*_old.*
-
-# Archivos de prueba
-test-files/
-playground/
-sandbox/
-
-# Screenshots y capturas
-screenshots/
-captures/
-*.png
-*.jpg
-*.gif
-!docs/images/
-!assets/images/
-
-# ===== SISTEMA OPERATIVO =====
-# Windows
-*.exe
-*.msi
-*.msm
-*.msp
-Desktop.ini
-$RECYCLE.BIN/
-
-# macOS
-.AppleDouble
-.LSOverride
-Icon?
-
-# Linux
-*~
-.fuse_hidden*
-.directory
-.Trash-*
-.nfs*
-
-# ===== VARIOS =====
-*.bak
-*.orig
-*.rej
-*.patch
-*.diff
-
-# Archivos comprimidos (excepto assets del proyecto)
+# ===========================================
+# ARCHIVOS COMPRIMIDOS DE RESPALDO
+# ===========================================
+# Archives
 *.zip
 *.rar
 *.7z
 *.tar
 *.gz
-!assets/*.zip
-!docs/*.zip
+*.bz2
+*.xz
+
+# Excepciones para archives necesarios
+!assets/**/*.zip
+!games/**/*.zip
+
+# ===========================================
+# ARCHIVOS PERSONALES Y PRIVADOS
+# ===========================================
+# Notas personales del desarrollador
+notas_personales.md
+TODO_personal.md
+ideas_privadas.txt
+
+# Claves API y tokens (aunque no los usemos aún)
+*.key
+*.pem
+*.p12
+secrets.json
+api-keys.json
+
+# Archivos de estadísticas locales sensibles
+user_stats_real.json
+analytics_data.json
+
+# ===========================================
+# ARCHIVOS DE UTILIDADES DE DESARROLLO
+# ===========================================
+# Scripts de desarrollo personal
+deploy-personal.sh
+build-personal.js
+test-personal.html
+
+# Herramientas de desarrollo
+tools/
+utilities/
+helpers/
+
+# ===========================================
+# ARCHIVOS ESPECÍFICOS DEL PROYECTO
+# ===========================================
+# Versiones de desarrollo de juegos
+games/*/dev_*
+games/*/test_*
+
+# Assets temporales o de prueba
+assets/temp/
+assets/test/
+
+# ===========================================
+# DOCUMENTACIÓN TEMPORAL
+# ===========================================
+# Documentos de trabajo temporal
+*_DRAFT.md
+*_WIP.md
+*_TEMP.md
+
+# Notas de reuniones o planificación personal
+meeting_notes_*.md
+planning_*.md
+
+# ===========================================
+# PERFORMANCE Y PROFILING
+# ===========================================
+# Performance testing files
+*.trace
+*.prof
+*.cpuprofile
+*.heapprofile
+
+# ===========================================
+# SECURITY
+# ===========================================
+# SSL certificates
+*.crt
+*.cer
+*.der
+*.p7b
+*.p7c
+*.p12
+*.pfx
+*.pem
+
+# Password files
+*.pwd
+passwords.txt
+
+# ===========================================
+# COMENTARIOS ADICIONALES
+# ===========================================
+# Este archivo está configurado para un proyecto
+# de desarrollo web frontend con HTML, CSS y JavaScript.
+# Se actualiza según las necesidades del proyecto ChessArcade.

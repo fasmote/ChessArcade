@@ -313,6 +313,21 @@ body {
     background: linear-gradient(45deg, var(--neon-orange), var(--neon-magenta));
 }
 
+/* Coming Soon Button */
+.neon-play-btn.coming-soon-btn {
+    background: linear-gradient(45deg, #666666, #999999);
+    color: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+}
+
+.neon-play-btn.coming-soon-btn:hover {
+    transform: none;
+    box-shadow: none;
+    background: linear-gradient(45deg, #666666, #999999);
+}
+
 /* ===============================
    🃏 CARD COMPONENTS
 =============================== */
@@ -366,6 +381,121 @@ body {
 @keyframes neonBounce {
     0%, 100% { transform: translateY(0) rotateZ(0deg); }
     50% { transform: translateY(-10px) rotateZ(5deg); }
+}
+
+/* ===============================
+   🚧 COMING SOON STYLES
+=============================== */
+.neon-card.coming-soon {
+    opacity: 0.7;
+    filter: grayscale(50%);
+    position: relative;
+    cursor: default;
+}
+
+.neon-card.coming-soon:hover {
+    transform: translateY(-5px) scale(1.01);
+    opacity: 0.8;
+    filter: grayscale(30%);
+    animation: comingSoonShake 0.5s ease;
+}
+
+@keyframes comingSoonShake {
+    0%, 100% { transform: translateY(-5px) scale(1.01) rotateZ(0deg); }
+    25% { transform: translateY(-5px) scale(1.01) rotateZ(-1deg); }
+    75% { transform: translateY(-5px) scale(1.01) rotateZ(1deg); }
+}
+
+.coming-soon-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.coming-soon-badge {
+    background: linear-gradient(45deg, var(--neon-yellow), var(--neon-orange));
+    color: var(--dark-bg);
+    padding: 0.4rem 1rem;
+    border-radius: 0 var(--radius-lg) 0 15px;
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    box-shadow: var(--glow-small) var(--neon-yellow);
+    animation: comingSoonPulse 2s ease-in-out infinite;
+}
+
+@keyframes comingSoonPulse {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: var(--glow-small) var(--neon-yellow);
+    }
+    50% { 
+        transform: scale(1.05);
+        box-shadow: var(--glow-medium) var(--neon-yellow);
+    }
+}
+
+.coming-soon-icon {
+    opacity: 0.6;
+    filter: grayscale(70%);
+}
+
+.neon-card.coming-soon .neon-card-icon::after {
+    content: '🔒';
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    font-size: 1.2rem;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 50%;
+    padding: 0.2rem;
+    border: 2px solid var(--neon-yellow);
+    box-shadow: var(--glow-small) var(--neon-yellow);
+}
+
+/* Notification for coming soon games */
+.coming-soon-notification {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(45deg, var(--neon-yellow), var(--neon-orange));
+    color: var(--dark-bg);
+    padding: 1rem 2rem;
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    box-shadow: var(--glow-large) var(--neon-yellow);
+    z-index: 10000;
+    animation: notificationSlideIn 0.5s ease, notificationSlideOut 0.5s ease 2s;
+    opacity: 0;
+    pointer-events: none;
+}
+
+@keyframes notificationSlideIn {
+    0% { 
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes notificationSlideOut {
+    0% { 
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    100% { 
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
 }
 
 /* ===============================

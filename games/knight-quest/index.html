@@ -508,8 +508,8 @@
             transform: none !important;
         }
 
-        /* VICTORY MESSAGE */
-        .victory-message {
+        /* VICTORY & GAME OVER MESSAGES */
+        .victory-message, .game-over-message {
             position: fixed;
             top: 50%;
             left: 50%;
@@ -517,40 +517,199 @@
             background: linear-gradient(145deg, rgba(0,0,0,0.95), rgba(26,0,51,0.9));
             padding: 3rem;
             border-radius: 20px;
-            border: 4px solid var(--neon-yellow);
             text-align: center;
             display: none;
             z-index: 1000;
             backdrop-filter: blur(20px);
+            border: 4px solid;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .victory-message {
+            border-color: var(--neon-yellow);
             box-shadow: 
                 var(--glow-large) var(--neon-yellow),
                 0 0 100px rgba(255,215,0,0.3);
         }
+        
+        .game-over-message {
+            border-color: var(--neon-magenta);
+            box-shadow: 
+                var(--glow-large) var(--neon-magenta),
+                0 0 100px rgba(255,0,128,0.3);
+        }
 
-        .victory-title {
+        .victory-title, .game-over-title {
             font-size: 2.5rem;
-            color: var(--neon-yellow);
             margin-bottom: 1.5rem;
-            animation: victoryGlow 1s ease-in-out infinite alternate;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 0.1em;
+            position: relative;
+        }
+        
+        .victory-title {
+            color: var(--neon-yellow);
+            animation: victoryGlow 1s ease-in-out infinite alternate;
+        }
+        
+        .game-over-title {
+            color: var(--neon-magenta);
+            animation: gameOverGlow 1.5s ease-in-out infinite alternate;
+        }
+        
+        .game-over-title::before {
+            content: '💀';
+            position: absolute;
+            left: -3.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            animation: skullBounce 2s ease-in-out infinite;
+        }
+        
+        .game-over-title::after {
+            content: '💀';
+            position: absolute;
+            right: -3.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            animation: skullBounce 2s ease-in-out infinite reverse;
         }
 
         @keyframes victoryGlow {
             0% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
             100% { text-shadow: 0 0 40px rgba(255, 215, 0, 1); }
         }
+        
+        @keyframes gameOverGlow {
+            0% { 
+                text-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+                transform: scale(1);
+            }
+            100% { 
+                text-shadow: 0 0 40px rgba(255, 0, 128, 1), 0 0 60px rgba(255, 0, 128, 0.7);
+                transform: scale(1.05);
+            }
+        }
+        
+        @keyframes skullBounce {
+            0%, 100% { transform: translateY(-50%) rotateZ(0deg); }
+            50% { transform: translateY(-60%) rotateZ(10deg); }
+        }
 
-        .victory-stats {
+        .victory-stats, .game-over-stats {
             font-size: 1.2rem;
             color: var(--text-secondary);
             line-height: 1.8;
             margin-bottom: 2rem;
+            background: rgba(0,0,0,0.3);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .victory-stats p {
+        .victory-stats p, .game-over-stats p {
             margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+        }
+        
+        .stat-value {
+            color: var(--neon-cyan);
+            font-weight: 900;
+            text-shadow: var(--glow-small) var(--neon-cyan);
+        }
+        
+        .victory-stats .stat-value {
+            color: var(--neon-yellow);
+            text-shadow: var(--glow-small) var(--neon-yellow);
+        }
+        
+        .game-over-reason {
+            background: linear-gradient(45deg, rgba(255,0,128,0.1), rgba(255,64,64,0.1));
+            border: 2px solid var(--neon-magenta);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            color: var(--neon-magenta);
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow: hidden;
+            border: 1px solid var(--neon-cyan);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-magenta), var(--neon-cyan), var(--neon-green));
+            border-radius: 10px;
+            transition: width 1.5s ease;
+            position: relative;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: progressShine 2s ease-in-out infinite;
+        }
+        
+        @keyframes progressShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .motivational-message {
+            background: linear-gradient(45deg, rgba(0,255,128,0.1), rgba(0,255,255,0.1));
+            border: 2px solid var(--neon-green);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--neon-green);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        
+        .achievement-unlock {
+            background: linear-gradient(45deg, rgba(255,215,0,0.1), rgba(255,193,7,0.1));
+            border: 2px solid var(--neon-yellow);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin: 1rem 0;
+            color: var(--neon-yellow);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: achievementGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes achievementGlow {
+            0% { box-shadow: var(--glow-small) var(--neon-yellow); }
+            100% { box-shadow: var(--glow-large) var(--neon-yellow); }
         }
 
         /* INSTRUCTIONS */
@@ -755,7 +914,30 @@
     <div id="victoryMessage" class="victory-message">
         <div class="victory-title">🏆 KNIGHT QUEST COMPLETED! 🏆</div>
         <div id="finalStats" class="victory-stats"></div>
+        <div class="achievement-unlock" id="achievementUnlock" style="display: none;">
+            <span>🏆</span>
+            <span id="achievementText">New Achievement Unlocked!</span>
+        </div>
         <button class="btn btn-primary" onclick="newGame()" style="margin-top: 1rem;">🎮 PLAY AGAIN</button>
+    </div>
+    
+    <!-- Game Over Message -->
+    <div id="gameOverMessage" class="game-over-message">
+        <div class="game-over-title">GAME OVER</div>
+        <div class="game-over-reason" id="gameOverReason">
+            ⛔ No more valid moves available! ⛔
+        </div>
+        <div id="gameOverStats" class="game-over-stats"></div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="completionProgress" style="width: 0%"></div>
+        </div>
+        <div class="motivational-message">
+            🎯 "Every master was once a disaster. The knight's tour teaches patience and strategy. Try again and conquer more squares!"
+        </div>
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+            <button class="btn btn-primary" onclick="newGame()">🎮 PLAY AGAIN</button>
+            <button class="btn btn-secondary" onclick="changeBoardSize(4)">📊 EASIER</button>
+        </div>
     </div>
     
     <script>

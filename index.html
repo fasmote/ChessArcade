@@ -91,63 +91,78 @@
                     </button>
                 </article>
                 
-                <!-- Vision Blitz Game -->
-                <article class="neon-card vision-blitz-card" tabindex="0" role="button">
-                    <div class="neon-card-icon" aria-hidden="true">⚡</div>
+                <!-- Vision Blitz Game - PRÓXIMAMENTE -->
+                <article class="neon-card vision-blitz-card coming-soon" tabindex="0" role="button">
+                    <div class="neon-card-icon coming-soon-icon" aria-hidden="true">⚡</div>
+                    <div class="coming-soon-overlay">
+                        <div class="coming-soon-badge">PRÓXIMAMENTE</div>
+                    </div>
                     <h2 class="neon-heading">Vision Blitz</h2>
                     <p class="neon-text neon-mb-md">
                         Lightning-fast tactical recognition. Spot attacks and defenses in neon-blazing speed through the cyberpunk chessboard!
                     </p>
-                    <button class="neon-play-btn" type="button" data-game="vision-blitz">
-                        Play Now
+                    <button class="neon-play-btn coming-soon-btn" type="button" disabled>
+                        Próximamente
                     </button>
                 </article>
                 
-                <!-- Square Rush Game -->
-                <article class="neon-card square-rush-card" tabindex="0" role="button">
-                    <div class="neon-card-icon" aria-hidden="true">🎯</div>
+                <!-- Square Rush Game - PRÓXIMAMENTE -->
+                <article class="neon-card square-rush-card coming-soon" tabindex="0" role="button">
+                    <div class="neon-card-icon coming-soon-icon" aria-hidden="true">🎯</div>
+                    <div class="coming-soon-overlay">
+                        <div class="coming-soon-badge">PRÓXIMAMENTE</div>
+                    </div>
                     <h2 class="neon-heading">Square Rush</h2>
                     <p class="neon-text neon-mb-md">
                         Navigate the coordinate matrix. A1 to H8 in record time through retro-futuristic grids and synthwave landscapes!
                     </p>
-                    <button class="neon-play-btn" type="button" data-game="square-rush">
-                        Play Now
+                    <button class="neon-play-btn coming-soon-btn" type="button" disabled>
+                        Próximamente
                     </button>
                 </article>
                 
-                <!-- Tactic Burst Game -->
-                <article class="neon-card tactic-burst-card" tabindex="0" role="button">
-                    <div class="neon-card-icon" aria-hidden="true">💥</div>
+                <!-- Tactic Burst Game - PRÓXIMAMENTE -->
+                <article class="neon-card tactic-burst-card coming-soon" tabindex="0" role="button">
+                    <div class="neon-card-icon coming-soon-icon" aria-hidden="true">💥</div>
+                    <div class="coming-soon-overlay">
+                        <div class="coming-soon-badge">PRÓXIMAMENTE</div>
+                    </div>
                     <h2 class="neon-heading">Tactic Burst</h2>
                     <p class="neon-text neon-mb-md">
                         Chain combos of tactical patterns. Pins, forks, and skewers in arcade-style action with pulsing neon effects!
                     </p>
-                    <button class="neon-play-btn" type="button" data-game="tactic-burst">
-                        Play Now
+                    <button class="neon-play-btn coming-soon-btn" type="button" disabled>
+                        Próximamente
                     </button>
                 </article>
                 
-                <!-- Checkmate Countdown Game -->
-                <article class="neon-card checkmate-countdown-card" tabindex="0" role="button">
-                    <div class="neon-card-icon" aria-hidden="true">🏆</div>
+                <!-- Checkmate Countdown Game - PRÓXIMAMENTE -->
+                <article class="neon-card checkmate-countdown-card coming-soon" tabindex="0" role="button">
+                    <div class="neon-card-icon coming-soon-icon" aria-hidden="true">🏆</div>
+                    <div class="coming-soon-overlay">
+                        <div class="coming-soon-badge">PRÓXIMAMENTE</div>
+                    </div>
                     <h2 class="neon-heading">Checkmate Countdown</h2>
                     <p class="neon-text neon-mb-md">
                         Beat the clock to find mate in X. Pulse-pounding puzzles with synthwave aesthetics and retro gaming vibes!
                     </p>
-                    <button class="neon-play-btn" type="button" data-game="checkmate-countdown">
-                        Play Now
+                    <button class="neon-play-btn coming-soon-btn" type="button" disabled>
+                        Próximamente
                     </button>
                 </article>
                 
-                <!-- Memory Matrix Game -->
-                <article class="neon-card memory-matrix-card" tabindex="0" role="button">
-                    <div class="neon-card-icon" aria-hidden="true">🧠</div>
+                <!-- Memory Matrix Game - PRÓXIMAMENTE -->
+                <article class="neon-card memory-matrix-card coming-soon" tabindex="0" role="button">
+                    <div class="neon-card-icon coming-soon-icon" aria-hidden="true">🧠</div>
+                    <div class="coming-soon-overlay">
+                        <div class="coming-soon-badge">PRÓXIMAMENTE</div>
+                    </div>
                     <h2 class="neon-heading">Memory Matrix</h2>
                     <p class="neon-text neon-mb-md">
                         Memorize positions in the digital chess cosmos. Train your mind like a chess computer in this neon wonderland!
                     </p>
-                    <button class="neon-play-btn" type="button" data-game="memory-matrix">
-                        Play Now
+                    <button class="neon-play-btn coming-soon-btn" type="button" disabled>
+                        Próximamente
                     </button>
                 </article>
                 
@@ -173,12 +188,47 @@
         // Custom game launch handlers
         document.addEventListener('DOMContentLoaded', function() {
             
-            // Handle game launches
+            // Handle game launches from buttons
             document.querySelectorAll('[data-game]').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     const game = this.getAttribute('data-game');
                     launchGame(game);
+                });
+            });
+            
+            // Handle card clicks (launch available games, show notification for coming soon)
+            document.querySelectorAll('.neon-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on button
+                    if (e.target.closest('button')) return;
+                    
+                    if (this.classList.contains('coming-soon')) {
+                        // Extract game name from class
+                        const classList = Array.from(this.classList);
+                        const gameClass = classList.find(cls => cls.includes('-card') && cls !== 'neon-card');
+                        if (gameClass) {
+                            const gameId = gameClass.replace('-card', '');
+                            showComingSoonNotification(gameId);
+                        }
+                    } else {
+                        // Available game - launch it
+                        const playBtn = this.querySelector('[data-game]');
+                        if (playBtn) {
+                            const gameId = playBtn.getAttribute('data-game');
+                            launchGame(gameId);
+                        }
+                    }
+                });
+            });
+            
+            // Handle "Start Game" button click
+            document.querySelectorAll('.neon-arcade-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (this.textContent.includes('Start Game')) {
+                        // Launch Knight Quest directly
+                        launchGame('knight-quest');
+                    }
                 });
             });
             
@@ -194,50 +244,88 @@
             
         });
         
-        // Game launch function
+        // Game launch function - Mejorado para manejar juegos disponibles y próximamente
         function launchGame(gameId) {
             console.log(`🎮 Launching game: ${gameId}`);
             
-            // Add screen flash effect
-            document.body.style.background = 'white';
-            setTimeout(() => {
-                document.body.style.background = '';
-            }, 100);
-            
-            // Create particles
-            NeonChess.createParticles(
-                window.innerWidth / 2, 
-                window.innerHeight / 2, 
-                '#00ff80'
-            );
-            
-            // Here you would redirect to the actual game
-            window.location.href = `games/${gameId}/index.html`;
-            
-            // For demo purposes, just show an alert
-            // setTimeout(() => {
-            //     alert(`🎮 Loading ${gameId.replace('-', ' ').toUpperCase()}...\n\n(In production, this would launch the actual game)`);
-            // }, 200);
+            // Check if game is available
+            if (gameId === 'knight-quest') {
+                // Add screen flash effect
+                document.body.style.background = 'white';
+                setTimeout(() => {
+                    document.body.style.background = '';
+                }, 100);
+                
+                // Create particles if NeonChess is available
+                if (typeof NeonChess !== 'undefined' && NeonChess.createParticles) {
+                    NeonChess.createParticles(
+                        window.innerWidth / 2, 
+                        window.innerHeight / 2, 
+                        '#00ff80'
+                    );
+                }
+                
+                // Redirect to Knight Quest
+                window.location.href = `games/${gameId}/index.html`;
+            } else {
+                // Show coming soon notification for unavailable games
+                showComingSoonNotification(gameId);
+            }
         }
         
-        // Analytics tracking (replace with your analytics)
+        // Show coming soon notification
+        function showComingSoonNotification(gameId) {
+            const gameName = gameId.replace('-', ' ').toUpperCase();
+            const notification = document.createElement('div');
+            notification.className = 'coming-soon-notification';
+            notification.textContent = `🚧 ${gameName} estará disponible pronto! 🚧`;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after animation
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
+        
+        // Analytics tracking mejorado
         function trackEvent(event, properties = {}) {
             console.log('📊 Analytics Event:', event, properties);
             
-            // Example: Google Analytics
-            // gtag('event', event, properties);
+            // Example: Google Analytics 4
+            // if (typeof gtag !== 'undefined') {
+            //     gtag('event', event, properties);
+            // }
             
             // Example: Custom analytics
-            // window.analytics?.track(event, properties);
+            // if (window.analytics && typeof window.analytics.track === 'function') {
+            //     window.analytics.track(event, properties);
+            // }
         }
         
-        // Track game launches
+        // Track game launches and interactions
         document.addEventListener('click', function(e) {
             if (e.target.hasAttribute('data-game')) {
                 trackEvent('game_launch_attempt', {
                     game: e.target.getAttribute('data-game'),
-                    source: 'main_page'
+                    source: 'play_button'
                 });
+            }
+            
+            // Track coming soon interactions
+            if (e.target.closest('.neon-card.coming-soon')) {
+                const card = e.target.closest('.neon-card.coming-soon');
+                const classList = Array.from(card.classList);
+                const gameClass = classList.find(cls => cls.includes('-card') && cls !== 'neon-card');
+                if (gameClass) {
+                    const gameId = gameClass.replace('-card', '');
+                    trackEvent('coming_soon_interaction', {
+                        game: gameId,
+                        source: 'card_click'
+                    });
+                }
             }
         });
         
