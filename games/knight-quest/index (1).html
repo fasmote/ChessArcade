@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐴 Knight Quest - ChessArcade</title>
+    
+    <style>
+        /* ===== RESET Y CORRECCIONES MÓVIL CRÍTICAS ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* SOLUCIÓN PRINCIPAL: SCROLL MÓVIL */
+        html, body {
+            height: auto !important;
+            min-height: 100vh;
+            overflow-y: auto !important;
+            overflow-x: hidden;
+            touch-action: pan-y !important;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+            position: relative !important;
+        }
+        
+        /* ===== VARIABLES CSS ===== */
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-accent: #00ffff;
+            --border-color: #333333;
+            --border-glow: rgba(0, 255, 255, 0.5);
+            --success-color: #00ff40;
+            --warning-color: #ffff00;
+            --error-color: #ff4040;
+            --knight-primary: #ff6b00;
+            --knight-secondary: #00ff6b;
+            --knight-accent: #6b00ff;
+            --knight-visited: #ff0066;
+            --knight-current: #00ff00;
+            --knight-possible: #ffff00;
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+            --font-family: 'Courier New', monospace;
+        }
+        
+        /* ===== DISEÑO BASE ===== */
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 50%, #0a0a0a 100%);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* ===== CONTENEDOR PRINCIPAL ===== */
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* ===== HEADER DEL JUEGO ===== */
+        .game-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: var(--border-radius);
+            border: 2px solid var(--text-accent);
+        }
+        
+        .game-title {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: bold;
+            color: var(--knight-primary);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px var(--knight-primary);
+        }
+        
+        .game-nav {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-home, .btn-new, .btn-sound {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--text-accent);
+            color: var(--text-accent);
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: var(--font-family);
+            font-size: 12px;
+            font-weight: bold;
+            
+            /* MÓVIL OPTIMIZADO */
+            touch-action: manipulation;
+            min-height: 40px;
+        }
+        
+        .btn-home:hover, .btn-home:active,
+        .btn-new:hover, .btn-new:active,
+        .btn-sound:hover, .btn-sound:active {
+            background: var(--text-accent);
+            color: var(--bg-primary);
+            transform: translateY(-2px);
+        }
+        
+        /* ===== ESTADÍSTICAS DEL JUEGO ===== */
+        .game-stats {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--knight-secondary);
+            border-radius: var(--border-radius);
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--text-primary);
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .stat span {
+            color: var(--knight-secondary);
+            text-shadow: 0 0 5px var(--knight-secondary);
+        }
+        
+        /* ===== ÁREA PRINCIPAL DEL JUEGO ===== */
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        /* ===== CONTROLES SUPERIORES ===== */
+        .game-top-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 1rem;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .difficulty-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .difficulty-selector label {
+            font-weight: 700;
+            color: var(--text-accent);
+            font-size: 12px;
+        }
+        
+        .difficulty-selector select {
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--text-primary);
+            border: 1px solid var(--text-accent);
+            border-radius: var(--border-radius);
+            padding: 6px;
+            font-family: var(--font-family);
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .hints-display {
+            color: var(--warning-color);
+            font-weight: 700;
+            font-size: 12px;
+        }
+        
+        /* ===== TABLERO DE AJEDREZ ===== */
+        .chessboard {
+            display: grid;
+            gap: 2px;
+            background: var(--bg-secondary);
+            border: 3px solid var(--text-accent);
+            border-radius: var(--border-radius);
+            padding: 10px;
+            margin: 20px 0;
+            
+            /* CRÍTICO PARA INTERACTIVIDAD MÓVIL */
+            touch-action: manipulation;
+            position: relative;
+            z-index: 20;
+        }
+        
+        .chessboard.size-4x4 {
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            width: 280px;
+            height: 280px;
+        }
+        
+        .chessboard.size-6x6 {
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            width: 360px;
+            height: 360px;
+        }
+        
+        .chessboard.size-8x8 {
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            width: 400px;
+            height: 400px;
+        }
+        
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            position: relative;
+            
+            /* CRÍTICO PARA TÁCTIL */
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .square.light {
+            background: #f0d9b5;
+            color: #333;
+        }
+        
+        .square.dark {
+            background: #b58863;
+            color: #fff;
+        }
+        
+        /* Estados específicos del caballo */
+        .square.knight-current {
+            background: linear-gradient(45deg, var(--knight-current), #40ff40) !important;
+            animation: knightGlow 1s ease-in-out infinite alternate;
+            color: var(--bg-primary);
+            box-shadow: 0 0 25px var(--knight-current);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .square.knight-visited {
+            background: linear-gradient(45deg, var(--knight-visited), #ff4080) !important;
+            color: white;
+            animation: knightVisited 0.6s ease;
+            font-weight: 900;
+        }
+        
+        .square.knight-possible {
+            background: linear-gradient(45deg, var(--knight-possible), #ffff80) !important;
+            cursor: pointer;
+            animation: knightPossible 1.5s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .square.knight-possible::before {
+            content: '🎯';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            animation: targetPulse 1s ease-in-out infinite;
+        }
+        
+        .square.knight-possible:hover,
+        .square.knight-possible:active {
+            transform: scale(1.15);
+            box-shadow: 0 0 20px var(--knight-possible);
+            z-index: 5;
+        }
+        
+        .square.knight-hint {
+            background: linear-gradient(45deg, var(--knight-accent), #aa80ff) !important;
+            animation: knightHint 0.5s ease 3;
+            box-shadow: 0 0 30px var(--knight-accent);
+            border: 3px solid var(--knight-accent);
+        }
+        
+        .square.knight-error {
+            animation: knightError 0.5s ease;
+            background: var(--error-color) !important;
+        }
+        
+        /* Animaciones */
+        @keyframes knightGlow {
+            0% { 
+                box-shadow: 0 0 20px var(--knight-current);
+                transform: scale(1);
+            }
+            100% { 
+                box-shadow: 0 0 35px var(--knight-current);
+                transform: scale(1.05);
+            }
+        }
+        
+        @keyframes knightVisited {
+            0% { transform: scale(1) rotateZ(0deg); }
+            25% { transform: scale(1.2) rotateZ(5deg); }
+            50% { transform: scale(1.1) rotateZ(-3deg); }
+            75% { transform: scale(1.15) rotateZ(2deg); }
+            100% { transform: scale(1) rotateZ(0deg); }
+        }
+        
+        @keyframes knightPossible {
+            0%, 100% { 
+                opacity: 0.8; 
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1.05);
+            }
+        }
+        
+        @keyframes targetPulse {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.7;
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes knightHint {
+            0%, 100% { 
+                transform: scale(1);
+                border-width: 3px;
+            }
+            50% { 
+                transform: scale(1.1);
+                border-width: 5px;
+            }
+        }
+        
+        @keyframes knightError {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px) rotateZ(-2deg); }
+            75% { transform: translateX(8px) rotateZ(2deg); }
+        }
+        
+        /* ===== INFORMACIÓN DE PROGRESO ===== */
+        .progress-info {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            border: 2px solid var(--text-accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--knight-primary), var(--knight-secondary));
+            border-radius: 13px;
+            transition: width 0.5s ease;
+            width: 0%;
+            position: relative;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--text-primary);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            z-index: 10;
+        }
+        
+        .game-tips {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--knight-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .game-tips strong {
+            color: var(--knight-secondary);
+        }
+        
+        /* ===== CONTROLES DEL JUEGO ===== */
+        .game-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-family: var(--font-family);
+            font-weight: bold;
+            font-size: 12px;
+            transition: var(--transition);
+            
+            /* MÓVIL OPTIMIZADO */
+            touch-action: manipulation;
+            min-height: 45px;
+            min-width: 80px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--knight-primary), #ff8c40);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--text-accent);
+            color: var(--text-accent);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, var(--warning-color), #ffff40);
+            color: var(--bg-primary);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, var(--success-color), #40ff80);
+            color: var(--bg-primary);
+        }
+        
+        .btn:hover, .btn:active {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* ===== PANEL DE ESTADO ===== */
+        .status-panel {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+        
+        .status-message {
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+        
+        .status-panel.success {
+            border-color: var(--success-color);
+            background: rgba(0, 255, 64, 0.1);
+        }
+        
+        .status-panel.success .status-message {
+            color: var(--success-color);
+            font-weight: 700;
+        }
+        
+        .status-panel.warning {
+            border-color: var(--warning-color);
+            background: rgba(255, 255, 0, 0.1);
+        }
+        
+        .status-panel.warning .status-message {
+            color: var(--warning-color);
+        }
+        
+        .status-panel.error {
+            border-color: var(--error-color);
+            background: rgba(255, 64, 64, 0.1);
+        }
+        
+        .status-panel.error .status-message {
+            color: var(--error-color);
+        }
+        
+        /* ===== MODALES ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            
+            /* SCROLL EN MODALES */
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .modal {
+            background: rgba(20, 20, 20, 0.95);
+            border: 2px solid var(--text-accent);
+            border-radius: var(--border-radius);
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-header {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--error-color);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            touch-action: manipulation;
+        }
+        
+        .modal-content {
+            padding: 20px;
+        }
+        
+        .modal-buttons {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* ===== INDICADOR DE MODO ===== */
+        .mode-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 12px;
+            z-index: 1000;
+            font-family: var(--font-family);
+            font-weight: 700;
+            color: #00ff00;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 15px;
+            }
+            
+            .game-top-controls {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .chessboard.size-4x4 {
+                width: 240px;
+                height: 240px;
+            }
+            
+            .chessboard.size-6x6 {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .chessboard.size-8x8 {
+                width: 320px;
+                height: 320px;
+            }
+            
+            .square {
+                font-size: 12px;
+            }
+            
+            .game-stats {
+                font-size: 11px;
+            }
+            
+            .stat {
+                padding: 6px 10px;
+                min-width: 70px;
+            }
+            
+            .game-controls {
+                gap: 8px;
+            }
+            
+            .btn {
+                padding: 10px 16px;
+                font-size: 11px;
+                min-height: 40px;
+                min-width: 70px;
+            }
+            
+            /* Espacio para navegación móvil si existe */
+            body {
+                padding-bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .chessboard.size-4x4 {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .chessboard.size-6x6 {
+                width: 240px;
+                height: 240px;
+            }
+            
+            .chessboard.size-8x8 {
+                width: 260px;
+                height: 260px;
+            }
+            
+            .square {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Indicador de modo -->
+    <div id="mode-indicator" class="mode-indicator">💾 LOCAL</div>
+    
+    <div class="game-container">
+        <!-- Header del juego -->
+        <header class="game-header">
+            <h1 class="game-title">🐴 KNIGHT QUEST</h1>
+            <nav class="game-nav">
+                <button onclick="goHome()" class="btn-home">🏠 INICIO</button>
+                <button onclick="newGame()" class="btn-new">🔄 NUEVO</button>
+                <button onclick="toggleSound()" class="btn-sound" id="soundBtn">🔊</button>
+                <button onclick="showHelp()" class="btn-home">❓ AYUDA</button>
+            </nav>
+        </header>
+
+        <!-- Estadísticas del juego -->
+        <div class="game-stats">
+            <div class="stat">Movimientos: <span id="moveCount">0</span></div>
+            <div class="stat">Visitadas: <span id="visitedCount">0</span>/64</div>
+            <div class="stat">Tiempo: <span id="timeCount">00:00</span></div>
+            <div class="stat">Nivel: <span id="levelCount">Principiante</span></div>
+            <div class="stat">Puntuación: <span id="scoreCount">0</span></div>
+        </div>
+
+        <!-- Área principal del juego -->
+        <main class="game-area">
+            <!-- Controles superiores -->
+            <div class="game-top-controls">
+                <div class="difficulty-selector">
+                    <label>Dificultad:</label>
+                    <select id="difficultySelect" onchange="changeDifficulty()">
+                        <option value="beginner">🟢 Principiante (4x4)</option>
+                        <option value="intermediate">🟡 Intermedio (6x6)</option>
+                        <option value="advanced">🟠 Avanzado (8x8)</option>
+                        <option value="expert">🔴 Experto (8x8 sin pistas)</option>
+                    </select>
+                </div>
+                
+                <div class="hints-display">
+                    <span>Pistas restantes: <strong id="hintsLeft">3</strong></span>
+                </div>
+            </div>
+
+            <!-- Tablero de ajedrez -->
+            <div id="chessboard" class="chessboard"></div>
+
+            <!-- Información del progreso -->
+            <div class="progress-info">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                    <span id="progressText" class="progress-text">0% completado</span>
+                </div>
+                
+                <div class="game-tips" id="gameTips">
+                    <p>💡 <strong>Consejo:</strong> Haz clic en cualquier casilla para empezar tu aventura con el caballo.</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Controles del juego -->
+        <div class="game-controls">
+            <button class="btn btn-primary" onclick="startGame()" id="startBtn">🎮 JUGAR</button>
+            <button class="btn btn-secondary" onclick="getHint()" id="hintBtn">💡 PISTA</button>
+            <button class="btn btn-secondary" onclick="undoMove()" id="undoBtn" disabled>↩️ DESHACER</button>
+            <button class="btn btn-warning" onclick="resetGame()" id="resetBtn">🔄 REINICIAR</button>
+            <button class="btn btn-success" onclick="showLeaderboard()" id="leaderboardBtn">🏆 RANKINGS</button>
+        </div>
+
+        <!-- Panel de estado -->
+        <div class="status-panel" id="statusPanel">
+            <div class="status-message" id="statusMessage">
+                ¡Bienvenido a Knight Quest! Recorre todas las casillas del tablero con tu valiente caballo.
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Game Over -->
+    <div id="gameOverModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="gameOverTitle">🏆 ¡QUEST COMPLETADO!</h3>
+                <button class="modal-close" onclick="closeGameOverModal()">&times;</button>
+            </div>
+            <div class="modal-content">
+                <div id="finalStats">
+                    <p>¡Estadísticas finales aparecerán aquí!</p>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="newGame()">🔄 JUGAR DE NUEVO</button>
+                <button class="btn btn-secondary" onclick="goHome()">🏠 INICIO</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ayuda -->
+    <div id="helpModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>❓ CÓMO JUGAR KNIGHT QUEST</h3>
+                <button class="modal-close" onclick="closeHelpModal()">&times;</button>
+            </div>
+            <div class="modal-content">
+                <div class="help-content">
+                    <h4>🎯 OBJETIVO:</h4>
+                    <p>Mueve el caballo por todo el tablero visitando cada casilla exactamente <strong>una vez</strong>.</p>
+                    
+                    <h4>🐴 MOVIMIENTO DEL CABALLO:</h4>
+                    <p>El caballo se mueve en forma de "L": 2 casillas en una dirección y 1 en perpendicular (o viceversa).</p>
+                    
+                    <h4>🎮 CONTROLES:</h4>
+                    <ul>
+                        <li><strong>Clic</strong> en una casilla para mover el caballo</li>
+                        <li><strong>💡 PISTA</strong> - Te muestra la mejor jugada</li>
+                        <li><strong>↩️ DESHACER</strong> - Deshace el último movimiento</li>
+                    </ul>
+                    
+                    <h4>🏆 PUNTUACIÓN:</h4>
+                    <ul>
+                        <li>Puntos base por cada casilla visitada</li>
+                        <li>Bonus por velocidad</li>
+                        <li>Bonus por usar pocas pistas</li>
+                        <li>Penalty por movimientos deshecho</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="closeHelpModal()">¡Entendido!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== KNIGHT QUEST - JAVASCRIPT INTEGRADO =====
+        console.log('🚀 Knight Quest - Iniciando...');
+        
+        // Configuración del juego
+        const KNIGHT_CONFIG = {
+            name: 'knight-quest',
+            version: '1.0.0',
+            difficulties: {
+                beginner: { size: 4, hints: 99, name: 'Principiante' },
+                intermediate: { size: 6, hints: 5, name: 'Intermedio' },
+                advanced: { size: 8, hints: 3, name: 'Avanzado' },
+                expert: { size: 8, hints: 0, name: 'Experto' }
+            }
+        };
+        
+        // Estado del juego
+        let gameState = {
+            isPlaying: false,
+            isPaused: false,
+            board: [],
+            boardSize: 4,
+            currentPos: null,
+            visitedSquares: new Set(),
+            moveHistory: [],
+            possibleMoves: [],
+            startTime: null,
+            gameTimer: null,
+            difficulty: 'beginner',
+            hintsLeft: 99,
+            hintsUsed: 0,
+            undosUsed: 0,
+            score: 0,
+            moveCount: 0
+        };
+        
+        // Movimientos del caballo (L-shaped)
+        const KNIGHT_MOVES = [
+            [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+            [1, -2], [1, 2], [2, -1], [2, 1]
+        ];
+        
+        // ===== FUNCIONES PRINCIPALES =====
+        
+        function initGame() {
+            console.log('Inicializando Knight Quest');
+            createBoard();
+            updateUI();
+            console.log('Knight Quest inicializado correctamente');
+        }
+        
+        function createBoard() {
+            const board = document.getElementById('chessboard');
+            board.innerHTML = '';
+            
+            const size = gameState.boardSize;
+            board.className = `chessboard size-${size}x${size}`;
+            
+            gameState.board = Array(size * size).fill(null);
+            
+            for (let row = 0; row < size; row++) {
+                for (let col = 0; col < size; col++) {
+                    const square = document.createElement('div');
+                    const index = row * size + col;
+                    
+                    square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                    square.dataset.index = index;
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+                    
+                    square.addEventListener('click', () => handleSquareClick(index));
+                    square.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        handleSquareClick(index);
+                    });
+                    
+                    board.appendChild(square);
+                }
+            }
+        }
+        
+        function handleSquareClick(targetIndex) {
+            console.log(`🎯 Square clicked: ${targetIndex}`);
+            
+            if (!gameState.isPlaying || gameState.isPaused) {
+                console.log('Juego no está activo');
+                return;
+            }
+            
+            // Primer movimiento - colocar caballo
+            if (gameState.currentPos === null) {
+                placeKnight(targetIndex);
+                return;
+            }
+            
+            // Verificar si es un movimiento válido
+            if (!gameState.possibleMoves.includes(targetIndex)) {
+                showError('¡Movimiento inválido! El caballo se mueve en forma de L.');
+                animateError(targetIndex);
+                return;
+            }
+            
+            makeMove(targetIndex);
+        }
+        
+        function placeKnight(position) {
+            console.log(`🐴 Colocando caballo en: ${position}`);
+            
+            gameState.currentPos = position;
+            gameState.visitedSquares.add(position);
+            gameState.moveHistory.push(position);
+            gameState.board[position] = gameState.moveHistory.length;
+            gameState.startTime = Date.now();
+            
+            startGameTimer();
+            updateBoard();
+            updatePossibleMoves();
+            updateUI();
+            updateGameTips('¡Excelente! Ahora mueve el caballo a una casilla válida.');
+        }
+        
+        function makeMove(targetIndex) {
+            console.log(`🎯 Haciendo movimiento a: ${targetIndex}`);
+            
+            if (gameState.visitedSquares.has(targetIndex)) {
+                showError('¡Ya visitaste esa casilla!');
+                animateError(targetIndex);
+                return;
+            }
+            
+            gameState.currentPos = targetIndex;
+            gameState.visitedSquares.add(targetIndex);
+            gameState.moveHistory.push(targetIndex);
+            gameState.board[targetIndex] = gameState.moveHistory.length;
+            gameState.moveCount++;
+            
+            updateBoard();
+            updatePossibleMoves();
+            updateUI();
+            
+            const totalSquares = gameState.boardSize * gameState.boardSize;
+            if (gameState.visitedSquares.size === totalSquares) {
+                setTimeout(() => completeQuest(), 500);
+            } else if (gameState.possibleMoves.length === 0) {
+                setTimeout(() => gameOver(false), 500);
+            } else {
+                updateGameTips('¡Continúa moviendo el caballo!');
+            }
+        }
+        
+        function getPossibleMoves(pos) {
+            const size = gameState.boardSize;
+            const row = Math.floor(pos / size);
+            const col = pos % size;
+            const moves = [];
+            
+            KNIGHT_MOVES.forEach(([dRow, dCol]) => {
+                const newRow = row + dRow;
+                const newCol = col + dCol;
+                
+                if (newRow >= 0 && newRow < size && newCol >= 0 && newCol < size) {
+                    const newPos = newRow * size + newCol;
+                    if (!gameState.visitedSquares.has(newPos)) {
+                        moves.push(newPos);
+                    }
+                }
+            });
+            
+            return moves;
+        }
+        
+        function updatePossibleMoves() {
+            if (gameState.currentPos !== null) {
+                gameState.possibleMoves = getPossibleMoves(gameState.currentPos);
+            } else {
+                gameState.possibleMoves = [];
+            }
+        }
+        
+        function updateBoard() {
+            const squares = document.querySelectorAll('.square');
+            
+            // Limpiar clases especiales
+            squares.forEach(square => {
+                square.className = square.className.split(' ').filter(c => 
+                    c === 'square' || c === 'light' || c === 'dark'
+                ).join(' ');
+                square.textContent = '';
+            });
+            
+            // Marcar casillas visitadas
+            gameState.visitedSquares.forEach((index) => {
+                if (index !== gameState.currentPos) {
+                    squares[index].classList.add('knight-visited');
+                    squares[index].textContent = gameState.board[index];
+                }
+            });
+            
+            // Marcar posición actual
+            if (gameState.currentPos !== null) {
+                squares[gameState.currentPos].classList.add('knight-current');
+                squares[gameState.currentPos].textContent = '♘';
+            }
+            
+            // Marcar movimientos posibles
+            gameState.possibleMoves.forEach(index => {
+                squares[index].classList.add('knight-possible');
+            });
+        }
+        
+        function updateUI() {
+            document.getElementById('moveCount').textContent = gameState.moveCount;
+            document.getElementById('visitedCount').textContent = gameState.visitedSquares.size;
+            document.getElementById('levelCount').textContent = KNIGHT_CONFIG.difficulties[gameState.difficulty].name;
+            document.getElementById('hintsLeft').textContent = gameState.hintsLeft;
+            
+            const totalSquares = gameState.boardSize * gameState.boardSize;
+            const progress = (gameState.visitedSquares.size / totalSquares) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `${Math.floor(progress)}% completado`;
+            
+            document.getElementById('hintBtn').disabled = gameState.hintsLeft <= 0 || !gameState.isPlaying;
+            document.getElementById('undoBtn').disabled = gameState.moveHistory.length <= 1 || !gameState.isPlaying;
+            
+            updateScore();
+        }
+        
+        function updateTimer() {
+            if (gameState.startTime && !gameState.isPaused) {
+                const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+                document.getElementById('timeCount').textContent = formatTime(elapsed);
+            }
+        }
+        
+        function startGameTimer() {
+            gameState.gameTimer = setInterval(updateTimer, 1000);
+        }
+        
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+        
+        function updateScore() {
+            // Cálculo simple de puntuación
+            let score = gameState.visitedSquares.size * 10;
+            if (gameState.startTime) {
+                const timeElapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+                score += Math.max(0, (300 - timeElapsed) * 2);
+            }
+            score -= gameState.hintsUsed * 25;
+            score -= gameState.undosUsed * 10;
+            
+            gameState.score = Math.max(0, Math.floor(score));
+            document.getElementById('scoreCount').textContent = gameState.score.toLocaleString();
+        }
+        
+        // ===== CONTROLES DEL JUEGO =====
+        
+        function startGame() {
+            console.log('🎮 Iniciando juego');
+            if (gameState.isPlaying) {
+                newGame();
+                return;
+            }
+            newGame();
+        }
+        
+        function newGame() {
+            console.log('🆕 Nuevo juego');
+            resetGameState();
+            createBoard();
+            updateBoard();
+            updateUI();
+            updateGameTips('¡Haz clic en cualquier casilla para comenzar tu aventura!');
+            document.getElementById('startBtn').textContent = '🔄 REINICIAR';
+        }
+        
+        function resetGame() {
+            if (confirm('¿Estás seguro de que quieres reiniciar el juego?')) {
+                newGame();
+            }
+        }
+        
+        function resetGameState() {
+            if (gameState.gameTimer) {
+                clearInterval(gameState.gameTimer);
+            }
+            
+            const difficulty = gameState.difficulty;
+            const config = KNIGHT_CONFIG.difficulties[difficulty];
+            
+            gameState = {
+                isPlaying: true,
+                isPaused: false,
+                board: [],
+                boardSize: config.size,
+                currentPos: null,
+                visitedSquares: new Set(),
+                moveHistory: [],
+                possibleMoves: [],
+                startTime: null,
+                gameTimer: null,
+                difficulty: difficulty,
+                hintsLeft: config.hints,
+                hintsUsed: 0,
+                undosUsed: 0,
+                score: 0,
+                moveCount: 0
+            };
+        }
+        
+        function getHint() {
+            console.log('💡 Solicitando pista');
+            
+            if (gameState.hintsLeft <= 0) {
+                showError('¡No tienes pistas restantes!');
+                return;
+            }
+            
+            if (gameState.currentPos === null) {
+                showError('¡Primero coloca el caballo en el tablero!');
+                return;
+            }
+            
+            if (gameState.possibleMoves.length === 0) {
+                showError('¡No hay movimientos posibles!');
+                return;
+            }
+            
+            // Mostrar una pista simple (primera opción disponible)
+            const hintMove = gameState.possibleMoves[0];
+            const squares = document.querySelectorAll('.square');
+            const hintSquare = squares[hintMove];
+            
+            hintSquare.classList.add('knight-hint');
+            setTimeout(() => {
+                hintSquare.classList.remove('knight-hint');
+            }, 2000);
+            
+            gameState.hintsLeft--;
+            gameState.hintsUsed++;
+            updateUI();
+            
+            showSuccess('💡 ¡Pista! Casilla resaltada');
+        }
+        
+        function undoMove() {
+            console.log('↩️ Deshaciendo movimiento');
+            
+            if (gameState.moveHistory.length <= 1) {
+                showError('¡No hay movimientos para deshacer!');
+                return;
+            }
+            
+            const lastPos = gameState.moveHistory.pop();
+            gameState.visitedSquares.delete(lastPos);
+            gameState.board[lastPos] = null;
+            gameState.undosUsed++;
+            
+            if (gameState.moveHistory.length > 0) {
+                gameState.currentPos = gameState.moveHistory[gameState.moveHistory.length - 1];
+            } else {
+                gameState.currentPos = null;
+                gameState.isPlaying = false;
+                clearInterval(gameState.gameTimer);
+            }
+            
+            updateBoard();
+            updatePossibleMoves();
+            updateUI();
+            
+            showWarning('↩️ Movimiento deshecho');
+        }
+        
+        function changeDifficulty() {
+            const select = document.getElementById('difficultySelect');
+            const newDifficulty = select.value;
+            
+            if (gameState.isPlaying && gameState.moveHistory.length > 0) {
+                if (!confirm('¿Cambiar dificultad reiniciará el juego actual. ¿Continuar?')) {
+                    select.value = gameState.difficulty;
+                    return;
+                }
+            }
+            
+            gameState.difficulty = newDifficulty;
+            const config = KNIGHT_CONFIG.difficulties[newDifficulty];
+            
+            document.getElementById('levelCount').textContent = config.name;
+            
+            if (gameState.isPlaying) {
+                newGame();
+            } else {
+                resetGameState();
+                createBoard();
+                updateUI();
+            }
+            
+            showSuccess(`🎯 Dificultad cambiada a ${config.name}`);
+        }
+        
+        // ===== FINALIZACIÓN DEL JUEGO =====
+        
+        function completeQuest() {
+            console.log('🏆 Quest completado!');
+            gameState.isPlaying = false;
+            clearInterval(gameState.gameTimer);
+            
+            showGameOverModal(true);
+            showSuccess('🏆 ¡Felicitaciones! ¡Has completado Knight Quest!');
+        }
+        
+        function gameOver(won = false) {
+            console.log('⚔️ Game Over');
+            gameState.isPlaying = false;
+            clearInterval(gameState.gameTimer);
+            
+            showGameOverModal(won);
+            showError('⚔️ No hay más movimientos posibles. ¡Inténtalo de nuevo!');
+        }
+        
+        // ===== MENSAJES Y NOTIFICACIONES =====
+        
+        function updateGameTips(message) {
+            document.getElementById('gameTips').innerHTML = `<p>💡 <strong>Consejo:</strong> ${message}</p>`;
+        }
+        
+        function showSuccess(message) {
+            updateStatusPanel(message, 'success');
+        }
+        
+        function showWarning(message) {
+            updateStatusPanel(message, 'warning');
+        }
+        
+        function showError(message) {
+            updateStatusPanel(message, 'error');
+        }
+        
+        function updateStatusPanel(message, type = 'info') {
+            const panel = document.getElementById('statusPanel');
+            const messageEl = document.getElementById('statusMessage');
+            
+            panel.className = `status-panel ${type}`;
+            messageEl.textContent = message;
+            
+            setTimeout(() => {
+                if (panel.className.includes(type)) {
+                    panel.className = 'status-panel';
+                    messageEl.textContent = 'Mueve el caballo por todas las casillas del tablero.';
+                }
+            }, 3000);
+        }
+        
+        function animateError(squareIndex) {
+            const squares = document.querySelectorAll('.square');
+            const square = squares[squareIndex];
+            square.classList.add('knight-error');
+            setTimeout(() => {
+                square.classList.remove('knight-error');
+            }, 500);
+        }
+        
+        // ===== MODALES =====
+        
+        function showGameOverModal(won) {
+            const modal = document.getElementById('gameOverModal');
+            const title = document.getElementById('gameOverTitle');
+            const stats = document.getElementById('finalStats');
+            
+            title.textContent = won ? '🏆 ¡KNIGHT QUEST COMPLETADO!' : '⚔️ QUEST TERMINADO';
+            
+            const timeElapsed = gameState.startTime ? Math.floor((Date.now() - gameState.startTime) / 1000) : 0;
+            
+            stats.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-size: 2rem; color: var(--knight-secondary); margin-bottom: 10px;">
+                            ${gameState.score.toLocaleString()}
+                        </div>
+                        <div style="color: var(--text-secondary);">Puntuación Final</div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
+                        <div>
+                            <div style="font-size: 1.2rem; color: var(--knight-primary);">${formatTime(timeElapsed)}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">Tiempo Total</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.2rem; color: var(--knight-primary);">${gameState.moveCount}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">Movimientos</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.2rem; color: var(--knight-primary);">${gameState.visitedSquares.size}/${gameState.boardSize * gameState.boardSize}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">Casillas Visitadas</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.2rem; color: var(--knight-primary);">${gameState.hintsUsed}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">Pistas Usadas</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(0,255,107,0.1); padding: 10px; border-radius: 8px; border: 1px solid var(--knight-secondary);">
+                        <strong>Dificultad:</strong> ${KNIGHT_CONFIG.difficulties[gameState.difficulty].name}
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+        
+        function closeGameOverModal() {
+            document.getElementById('gameOverModal').style.display = 'none';
+        }
+        
+        function showLeaderboard() {
+            alert('🏆 Leaderboard próximamente disponible!\n\nTu puntuación actual: ' + gameState.score.toLocaleString());
+        }
+        
+        function showHelp() {
+            document.getElementById('helpModal').style.display = 'flex';
+        }
+        
+        function closeHelpModal() {
+            document.getElementById('helpModal').style.display = 'none';
+        }
+        
+        // ===== UTILIDADES =====
+        
+        function toggleSound() {
+            // Placeholder para función de sonido
+            const btn = document.getElementById('soundBtn');
+            btn.textContent = btn.textContent === '🔊' ? '🔇' : '🔊';
+            console.log('🔊 Toggle sound');
+        }
+        
+        function goHome() {
+            if (confirm('¿Volver al inicio? Se perderá el progreso actual.')) {
+                window.location.href = '../index.html';
+            }
+        }
+        
+        // ===== EVENT LISTENERS =====
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modals = document.querySelectorAll('.modal-overlay');
+                modals.forEach(modal => {
+                    if (modal.style.display === 'flex') {
+                        modal.style.display = 'none';
+                    }
+                });
+            }
+        });
+        
+        // Prevenir zoom accidental
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+        
+        // ===== INICIALIZACIÓN =====
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('✅ DOM cargado, inicializando Knight Quest...');
+            initGame();
+        });
+        
+        console.log('🐴 Knight Quest v' + KNIGHT_CONFIG.version + ' cargado correctamente');
+    </script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>ChessArcade - Level Up Your Chess Game | NeonChess Style</title>
+    <meta name="description" content="Experience chess like never before with ChessArcade's neon-powered gaming platform. Master tactical puzzles, knight tours, and more in retro 80s style.">
+    <meta name="keywords" content="chess, arcade, games, tactics, knight tour, puzzle, neon, retro, 80s">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="ChessArcade - Level Up Your Chess Game">
+    <meta property="og:description" content="Neon-powered chess gaming platform with tactical puzzles and arcade-style challenges">
+    <meta property="og:type" content="website">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♔</text></svg>">
+    
+    <!-- NeonChess System Styles -->
+    <link rel="stylesheet" href="assets/css/neonchess-style.css">
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <!-- Main Container with Grid Background -->
+    <div class="neon-container neon-grid-bg">
+        
+        <!-- Coin Counter UI -->
+        <div class="neon-coin-counter" aria-label="Coin counter">
+            <div class="neon-coin-icon" aria-hidden="true">¢</div>
+            <span>1,337</span>
+        </div>
+        
+        <!-- Hero Section -->
+        <section class="neon-section neon-center">
+            <header>
+                <h1 class="neon-title">ChessArcade</h1>
+                <p class="neon-subtitle">Level Up Your Chess Game</p>
+            </header>
+        </section>
+        
+        <!-- Navigation Pills -->
+        <section class="neon-section">
+            <nav class="neon-flex" role="navigation" aria-label="Main navigation">
+                <a href="#quick-play" class="neon-pill" role="button">Quick Play</a>
+                <a href="#tournament" class="neon-pill primary" role="button">Tournament</a>
+                <a href="#leaderboard" class="neon-pill secondary" role="button">Leaderboard</a>
+            </nav>
+        </section>
+        
+        <!-- Chess Pieces Showcase -->
+        <section class="neon-section">
+            <div class="neon-pieces" role="group" aria-label="Interactive chess pieces">
+                <div class="neon-piece" role="button" aria-label="King piece" tabindex="0">♔</div>
+                <div class="neon-piece" role="button" aria-label="Queen piece" tabindex="0">♕</div>
+                <div class="neon-piece" role="button" aria-label="Rook piece" tabindex="0">♖</div>
+                <div class="neon-piece" role="button" aria-label="Bishop piece" tabindex="0">♗</div>
+                <div class="neon-piece" role="button" aria-label="Knight piece" tabindex="0">♘</div>
+                <div class="neon-piece" role="button" aria-label="Pawn piece" tabindex="0">♙</div>
+            </div>
+        </section>
+        
+        <!-- Main Action Buttons -->
+        <section class="neon-section">
+            <div class="neon-flex">
+                <button class="neon-arcade-btn red" type="button">
+                    ▶ Start Game
+                </button>
+                <button class="neon-arcade-btn blue" type="button">
+                    ★ High Scores
+                </button>
+            </div>
+        </section>
+        
+        <!-- Games Grid -->
+        <section class="neon-section">
+            <div class="neon-grid neon-grid-auto">
+                
+                <!-- Knight Quest Game -->
+                <article class="neon-card knight-quest-card" tabindex="0" role="button">
+                    <div class="neon-card-icon large" aria-hidden="true">🐴</div>
+                    <h2 class="neon-heading">Knight Quest</h2>
+                    <p class="neon-text neon-mb-md">
+                        Master the knight's tour across pixel-perfect boards. Can you conquer all 64 squares in this neon-blazing adventure?
+                    </p>
+                    <button class="neon-play-btn" type="button" data-game="knight-quest">
+                        Play Now
+                    </button>
+                </article>
+                
+                <!-- Vision Blitz Game -->
+                <article class="neon-card vision-blitz-card" tabindex="0" role="button">
+                    <div class="neon-card-icon" aria-hidden="true">⚡</div>
+                    <h2 class="neon-heading">Vision Blitz</h2>
+                    <p class="neon-text neon-mb-md">
+                        Lightning-fast tactical recognition. Spot attacks and defenses in neon-blazing speed through the cyberpunk chessboard!
+                    </p>
+                    <button class="neon-play-btn" type="button" data-game="vision-blitz">
+                        Play Now
+                    </button>
+                </article>
+                
+                <!-- Square Rush Game -->
+                <article class="neon-card square-rush-card" tabindex="0" role="button">
+                    <div class="neon-card-icon" aria-hidden="true">🎯</div>
+                    <h2 class="neon-heading">Square Rush</h2>
+                    <p class="neon-text neon-mb-md">
+                        Navigate the coordinate matrix. A1 to H8 in record time through retro-futuristic grids and synthwave landscapes!
+                    </p>
+                    <button class="neon-play-btn" type="button" data-game="square-rush">
+                        Play Now
+                    </button>
+                </article>
+                
+                <!-- Tactic Burst Game -->
+                <article class="neon-card tactic-burst-card" tabindex="0" role="button">
+                    <div class="neon-card-icon" aria-hidden="true">💥</div>
+                    <h2 class="neon-heading">Tactic Burst</h2>
+                    <p class="neon-text neon-mb-md">
+                        Chain combos of tactical patterns. Pins, forks, and skewers in arcade-style action with pulsing neon effects!
+                    </p>
+                    <button class="neon-play-btn" type="button" data-game="tactic-burst">
+                        Play Now
+                    </button>
+                </article>
+                
+                <!-- Checkmate Countdown Game -->
+                <article class="neon-card checkmate-countdown-card" tabindex="0" role="button">
+                    <div class="neon-card-icon" aria-hidden="true">🏆</div>
+                    <h2 class="neon-heading">Checkmate Countdown</h2>
+                    <p class="neon-text neon-mb-md">
+                        Beat the clock to find mate in X. Pulse-pounding puzzles with synthwave aesthetics and retro gaming vibes!
+                    </p>
+                    <button class="neon-play-btn" type="button" data-game="checkmate-countdown">
+                        Play Now
+                    </button>
+                </article>
+                
+                <!-- Memory Matrix Game -->
+                <article class="neon-card memory-matrix-card" tabindex="0" role="button">
+                    <div class="neon-card-icon" aria-hidden="true">🧠</div>
+                    <h2 class="neon-heading">Memory Matrix</h2>
+                    <p class="neon-text neon-mb-md">
+                        Memorize positions in the digital chess cosmos. Train your mind like a chess computer in this neon wonderland!
+                    </p>
+                    <button class="neon-play-btn" type="button" data-game="memory-matrix">
+                        Play Now
+                    </button>
+                </article>
+                
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="neon-section neon-center neon-mt-lg">
+            <p class="neon-text">
+                &copy; 2025 ChessArcade | Powered by <span class="neon-cyan neon-bold">NeonChess System</span>
+            </p>
+        </footer>
+        
+    </div>
+    
+    <!-- Floating Power-ups (created dynamically by JS) -->
+    
+    <!-- NeonChess Interactive System -->
+    <script src="assets/js/neonchess-effects.js"></script>
+    
+    <!-- Game-specific handlers -->
+    <script>
+        // Custom game launch handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Handle game launches
+            document.querySelectorAll('[data-game]').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const game = this.getAttribute('data-game');
+                    launchGame(game);
+                });
+            });
+            
+            // Handle keyboard navigation
+            document.querySelectorAll('[tabindex="0"]').forEach(element => {
+                element.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+            
+        });
+        
+        // Game launch function
+        function launchGame(gameId) {
+            console.log(`🎮 Launching game: ${gameId}`);
+            
+            // Add screen flash effect
+            document.body.style.background = 'white';
+            setTimeout(() => {
+                document.body.style.background = '';
+            }, 100);
+            
+            // Create particles
+            NeonChess.createParticles(
+                window.innerWidth / 2, 
+                window.innerHeight / 2, 
+                '#00ff80'
+            );
+            
+            // Here you would redirect to the actual game
+            window.location.href = `games/${gameId}/index.html`;
+            
+            // For demo purposes, just show an alert
+            // setTimeout(() => {
+            //     alert(`🎮 Loading ${gameId.replace('-', ' ').toUpperCase()}...\n\n(In production, this would launch the actual game)`);
+            // }, 200);
+        }
+        
+        // Analytics tracking (replace with your analytics)
+        function trackEvent(event, properties = {}) {
+            console.log('📊 Analytics Event:', event, properties);
+            
+            // Example: Google Analytics
+            // gtag('event', event, properties);
+            
+            // Example: Custom analytics
+            // window.analytics?.track(event, properties);
+        }
+        
+        // Track game launches
+        document.addEventListener('click', function(e) {
+            if (e.target.hasAttribute('data-game')) {
+                trackEvent('game_launch_attempt', {
+                    game: e.target.getAttribute('data-game'),
+                    source: 'main_page'
+                });
+            }
+        });
+        
+    </script>
+    
+    <!-- Service Worker for PWA (optional) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('🔧 Service Worker registered'))
+                .catch(err => console.log('❌ Service Worker registration failed'));
+        }
+    </script>
+    
+</body>
+</html>

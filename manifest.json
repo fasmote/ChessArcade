@@ -1,0 +1,165 @@
+{
+  "name": "ChessArcade - Retro Gaming Collection",
+  "short_name": "ChessArcade",
+  "description": "Colección épica de juegos de ajedrez con estilo retro años 80. Knight Quest, Chess Puzzles y más juegos con efectos neón vibrantes.",
+  "version": "2.0.0",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#ff0080",
+  "background_color": "#0a0a0a",
+  "scope": "/",
+  "lang": "es",
+  "dir": "ltr",
+  
+  "icons": [
+    {
+      "src": "assets/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+
+  "shortcuts": [
+    {
+      "name": "Knight Quest",
+      "description": "Juega al clásico Salto del Caballo con estilo retro",
+      "url": "/games/knight-quest/",
+      "icons": [
+        {
+          "src": "assets/icons/knight-icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Chess Puzzles",
+      "description": "Resuelve rompecabezas tácticos de ajedrez",
+      "url": "/games/chess-puzzles/",
+      "icons": [
+        {
+          "src": "assets/icons/puzzle-icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Rankings",
+      "description": "Ver puntuaciones y logros",
+      "url": "/#rankings",
+      "icons": [
+        {
+          "src": "assets/icons/trophy-icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+
+  "categories": [
+    "games",
+    "entertainment",
+    "puzzle",
+    "strategy",
+    "arcade"
+  ],
+
+  "screenshots": [
+    {
+      "src": "assets/screenshots/knight-quest-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Knight Quest en móvil - Tablero 4x4 con efectos neón"
+    },
+    {
+      "src": "assets/screenshots/knight-quest-desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Knight Quest en desktop - Experiencia completa retro"
+    },
+    {
+      "src": "assets/screenshots/game-hub.png",
+      "sizes": "1200x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Hub principal de ChessArcade con estilo años 80"
+    }
+  ],
+
+  "features": [
+    "Cross-platform",
+    "Offline support",
+    "Touch-optimized",
+    "Retro aesthetic",
+    "Multiple difficulty levels",
+    "Local leaderboards",
+    "Achievement system"
+  ],
+
+  "prefer_related_applications": false,
+
+  "protocol_handlers": [
+    {
+      "protocol": "web+chessarcade",
+      "url": "/?game=%s"
+    }
+  ],
+
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+
+  "launch_handler": {
+    "client_mode": "navigate-new"
+  },
+
+  "id": "chessarcade-retro-gaming"
+}

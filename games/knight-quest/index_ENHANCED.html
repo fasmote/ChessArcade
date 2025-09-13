@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knight Quest - ChessArcade</title>
+    <meta name="description" content="Master the knight's tour across pixel-perfect boards in this neon-blazing adventure.">
+    
+    <!-- NeonChess System -->
+    <link rel="stylesheet" href="../../assets/css/neonchess-style.css">
+    
+    <!-- Game-specific styles -->
+    <style>
+        /* ENHANCED KNIGHT QUEST STYLES */
+        
+        /* Tablero de ajedrez mejorado */
+        .chess-board {
+            display: grid;
+            gap: 3px;
+            background: linear-gradient(45deg, #222, #444);
+            padding: 20px;
+            border-radius: 15px;
+            border: 4px solid var(--neon-cyan);
+            box-shadow: 
+                var(--glow-large) var(--neon-cyan),
+                inset 0 0 50px rgba(0,255,255,0.1);
+            margin: 2rem auto;
+            position: relative;
+        }
+
+        /* Tamaños dinámicos del tablero */
+        .chess-board.size-4x4 {
+            grid-template-columns: repeat(4, 80px);
+            grid-template-rows: repeat(4, 80px);
+        }
+
+        .chess-board.size-6x6 {
+            grid-template-columns: repeat(6, 70px);
+            grid-template-rows: repeat(6, 70px);
+        }
+
+        .chess-board.size-8x8 {
+            grid-template-columns: repeat(8, 65px);
+            grid-template-rows: repeat(8, 65px);
+        }
+        
+        .chess-square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all var(--transition-fast);
+            position: relative;
+            border: 2px solid transparent;
+            font-weight: 700;
+            
+            /* Efecto 3D */
+            box-shadow: 
+                inset 2px 2px 4px rgba(255,255,255,0.2),
+                inset -2px -2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .chess-square.light {
+            background: linear-gradient(135deg, #f5deb3 0%, #f0d9b5 50%, #e8c78a 100%);
+            color: #8b4513;
+        }
+        
+        .chess-square.dark {
+            background: linear-gradient(135deg, #d2b48c 0%, #b58863 50%, #9d6e47 100%);
+            color: #f5deb3;
+        }
+        
+        .chess-square.visited {
+            background: linear-gradient(45deg, var(--neon-magenta), #ff4040) !important;
+            color: white;
+            font-weight: 900;
+            font-size: 1.2rem;
+            animation: visitedPulse 0.6s ease;
+            box-shadow: var(--glow-medium) var(--neon-magenta);
+            border: 2px solid white;
+        }
+        
+        .chess-square.current {
+            background: linear-gradient(45deg, var(--neon-green), #40ff40) !important;
+            color: #000;
+            font-weight: 900;
+            animation: currentGlow 1.5s ease-in-out infinite alternate;
+            box-shadow: 0 0 25px rgba(0, 255, 128, 0.8);
+            border: 3px solid white;
+            transform: scale(1.05);
+        }
+        
+        .chess-square.possible-move {
+            background: linear-gradient(45deg, var(--neon-yellow), #ffd700) !important;
+            animation: possibleHint 1.2s ease-in-out infinite alternate;
+            cursor: pointer;
+            border: 2px solid var(--neon-orange);
+            box-shadow: var(--glow-small) var(--neon-yellow);
+        }
+        
+        .chess-square.possible-move::before {
+            content: '⚡';
+            color: var(--neon-orange);
+            font-size: 1.5rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: electricBolt 0.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes electricBolt {
+            0% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        }
+        
+        .chess-square:hover.possible-move {
+            transform: scale(1.15);
+            box-shadow: 0 0 20px rgba(255, 255, 0, 1);
+            background: linear-gradient(45deg, #ffff00, #ff8000) !important;
+        }
+        
+        @keyframes visitedPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1.05); }
+        }
+        
+        @keyframes currentGlow {
+            0% { box-shadow: 0 0 25px rgba(0, 255, 128, 0.8); }
+            100% { box-shadow: 0 0 40px rgba(0, 255, 128, 1), 0 0 60px rgba(0, 255, 128, 0.5); }
+        }
+        
+        @keyframes possibleHint {
+            0% { opacity: 0.8; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.02); }
+        }
+        
+        /* CABALLO MÁS GRANDE Y ESPECTACULAR */
+        .knight-position {
+            font-size: 3.5rem;
+            text-shadow: 
+                0 0 10px currentColor,
+                0 0 20px currentColor,
+                0 0 30px currentColor,
+                0 0 40px currentColor;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.9));
+            margin: 0;
+            animation: knightGlow 1.2s ease-in-out infinite alternate;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes knightGlow {
+            0% { 
+                transform: scale(1);
+                text-shadow: 
+                    0 0 10px currentColor,
+                    0 0 20px currentColor,
+                    0 0 30px currentColor,
+                    0 0 40px currentColor;
+            }
+            100% { 
+                transform: scale(1.1);
+                text-shadow: 
+                    0 0 15px currentColor,
+                    0 0 30px currentColor,
+                    0 0 45px currentColor,
+                    0 0 60px currentColor;
+            }
+        }
+        
+        .move-number {
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            font-size: 1rem;
+            font-weight: 900;
+            opacity: 0.9;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.5);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* Selector de tamaño mejorado */
+        .size-selector {
+            display: flex;
+            gap: 0.5rem;
+            background: linear-gradient(145deg, rgba(0,0,0,0.8), rgba(26,0,51,0.6));
+            padding: 0.8rem;
+            border-radius: 25px;
+            border: 3px solid var(--neon-cyan);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--glow-small) var(--neon-cyan);
+        }
+
+        .size-btn {
+            padding: 0.6rem 1.2rem;
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .size-btn.active {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            box-shadow: var(--glow-small) var(--neon-cyan);
+            transform: scale(1.05);
+        }
+
+        .size-btn:hover {
+            background: rgba(0,255,255,0.2);
+            transform: scale(1.08);
+            box-shadow: var(--glow-small) var(--neon-cyan);
+        }
+
+        /* BOTONES ARCADE RETRO ENHANCED */
+        .neon-arcade-btn {
+            padding: 1.5rem 4rem;
+            font-size: 1.6rem;
+            font-weight: 900;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Orbitron', monospace;
+            
+            /* Retro 80s Shadow Stack MEJORADO */
+            box-shadow: 
+                0 8px 0 #333,
+                0 12px 0 #222,
+                0 16px 0 #111,
+                0 20px 30px rgba(0,0,0,0.6),
+                inset 0 2px 0 rgba(255,255,255,0.2);
+            
+            /* Efecto de bisel 3D */
+            border-top: 3px solid rgba(255,255,255,0.3);
+            border-left: 3px solid rgba(255,255,255,0.2);
+            border-right: 3px solid rgba(0,0,0,0.3);
+            border-bottom: 3px solid rgba(0,0,0,0.4);
+        }
+
+        .neon-arcade-btn:active {
+            transform: translateY(8px);
+            box-shadow: 
+                0 0px 0 #333,
+                0 4px 0 #222,
+                0 8px 0 #111,
+                0 12px 15px rgba(0,0,0,0.6);
+        }
+
+        .neon-arcade-btn.red {
+            background: linear-gradient(to bottom, #ff8a80 0%, #ff6b6b 30%, #ff5252 70%, #d32f2f 100%);
+            color: white;
+            text-shadow: 0 3px 0 #b71c1c, 0 0 20px rgba(255,255,255,0.5);
+        }
+
+        .neon-arcade-btn.red:hover {
+            background: linear-gradient(to bottom, #ffab91 0%, #ff8a80 30%, #ff6b6b 70%, #ff5252 100%);
+            box-shadow: 
+                0 8px 0 #333,
+                0 12px 0 #222,
+                0 16px 0 #111,
+                0 20px 35px rgba(255,107,107,0.8),
+                inset 0 2px 0 rgba(255,255,255,0.3);
+            text-shadow: 0 3px 0 #b71c1c, 0 0 25px rgba(255,255,255,0.8);
+        }
+
+        /* Stats mejoradas */
+        .game-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--space-lg);
+            margin: var(--space-lg) 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(145deg, var(--dark-surface), var(--dark-surface-glass));
+            border: 3px solid var(--neon-cyan);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+            box-shadow: var(--glow-small) var(--neon-cyan);
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--neon-magenta);
+            text-shadow: var(--glow-medium) var(--neon-magenta);
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.5rem;
+        }
+
+        /* Instrucciones mejoradas */
+        .instructions {
+            background: linear-gradient(145deg, var(--dark-surface), var(--dark-surface-glass));
+            border: 3px solid;
+            border-image: linear-gradient(45deg, var(--neon-magenta), var(--neon-cyan), var(--neon-green)) 1;
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            margin: var(--space-lg) 0;
+        }
+
+        .instructions h2 {
+            color: var(--neon-cyan);
+            text-shadow: var(--glow-medium) var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--space-sm);
+            font-size: 1.8rem;
+        }
+
+        .instructions p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: var(--space-sm);
+        }
+
+        /* Responsive mejorado */
+        @media (max-width: 768px) {
+            .neon-title {
+                font-size: 3rem;
+            }
+            
+            .neon-subtitle {
+                font-size: 1.3rem;
+            }
+            
+            .chess-board.size-4x4 {
+                grid-template-columns: repeat(4, 60px);
+                grid-template-rows: repeat(4, 60px);
+            }
+
+            .chess-board.size-6x6 {
+                grid-template-columns: repeat(6, 50px);
+                grid-template-rows: repeat(6, 50px);
+            }
+
+            .chess-board.size-8x8 {
+                grid-template-columns: repeat(8, 45px);
+                grid-template-rows: repeat(8, 45px);
+            }
+            
+            .chess-square {
+                font-size: 1.8rem;
+            }
+
+            .knight-position {
+                font-size: 2.5rem;
+            }
+            
+            .stat-number {
+                font-size: 2.2rem;
+            }
+
+            .neon-arcade-btn {
+                font-size: 1.2rem;
+                padding: 1rem 2rem;
+                letter-spacing: 0.2em;
+            }
+
+            .game-controls {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .size-selector {
+                order: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="neon-container neon-grid-bg">
+        
+        <!-- Coin Counter -->
+        <div class="neon-coin-counter">
+            <div class="neon-coin-icon">¢</div>
+            <span>1,337</span>
+        </div>
+        
+        <!-- Game Header -->
+        <section class="neon-section neon-center">
+            <div class="neon-card-icon large">🐴</div>
+            <h1 class="neon-title">Knight Quest</h1>
+            <p class="neon-subtitle">Master the Knight's Tour</p>
+        </section>
+        
+        <!-- Game Stats -->
+        <section class="neon-section">
+            <div class="game-info">
+                <div class="stat-card">
+                    <div class="stat-number" id="moves-count">0</div>
+                    <p class="stat-label">Moves</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="remaining-squares">16</div>
+                    <p class="stat-label">Remaining</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="current-position">--</div>
+                    <p class="stat-label">Position</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="best-score">0</div>
+                    <p class="stat-label">Best Score</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Game Controls -->
+        <section class="neon-section">
+            <div class="game-controls">
+                <button class="neon-arcade-btn red" id="new-game-btn">🎮 NEW GAME</button>
+                
+                <div class="size-selector">
+                    <button class="size-btn active" data-size="4">4x4</button>
+                    <button class="size-btn" data-size="6">6x6</button>
+                    <button class="size-btn" data-size="8">8x8</button>
+                </div>
+                
+                <button class="neon-pill secondary" id="hint-btn">🙈 Hide Hints</button>
+                <button class="neon-pill secondary" id="reset-btn">🔄 Reset</button>
+                <a href="../../index.html" class="neon-pill">🏠 Home</a>
+            </div>
+        </section>
+        
+        <!-- Chess Board -->
+        <section class="neon-section">
+            <div class="chess-board size-4x4" id="chess-board">
+                <!-- Squares generated by JavaScript -->
+            </div>
+        </section>
+        
+        <!-- Instructions -->
+        <section class="neon-section">
+            <div class="instructions">
+                <h2>🎯 How to Play</h2>
+                <p>Move the knight to visit every square on the board exactly once.</p>
+                <p>Knights move in an L-shape: 2 squares in one direction, then 1 square perpendicular.</p>
+                <p>⚡ Yellow highlighted squares show possible moves. Try to complete all squares!</p>
+                <p>🎮 Choose your board size: 4x4 (16 squares), 6x6 (36 squares), or 8x8 (64 squares)</p>
+            </div>
+        </section>
+        
+    </div>
+    
+    <!-- NeonChess Effects System -->
+    <script src="../../assets/js/neonchess-effects.js"></script>
+    
+    <!-- Knight Quest Game Logic ENHANCED -->
+    <script>
+        class KnightQuest {
+            constructor() {
+                this.board = [];
+                this.knightPos = { row: 0, col: 0 };
+                this.visitedCount = 0;
+                this.moveCount = 0;
+                this.gameStarted = false;
+                this.showingHints = true;
+                this.boardSize = 4; // Empezar en 4x4 como solicitado
+                this.bestScore = parseInt(localStorage.getItem('knight-quest-best') || '0');
+                
+                this.init();
+            }
+            
+            init() {
+                this.createBoard();
+                this.updateStats();
+                this.setupEventListeners();
+                console.log('🐴 Knight Quest Enhanced initialized!');
+            }
+            
+            setupEventListeners() {
+                document.getElementById('new-game-btn').addEventListener('click', () => this.startNewGame());
+                document.getElementById('hint-btn').addEventListener('click', () => this.toggleHints());
+                document.getElementById('reset-btn').addEventListener('click', () => this.resetGame());
+                
+                // Size selector
+                document.querySelectorAll('.size-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const size = parseInt(btn.dataset.size);
+                        this.changeBoardSize(size);
+                        
+                        // Update active button
+                        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                    });
+                });
+                
+                // Keyboard controls
+                document.addEventListener('keydown', (e) => this.handleKeyPress(e));
+            }
+            
+            changeBoardSize(size) {
+                this.boardSize = size;
+                const boardElement = document.getElementById('chess-board');
+                
+                // Remove old size classes
+                boardElement.className = 'chess-board';
+                boardElement.classList.add(`size-${size}x${size}`);
+                
+                this.resetGame();
+                this.createBoard();
+                this.updateStats();
+            }
+            
+            createBoard() {
+                const boardElement = document.getElementById('chess-board');
+                boardElement.innerHTML = '';
+                this.board = [];
+                
+                for (let row = 0; row < this.boardSize; row++) {
+                    this.board[row] = [];
+                    for (let col = 0; col < this.boardSize; col++) {
+                        const square = document.createElement('div');
+                        square.className = `chess-square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                        square.dataset.row = row;
+                        square.dataset.col = col;
+                        square.addEventListener('click', () => this.handleSquareClick(row, col));
+                        
+                        boardElement.appendChild(square);
+                        this.board[row][col] = { visited: false, element: square };
+                    }
+                }
+                
+                console.log(`✅ Board created: ${this.boardSize}x${this.boardSize}`);
+            }
+            
+            startNewGame() {
+                this.resetGame();
+                
+                // Random starting position
+                this.knightPos.row = Math.floor(Math.random() * this.boardSize);
+                this.knightPos.col = Math.floor(Math.random() * this.boardSize);
+                
+                this.placeKnight();
+                this.gameStarted = true;
+                this.updateStats();
+                
+                // Game start effects
+                if (window.NeonChess) {
+                    NeonChess.createParticles(window.innerWidth / 2, window.innerHeight / 2, '#00ff80');
+                    NeonChess.addCoins(10);
+                }
+                
+                console.log(`🎮 New game started at position: ${this.knightPos.row}, ${this.knightPos.col}`);
+            }
+            
+            resetGame() {
+                this.visitedCount = 0;
+                this.moveCount = 0;
+                this.gameStarted = false;
+                
+                // Clear board
+                for (let row = 0; row < this.boardSize; row++) {
+                    for (let col = 0; col < this.boardSize; col++) {
+                        const square = this.board[row][col];
+                        if (square) {
+                            square.visited = false;
+                            square.element.className = `chess-square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                            square.element.innerHTML = '';
+                        }
+                    }
+                }
+                
+                this.updateStats();
+                console.log('🔄 Game reset');
+            }
+            
+            placeKnight() {
+                const { row, col } = this.knightPos;
+                
+                if (row < 0 || row >= this.boardSize || col < 0 || col >= this.boardSize) {
+                    console.error(`❌ Knight position out of bounds: ${row}, ${col}`);
+                    return;
+                }
+                
+                const square = this.board[row][col];
+                
+                if (!square.visited) {
+                    square.visited = true;
+                    square.element.classList.add('visited');
+                    square.element.innerHTML = `<span class="move-number">${++this.visitedCount}</span>`;
+                }
+                
+                // Remove current class from all squares
+                document.querySelectorAll('.chess-square.current').forEach(s => {
+                    s.classList.remove('current');
+                });
+                
+                // Add current class to knight position
+                square.element.classList.add('current');
+                square.element.innerHTML = `<span class="move-number">${this.visitedCount}</span><span class="knight-position">♞</span>`;
+                
+                this.updatePossibleMoves();
+                this.updateStats();
+                this.checkWinCondition();
+                
+                console.log(`🐴 Knight placed at ${row}, ${col} - Move ${this.visitedCount}`);
+            }
+            
+            handleSquareClick(row, col) {
+                console.log(`🎯 Square clicked: ${row}, ${col}`);
+                
+                if (row < 0 || row >= this.boardSize || col < 0 || col >= this.boardSize) {
+                    console.log('❌ Click outside board bounds');
+                    return;
+                }
+                
+                if (!this.gameStarted) {
+                    console.log('🎲 Starting new game at clicked position');
+                    this.knightPos = { row, col };
+                    this.startNewGame();
+                    return;
+                }
+                
+                if (this.isValidMove(row, col)) {
+                    console.log('✅ Valid move detected');
+                    this.makeMove(row, col);
+                } else {
+                    console.log('❌ Invalid move attempted');
+                }
+            }
+            
+            isValidMove(row, col) {
+                if (row < 0 || row >= this.boardSize || col < 0 || col >= this.boardSize) {
+                    return false;
+                }
+                
+                const { row: currentRow, col: currentCol } = this.knightPos;
+                const rowDiff = Math.abs(row - currentRow);
+                const colDiff = Math.abs(col - currentCol);
+                
+                const isKnightMove = (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
+                const isUnvisited = !this.board[row][col].visited;
+                
+                console.log(`🔍 Move validation: knight=${isKnightMove}, unvisited=${isUnvisited}`);
+                return isKnightMove && isUnvisited;
+            }
+            
+            makeMove(row, col) {
+                if (row < 0 || row >= this.boardSize || col < 0 || col >= this.boardSize) {
+                    console.error(`❌ Invalid move attempted: ${row}, ${col}`);
+                    return;
+                }
+                
+                this.knightPos = { row, col };
+                this.moveCount++;
+                this.placeKnight();
+                
+                // Move effects
+                const squareElement = this.board[row][col].element;
+                const rect = squareElement.getBoundingClientRect();
+                
+                if (window.NeonChess) {
+                    NeonChess.createParticles(
+                        rect.left + rect.width / 2,
+                        rect.top + rect.height / 2,
+                        '#ff0080'
+                    );
+                }
+                
+                console.log(`🎯 Move completed to ${row}, ${col}`);
+            }
+            
+            updatePossibleMoves() {
+                document.querySelectorAll('.possible-move').forEach(square => {
+                    square.classList.remove('possible-move');
+                });
+                
+                if (this.showingHints && this.gameStarted) {
+                    const possibleMoves = this.getPossibleMoves();
+                    possibleMoves.forEach(({ row, col }) => {
+                        if (this.board[row] && this.board[row][col]) {
+                            this.board[row][col].element.classList.add('possible-move');
+                        }
+                    });
+                    console.log(`💡 ${possibleMoves.length} possible moves highlighted`);
+                }
+            }
+            
+            getPossibleMoves() {
+                const { row, col } = this.knightPos;
+                const moves = [
+                    [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+                    [1, -2], [1, 2], [2, -1], [2, 1]
+                ];
+                
+                return moves
+                    .map(([dr, dc]) => ({ row: row + dr, col: col + dc }))
+                    .filter(({ row, col }) => 
+                        row >= 0 && row < this.boardSize && 
+                        col >= 0 && col < this.boardSize && 
+                        !this.board[row][col].visited
+                    );
+            }
+            
+            toggleHints() {
+                this.showingHints = !this.showingHints;
+                const btn = document.getElementById('hint-btn');
+                btn.textContent = this.showingHints ? '🙈 Hide Hints' : '💡 Show Hints';
+                btn.className = this.showingHints ? 'neon-pill secondary' : 'neon-pill';
+                this.updatePossibleMoves();
+                console.log(`💡 Hints ${this.showingHints ? 'enabled' : 'disabled'}`);
+            }
+            
+            updateStats() {
+                const totalSquares = this.boardSize * this.boardSize;
+                document.getElementById('moves-count').textContent = this.moveCount;
+                document.getElementById('remaining-squares').textContent = totalSquares - this.visitedCount;
+                
+                const position = this.gameStarted ? 
+                    `${String.fromCharCode(65 + this.knightPos.col)}${this.boardSize - this.knightPos.row}` : 
+                    '--';
+                document.getElementById('current-position').textContent = position;
+                document.getElementById('best-score').textContent = this.bestScore;
+            }
+            
+            checkWinCondition() {
+                const totalSquares = this.boardSize * this.boardSize;
+                
+                if (this.visitedCount === totalSquares) {
+                    this.gameWon();
+                } else if (this.getPossibleMoves().length === 0 && this.gameStarted) {
+                    this.gameOver();
+                }
+            }
+            
+            gameWon() {
+                if (this.visitedCount > this.bestScore) {
+                    this.bestScore = this.visitedCount;
+                    localStorage.setItem('knight-quest-best', this.bestScore.toString());
+                }
+                
+                if (window.NeonChess) {
+                    NeonChess.screenShake();
+                    NeonChess.addCoins(500);
+                    
+                    setTimeout(() => NeonChess.createParticles(200, 200, '#00ff80'), 100);
+                    setTimeout(() => NeonChess.createParticles(600, 300, '#ff0080'), 300);
+                    setTimeout(() => NeonChess.createParticles(400, 100, '#ffff00'), 500);
+                }
+                
+                setTimeout(() => {
+                    alert('🏆 VICTORY! You completed the Knight\'s Tour!\n\n' +
+                          `Board size: ${this.boardSize}x${this.boardSize}\n` +
+                          `Total moves: ${this.moveCount}\n` +
+                          'You are a chess knight master! 🐴✨');
+                }, 1000);
+                
+                console.log('🏆 GAME WON!');
+            }
+            
+            gameOver() {
+                const totalSquares = this.boardSize * this.boardSize;
+                setTimeout(() => {
+                    alert(`⚔️ Game Over!\n\n` +
+                          `You visited ${this.visitedCount} out of ${totalSquares} squares.\n` +
+                          `Total moves: ${this.moveCount}\n\n` +
+                          'Try again for a better score! 🎯');
+                }, 500);
+                
+                console.log('💀 GAME OVER');
+            }
+            
+            handleKeyPress(e) {
+                if (e.key === ' ') {
+                    e.preventDefault();
+                    this.toggleHints();
+                }
+                
+                if (e.key === 'r' || e.key === 'R') {
+                    this.startNewGame();
+                }
+
+                // Números para cambiar tamaño
+                if (e.key === '4') {
+                    this.changeBoardSize(4);
+                    document.querySelector('[data-size="4"]').click();
+                }
+                if (e.key === '6') {
+                    this.changeBoardSize(6);
+                    document.querySelector('[data-size="6"]').click();
+                }
+                if (e.key === '8') {
+                    this.changeBoardSize(8);
+                    document.querySelector('[data-size="8"]').click();
+                }
+            }
+        }
+        
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            window.knightQuest = new KnightQuest();
+            
+            // Update best score display
+            document.getElementById('best-score').textContent = 
+                localStorage.getItem('knight-quest-best') || '0';
+                
+            console.log('🚀 Knight Quest Enhanced loaded and ready!');
+        });
+        
+    </script>
+    
+</body>
+</html>

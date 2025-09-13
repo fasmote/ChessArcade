@@ -1,0 +1,647 @@
+/* ========================================
+   CHESSARCADE HUB - ESTILOS ADICIONALES
+   Estilos específicos para el hub principal
+   ======================================== */
+
+/* Estas reglas se agregan al final del archivo arcade-shared.css */
+
+/* ========================================
+   HUB HEADER ESPECÍFICO
+   ======================================== */
+.hub-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.chess-pieces {
+    display: flex;
+    gap: 1.5rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.piece {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    border: 2px solid var(--text-accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    animation: float 3s ease-in-out infinite;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px var(--border-glow);
+}
+
+.piece:nth-child(2n) {
+    animation-delay: -1.5s;
+    background: linear-gradient(45deg, var(--accent-color), var(--warning-color));
+}
+
+.piece:hover {
+    transform: scale(1.2) rotateZ(10deg);
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.8);
+}
+
+/* ========================================
+   ESTADÍSTICAS DEL USUARIO
+   ======================================== */
+.user-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0 3rem 0;
+    max-width: 1000px;
+    width: 100%;
+}
+
+.user-stats .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid var(--text-accent);
+    border-radius: var(--border-radius);
+    box-shadow: 0 0 20px var(--border-glow);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.user-stats .stat::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+    transform: rotate(45deg);
+    transition: all 0.6s ease;
+    opacity: 0;
+}
+
+.user-stats .stat:hover::before {
+    animation: shine 1.5s ease-in-out;
+}
+
+.user-stats .stat:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px var(--border-glow);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px var(--primary-color);
+}
+
+/* ========================================
+   GAME CARDS ESPECÍFICAS DEL HUB
+   ======================================== */
+.game-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    z-index: 10;
+}
+
+.game-card.available .game-status {
+    background: linear-gradient(45deg, var(--success-color), #40ff80);
+    color: var(--bg-primary);
+    box-shadow: 0 0 10px var(--success-color);
+}
+
+.game-card.coming-soon .game-status {
+    background: linear-gradient(45deg, var(--warning-color), #ffff80);
+    color: var(--bg-primary);
+    box-shadow: 0 0 10px var(--warning-color);
+}
+
+.game-stats-preview {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0 0.5rem 0;
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.8rem;
+}
+
+.stat-mini {
+    color: var(--text-secondary);
+}
+
+.stat-mini strong {
+    color: var(--primary-color);
+}
+
+.game-difficulty {
+    display: flex;
+    gap: 0.3rem;
+    margin-top: 0.5rem;
+    justify-content: center;
+}
+
+.difficulty-badge {
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.difficulty-badge.beginner {
+    background: rgba(0, 255, 0, 0.2);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+
+.difficulty-badge.expert {
+    background: rgba(255, 0, 0, 0.2);
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+}
+
+.coming-soon-eta {
+    margin: 1rem 0;
+    padding: 0.5rem;
+    background: rgba(255, 255, 0, 0.1);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--warning-color);
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--warning-color);
+}
+
+.game-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 1rem;
+    justify-content: center;
+}
+
+.feature {
+    padding: 0.2rem 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.new-badge {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    background: linear-gradient(45deg, var(--error-color), #ff8080);
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 15px;
+    font-size: 0.6rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    animation: newBadgePulse 2s ease-in-out infinite;
+    box-shadow: 0 0 15px var(--error-color);
+    z-index: 15;
+}
+
+@keyframes newBadgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* ========================================
+   SECCIÓN DE CARACTERÍSTICAS
+   ======================================== */
+.features-section {
+    margin: 4rem 0;
+    padding: 3rem 0;
+    border-top: 2px solid var(--border-color);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: var(--text-accent);
+    text-shadow: 0 0 20px var(--border-glow);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px var(--border-glow);
+    border-color: var(--text-accent);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.feature-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.feature-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ========================================
+   CALL TO ACTION
+   ======================================== */
+.cta-section {
+    text-align: center;
+    margin: 4rem 0;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, rgba(255, 0, 128, 0.1), rgba(0, 255, 128, 0.1));
+    border-radius: var(--border-radius);
+    border: 2px solid var(--text-accent);
+    box-shadow: 0 0 30px var(--border-glow);
+}
+
+.cta-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 3s ease-in-out infinite;
+}
+
+.cta-description {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.cta-btn {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: inline-block;
+}
+
+/* ========================================
+   FOOTER DEL HUB
+   ======================================== */
+.hub-footer {
+    margin-top: 4rem;
+    padding: 3rem 0 1rem 0;
+    border-top: 2px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section h4 {
+    color: var(--text-accent);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.footer-section p {
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section li {
+    padding: 0.3rem 0;
+    color: var(--text-secondary);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+/* ========================================
+   POWER-UPS ANIMADOS
+   ======================================== */
+.power-up {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: var(--success-color);
+    border-radius: 50%;
+    animation: powerUpFloat 6s ease-in-out infinite;
+    z-index: -1;
+    box-shadow: 0 0 10px var(--success-color);
+}
+
+@keyframes powerUpFloat {
+    0% { 
+        transform: translateY(100vh) scale(0); 
+        opacity: 0; 
+    }
+    10% { 
+        opacity: 1; 
+    }
+    90% { 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translateY(-20px) scale(1); 
+        opacity: 0; 
+    }
+}
+
+/* ========================================
+   ACHIEVEMENTS GRID
+   ======================================== */
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.achievement-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.achievement-card.unlocked {
+    border-color: var(--success-color);
+    background: rgba(0, 255, 64, 0.1);
+}
+
+.achievement-card.locked {
+    opacity: 0.6;
+    border-color: var(--text-secondary);
+}
+
+.achievement-card .achievement-icon {
+    font-size: 2rem;
+    min-width: 50px;
+    text-align: center;
+}
+
+.achievement-info {
+    flex: 1;
+}
+
+.achievement-name {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.3rem;
+}
+
+.achievement-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.achievement-status {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.achievement-card.unlocked .achievement-status {
+    color: var(--success-color);
+}
+
+.achievement-card.locked .achievement-status {
+    color: var(--text-secondary);
+}
+
+.achievements-summary {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.achievements-summary .progress-bar {
+    width: 100%;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    margin-top: 1rem;
+    overflow: hidden;
+}
+
+.achievements-summary .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border-radius: 10px;
+    transition: width 1s ease;
+}
+
+/* ========================================
+   SETTINGS MODAL ESPECÍFICO
+   ======================================== */
+.settings-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.settings-section:last-child {
+    border-bottom: none;
+}
+
+.settings-section h4 {
+    color: var(--text-accent);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.setting-item {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.setting-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.setting-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary-color);
+}
+
+.setting-item select {
+    background: rgba(0, 0, 0, 0.7);
+    color: var(--text-primary);
+    border: 1px solid var(--text-accent);
+    border-radius: var(--border-radius);
+    padding: 0.5rem;
+    font-family: var(--font-family);
+    max-width: 200px;
+}
+
+.setting-item select:focus {
+    outline: none;
+    box-shadow: 0 0 10px var(--border-glow);
+}
+
+.setting-description {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+    line-height: 1.4;
+}
+
+/* ========================================
+   RESPONSIVE ESPECÍFICO DEL HUB
+   ======================================== */
+@media (max-width: 768px) {
+    .chess-pieces {
+        gap: 1rem;
+    }
+    
+    .piece {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+    
+    .user-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .user-stats .stat {
+        padding: 1rem;
+    }
+    
+    .stat-icon {
+        font-size: 1.5rem;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .feature-card {
+        padding: 1.5rem;
+    }
+    
+    .cta-section {
+        padding: 2rem 1rem;
+    }
+    
+    .cta-title {
+        font-size: 2rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        text-align: center;
+    }
+    
+    .achievements-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-title {
+        font-size: 1.8rem;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+}
