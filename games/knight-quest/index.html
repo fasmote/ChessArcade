@@ -334,19 +334,22 @@
         }
 
         .square.possible::before {
-            content: '⚡';
-            color: var(--neon-orange);
-            font-size: 1.4rem;
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #ff0000;
+            border-radius: 50%;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            animation: electricBolt 0.8s ease-in-out infinite alternate;
+            animation: redDotPulse 1s ease-in-out infinite;
         }
 
-        @keyframes electricBolt {
-            0% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.8); }
-            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        @keyframes redDotPulse {
+            0% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
         }
 
         .square:hover.possible {
@@ -374,34 +377,24 @@
         /* KNIGHT GIGANTE */
         .knight-symbol {
             font-size: 3rem;
-            text-shadow: 
-                0 0 10px currentColor,
-                0 0 20px currentColor,
-                0 0 30px currentColor,
-                0 0 40px currentColor;
-            filter: drop-shadow(0 0 15px rgba(255,255,255,0.9));
-            animation: knightGlow 1.2s ease-in-out infinite alternate;
-            position: relative;
+            color: #333;
+            background: #f5f5f5;
+            border: 3px solid #333;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
             z-index: 10;
+            position: relative;
+            animation: knightBob 2s ease-in-out infinite;
         }
 
-        @keyframes knightGlow {
-            0% { 
-                transform: scale(1);
-                text-shadow: 
-                    0 0 10px currentColor,
-                    0 0 20px currentColor,
-                    0 0 30px currentColor,
-                    0 0 40px currentColor;
-            }
-            100% { 
-                transform: scale(1.1);
-                text-shadow: 
-                    0 0 15px currentColor,
-                    0 0 30px currentColor,
-                    0 0 45px currentColor,
-                    0 0 60px currentColor;
-            }
+        @keyframes knightBob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
         }
 
         .move-number {
@@ -539,6 +532,45 @@
             box-shadow: 
                 var(--glow-large) var(--neon-magenta),
                 0 0 100px rgba(255,0,128,0.3);
+            max-width: 70vw;
+            max-height: 80vh;
+            padding: 2rem;
+        }
+
+        .game-over-message .modal-close:hover {
+            color: var(--neon-magenta);
+            background: rgba(255, 0, 128, 0.1);
+        }
+
+        /* Close button for victory modal */
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+            color: var(--neon-cyan);
+        }
+
+        .victory-message .modal-close:hover {
+            color: var(--neon-yellow);
+            background: rgba(255, 215, 0, 0.1);
         }
 
         .victory-title, .game-over-title {
@@ -613,14 +645,18 @@
         }
 
         .victory-stats p, .game-over-stats p {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0.3rem 0;
         }
         
         .stat-label {
             color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .stat-value {
@@ -894,6 +930,8 @@
             <button class="btn btn-secondary" onclick="getHint()" id="hintBtn">💡 HINT (3)</button>
             <button class="btn btn-secondary" onclick="undoMove()" id="undoBtn" disabled>↩️ UNDO</button>
             <button class="btn btn-secondary" onclick="toggleSound()" id="soundBtn">🔊 SOUND</button>
+            <button class="btn btn-secondary" onclick="showVictoryModal()" id="showVictoryBtn" style="display: none;">📊 SHOW STATS</button>
+            <button class="btn btn-secondary" onclick="showGameOverModal()" id="showGameOverBtn" style="display: none;">⚔️ SHOW RESULT</button>
             <a href="../../index.html" class="btn btn-secondary">🏠 HOME</a>
         </div>
         
@@ -912,6 +950,7 @@
     
     <!-- Victory Message -->
     <div id="victoryMessage" class="victory-message">
+        <button class="modal-close" onclick="closeVictoryModal()" title="Close">&times;</button>
         <div class="victory-title">🏆 KNIGHT QUEST COMPLETED! 🏆</div>
         <div id="finalStats" class="victory-stats"></div>
         <div class="achievement-unlock" id="achievementUnlock" style="display: none;">
@@ -923,20 +962,21 @@
     
     <!-- Game Over Message -->
     <div id="gameOverMessage" class="game-over-message">
-        <div class="game-over-title">GAME OVER</div>
+        <button class="modal-close" onclick="closeGameOverModal()" title="Close">&times;</button>
+        <div class="game-over-title">⚔️ QUEST INCOMPLETE</div>
         <div class="game-over-reason" id="gameOverReason">
-            ⛔ No more valid moves available! ⛔
+            🚫 No more valid moves available!
         </div>
         <div id="gameOverStats" class="game-over-stats"></div>
         <div class="progress-bar">
             <div class="progress-fill" id="completionProgress" style="width: 0%"></div>
         </div>
         <div class="motivational-message">
-            🎯 "Every master was once a disaster. The knight's tour teaches patience and strategy. Try again and conquer more squares!"
+            🎯 "Every master was once a disaster. Try a different strategy and conquer more squares!"
         </div>
-        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
-            <button class="btn btn-primary" onclick="newGame()">🎮 PLAY AGAIN</button>
-            <button class="btn btn-secondary" onclick="changeBoardSize(4)">📊 EASIER</button>
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="newGame()">🎮 TRY AGAIN</button>
+            <button class="btn btn-secondary" onclick="closeGameOverModal(); changeBoardSize(4);">📉 EASIER</button>
         </div>
     </div>
     
@@ -965,6 +1005,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🐴 Knight Quest Enhanced Loading...');
             initGame();
+            
+            // Resume audio context on first user interaction
+            document.addEventListener('click', function resumeAudio() {
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            });
         });
         
         // Initialize game
@@ -1055,8 +1102,11 @@
             // Start new timer
             gameState.gameTimer = setInterval(updateTimer, 1000);
             
-            // Hide victory message
+            // Hide victory message and show stats button
             document.getElementById('victoryMessage').style.display = 'none';
+            document.getElementById('showVictoryBtn').style.display = 'none';
+            document.getElementById('gameOverMessage').style.display = 'none';
+            document.getElementById('showGameOverBtn').style.display = 'none';
             
             // Reset UI
             updateDisplay();
@@ -1319,16 +1369,16 @@
             const totalSquares = gameState.boardSize * gameState.boardSize;
             
             document.getElementById('finalStats').innerHTML = `
-                <p>🎯 <strong>Board Size:</strong> ${gameState.boardSize}x${gameState.boardSize} (${totalSquares} squares)</p>
-                <p>⏱️ <strong>Time:</strong> ${minutes}:${seconds.toString().padStart(2, '0')}</p>
-                <p>🎮 <strong>Moves:</strong> ${gameState.moveHistory.length}</p>
-                <p>💡 <strong>Hints Used:</strong> ${3 - gameState.hintsLeft}</p>
-                <p style="color: var(--neon-green); margin-top: 1rem; font-size: 1.3rem;">
+                <p><span class="stat-label">🎯 Board Size:</span> <span class="stat-value">${gameState.boardSize}x${gameState.boardSize} (${totalSquares} squares)</span></p>
+                <p><span class="stat-label">⏱️ Time:</span> <span class="stat-value">${minutes}:${seconds.toString().padStart(2, '0')}</span></p>
+                <p><span class="stat-label">🎮 Moves:</span> <span class="stat-value">${gameState.moveHistory.length}</span></p>
+                <p><span class="stat-label">💡 Hints Used:</span> <span class="stat-value">${3 - gameState.hintsLeft}</span></p>
+                <p style="color: var(--neon-green); margin-top: 1rem; font-size: 1.3rem; text-align: center;">
                     <strong>🐴 You are a Knight Quest Master! ✨</strong>
                 </p>
             `;
             
-            document.getElementById('victoryMessage').style.display = 'block';
+            showVictoryModal();
             playSound('victory');
             addCoins(500);
             
@@ -1341,6 +1391,23 @@
             }
         }
         
+        // Show victory modal
+        function showVictoryModal() {
+            const modal = document.getElementById('victoryMessage');
+            const showBtn = document.getElementById('showVictoryBtn');
+            modal.style.display = 'block';
+            showBtn.style.display = 'none';
+        }
+        
+        // Close victory modal
+        function closeVictoryModal() {
+            const modal = document.getElementById('victoryMessage');
+            const showBtn = document.getElementById('showVictoryBtn');
+            modal.style.display = 'none';
+            showBtn.style.display = 'inline-block';
+            playSound('click');
+        }
+        
         // Show game over
         function showGameOver() {
             console.log('💀 Game Over - No more moves');
@@ -1348,12 +1415,41 @@
             
             const totalSquares = gameState.boardSize * gameState.boardSize;
             const percentage = Math.round((gameState.visitedSquares.size / totalSquares) * 100);
+            const elapsed = gameState.startTime ? Math.floor((Date.now() - gameState.startTime) / 1000) : 0;
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
             
-            alert(`⚔️ Game Over!\n\n` +
-                  `Board: ${gameState.boardSize}x${gameState.boardSize}\n` +
-                  `Completed: ${gameState.visitedSquares.size}/${totalSquares} squares (${percentage}%)\n` +
-                  `Moves: ${gameState.moveHistory.length}\n\n` +
-                  'Try again for a better score! 🎯');
+            // Update game over stats
+            document.getElementById('gameOverStats').innerHTML = `
+                <p><span class="stat-label">🎯 Board Size:</span> <span class="stat-value">${gameState.boardSize}x${gameState.boardSize} (${totalSquares} squares)</span></p>
+                <p><span class="stat-label">⏱️ Time:</span> <span class="stat-value">${minutes}:${seconds.toString().padStart(2, '0')}</span></p>
+                <p><span class="stat-label">🎮 Moves:</span> <span class="stat-value">${gameState.moveHistory.length}</span></p>
+                <p><span class="stat-label">📊 Completed:</span> <span class="stat-value">${gameState.visitedSquares.size}/${totalSquares} squares (${percentage}%)</span></p>
+                <p><span class="stat-label">💡 Hints Used:</span> <span class="stat-value">${3 - gameState.hintsLeft}</span></p>
+            `;
+            
+            // Update progress bar
+            document.getElementById('completionProgress').style.width = `${percentage}%`;
+            
+            showGameOverModal();
+            playSound('error');
+        }
+        
+        // Show game over modal
+        function showGameOverModal() {
+            const modal = document.getElementById('gameOverMessage');
+            const showBtn = document.getElementById('showGameOverBtn');
+            modal.style.display = 'block';
+            showBtn.style.display = 'none';
+        }
+        
+        // Close game over modal
+        function closeGameOverModal() {
+            const modal = document.getElementById('gameOverMessage');
+            const showBtn = document.getElementById('showGameOverBtn');
+            modal.style.display = 'none';
+            showBtn.style.display = 'inline-block';
+            playSound('click');
         }
         
         // Animate error (Same as your working code)
@@ -1364,11 +1460,89 @@
             }, 500);
         }
         
+        // ========================================
+        // SOUND SYSTEM - Web Audio API Implementation
+        // ========================================
+        let audioContext = null;
+        
+        // Initialize Web Audio API
+        function initAudio() {
+            if (!audioContext) {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.log('Web Audio API not supported');
+                }
+            }
+        }
+        
+        // Play tone with Web Audio API
+        function playTone(frequency, duration, type = 'sine') {
+            if (!gameState.soundEnabled || !audioContext) return;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = type;
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.log('Error playing sound:', e);
+            }
+        }
+        
         // Sound effects
         function playSound(type) {
             if (!gameState.soundEnabled) return;
-            console.log(`🔊 Playing ${type} sound`);
-            // In a real implementation, you'd load and play actual sound files
+            
+            initAudio();
+            
+            // Resume audio context if suspended
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            switch(type) {
+                case 'move':
+                    playTone(440, 0.1, 'sine');
+                    break;
+                case 'success':
+                    playTone(523, 0.2, 'triangle');
+                    break;
+                case 'error':
+                    playTone(220, 0.3, 'sawtooth');
+                    break;
+                case 'hint':
+                    playTone(330, 0.15, 'square');
+                    break;
+                case 'victory':
+                    // Play victory melody
+                    playTone(523, 0.3);
+                    setTimeout(() => playTone(659, 0.3), 300);
+                    setTimeout(() => playTone(784, 0.3), 600);
+                    setTimeout(() => playTone(1047, 0.5), 900);
+                    break;
+                case 'click':
+                    playTone(800, 0.05, 'square');
+                    break;
+                case 'start':
+                    playTone(392, 0.2, 'triangle');
+                    break;
+                case 'undo':
+                    playTone(294, 0.15, 'sine');
+                    break;
+                default:
+                    console.log(`Unknown sound type: ${type}`);
+            }
         }
         
         // Toggle sound
