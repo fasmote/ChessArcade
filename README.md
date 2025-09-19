@@ -2,7 +2,7 @@
 
 ![ChessArcade Banner](./assets/images/chessarcade-banner.png)
 
-## 🚀 [Try Knight Quest Now!](https://github.com/fasmote/ChessArcade/tree/main/games/knight-quest) | [🎮 Play Online](https://fasmote.github.io/ChessArcade/games/knight-quest/)
+## 🚀 [Play Square Rush](./games/square-rush/index.html) | [Play Knight Quest](./games/knight-quest/index.html) | [🎮 Try Both Games!](https://fasmote.github.io/ChessArcade/)
 
 ---
 
@@ -13,8 +13,8 @@
 **ChessArcade** is a collection of chess puzzle games with **neon retro-futuristic aesthetics** inspired by 80s synthwave culture. Transform traditional chess training into an exciting arcade experience with visual effects, electronic sounds, and gamification elements.
 
 #### ✨ **Current Games Available:**
-- **🐴 Knight Quest** - Master the knight's tour across pixel-perfect boards *(Available Now!)*
 - **🎯 Square Rush** - Navigate coordinates A1-H8 in record time *(Available Now!)*
+- **🐴 Knight Quest** - Master the knight's tour across pixel-perfect boards *(Available Now!)*
 - **⚡ Vision Blitz** - Lightning-fast tactical recognition *(Coming Soon)*
 - **💥 Tactic Burst** - Chain tactical patterns *(Coming Soon)*
 - **🏆 Checkmate Countdown** - Find mate in X moves *(Coming Soon)*
@@ -22,9 +22,9 @@
 
 #### 🎯 **Features:**
 - **Responsive Design**: Optimized for desktop and mobile
-- **Web Audio API**: Immersive synthetic soundscapes
-- **Progressive Difficulty**: From beginner 4x4 to expert 10x10 boards
-- **Smart Hints**: AI-powered suggestions using Warnsdorff's algorithm
+- **Progressive Difficulty**: From beginner-friendly to expert challenges
+- **Smart Learning**: Educational gameplay with immediate feedback
+- **Audio Control**: Immersive sound effects with easy toggle
 - **Local Storage**: Save your best scores and progress
 - **Modern CSS**: Smooth animations and neon visual effects
 
@@ -35,8 +35,8 @@
 **ChessArcade** es una colección de juegos de rompecabezas de ajedrez con **estética retro-futurista neón** inspirada en la cultura synthwave de los 80s. Transforma el entrenamiento tradicional de ajedrez en una experiencia arcade emocionante con efectos visuales, sonidos electrónicos y elementos de gamificación.
 
 #### ✨ **Juegos Disponibles Actualmente:**
-- **🐴 Knight Quest** - Domina el recorrido del caballo en tableros perfectos *(¡Disponible Ahora!)*
 - **🎯 Square Rush** - Navega coordenadas A1-H8 en tiempo récord *(¡Disponible Ahora!)*
+- **🐴 Knight Quest** - Domina el recorrido del caballo en tableros perfectos *(¡Disponible Ahora!)*
 - **⚡ Vision Blitz** - Reconocimiento táctico ultrarrápido *(Próximamente)*
 - **💥 Tactic Burst** - Encadena patrones tácticos *(Próximamente)*
 - **🏆 Checkmate Countdown** - Encuentra mate en X jugadas *(Próximamente)*
@@ -44,30 +44,85 @@
 
 #### 🎯 **Características:**
 - **Diseño Responsivo**: Optimizado para escritorio y móvil
-- **Web Audio API**: Paisajes sonoros sintéticos inmersivos
-- **Dificultad Progresiva**: Desde principiante 4x4 hasta experto 10x10
-- **Pistas Inteligentes**: Sugerencias con IA usando algoritmo de Warnsdorff
+- **Dificultad Progresiva**: Desde principiante hasta desafíos expertos
+- **Aprendizaje Inteligente**: Gameplay educativo con feedback inmediato
+- **Control de Audio**: Efectos de sonido inmersivos con toggle fácil
 - **Almacenamiento Local**: Guarda tus mejores puntuaciones y progreso
 - **CSS Moderno**: Animaciones fluidas y efectos visuales neón
 
 ---
 
-## 🎮 Knight Quest - Now Available!
+## 🎯 Square Rush - NEW! Perfect for Learning Chess Coordinates
 
-[![Knight Quest Screenshot](./assets/images/knight-quest-preview.png)](https://fasmote.github.io/ChessArcade/games/knight-quest/)
+[![Square Rush Screenshot](./assets/images/square-rush-preview.png)](./games/square-rush/index.html)
 
-### 🔗 **Quick Links:**
-- **🎯 [Play Knight Quest Online](https://fasmote.github.io/ChessArcade/games/knight-quest/)**
-- **📁 [View Source Code](https://github.com/fasmote/ChessArcade/tree/main/games/knight-quest)**
-- **📖 [Knight Quest Documentation](./games/knight-quest/README.md)**
+### 🎮 **What is Square Rush?**
+**Square Rush** is the perfect game to master chess board coordinates! Navigate from A1 to H8 in this fast-paced coordinate recognition challenge that makes learning chess notation fun and addictive.
+
+### ✨ **Game Features:**
+- **🎯 5 Progressive Levels**: From BABY STEPS (12s) to LITTLE MASTER (6s per coordinate)
+- **🎮 Combo System**: Build multipliers up to x3 for higher scores  
+- **👶 Beginner Friendly**: Optional coordinate labels for learning
+- **📱 Mobile Optimized**: Perfect touch controls for phones and tablets
+- **🔊 Sound Toggle**: Immersive audio feedback with easy on/off control
+- **📚 Educational**: Learn chess notation while having fun!
+
+### 🎪 **Perfect For:**
+- **Kids 6+**: Visual coordinate learning with big, clear labels
+- **Chess Beginners**: Master the board layout naturally
+- **Advanced Players**: Speed training for tournament preparation  
+- **Mobile Gaming**: Play anywhere, anytime on any device
+
+### 🎵 **Gameplay Experience:**
+```
+🎯 Target: E4
+⏱️ Timer: 8.5s
+🏆 Score: 1,200 pts
+🔥 Combo: x2 multiplier
+```
+
+---
+
+## 🐴 Knight Quest - Master the Knight's Tour!
+
+[![Knight Quest Screenshot](./assets/images/knight-quest-preview.png)](./games/knight-quest/index.html)
+
+### 🎮 **What is Knight Quest?**
+**Knight Quest** challenges you to visit every square on the chessboard using only knight moves in this classic puzzle that has fascinated chess players for centuries.
+
+### ✨ **Game Features:**
+- **🏰 4 Board Sizes**: 4x4, 6x6, 8x8, and 10x10 Super Mode
+- **🧠 Smart Hints**: AI-powered suggestions using Warnsdorff's algorithm  
+- **🏆 Ranking System**: Local leaderboards with your best performances
+- **↩️ Undo System**: Take back moves to find the perfect path
+- **📊 Progress Tracking**: See your improvement over time
+- **🎨 Neon Aesthetics**: Beautiful cyberpunk-inspired visuals
+
+### 🎯 **Challenge Yourself:**
+```
+🏰 Board: 8x8 (64 squares)
+⚡ Moves: 45/64 completed  
+💡 Hints: 2 remaining
+🏃‍♂️ Time: 03:47
+```
+
+---
+
+### 🔗 **Play Both Games:**
+- **🎯 [Play Square Rush](./games/square-rush/index.html)** - Master coordinates A1-H8!
+- **🐴 [Play Knight Quest](./games/knight-quest/index.html)** - Conquer the knight's tour!  
+- **📁 [View Source Code](https://github.com/fasmote/ChessArcade)**
+- **📜 [Full Documentation](./docs/)**
 - **🐛 [Report Issues](https://github.com/fasmote/ChessArcade/issues)**
 
 ### 🏆 **What Players Say:**
-> *\"The neon aesthetics and sound design make chess puzzles addictive!\"*
+> *"Square Rush is perfect for learning chess coordinates - my 8-year-old loves the big letters!"*
 
-> *\"Perfect for mobile - finally a chess trainer that works beautifully on phone.\"*
+> *"Knight Quest's Warnsdorff hints teach real strategy while you play."*
 
-> *\"The Warnsdorff hints are genius - learns you strategy while you play.\"*
+> *"Finally chess trainers that work beautifully on mobile - the neon design is amazing!"*
+
+> *"Both games are addictive! My coordinate speed improved dramatically."*
 
 ---
 
@@ -75,7 +130,7 @@
 
 - **Frontend**: Vanilla HTML5, CSS3, JavaScript ES6+
 - **Styling**: CSS Grid, Flexbox, Custom Properties
-- **Audio**: Web Audio API for synthetic sounds  
+- **Audio**: Howler.js for cross-browser sound support
 - **Storage**: localStorage for persistence
 - **Responsive**: Mobile-first design approach
 - **Performance**: Optimized for 60fps animations
@@ -125,8 +180,8 @@ ChessArcade uses a custom **NeonChess Design System** featuring:
 │   └── 📁 images/                   # Screenshots and assets
 ├── 📁 games/
 │   ├── 📁 knight-quest/             # ✅ Knight's Tour game
+│   ├── 📁 square-rush/              # ✅ Coordinate training
 │   ├── 📁 vision-blitz/             # ⏳ Coming soon
-│   ├── 📁 square-rush/              # ⏳ Coming soon
 │   ├── 📁 tactic-burst/             # ⏳ Coming soon
 │   ├── 📁 checkmate-countdown/      # ⏳ Coming soon
 │   └── 📁 memory-matrix/            # ⏳ Coming soon
@@ -155,26 +210,28 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ## 🔗 **Links & Resources**
 
-- **🎮 [Play Knight Quest](https://fasmote.github.io/ChessArcade/games/knight-quest/)**
+- **🎯 [Play Square Rush](./games/square-rush/index.html)**
+- **🐴 [Play Knight Quest](./games/knight-quest/index.html)**
 - **📁 [Main Repository](https://github.com/fasmote/ChessArcade)**
 - **🐦 [Follow Updates on GitHub](https://github.com/fasmote)**
 - **📧 [Contact](https://github.com/fasmote)**
 
 ## 🏅 **Achievements & Stats**
 
-- **🎯 Games Released**: 1/6
+- **🎯 Games Released**: 2/6 (Square Rush + Knight Quest)
 - **⭐ GitHub Stars**: Growing!
-- **🔧 Last Updated**: January 2025
+- **🔧 Last Updated**: September 2025
 - **📱 Mobile Support**: 100%
 - **🌐 Browser Support**: Chrome, Firefox, Safari, Edge
 
 ---
 
-<div align=\"center\">
+<div align="center">
 
 ### 🎮 **Ready to Level Up Your Chess Game?**
 
-[![Play Now](https://img.shields.io/badge/🎯_Play_Knight_Quest-FF0080?style=for-the-badge)](https://fasmote.github.io/ChessArcade/games/knight-quest/)
+[![Play Square Rush](https://img.shields.io/badge/🎯_Play_Square_Rush-FF8000?style=for-the-badge)](./games/square-rush/index.html)
+[![Play Knight Quest](https://img.shields.io/badge/🐴_Play_Knight_Quest-FF0080?style=for-the-badge)](./games/knight-quest/index.html)
 [![GitHub](https://img.shields.io/badge/⭐_Star_on_GitHub-00FFFF?style=for-the-badge&logo=github)](https://github.com/fasmote/ChessArcade)
 [![Download](https://img.shields.io/badge/📱_Open_Source-00FF80?style=for-the-badge&logo=download)](https://github.com/fasmote/ChessArcade)
 
