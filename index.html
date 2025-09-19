@@ -106,18 +106,15 @@
                     </button>
                 </article>
                 
-                <!-- Square Rush Game - PRÓXIMAMENTE -->
-                <article class="neon-card square-rush-card coming-soon" tabindex="0" role="button">
-                    <div class="neon-card-icon coming-soon-icon" aria-hidden="true">🎯</div>
-                    <div class="coming-soon-overlay">
-                        <div class="coming-soon-badge">PRÓXIMAMENTE</div>
-                    </div>
+                <!-- Square Rush Game - AVAILABLE -->
+                <article class="neon-card square-rush-card" tabindex="0" role="button">
+                    <div class="neon-card-icon" aria-hidden="true">🎯</div>
                     <h2 class="neon-heading">Square Rush</h2>
                     <p class="neon-text neon-mb-md">
                         Navigate the coordinate matrix. A1 to H8 in record time through retro-futuristic grids and synthwave landscapes!
                     </p>
-                    <button class="neon-play-btn coming-soon-btn" type="button" disabled>
-                        Próximamente
+                    <button class="neon-play-btn" type="button" data-game="square-rush">
+                        Play Now
                     </button>
                 </article>
                 
@@ -249,7 +246,7 @@
             console.log(`🎮 Launching game: ${gameId}`);
             
             // Check if game is available
-            if (gameId === 'knight-quest') {
+            if (gameId === 'knight-quest' || gameId === 'square-rush') {
                 // Add screen flash effect
                 document.body.style.background = 'white';
                 setTimeout(() => {
@@ -265,8 +262,12 @@
                     );
                 }
                 
-                // Redirect to Knight Quest
-                window.location.href = `games/${gameId}/index.html`;
+                // Redirect to game
+                if (gameId === 'square-rush') {
+                    window.location.href = 'games/square-rush/index.html';
+                } else {
+                    window.location.href = `games/${gameId}/index.html`;
+                }
             } else {
                 // Show coming soon notification for unavailable games
                 showComingSoonNotification(gameId);

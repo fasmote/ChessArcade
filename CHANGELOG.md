@@ -1,4 +1,4 @@
-# 📋 CHANGELOG - ChessArcade Knight Quest
+# 📋 CHANGELOG - ChessArcade
 
 Todas las actualizaciones y cambios notables del proyecto serán documentados en este archivo.
 
@@ -6,6 +6,77 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-es/1
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.4.0] - 2025-09-18 🎯 Square Rush MVP Launch
+
+### ✨ New Game: Square Rush
+- **🎯 Square Rush MVP**: Primer juego completamente funcional del arcade
+- **5 niveles progresivos**: BABY STEPS (1-3) → LITTLE MASTER (4-5)
+- **Sistema de coordenadas**: Aprendizaje de notación algebraica A1-H8
+- **Dificultad progresiva**: De 12s a 6s por coordenada + más targets
+- **Sistema de combos**: Multiplicador x1 → x1.5 → x2 → x3
+- **Audio toggle**: Control de sonido con persistencia localStorage
+- **Modo principiante**: Coordenadas visibles para niños 6+ años
+- **Timer preciso**: Countdown con decimales (X.X segundos)
+
+### 🎮 Gameplay Features
+- **Inicio alternativo**: Click directo en coordenada correcta inicia el juego
+- **Pause/Resume**: Control completo de la partida
+- **Progreso visual**: Barra de progreso para objetivos del nivel
+- **Game Over/Level Complete**: Pantallas de transición profesionales
+- **Score acumulativo**: Puntuación que persiste durante toda la sesión
+- **Feedback inmediato**: Animaciones verdes (✓) y rojas (✗) en cuadrados
+
+### 🎨 Visual Design
+- **Estilo arcade retro**: Tema cyberpunk consistente con ChessArcade
+- **Grid background animado**: Efecto matrix en movimiento constante
+- **Tablero de ajedrez**: Colores estándar claros/oscuros con hover effects
+- **Typography futurista**: Orbitron font con gradientes animados
+- **Responsive design**: Tablero adapta de 60px (desktop) a 35px (mobile)
+- **Sound toggle UI**: Botón flotante esquina superior derecha
+
+### 🔧 Technical Implementation
+- **Vanilla JavaScript**: Sin dependencias externas (excepto Howler.js)
+- **Modular structure**: CSS y JS organizados y comentados
+- **Game state management**: Estado centralizado para toda la lógica
+- **Analytics integration**: Google Analytics eventos completos
+- **Sound management**: Howler.js para audio cross-browser
+- **LocalStorage**: Persistencia de preferencias de sonido
+
+### 📱 Mobile Optimizations
+- **Touch-first design**: Optimizado para interacciones táctiles
+- **Responsive breakpoints**: 768px (tablet) y 480px (mobile)
+- **Prevent zoom**: Configuración de viewport para evitar zoom accidental
+- **Context menu disabled**: Para mejor experiencia móvil
+- **Font scaling**: Typography que se adapta automáticamente
+
+### 🏠 Homepage Integration
+- **Square Rush activado**: Removido de "Próximamente" a disponible
+- **Link funcionando**: Redirige correctamente a games/square-rush/index.html
+- **Visual differentiation**: Card destacada vs coming-soon games
+- **Analytics tracking**: Eventos de launch desde homepage
+- **JavaScript routing**: Lógica mejorada para juegos disponibles vs próximos
+
+### 📊 Analytics & Tracking
+- **Game events**: Start game, correct answer, wrong answer, level complete
+- **Performance tracking**: Time per level, accuracy, completion rate
+- **User behavior**: Click patterns, pause usage, coordinate display toggle
+- **Error tracking**: JavaScript errors y debugging info
+- **Conversion funnel**: Homepage → Game launch → Level completion
+
+### 🚀 Deployment Ready
+- **Production build**: Código optimizado para hosting
+- **Google AdSense**: Integración lista para monetización
+- **SEO optimized**: Meta tags y structured data
+- **Error handling**: Graceful degradation si fallan dependencias
+- **Cross-browser**: Testeado en Chrome, Firefox, Safari, Edge
+
+### 🎯 Game Design Philosophy
+- **Accessible learning**: Desde niños 6 años hasta grandes maestros
+- **Immediate feedback**: Sin delays, respuesta instantánea
+- **Progressive difficulty**: Curva de aprendizaje natural
+- **Addictive mechanics**: Combos, scores, level progression
+- **Educational value**: Aprendizaje real de coordenadas de ajedrez
 
 ## [1.3.0] - 2025-09-12 🎮 ChessArcade 04d
 

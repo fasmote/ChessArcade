@@ -14,8 +14,8 @@
 
 #### ✨ **Current Games Available:**
 - **🐴 Knight Quest** - Master the knight's tour across pixel-perfect boards *(Available Now!)*
+- **🎯 Square Rush** - Navigate coordinates A1-H8 in record time *(Available Now!)*
 - **⚡ Vision Blitz** - Lightning-fast tactical recognition *(Coming Soon)*
-- **🎯 Square Rush** - Navigate coordinates in record time *(Coming Soon)*
 - **💥 Tactic Burst** - Chain tactical patterns *(Coming Soon)*
 - **🏆 Checkmate Countdown** - Find mate in X moves *(Coming Soon)*
 - **🧠 Memory Matrix** - Train positional memory *(Coming Soon)*
@@ -36,8 +36,8 @@
 
 #### ✨ **Juegos Disponibles Actualmente:**
 - **🐴 Knight Quest** - Domina el recorrido del caballo en tableros perfectos *(¡Disponible Ahora!)*
+- **🎯 Square Rush** - Navega coordenadas A1-H8 en tiempo récord *(¡Disponible Ahora!)*
 - **⚡ Vision Blitz** - Reconocimiento táctico ultrarrápido *(Próximamente)*
-- **🎯 Square Rush** - Navega coordenadas en tiempo récord *(Próximamente)*
 - **💥 Tactic Burst** - Encadena patrones tácticos *(Próximamente)*
 - **🏆 Checkmate Countdown** - Encuentra mate en X jugadas *(Próximamente)*
 - **🧠 Memory Matrix** - Entrena la memoria posicional *(Próximamente)*
