@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Test - Memory Matrix</title>
+
+    <!-- Chessground CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/@chessground/chessground/assets/chessground.base.css">
+    <link rel="stylesheet" href="https://unpkg.com/@chessground/chessground/assets/chessground.brown.css">
+
+    <style>
+        body {
+            background: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        #chessboard {
+            width: 480px;
+            height: 480px;
+            border: 2px solid cyan;
+            margin: 20px auto;
+        }
+
+        .status {
+            text-align: center;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Direct Test - Memory Matrix</h1>
+
+    <div class="status" id="status">Cargando...</div>
+
+    <div id="chessboard"></div>
+
+    <button onclick="startTest()">Crear Tablero</button>
+
+    <!-- Scripts en orden correcto -->
+    <script src="https://unpkg.com/chess.js/chess.min.js"></script>
+    <script src="https://unpkg.com/@chessground/chessground/dist/chessground.min.js"></script>
+
+    <script>
+        let board = null;
+
+        function updateStatus(msg) {
+            document.getElementById('status').textContent = msg;
+            console.log(msg);
+        }
+
+        function startTest() {
+            updateStatus('Iniciando test...');
+
+            // Verificar dependencias
+            if (typeof Chess === 'undefined') {
+                updateStatus('❌ Chess.js no cargado');
+                return;
+            }
+
+            if (typeof Chessground === 'undefined') {
+                updateStatus('❌ Chessground no cargado');
+                return;
+            }
+
+            updateStatus('✅ Dependencias OK');
+
+            // Crear tablero
+            const boardElement = document.getElementById('chessboard');
+            if (!boardElement) {
+                updateStatus('❌ Elemento #chessboard no encontrado');
+                return;
+            }
+
+            try {
+                board = Chessground(boardElement, {
+                    fen: '4k3/8/8/8/8/8/8/4K3 w - - 0 1',
+                    orientation: 'white',
+                    coordinates: true
+                });
+
+                updateStatus('✅ Tablero creado correctamente!');
+
+            } catch (error) {
+                updateStatus('❌ Error creando tablero: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        // Auto start
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                updateStatus('Librerías cargadas, presiona el botón');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

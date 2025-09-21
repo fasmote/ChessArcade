@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "WebFetch(domain:unpkg.com)",
+      "WebFetch(domain:cdn.jsdelivr.net)",
+      "Bash(start test-lib.html)",
+      "Bash(start index.html)",
+      "Bash(start simple-test.html)",
+      "Bash(start force-test.html)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

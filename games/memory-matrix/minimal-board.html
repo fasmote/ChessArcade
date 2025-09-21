@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Chess Board - Memory Matrix</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .status {
+            margin: 20px;
+            text-align: center;
+            color: #00ffff;
+        }
+
+        .chessboard {
+            width: 480px;
+            height: 480px;
+            border: 3px solid #00ffff;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            margin: 20px;
+        }
+
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        .light {
+            background: #f0d9b5;
+            color: #8b4513;
+        }
+
+        .dark {
+            background: #b58863;
+            color: #f0d9b5;
+        }
+
+        .piece {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            transition: transform 0.2s ease;
+        }
+
+        .piece:hover {
+            transform: scale(1.1);
+        }
+
+        .controls {
+            margin: 20px;
+        }
+
+        button {
+            background: #ff0080;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 0 10px;
+            font-family: 'Orbitron', Arial, sans-serif;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #ff4080;
+            transform: translateY(-2px);
+        }
+
+        .hidden {
+            opacity: 0.2;
+            background: rgba(255, 0, 0, 0.2) !important;
+        }
+
+        .target {
+            background: rgba(0, 255, 0, 0.3) !important;
+            border: 2px dashed #00ff00;
+        }
+
+        .game-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #00ffff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .level-info {
+            color: #ff8000;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="game-title">🧠 MEMORY MATRIX</h1>
+    <div class="level-info">Nivel 1: DOS REYES SOLOS</div>
+
+    <div class="status" id="status">Tablero listo - Presiona EMPEZAR NIVEL</div>
+
+    <div class="chessboard" id="chessboard"></div>
+
+    <div class="controls">
+        <button onclick="startLevel()">EMPEZAR NIVEL</button>
+        <button onclick="resetBoard()">RESETEAR</button>
+        <button onclick="showSolution()">VER SOLUCIÓN</button>
+    </div>
+
+    <script>
+        // Piezas Unicode de ajedrez
+        const pieces = {
+            'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+            'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+        };
+
+        // Posición inicial nivel 1: Dos reyes solos
+        const initialPosition = {
+            'e1': 'K',  // Rey blanco
+            'e8': 'k'   // Rey negro
+        };
+
+        // Estado del juego
+        let gameState = {
+            position: {...initialPosition},
+            hiddenSquares: [],
+            memoryPhase: false,
+            placementPhase: false,
+            level: 1,
+            correctPlacements: 0
+        };
+
+        let boardElement;
+
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+            console.log(message);
+        }
+
+        function createBoard() {
+            boardElement = document.getElementById('chessboard');
+            boardElement.innerHTML = '';
+
+            // Crear las 64 casillas
+            for (let rank = 8; rank >= 1; rank--) {
+                for (let file = 1; file <= 8; file++) {
+                    const square = document.createElement('div');
+                    const fileName = String.fromCharCode(96 + file); // a-h
+                    const squareName = fileName + rank;
+
+                    square.className = 'square ' + ((rank + file) % 2 === 0 ? 'dark' : 'light');
+                    square.id = squareName;
+                    square.setAttribute('data-square', squareName);
+
+                    // Event listener para colocación de piezas
+                    square.addEventListener('click', () => handleSquareClick(squareName));
+
+                    boardElement.appendChild(square);
+                }
+            }
+
+            renderPosition();
+            updateStatus('✅ Tablero creado - SIN CDN, SIN LIBRERÍAS EXTERNAS');
+        }
+
+        function renderPosition() {
+            // Limpiar todas las casillas
+            document.querySelectorAll('.square').forEach(sq => {
+                sq.textContent = '';
+                sq.classList.remove('hidden', 'target');
+            });
+
+            // Colocar piezas
+            for (const [square, piece] of Object.entries(gameState.position)) {
+                const squareElement = document.getElementById(square);
+                if (squareElement) {
+                    squareElement.innerHTML = `<span class="piece">${pieces[piece]}</span>`;
+                }
+            }
+
+            // Marcar casillas ocultas
+            gameState.hiddenSquares.forEach(square => {
+                const squareElement = document.getElementById(square);
+                if (squareElement) {
+                    squareElement.classList.add('hidden');
+                    squareElement.innerHTML = '';
+                }
+            });
+
+            // Marcar casillas objetivo en fase de colocación
+            if (gameState.placementPhase) {
+                gameState.hiddenSquares.forEach(square => {
+                    const squareElement = document.getElementById(square);
+                    if (squareElement) {
+                        squareElement.classList.add('target');
+                    }
+                });
+            }
+        }
+
+        function startLevel() {
+            updateStatus('🧠 MEMORIZA LA POSICIÓN - 8 segundos');
+
+            // Reset estado
+            gameState.position = {...initialPosition};
+            gameState.hiddenSquares = [];
+            gameState.memoryPhase = true;
+            gameState.placementPhase = false;
+            gameState.correctPlacements = 0;
+
+            renderPosition();
+
+            // Countdown visual
+            let countdown = 8;
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                updateStatus(`🧠 MEMORIZA LA POSICIÓN - ${countdown} segundos`);
+
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    startPlacementPhase();
+                }
+            }, 1000);
+        }
+
+        function startPlacementPhase() {
+            updateStatus('🎯 COLOCA LOS REYES EN SUS POSICIONES CORRECTAS');
+
+            gameState.memoryPhase = false;
+            gameState.placementPhase = true;
+            gameState.hiddenSquares = ['e1', 'e8']; // Ocultar ambos reyes
+
+            // Limpiar posición para fase de colocación
+            gameState.position = {};
+
+            renderPosition();
+        }
+
+        function handleSquareClick(square) {
+            if (!gameState.placementPhase) return;
+
+            // Verificar si es una casilla objetivo
+            if (!gameState.hiddenSquares.includes(square)) {
+                updateStatus('❌ Casilla incorrecta - Intenta de nuevo');
+                return;
+            }
+
+            // Determinar qué pieza debería ir ahí
+            let correctPiece;
+            if (square === 'e1') {
+                correctPiece = 'K'; // Rey blanco
+            } else if (square === 'e8') {
+                correctPiece = 'k'; // Rey negro
+            }
+
+            // Colocar la pieza
+            gameState.position[square] = correctPiece;
+            gameState.correctPlacements++;
+
+            // Remover de casillas ocultas
+            gameState.hiddenSquares = gameState.hiddenSquares.filter(s => s !== square);
+
+            renderPosition();
+
+            // Verificar si nivel completado
+            if (gameState.correctPlacements >= 2) {
+                setTimeout(() => {
+                    updateStatus('🏆 ¡NIVEL COMPLETADO! ¡Excelente memoria!');
+                }, 500);
+            } else {
+                updateStatus(`✅ ¡Correcto! Faltan ${2 - gameState.correctPlacements} piezas`);
+            }
+        }
+
+        function resetBoard() {
+            gameState = {
+                position: {...initialPosition},
+                hiddenSquares: [],
+                memoryPhase: false,
+                placementPhase: false,
+                level: 1,
+                correctPlacements: 0
+            };
+            renderPosition();
+            updateStatus('🔄 Tablero reseteado - Presiona EMPEZAR NIVEL');
+        }
+
+        function showSolution() {
+            gameState.position = {...initialPosition};
+            gameState.hiddenSquares = [];
+            gameState.placementPhase = false;
+            renderPosition();
+            updateStatus('💡 Solución mostrada - Los reyes van en e1 y e8');
+        }
+
+        // Inicializar cuando se cargue la página
+        window.addEventListener('load', function() {
+            updateStatus('Inicializando tablero...');
+            createBoard();
+        });
+
+        console.log('🧠 Memory Matrix - Versión Mínima SIN DEPENDENCIAS EXTERNAS');
+        console.log('✅ No requiere CDN');
+        console.log('✅ No requiere Chessground');
+        console.log('✅ No requiere Chess.js');
+    </script>
+</body>
+</html>

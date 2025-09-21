@@ -1,0 +1,33 @@
+/* ChessArcade Shared Styles - Minimal fallback */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Orbitron', Arial, sans-serif;
+    background: #0a0a0a;
+    color: white;
+}
+
+.chess-arcade-bg {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 50%, #330066 100%);
+}
+
+/* Variables CSS básicas */
+:root {
+    --neon-cyan: #00ffff;
+    --neon-green: #00ff80;
+    --neon-pink: #ff0080;
+    --neon-blue: #0080ff;
+    --neon-orange: #ff8000;
+    --gold: #ffd700;
+}
+
+/* Overlay básico */
+.overlay-text {
+    color: var(--neon-cyan);
+    text-align: center;
+}
+
+.position-overlay.show {
+    display: flex !important;
+}

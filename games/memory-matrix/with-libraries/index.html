@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Matrix - Con Librerías - ChessArcade</title>
+    <meta name="description" content="Memory Matrix usando Chess.js y Chessground - Versión con librerías profesionales.">
+
+    <!-- OBLIGATORIOS: Google AdSense + Analytics -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2472413468382197" crossorigin="anonymous"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N3EKXHPD5Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-N3EKXHPD5Y');
+    </script>
+
+    <!-- Fuentes y estilos -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <!-- Chessground CSS Local -->
+    <link rel="stylesheet" href="libs/chessground.css">
+
+    <!-- Estilos compartidos -->
+    <link rel="stylesheet" href="../../../assets/css/chessarcade-shared.css">
+    <link rel="stylesheet" href="memory-matrix-lib.css">
+</head>
+
+<body>
+    <div class="game-container chess-arcade-bg">
+
+        <!-- OBLIGATORIOS: Botones flotantes -->
+        <div class="home-toggle" id="homeBtn" title="Volver al inicio">🏠</div>
+        <div class="sound-toggle" id="soundToggle" title="Toggle Sound">🔊</div>
+
+        <!-- Header del juego -->
+        <div class="game-header">
+            <div class="game-title">🧠 MEMORY MATRIX</div>
+            <div class="game-subtitle">Versión con Chess.js + Chessground</div>
+        </div>
+
+        <!-- UI de estado del juego -->
+        <div class="game-ui">
+            <div class="level-info">
+                <div class="level-number" id="levelNumber">1</div>
+                <div class="level-name" id="levelName">DOS REYES SOLOS</div>
+                <div class="level-phase" id="levelPhase">🔸 Estructura Base</div>
+                <div class="level-description" id="levelDescription">Los reyes nunca pueden estar juntos</div>
+            </div>
+
+            <div class="memory-stats">
+                <div class="pieces-total">Piezas: <span id="piecesTotal">2</span></div>
+                <div class="pieces-hidden">Ocultas: <span id="piecesHidden">2</span></div>
+                <div class="view-time">Vista: <span id="viewTime">8.0s</span></div>
+            </div>
+
+            <div class="score-info">
+                <div class="score">Score: <span id="score">0</span></div>
+                <div class="accuracy">Precisión: <span id="accuracy">100%</span></div>
+                <div class="progress">
+                    Nivel <span id="currentLevel">1</span>/30
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de información histórica/educativa -->
+        <div class="educational-panel" id="educationalPanel">
+            <div class="panel-title" id="panelTitle">🏰 Información de Apertura</div>
+            <div class="panel-content" id="panelContent">
+                <div class="level-explanation" id="levelExplanation">
+                    🤴 Los reyes nunca pueden estar en casillas adyacentes
+                </div>
+            </div>
+        </div>
+
+        <!-- Banner Ad Superior -->
+        <div class="ad-banner-top">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2472413468382197" data-ad-slot="1111111111" data-ad-format="auto"></ins>
+        </div>
+
+        <!-- Área de visualización de posición -->
+        <div class="position-display" id="positionDisplay">
+            <div class="chess-board-container">
+                <!-- Tablero de Chessground -->
+                <div class="chess-board" id="chessboard">
+                    <!-- Chessground se renderiza aquí -->
+                </div>
+
+                <div class="position-overlay" id="boardOverlay" style="display:none;">
+                    <div class="overlay-text" id="overlayText">¡Memoriza la posición!</div>
+                    <div class="overlay-countdown" id="overlayCountdown">8</div>
+                    <div class="phase-indicator" id="phaseIndicator">🧠 Fase de memoria</div>
+                </div>
+
+                <!-- Banco de piezas lateral -->
+                <div class="piece-bank-container" id="pieceBankContainer" style="display:none;">
+                    <div class="bank-title">Coloca en el tablero:</div>
+                    <div class="piece-bank" id="pieceBank">
+                        <!-- Piezas generadas dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controles del juego -->
+        <div class="game-controls">
+            <button class="btn btn-primary" id="startBtn">EMPEZAR NIVEL</button>
+            <button class="btn btn-secondary" id="pauseBtn" disabled>PAUSA</button>
+            <button class="btn btn-secondary" id="hintBtn">PISTA</button>
+            <button class="btn btn-secondary" id="skipPhaseBtn">SALTAR FASE</button>
+        </div>
+
+        <!-- Feedback de colocación -->
+        <div class="feedback-display" id="feedbackDisplay" style="display:none;">
+            <div class="feedback-icon" id="feedbackIcon">✅</div>
+            <div class="feedback-text" id="feedbackText">¡Correcto!</div>
+            <div class="feedback-explanation" id="feedbackExplanation">Has colocado la pieza en el lugar correcto</div>
+        </div>
+
+        <!-- Pantalla de completar nivel -->
+        <div class="level-complete" id="levelCompleteScreen">
+            <div class="level-complete-content">
+                <div class="complete-title" id="completeTitle">¡NIVEL COMPLETADO!</div>
+                <div class="complete-stats">
+                    <div class="final-score">Puntuación: <span id="finalScore">0</span></div>
+                    <div class="accuracy-final">Precisión: <span id="accuracyFinal">100%</span></div>
+                    <div class="time-total">Tiempo total: <span id="timeTotal">45s</span></div>
+                </div>
+
+                <!-- Información educativa -->
+                <div class="lesson-learned" id="lessonLearned">
+                    <div class="lesson-title">📚 Has aprendido:</div>
+                    <div class="lesson-content" id="lessonContent"></div>
+                </div>
+
+                <!-- Banner Ad Interstitial -->
+                <div class="ad-interstitial">
+                    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2472413468382197" data-ad-slot="2222222222" data-ad-format="auto"></ins>
+                </div>
+
+                <div class="level-complete-actions">
+                    <button class="btn btn-primary" id="nextLevelBtn">SIGUIENTE NIVEL</button>
+                    <button class="btn btn-secondary" id="repeatLevelBtn">REPETIR NIVEL</button>
+                    <button class="btn btn-secondary" id="mainMenuBtn">MENÚ PRINCIPAL</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banner Ad Inferior -->
+        <div class="ad-banner-bottom">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2472413468382197" data-ad-slot="3333333333" data-ad-format="auto"></ins>
+        </div>
+
+    </div>
+
+    <!-- Scripts - Librerías locales primero -->
+    <script src="libs/chess.min.js"></script>
+    <script src="libs/chessground.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+
+    <!-- Game Files -->
+    <script src="memory-levels.js"></script>
+    <script src="memory-matrix-lib.js"></script>
+
+    <!-- Debug Script (remove in production) -->
+    <script src="debug.js"></script>
+
+    <!-- AdSense Initialization -->
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</body>
+</html>

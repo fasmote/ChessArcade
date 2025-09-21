@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Chessground</title>
+    <link rel="stylesheet" href="https://unpkg.com/@chessground/chessground/assets/chessground.base.css">
+    <link rel="stylesheet" href="https://unpkg.com/@chessground/chessground/assets/chessground.brown.css">
+</head>
+<body>
+    <h1>Test Tablero</h1>
+    <div id="board" style="width: 400px; height: 400px; border: 2px solid red;"></div>
+
+    <script src="https://unpkg.com/chess.js/chess.min.js"></script>
+    <script src="https://unpkg.com/@chessground/chessground/dist/chessground.min.js"></script>
+
+    <script>
+        console.log('Chess.js loaded:', typeof Chess !== 'undefined');
+        console.log('Chessground loaded:', typeof Chessground !== 'undefined');
+
+        // Test básico
+        const board = Chessground(document.getElementById('board'), {
+            fen: '4k3/8/8/8/8/8/8/4K3 w - - 0 1',
+            orientation: 'white'
+        });
+
+        console.log('Board created:', board);
+    </script>
+</body>
+</html>

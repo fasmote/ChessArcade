@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision Blitz - ChessArcade</title>
+    <meta name="description" content="Entrena tu visión táctica con Vision Blitz. Reconoce patrones de ajedrez en segundos desde nivel principiante hasta Gran Maestro.">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- OBLIGATORIOS: Google AdSense + Analytics -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2472413468382197" crossorigin="anonymous"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N3EKXHPD5Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-N3EKXHPD5Y');
+    </script>
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="../../assets/css/chessarcade-shared.css">
+    <link rel="stylesheet" href="vision-blitz.css">
+</head>
+<body>
+    <div class="game-container chess-arcade-bg">
+        
+        <!-- OBLIGATORIOS: Botones flotantes -->
+        <div class="home-toggle" id="homeBtn" title="Volver al inicio">🏠</div>
+        <div class="sound-toggle" id="soundToggle" title="Toggle Sound">🔊</div>
+        
+        <!-- Header del juego -->
+        <div class="game-header">
+            <div class="game-title">⚡ VISION BLITZ</div>
+            <div class="game-subtitle">Lightning-fast tactical recognition!</div>
+        </div>
+        
+        <!-- UI de estado del juego -->
+        <div class="game-ui">
+            <div class="level-info">
+                <div class="level-number" id="levelNumber">1</div>
+                <div class="level-name" id="levelName">FIRST STEPS</div>
+                <div class="level-description" id="levelDescription">Solo 3 piezas: encuentra el mate</div>
+            </div>
+            
+            <div class="timer-display">
+                <div class="timer-label">Tiempo de vista:</div>
+                <div class="timer" id="viewTimer">10.0s</div>
+            </div>
+            
+            <div class="score-info">
+                <div class="score">Score: <span id="score">0</span></div>
+                <div class="streak">Racha: <span id="streak">0</span></div>
+                <div class="progress">
+                    <span id="puzzleProgress">1</span>/<span id="totalPuzzles">3</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Banner Ad Superior -->
+        <div class="ad-banner-top">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2472413468382197" data-ad-slot="1234567890" data-ad-format="auto"></ins>
+        </div>
+        
+        <!-- Área de visualización de posición -->
+        <div class="position-display" id="positionDisplay">
+            <div class="chess-board" id="chessBoard">
+                <!-- Tablero generado por JS -->
+            </div>
+            <div class="position-overlay" id="positionOverlay">
+                <div class="overlay-text">¡Memoriza la posición!</div>
+                <div class="overlay-countdown" id="overlayCountdown">10</div>
+            </div>
+            <div class="rotation-indicator" id="rotationIndicator" style="display: none;">🔄</div>
+        </div>
+        
+        <!-- Control de coordenadas -->
+        <div class="coordinates-toggle" id="coordinatesToggle">
+            <button class="coordinates-btn" id="coordinatesBtn">OCULTAR COORDENADAS</button>
+        </div>
+        
+        <!-- Opciones de respuesta -->
+        <div class="answer-options" id="answerOptions" style="display: none;">
+            <div class="options-header">¿Cuál es la mejor jugada?</div>
+            <div class="options-grid" id="optionsGrid">
+                <!-- Opciones generadas dinámicamente por JS -->
+            </div>
+        </div>
+        
+        <!-- Feedback de respuesta -->
+        <div class="feedback-display" id="feedbackDisplay" style="display: none;">
+            <div class="feedback-icon" id="feedbackIcon">✅</div>
+            <div class="feedback-text" id="feedbackText">¡Correcto!</div>
+            <div class="feedback-explanation" id="feedbackExplanation">La torre da mate en la última fila</div>
+            <div class="feedback-hint" id="feedbackHint">El rey no puede escapar</div>
+        </div>
+        
+        <!-- Controles del juego -->
+        <div class="game-controls">
+            <button class="btn btn-primary" id="startBtn">EMPEZAR JUEGO</button>
+            <button class="btn btn-secondary" id="pauseBtn" disabled>PAUSA</button>
+            <button class="btn btn-secondary" id="hintBtn" disabled>PISTA</button>
+            <button class="btn btn-secondary" id="skipBtn" disabled>SALTAR PUZZLE</button>
+        </div>
+        
+        <!-- Pantalla de Game Over -->
+        <div class="game-over" id="gameOverScreen">
+            <div class="game-over-content">
+                <div class="game-over-title" id="gameOverTitle">¡NIVEL COMPLETADO!</div>
+                <div class="final-stats">
+                    <div class="final-score">Puntuación: <span id="finalScore">0</span></div>
+                    <div class="accuracy-stats">Precisión: <span id="accuracyStats">0%</span></div>
+                    <div class="time-stats">Tiempo promedio: <span id="timeStats">0s</span></div>
+                    <div class="level-badge" id="levelBadge">🏆 Primer Nivel Completado</div>
+                </div>
+                
+                <!-- Banner Ad Interstitial -->
+                <div class="ad-interstitial">
+                    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2472413468382197" data-ad-slot="9876543210" data-ad-format="auto"></ins>
+                </div>
+                
+                <div class="game-over-actions">
+                    <button class="btn btn-primary" id="nextLevelBtn">SIGUIENTE NIVEL</button>
+                    <button class="btn btn-secondary" id="playAgainBtn">JUGAR DE NUEVO</button>
+                    <button class="btn btn-secondary" id="mainMenuBtn">MENÚ PRINCIPAL</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Banner Ad Inferior -->
+        <div class="ad-banner-bottom">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2472413468382197" data-ad-slot="5555555555" data-ad-format="auto"></ins>
+        </div>
+        
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="../../assets/js/audio-manager.js"></script>
+    <script src="tactics-database.js"></script>
+    <script src="vision-blitz-engine.js"></script>
+    <script src="vision-blitz.js"></script>
+    
+    <!-- AdSense Script -->
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</body>
+</html>

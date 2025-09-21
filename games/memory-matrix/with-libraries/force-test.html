@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Force Test - Tablero Visible</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #222;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .board-area {
+            width: 400px;
+            height: 400px;
+            margin: 20px auto;
+            border: 3px solid #00ffff;
+            background: #f0d9b5;
+            position: relative;
+        }
+        .status {
+            background: rgba(0,255,255,0.1);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .btn {
+            background: #00ffff;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Force Test - Tablero Visible</h1>
+
+        <div class="status" id="status">Inicializando...</div>
+
+        <div class="board-area" id="boardArea">
+            <!-- Tablero aquí -->
+        </div>
+
+        <button class="btn" onclick="createBoard()">CREAR TABLERO FORZADO</button>
+        <button class="btn" onclick="addPieces()">AGREGAR REYES</button>
+        <button class="btn" onclick="logInfo()">DEBUG INFO</button>
+
+        <div class="status" id="debugInfo">Debug info aquí...</div>
+    </div>
+
+    <script src="libs/chess.min.js"></script>
+    <script src="libs/chessground.min.js"></script>
+
+    <script>
+        let chessInstance = null;
+        let chessgroundInstance = null;
+
+        function updateStatus(msg) {
+            document.getElementById('status').textContent = msg;
+            console.log('STATUS:', msg);
+        }
+
+        function updateDebug(msg) {
+            document.getElementById('debugInfo').innerHTML = msg;
+            console.log('DEBUG:', msg);
+        }
+
+        function createBoard() {
+            const container = document.getElementById('boardArea');
+
+            try {
+                // Limpiar
+                container.innerHTML = '';
+
+                // Forzar estilos en el contenedor con altura fija
+                container.style.cssText = `
+                    width: 400px !important;
+                    height: 400px !important;
+                    min-height: 400px !important;
+                    max-height: 400px !important;
+                    background: #f0d9b5 !important;
+                    position: relative !important;
+                    border: 3px solid #00ffff !important;
+                    margin: 20px auto !important;
+                    display: block !important;
+                    overflow: hidden !important;
+                `;
+
+                console.log('Container forced to:', container.offsetWidth, 'x', container.offsetHeight);
+
+                // Crear Chess.js
+                chessInstance = new Chess();
+
+                // Crear Chessground con configuración mínima
+                const config = {
+                    coordinates: false,
+                    viewOnly: true,
+                    orientation: 'white'
+                };
+
+                chessgroundInstance = Chessground(container, config);
+
+                // Verificar que se crearon las casillas
+                setTimeout(() => {
+                    const squares = container.querySelectorAll('.cg-square');
+                    updateStatus(`✅ Tablero creado: ${squares.length} casillas`);
+
+                    if (squares.length === 0) {
+                        updateStatus('❌ No se crearon casillas - Creando manualmente...');
+                        createManualBoard(container);
+                    } else {
+                        // Forzar estilos en las casillas existentes con píxeles fijos
+                        const containerSize = Math.min(container.offsetWidth, container.offsetHeight);
+                        const squareSize = containerSize / 8;
+
+                        squares.forEach((square, index) => {
+                            const file = index % 8;
+                            const rank = Math.floor(index / 8);
+                            const isLight = (rank + file) % 2 === 1;
+                            const bgColor = isLight ? '#f0d9b5' : '#b58863';
+
+                            square.style.cssText = `
+                                position: absolute !important;
+                                width: ${squareSize}px !important;
+                                height: ${squareSize}px !important;
+                                background-color: ${bgColor} !important;
+                                border: 1px solid #333 !important;
+                                box-sizing: border-box !important;
+                                transform: translate(${file * squareSize}px, ${rank * squareSize}px) !important;
+                                top: 0 !important;
+                                left: 0 !important;
+                            `;
+                        });
+
+                        console.log(`Container: ${containerSize}px, Square: ${squareSize}px`);
+
+                        // Verificar dimensiones después del forzado
+                        setTimeout(() => {
+                            const firstSquare = squares[0];
+                            console.log('Square after forced styles:', firstSquare.offsetWidth, 'x', firstSquare.offsetHeight);
+                            updateDebug(`Casillas forzadas: ${firstSquare.offsetWidth}x${firstSquare.offsetHeight}`);
+                        }, 50);
+                    }
+                }, 100);
+
+            } catch (error) {
+                updateStatus('❌ Error: ' + error.message);
+                console.error('Error completo:', error);
+            }
+        }
+
+        function createManualBoard(container) {
+            // Si Chessground falla, crear tablero manual con píxeles fijos
+            container.innerHTML = '';
+
+            const containerSize = Math.min(container.offsetWidth, container.offsetHeight);
+            const squareSize = containerSize / 8;
+
+            for (let rank = 0; rank < 8; rank++) {
+                for (let file = 0; file < 8; file++) {
+                    const square = document.createElement('div');
+                    const isLight = (rank + file) % 2 === 1;
+                    const bgColor = isLight ? '#f0d9b5' : '#b58863';
+
+                    square.style.cssText = `
+                        position: absolute;
+                        width: ${squareSize}px;
+                        height: ${squareSize}px;
+                        background-color: ${bgColor};
+                        border: 1px solid #333;
+                        box-sizing: border-box;
+                        transform: translate(${file * squareSize}px, ${rank * squareSize}px);
+                        top: 0;
+                        left: 0;
+                    `;
+
+                    square.className = `manual-square ${isLight ? 'light' : 'dark'}`;
+                    square.dataset.square = String.fromCharCode(97 + file) + (8 - rank);
+
+                    container.appendChild(square);
+                }
+            }
+
+            updateStatus('✅ Tablero manual creado: 64 casillas cuadradas');
+            updateDebug(`Tablero manual: ${squareSize}px casillas`);
+        }
+
+        function addPieces() {
+            if (!chessInstance) {
+                updateStatus('❌ Crear tablero primero');
+                return;
+            }
+
+            try {
+                const fen = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
+                chessInstance.load(fen);
+
+                if (chessgroundInstance) {
+                    chessgroundInstance.set({ fen: fen });
+                } else {
+                    // Agregar piezas manualmente
+                    addManualPieces();
+                }
+
+                updateStatus('✅ Reyes agregados');
+            } catch (error) {
+                updateStatus('❌ Error agregando piezas: ' + error.message);
+            }
+        }
+
+        function addManualPieces() {
+            const container = document.getElementById('boardArea');
+            const kingWhite = container.querySelector('[data-square="e1"]');
+            const kingBlack = container.querySelector('[data-square="e8"]');
+
+            if (kingWhite) {
+                kingWhite.textContent = '♔';
+                kingWhite.style.fontSize = '2rem';
+                kingWhite.style.textAlign = 'center';
+                kingWhite.style.lineHeight = '100%';
+                kingWhite.style.display = 'flex';
+                kingWhite.style.alignItems = 'center';
+                kingWhite.style.justifyContent = 'center';
+            }
+
+            if (kingBlack) {
+                kingBlack.textContent = '♚';
+                kingBlack.style.fontSize = '2rem';
+                kingBlack.style.textAlign = 'center';
+                kingBlack.style.lineHeight = '100%';
+                kingBlack.style.display = 'flex';
+                kingBlack.style.alignItems = 'center';
+                kingBlack.style.justifyContent = 'center';
+            }
+        }
+
+        function logInfo() {
+            const container = document.getElementById('boardArea');
+            const squares = container.querySelectorAll('.cg-square, .manual-square');
+
+            let info = `
+                <strong>Board Info:</strong><br>
+                Container: ${container.offsetWidth}x${container.offsetHeight}<br>
+                Squares: ${squares.length}<br>
+                Chess.js: ${chessInstance ? 'OK' : 'NO'}<br>
+                Chessground: ${chessgroundInstance ? 'OK' : 'NO'}
+            `;
+
+            if (squares.length > 0) {
+                const firstSquare = squares[0];
+                info += `<br>First square: ${firstSquare.offsetWidth}x${firstSquare.offsetHeight}`;
+                info += `<br>BG Color: ${window.getComputedStyle(firstSquare).backgroundColor}`;
+            }
+
+            updateDebug(info);
+        }
+
+        // Auto-init
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStatus('✅ DOM cargado - Click "CREAR TABLERO FORZADO"');
+        });
+    </script>
+</body>
+</html>
