@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blindfold Chess X - Version Integrada</title>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+            padding: 20px;
+        }
+        #board {
+            width: 400px;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        .button {
+            margin: 5px;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        }
+        .button:hover {
+            background-color: #45a049;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        }
+        #moves-container {
+            width: 100%;
+            max-width: 400px;
+        }
+        #moves-title {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        #moves {
+            width: 100%;
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: white;
+            white-space: pre-wrap;
+            font-family: monospace;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .legal-move-hint {
+            background: radial-gradient(circle, #000 15%, transparent 16%);
+        }
+        .highlight-last-move {
+            box-shadow: inset 0 0 3px 3px yellow;
+        }
+		
+		.highlight-selected {
+			//background-color: rgba(173, 216, 230, 0.5) !important;
+			box-shadow: inset 0 0 3px 3px yellow;
+}
+		
+        #controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+            }
+            #board {
+                margin-right: 20px;
+                margin-bottom: 0;
+            }
+            #moves-container {
+                max-width: 300px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+</head>
+<body>
+    <h1>Blindfold Chess X - Version Integrada</h1>
+    <div class="container">
+        <div>
+            <div id="board"></div>
+            <button id="togglePieces" class="button"><i class="fas fa-eye-slash"></i> Ocultar Piezas</button>
+            <button id="toggleSound" class="button"><i class="fas fa-volume-up"></i> Sonido</button>
+            <div id="status"></div>
+        </div>
+        <div id="moves-container">
+            <div id="moves-title">Movimientos de la partida</div>
+            <div id="moves"></div>
+            <div id="controls">
+                <button id="startBtn" class="button"><i class="fas fa-fast-backward"></i></button>
+                <button id="prevBtn" class="button"><i class="fas fa-step-backward"></i></button>
+                <button id="nextBtn" class="button"><i class="fas fa-step-forward"></i></button>
+                <button id="endBtn" class="button"><i class="fas fa-fast-forward"></i></button>
+            </div>
+            <button id="downloadPgn" class="button"><i class="fas fa-download"></i> Descargar PGN</button>
+        </div>
+    </div>
+
+    <script>
+        console.log("Iniciando script");
+        let board = null;
+        let game = null;
+        const movesDiv = document.getElementById('moves');
+        const toggleButton = document.getElementById('togglePieces');
+        const toggleSoundButton = document.getElementById('toggleSound');
+        const statusElement = document.getElementById('status');
+        let piecesHidden = false;
+        let soundEnabled = true;
+        let $board = $('#board');
+        let currentMoveIndex = -1;
+        let draggingPiece = null;
+		// Nuevas variables para el arrastre visual
+		// $draggingPiece: Una referencia jQuery al nuevo elemento que creamos para mostrar la pieza que se está arrastrando.
+		// isDragging: Un booleano que usaremos para rastrear si actualmente estamos en medio de una operación de arrastre.
+		let $draggingPiece = $('#dragging-piece');
+		let isDragging = false;
+
+        function onDrop(source, target) {
+            console.log('onDrop', { source, target, piecesHidden, draggingPiece });
+			
+			removeHighlightSquares();// Remueve la casilla resaltada de la jugada anterior.
+            let move = game.move({
+                from: source,
+                to: target,
+                promotion: 'q'
+            });
+
+            //if (move === null) return;
+			
+			if (move === null) {
+				if (!piecesHidden) {
+					// Si el movimiento es inválido, devolver la pieza a su posición original
+					$board.find('.square-' + source + ' .piece-417db').css('opacity', '');
+				}
+				return;
+			}
+
+            board.position(game.fen(), false);
+            updateStatus();
+            updateMoves();
+            highlightLastMove(source, target);
+
+            if (piecesHidden) {
+                hidePieces();
+            }
+        }
+
+        function highlightLegalMoves(square) {
+			console.log('Resaltando movimientos legales para:', square);
+            let moves = game.moves({
+                square: square,
+                verbose: true
+            });
+
+            removeHighlightSquares();
+			
+			 // Resaltar la casilla de origen
+			$board.find('.square-' + square).addClass('highlight-selected');
+            
+			for (let i = 0; i < moves.length; i++) {
+                $board.find('.square-' + moves[i].to).addClass('legal-move-hint');
+            }
+        }
+
+        function removeHighlightSquares() {
+			console.log('Removiendo todos los resaltados');
+            $board.find('.square-55d63').removeClass('legal-move-hint highlight-selected');
+        }
+
+        function highlightLastMove(from, to) {
+            $board.find('.square-55d63').removeClass('highlight-last-move');
+            $board.find('.square-' + from).addClass('highlight-last-move');
+            $board.find('.square-' + to).addClass('highlight-last-move');
+        }
+
+        function updateStatus() {
+            let status = '';
+            let moveColor = 'Blancas';
+            if (game.turn() === 'b') {
+                moveColor = 'Negras';
+            }
+
+            if (game.in_checkmate()) {
+                status = 'Fin del juego, ' + moveColor + ' están en jaque mate.';
+            }
+            else if (game.in_draw()) {
+                status = 'Fin del juego, tablas';
+            }
+            else {
+                status = moveColor + ' por mover';
+                if (game.in_check()) {
+                    status += ', ' + moveColor + ' están en jaque';
+                }
+            }
+
+            statusElement.innerHTML = status;
+        }
+
+        function initializeBoard() {
+            console.log("Inicializando el tablero...");
+            game = new Chess();
+            let config = {
+                position: 'start',
+                pieceTheme: 'https://lichess1.org/assets/_Ln8KLd/piece/cburnett/{piece}.svg',
+                draggable: false,
+            };
+            board = Chessboard('board', config);
+            console.log("Tablero inicializado:", board);
+            updateStatus();
+        }
+
+        function updateMoves() {
+            let moves = game.history({verbose: true});
+            let formattedMoves = '';
+            for (let i = 0; i < moves.length; i += 2) {
+                let moveNumber = Math.floor(i / 2) + 1;
+                let whiteMoveFormatted = `${moveNumber}. ${moves[i].san}`;
+                let blackMove = moves[i + 1] ? ` ${moves[i + 1].san}` : '';
+                formattedMoves += `${whiteMoveFormatted.padEnd(10)}${blackMove}\n`;
+            }
+            movesDiv.textContent = formattedMoves;
+        }
+
+        function hidePieces() {
+            $board.find('.piece-417db').css({
+                'opacity': '0',
+                'pointer-events': 'none'
+            });
+        }
+
+        function showPieces() {
+            $board.find('.piece-417db').css({
+                'opacity': '1',
+                'pointer-events': 'auto'
+            });
+        }
+
+        /* 
+		$board.on('mousedown', '.square-55d63', function(e) {
+            console.log('Mousedown', { square: $(this).attr('data-square'), draggingPiece });
+            if (e.which === 1) { // Botón izquierdo
+                removeHighlightSquares();
+				let square = $(this).attr('data-square');
+                console.log('Mousedown en casilla:', square);
+				let piece = game.get(square);
+                if (piece && game.turn() === piece.color) {
+                    draggingPiece = { source: square, piece: piece };
+                    highlightLegalMoves(square);
+                } //else {
+					//removeHighlightSquares();
+					//}
+            }
+        });
+		*/
+		
+		$board.on('mousedown', '.square-55d63', function(e) {
+			console.log('Mousedown', { square: $(this).attr('data-square'), draggingPiece });
+			if (e.which === 1) { // Botón izquierdo
+				removeHighlightSquares();
+				let square = $(this).attr('data-square');
+				console.log('Mousedown en casilla:', square);
+				let piece = game.get(square);
+				if (piece && game.turn() === piece.color) {
+					draggingPiece = { source: square, piece: piece };
+					highlightLegalMoves(square);
+            
+					if (!piecesHidden) {
+						// Iniciar arrastre visual
+						let $piece = $(this).find('.piece-417db');
+						$draggingPiece.html($piece.clone()).css({
+							display: 'block',
+							left: e.pageX - 20,
+							top: e.pageY - 20
+						});
+						$piece.css('opacity', '0.5');
+						isDragging = true;
+					}
+				}
+			}
+});
+		
+		$(document).on('mousemove', function(e) {
+			//console.log('mousemove activado', draggingPiece, piecesHidden);
+			if (isDragging && !piecesHidden) {
+				$draggingPiece.css({
+					left: e.pageX - 20,
+					top: e.pageY - 20
+				});
+			}
+});
+		
+
+        $(document).on('mouseup', function(e) {
+            console.log('Mouseup', { square: $(this).attr('data-square'), draggingPiece });
+            if (draggingPiece) {
+                let targetSquare = $('.square-55d63').filter(function() {
+                    let rect = this.getBoundingClientRect();
+                    return e.clientX >= rect.left && e.clientX <= rect.right &&
+                           e.clientY >= rect.top && e.clientY <= rect.bottom;
+                }).first().attr('data-square');
+
+                if (targetSquare) {
+					console.log('MouseUP en casilla:', targetSquare);
+                    onDrop(draggingPiece.source, targetSquare);
+                }
+				
+				if (!piecesHidden) {
+					// Finalizar arrastre visual
+					$draggingPiece.css('display', 'none');
+					$board.find('.piece-417db').css('opacity', '');
+					isDragging = false;
+				}
+				
+                draggingPiece = null;
+                removeHighlightSquares(); // Al soltar la pieza, borra casilla resaltada
+            }
+        });
+
+        toggleButton.addEventListener('click', () => {
+            piecesHidden = !piecesHidden;
+            if (piecesHidden) {
+                hidePieces();
+                toggleButton.innerHTML = '<i class="fas fa-eye"></i> Mostrar Piezas';
+            } else {
+                showPieces();
+                toggleButton.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar Piezas';
+            }
+        });
+
+        toggleSoundButton.addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            toggleSoundButton.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i> Sonido On' : '<i class="fas fa-volume-mute"></i> Sonido Off';
+        });
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            game.reset();
+            board.position('start');
+            currentMoveIndex = -1;
+            updateMoves();
+            updateStatus();
+			
+			removeHighlightSquares(); // Añadida en version 40
+            
+			if (piecesHidden) hidePieces();
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (currentMoveIndex > -1) {
+                game.undo();
+                currentMoveIndex--;
+                board.position(game.fen());
+                updateMoves();
+                updateStatus();
+				
+				removeHighlightSquares(); // Añadida en version 40
+				
+                if (piecesHidden) hidePieces();
+            }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            if (currentMoveIndex < game.history().length - 1) {
+                game.move(game.history()[currentMoveIndex + 1]);
+                currentMoveIndex++;
+                board.position(game.fen());
+                updateMoves();
+                updateStatus();
+				
+				removeHighlightSquares(); // Añadida en version 40
+				
+                if (piecesHidden) hidePieces();
+            }
+        });
+
+        document.getElementById('endBtn').addEventListener('click', () => {
+            while (currentMoveIndex < game.history().length - 1) {
+                game.move(game.history()[currentMoveIndex + 1]);
+                currentMoveIndex++;
+            }
+            board.position(game.fen());
+            updateMoves();
+            updateStatus();
+			
+			removeHighlightSquares(); // Añadida en version 40
+			
+            if (piecesHidden) hidePieces();
+        });
+
+        document.getElementById('downloadPgn').addEventListener('click', () => {
+            const pgn = game.pgn();
+            const blob = new Blob([pgn], {type: 'text/plain'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'partida.pgn';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        window.onload = function() {
+            console.log("Página cargada. Iniciando aplicación...");
+            initializeBoard();
+        };
+    </script>
+	
+	<div id="dragging-piece" style="position: absolute; pointer-events: none; z-index: 1000; display: none;"></div>
+
+</body>
+</html>
