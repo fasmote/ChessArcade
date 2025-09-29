@@ -148,18 +148,16 @@
                     </button>
                 </article>
                 
-                <!-- Memory Matrix Game - PRÓXIMAMENTE -->
-                <article class="neon-card memory-matrix-card coming-soon" tabindex="0" role="button">
-                    <div class="neon-card-icon coming-soon-icon" aria-hidden="true">🧠</div>
-                    <div class="coming-soon-overlay">
-                        <div class="coming-soon-badge">PRÓXIMAMENTE</div>
-                    </div>
+                <!-- Memory Matrix Game - AVAILABLE -->
+                <article class="neon-card memory-matrix-card" tabindex="0" role="button">
+                    <div class="neon-card-icon" aria-hidden="true">🧠</div>
                     <h2 class="neon-heading">Memory Matrix</h2>
                     <p class="neon-text neon-mb-md">
                         Memorize positions in the digital chess cosmos. Train your mind like a chess computer in this neon wonderland!
                     </p>
-                    <button class="neon-play-btn coming-soon-btn" type="button" disabled>
-                        Próximamente
+                    <button class="neon-btn tertiary" data-game="memory-matrix" onclick="launchGame('memory-matrix')" aria-label="Start Memory Matrix game">
+                        <span class="neon-btn-text">Start Game</span>
+                        <span class="neon-btn-icon" aria-hidden="true">🧠</span>
                     </button>
                 </article>
                 
@@ -213,7 +211,10 @@
                         const playBtn = this.querySelector('[data-game]');
                         if (playBtn) {
                             const gameId = playBtn.getAttribute('data-game');
+                            console.log(`🎯 Card click detected - launching: ${gameId}`);
                             launchGame(gameId);
+                        } else {
+                            console.log(`⚠️ No data-game attribute found in available card`);
                         }
                     }
                 });
@@ -244,9 +245,11 @@
         // Game launch function - Mejorado para manejar juegos disponibles y próximamente
         function launchGame(gameId) {
             console.log(`🎮 Launching game: ${gameId}`);
-            
+            console.log(`🔍 Checking if game is available...`);
+
             // Check if game is available
-            if (gameId === 'knight-quest' || gameId === 'square-rush') {
+            if (gameId === 'knight-quest' || gameId === 'square-rush' || gameId === 'memory-matrix') {
+                console.log(`✅ Game ${gameId} is available, proceeding...`);
                 // Add screen flash effect
                 document.body.style.background = 'white';
                 setTimeout(() => {
@@ -264,8 +267,16 @@
                 
                 // Redirect to game
                 if (gameId === 'square-rush') {
+                    console.log(`🎯 Redirecting to Square Rush...`);
                     window.location.href = 'games/square-rush/index.html';
+                } else if (gameId === 'memory-matrix') {
+                    console.log(`🧠 Redirecting to Memory Matrix...`);
+                    const targetUrl = 'games/memory-matrix/with-chessboard2/index.html';
+                    console.log(`🔗 Target URL: ${targetUrl}`);
+                    // Usar la versión ChessBoard.js que funciona mejor
+                    window.location.href = targetUrl;
                 } else {
+                    console.log(`🎮 Redirecting to ${gameId}...`);
                     window.location.href = `games/${gameId}/index.html`;
                 }
             } else {

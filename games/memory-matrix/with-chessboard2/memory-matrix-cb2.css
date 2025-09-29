@@ -821,7 +821,7 @@
 }
 
 /* TABLET: A partir de 600px - mantener vertical */
-@media (min-width: 600px) {
+@media (min-width: 600px) and (max-width: 899px) {
     .chess-board {
         width: 420px;
         height: 420px;
@@ -830,22 +830,36 @@
     }
 
     .chess-board-container {
-        flex-direction: column; /* TABLET: Mantener vertical */
+        flex-direction: column !important; /* TABLET: Forzar vertical */
         gap: 30px;
         padding: 15px;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     /* TABLET: Banco sigue abajo pero más ancho */
+    .piece-bank-container {
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+    }
+
     .piece-bank {
         width: 420px !important; /* Mismo ancho que el tablero */
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
         flex-direction: row !important;
         gap: 15px !important;
         padding: 20px !important;
+        justify-content: center !important;
+        flex-wrap: wrap !important;
     }
 }
 
-/* DESKTOP: A partir de 768px, tablero grande con banco lateral */
-@media (min-width: 768px) {
+/* DESKTOP: A partir de 900px, tablero grande con banco lateral */
+@media (min-width: 900px) {
     .chess-board {
         width: 480px;
         height: 480px;

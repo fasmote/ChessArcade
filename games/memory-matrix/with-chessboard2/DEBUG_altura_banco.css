@@ -1,0 +1,262 @@
+/*
+ * ============================================
+ * CSS DE PRUEBA: SOLUCION ALTURA BANCO PIEZAS
+ * ============================================
+ *
+ * PROBLEMA IDENTIFICADO:
+ * - La barra lateral (banco de piezas) no tiene la misma altura que el tablero
+ * - JavaScript se ejecuta correctamente (confirmado en logs)
+ * - CSS con !important está sobreescribiendo JavaScript
+ *
+ * OBJETIVO:
+ * - Crear reglas CSS que fuercen altura exacta del banco = altura del tablero
+ * - Documentar la solución final para futuros proyectos ChessArcade
+ *
+ * PARA USAR ESTE CSS:
+ * 1. Agregar link en index.html: <link rel="stylesheet" href="DEBUG_altura_banco.css">
+ * 2. Verificar que funciona en desktop (768px+)
+ * 3. Una vez confirmado, integrar reglas en CSS principal
+ *
+ * AUTOR: Claude Code - Memory Matrix Project
+ * FECHA: Septiembre 2025
+ * PROPOSITO: Depuración específica problema altura banco
+ */
+
+/* ============================================
+   SOLUCION 1: ELIMINAR !important PROBLEMATICO
+   ============================================ */
+
+/*
+ * Anular las reglas CSS problemáticas del archivo principal
+ * que están causando conflicto con JavaScript
+ */
+@media (min-width: 768px) {
+    /* ANULAR reglas problemáticas existentes */
+    .piece-bank-container {
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+        /* Permitir que JavaScript controle completamente la altura */
+    }
+
+    .piece-bank {
+        height: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+        /* Permitir que JavaScript controle completamente la altura */
+    }
+}
+
+/* ============================================
+   SOLUCION 2: REGLAS CSS DINAMICAS
+   ============================================ */
+
+/*
+ * Usar CSS personalizado que se sincroniza con JavaScript
+ * via custom properties (CSS variables)
+ */
+:root {
+    /* Variable CSS que será actualizada por JavaScript */
+    --tablero-altura-real: 520px; /* Valor inicial, será sobreescrito */
+}
+
+@media (min-width: 768px) {
+    /* Contenedor del banco: usar altura dinámica del tablero */
+    .piece-bank-container.js-controlled {
+        width: 150px !important;
+        height: var(--tablero-altura-real) !important;
+        min-height: var(--tablero-altura-real) !important;
+        max-height: var(--tablero-altura-real) !important;
+        flex-shrink: 0 !important;
+
+        /* Debug visual */
+        border: 3px solid lime !important;
+        box-shadow: 0 0 10px lime !important;
+    }
+
+    /* Banco de piezas: usar altura dinámica del tablero */
+    .piece-bank.js-controlled {
+        width: 150px !important;
+        height: var(--tablero-altura-real) !important;
+        min-height: var(--tablero-altura-real) !important;
+        max-height: var(--tablero-altura-real) !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        padding: 12px !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        overflow-y: auto !important;
+        flex-wrap: nowrap !important;
+        box-sizing: border-box !important;
+
+        /* Debug visual */
+        background: rgba(0, 255, 0, 0.2) !important;
+        border: 2px solid lime !important;
+    }
+
+    /* Debug: Tablero con borde para comparar alturas */
+    .chess-board.debug-height {
+        border: 3px solid red !important;
+        box-shadow: 0 0 10px red !important;
+    }
+}
+
+/* ============================================
+   SOLUCION 3: FLEXBOX SINCRONIZADO
+   ============================================ */
+
+/*
+ * Usar flexbox para que el banco automáticamente
+ * tenga la misma altura que el tablero
+ */
+@media (min-width: 768px) {
+    /* Contenedor padre que alinea tablero y banco */
+    .chess-board-container.flex-sync {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: stretch !important; /* CLAVE: stretch hace que ambos tengan misma altura */
+        justify-content: center !important;
+        gap: 15px !important;
+    }
+
+    /* Tablero: tamaño fijo */
+    .chess-board.flex-item {
+        flex-shrink: 0 !important;
+        align-self: stretch !important;
+    }
+
+    /* Banco: debe estirarse para igualar altura del tablero */
+    .piece-bank-container.flex-item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-self: stretch !important; /* CLAVE: esto iguala altura con tablero */
+        width: 150px !important;
+        flex-shrink: 0 !important;
+
+        /* Debug visual */
+        background: rgba(255, 0, 255, 0.2) !important;
+        border: 2px solid magenta !important;
+    }
+
+    .piece-bank.flex-item {
+        flex: 1 !important; /* Ocupar todo el espacio del contenedor */
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        overflow-y: auto !important;
+
+        /* Debug visual */
+        background: rgba(255, 0, 255, 0.1) !important;
+        border: 1px solid magenta !important;
+    }
+}
+
+/* ============================================
+   DEBUG Y TESTING
+   ============================================ */
+
+/* Clases para debugging visual */
+.debug-tablero {
+    outline: 5px solid red !important;
+    outline-offset: 2px !important;
+}
+
+.debug-banco-container {
+    outline: 5px solid blue !important;
+    outline-offset: 2px !important;
+}
+
+.debug-banco {
+    outline: 3px solid green !important;
+    outline-offset: 1px !important;
+}
+
+/* Mostrar alturas en pseudo-elementos */
+.chess-board::after {
+    content: "Tablero: " attr(data-height) "px";
+    position: absolute;
+    top: -25px;
+    left: 0;
+    background: red;
+    color: white;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 999;
+}
+
+.piece-bank-container::after {
+    content: "Banco: " attr(data-height) "px";
+    position: absolute;
+    top: -25px;
+    right: 0;
+    background: blue;
+    color: white;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 999;
+}
+
+/* ============================================
+   INSTRUCCIONES PARA JAVASCRIPT
+   ============================================ */
+
+/*
+ * JAVASCRIPT NECESARIO PARA CADA SOLUCION:
+ *
+ * SOLUCION 1 - Eliminar !important:
+ * - No requiere cambios, JavaScript actual debería funcionar
+ *
+ * SOLUCION 2 - CSS Variables:
+ * function syncWithCSSVariables() {
+ *     const boardHeight = document.getElementById('chessboard').getBoundingClientRect().height;
+ *     document.documentElement.style.setProperty('--tablero-altura-real', boardHeight + 'px');
+ *
+ *     // Agregar clases de control
+ *     document.querySelector('.piece-bank-container').classList.add('js-controlled');
+ *     document.querySelector('.piece-bank').classList.add('js-controlled');
+ * }
+ *
+ * SOLUCION 3 - Flexbox:
+ * function enableFlexSync() {
+ *     document.querySelector('.chess-board-container').classList.add('flex-sync');
+ *     document.querySelector('.chess-board').classList.add('flex-item');
+ *     document.querySelector('.piece-bank-container').classList.add('flex-item');
+ *     document.querySelector('.piece-bank').classList.add('flex-item');
+ * }
+ *
+ * DEBUGGING:
+ * function addDebugClasses() {
+ *     document.querySelector('.chess-board').classList.add('debug-tablero');
+ *     document.querySelector('.piece-bank-container').classList.add('debug-banco-container');
+ *     document.querySelector('.piece-bank').classList.add('debug-banco');
+ *
+ *     // Mostrar alturas en elementos
+ *     const board = document.getElementById('chessboard');
+ *     const bank = document.querySelector('.piece-bank-container');
+ *     board.setAttribute('data-height', board.getBoundingClientRect().height);
+ *     bank.setAttribute('data-height', bank.getBoundingClientRect().height);
+ * }
+ */
+
+/* ============================================
+   TESTING FINAL
+   ============================================ */
+
+/*
+ * PASOS PARA PROBAR:
+ *
+ * 1. Agregar este CSS al proyecto
+ * 2. Probar SOLUCION 1 primero (más simple)
+ * 3. Si no funciona, probar SOLUCION 2 (CSS variables)
+ * 4. Si no funciona, probar SOLUCION 3 (flexbox)
+ * 5. Usar clases debug para visualizar alturas
+ * 6. Una vez que funcione, integrar solución al CSS principal
+ * 7. Remover este archivo debug
+ *
+ * RESULTADO ESPERADO:
+ * - Banco lateral exactamente misma altura que tablero en desktop
+ * - Mobile/tablet mantiene comportamiento actual (banco abajo)
+ * - Sin efectos visuales extraños o overflow
+ */

@@ -38,6 +38,24 @@ let gameState = 'waiting'; // waiting, memorize, place, complete, paused
 let currentLevel = 1;
 
 /**
+ * Variables para manejo de pausa
+ */
+let memorizationTimer = null; // Timer del countdown de memorización
+let pausedTimeLeft = 0; // Tiempo restante cuando se pausó
+let gameStatePaused = null; // Estado anterior antes de pausar
+
+/**
+ * Limpiar todos los timers activos
+ */
+function clearAllTimers() {
+    if (memorizationTimer) {
+        clearInterval(memorizationTimer);
+        memorizationTimer = null;
+        console.log('⏰ Timer de memorización limpiado');
+    }
+}
+
+/**
  * Instancia del tablero Chessboard2.js
  * Se inicializa una vez y se reutiliza durante todo el juego
  */
@@ -269,6 +287,13 @@ function initializeChessboard() {
         chess = new Chess();
 
         console.log('✅ Tablero inicializado correctamente');
+
+        // IMPORTANTE: Sincronizar altura del banco después de que el tablero esté listo
+        // Usamos setTimeout para asegurar que el DOM esté completamente renderizado
+        setTimeout(() => {
+            syncPieceBankHeight();
+        }, 100);
+
         return true;
     } catch (error) {
         console.error('❌ Error inicializando tablero:', error);
@@ -386,6 +411,10 @@ function setupBoardDropListeners() {
 function handlePiecePlacementFromBank(pieceCode, targetSquare) {
     console.log(`🎯 Colocación desde banco: ${pieceCode} hacia ${targetSquare}`);
 
+    if (gameState === 'paused') {
+        console.log('⏸️ Colocación rechazada: juego pausado');
+        return;
+    }
     if (gameState !== 'place') {
         console.log('⚠️ No estamos en fase de colocación');
         return;
@@ -483,6 +512,10 @@ function handlePiecePlacement(source, target, piece, newPos, oldPos) {
     console.log(`🎯 Colocación: ${piece} desde ${source} hacia ${target}`);
 
     // Solo permitir colocaciones durante la fase de colocación
+    if (gameState === 'paused') {
+        console.log('⏸️ Colocación rechazada: juego pausado');
+        return 'snapback';
+    }
     if (gameState !== 'place') {
         console.log('❌ Colocación rechazada: no estamos en fase de colocación');
         return 'snapback';
@@ -688,6 +721,11 @@ function loadLevel(levelNumber) {
 
     // Preparar el tablero para este nivel
     setupBoardForLevel(levelConfig);
+
+    // IMPORTANTE: Sincronizar altura del banco después de configurar el tablero
+    setTimeout(() => {
+        syncPieceBankHeight();
+    }, 100);
 
     // Configurar panel educativo
     updateEducationalPanel(levelConfig);
@@ -1056,6 +1094,60 @@ function completLevel() {
 // ============================================
 
 /**
+ * Sincronizar altura de banco de piezas con el tablero
+ * SOLUCION DEFINITIVA: El banco debe tener EXACTAMENTE la misma altura que el tablero
+ */
+function syncPieceBankHeight() {
+    console.log('📏 Sincronizando altura de banco de piezas con tablero...');
+
+    try {
+        const chessboardElement = document.getElementById('chessboard');
+        const pieceBankContainer = document.querySelector('.piece-bank-container');
+        const pieceBank = document.querySelector('.piece-bank');
+
+        if (!chessboardElement || !pieceBankContainer || !pieceBank) {
+            console.warn('⚠️ Elementos no encontrados para sincronización de altura');
+            return;
+        }
+
+        // Obtener altura REAL del tablero (incluyendo border, padding, etc.)
+        const boardRect = chessboardElement.getBoundingClientRect();
+        const boardHeight = boardRect.height;
+
+        console.log(`📐 Altura real del tablero: ${boardHeight}px`);
+
+        // Solo aplicar en desktop (900px+) donde el banco es lateral
+        if (window.innerWidth >= 900) {
+            // Establecer altura exacta del contenedor con !important para superar CSS
+            pieceBankContainer.style.setProperty('height', `${boardHeight}px`, 'important');
+            pieceBankContainer.style.setProperty('min-height', `${boardHeight}px`, 'important');
+            pieceBankContainer.style.setProperty('max-height', `${boardHeight}px`, 'important');
+
+            // Establecer altura exacta del banco con !important
+            pieceBank.style.setProperty('height', `${boardHeight}px`, 'important');
+            pieceBank.style.setProperty('min-height', `${boardHeight}px`, 'important');
+            pieceBank.style.setProperty('max-height', `${boardHeight}px`, 'important');
+
+            console.log(`✅ Banco sincronizado: ${boardHeight}px de altura (con !important)`);
+        } else {
+            // En mobile/tablet, remover restricciones de altura forzadas
+            pieceBankContainer.style.removeProperty('height');
+            pieceBankContainer.style.removeProperty('min-height');
+            pieceBankContainer.style.removeProperty('max-height');
+
+            pieceBank.style.removeProperty('height');
+            pieceBank.style.removeProperty('min-height');
+            pieceBank.style.removeProperty('max-height');
+
+            console.log('📱 Mobile/tablet: altura automática del banco (CSS removido)');
+        }
+
+    } catch (error) {
+        console.error('❌ Error sincronizando altura:', error);
+    }
+}
+
+/**
  * Inicializa todos los event listeners de los botones y controles
  */
 function initializeEventListeners() {
@@ -1121,6 +1213,15 @@ function initializeEventListeners() {
     // Cerrar feedback al hacer click en cualquier parte del feedback
     feedbackDisplay.addEventListener('click', function() {
         hideFeedback();
+    });
+
+    // Listener para redimensionar ventana - RE-SINCRONIZAR altura del banco
+    window.addEventListener('resize', function() {
+        console.log('📐 Ventana redimensionada - re-sincronizando banco...');
+        // Usar setTimeout para esperar que termine la animación de resize
+        setTimeout(() => {
+            syncPieceBankHeight();
+        }, 200);
     });
 
     console.log('✅ Event listeners configurados');
@@ -1241,6 +1342,13 @@ function updateGameControls() {
 function resetGameState() {
     console.log('🔄 Reiniciando estado del juego');
 
+    // Limpiar timers activos
+    clearAllTimers();
+
+    // Reset variables de pausa
+    pausedTimeLeft = 0;
+    gameStatePaused = null;
+
     gameState = 'waiting';
     targetPosition = '';
     currentFEN = '';
@@ -1251,6 +1359,9 @@ function resetGameState() {
     hideLevelCompleteScreen();
     hideFeedback();
     clearPieceBank();
+
+    // Limpiar overlay de pausa si existe
+    hideOverlay('pause');
 
     console.log('✅ Estado reiniciado, gameState:', gameState);
 }
@@ -1367,17 +1478,26 @@ function hideMemorizationOverlay() {
  */
 function startMemorizationCountdown() {
     let timeLeft = levelStats.viewTime;
+    pausedTimeLeft = timeLeft; // Guardar tiempo inicial para pausa
     const countdownElement = document.getElementById('overlayCountdown');
 
     // IMPORTANTE: Mostrar el tiempo inicial inmediatamente
     // Esto previene que aparezca "0" o un valor incorrecto durante el primer segundo
     countdownElement.textContent = timeLeft.toString();
 
-    const countdown = setInterval(() => {
+    // Guardar timer globalmente para poder pausarlo
+    memorizationTimer = setInterval(() => {
+        // Verificar si el juego está pausado
+        if (gameState === 'paused') {
+            return; // No hacer nada si está pausado
+        }
+
         timeLeft--;
+        pausedTimeLeft = timeLeft; // Actualizar tiempo para pausa
 
         if (timeLeft < 0) {
-            clearInterval(countdown);
+            clearInterval(memorizationTimer);
+            memorizationTimer = null;
             startPlacementPhase();
         } else {
             // Actualizar display solo si hay tiempo restante
@@ -1889,12 +2009,119 @@ function hideLevelCompleteScreen() {
  * Funciones de botones que faltan
  */
 function togglePause() {
+    console.log('⏸️ Toggling pause, current state:', gameState);
+
     if (gameState === 'paused') {
-        gameState = 'place';
+        // REANUDAR JUEGO
+        console.log('▶️ Reanudando juego...');
+
+        // Restaurar estado anterior
+        if (gameStatePaused) {
+            gameState = gameStatePaused;
+        } else {
+            gameState = 'place'; // Default fallback
+        }
+
+        // Reanudar timer si estaba en memorización
+        if (gameState === 'memorize' && pausedTimeLeft > 0) {
+            console.log(`⏰ Reanudando countdown con ${pausedTimeLeft} segundos`);
+            // Actualizar display con tiempo actual
+            const countdownElement = document.getElementById('overlayCountdown');
+            if (countdownElement) {
+                countdownElement.textContent = pausedTimeLeft.toString();
+            }
+            // El timer ya está configurado para ignorar cuando gameState === 'paused'
+        }
+
+        // Habilitar interacciones
+        enableGameInteractions();
+
+        // Ocultar overlay de pausa si existe
+        hideOverlay('pause');
+
+        // Actualizar botón
         document.getElementById('pauseBtn').textContent = 'PAUSA';
+
+        console.log('✅ Juego reanudado, nuevo estado:', gameState);
+
     } else {
+        // PAUSAR JUEGO
+        console.log('⏸️ Pausando juego...');
+
+        // Guardar estado actual antes de pausar
+        gameStatePaused = gameState;
         gameState = 'paused';
+
+        // Deshabilitar interacciones
+        disableGameInteractions();
+
+        // Mostrar overlay de pausa
+        showOverlay('pause');
+
+        // Actualizar botón
         document.getElementById('pauseBtn').textContent = 'REANUDAR';
+
+        console.log('⏸️ Juego pausado, estado anterior:', gameStatePaused);
+    }
+
+    // Actualizar controles UI
+    updateGameControls();
+}
+
+/**
+ * Funciones auxiliares para el sistema de pausa
+ */
+function enableGameInteractions() {
+    console.log('🎮 Habilitando interacciones del juego');
+    // Habilitar drag & drop en banco de piezas
+    const pieceBankElements = document.querySelectorAll('.draggable-piece');
+    pieceBankElements.forEach(piece => {
+        piece.style.pointerEvents = 'auto';
+        piece.style.opacity = '1';
+    });
+
+    // Habilitar drop en tablero (ya manejado por gameState en handleDrop)
+    // Los listeners ya verifican el gameState
+}
+
+function disableGameInteractions() {
+    console.log('🚫 Deshabilitando interacciones del juego');
+    // Deshabilitar drag & drop en banco de piezas
+    const pieceBankElements = document.querySelectorAll('.draggable-piece');
+    pieceBankElements.forEach(piece => {
+        piece.style.pointerEvents = 'none';
+        piece.style.opacity = '0.5';
+    });
+
+    // Drop en tablero se deshabilita automáticamente por gameState
+}
+
+function showOverlay(type) {
+    console.log('👁️ Mostrando overlay:', type);
+    if (type === 'pause') {
+        // Crear o mostrar overlay de pausa
+        let pauseOverlay = document.getElementById('pauseOverlay');
+        if (!pauseOverlay) {
+            pauseOverlay = document.createElement('div');
+            pauseOverlay.id = 'pauseOverlay';
+            pauseOverlay.className = 'position-overlay';
+            pauseOverlay.innerHTML = `
+                <div class="overlay-text">⏸️ JUEGO PAUSADO</div>
+                <div class="phase-indicator">Presiona REANUDAR para continuar</div>
+            `;
+            document.querySelector('.position-display').appendChild(pauseOverlay);
+        }
+        pauseOverlay.classList.add('show');
+    }
+}
+
+function hideOverlay(type) {
+    console.log('🙈 Ocultando overlay:', type);
+    if (type === 'pause') {
+        const pauseOverlay = document.getElementById('pauseOverlay');
+        if (pauseOverlay) {
+            pauseOverlay.classList.remove('show');
+        }
     }
 }
 
