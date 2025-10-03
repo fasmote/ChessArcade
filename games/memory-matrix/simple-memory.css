@@ -1,0 +1,233 @@
+/* Memory Matrix v2 - Estilo ChessArcade Simplificado */
+
+:root {
+    --neon-cyan: #00ffff;
+    --neon-green: #00ff80;
+    --neon-pink: #ff0080;
+    --neon-orange: #ff8000;
+    --gold: #ffd700;
+    --dark-bg: linear-gradient(135deg, #0a0a0a 0%, #1a0033 50%, #330066 100%);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Orbitron', 'Arial', monospace;
+    background: var(--dark-bg);
+    color: white;
+    min-height: 100vh;
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+/* Fondo con grid animado */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    animation: gridMove 20s linear infinite;
+    z-index: 0;
+}
+
+@keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+}
+
+.game-container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header con estilo neón */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--neon-cyan);
+    text-shadow:
+        0 0 10px var(--neon-cyan),
+        0 0 20px var(--neon-cyan),
+        0 0 30px var(--neon-cyan);
+    margin-bottom: 20px;
+    animation: neonGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes neonGlow {
+    from { text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan), 0 0 30px var(--neon-cyan); }
+    to { text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan), 0 0 15px var(--neon-cyan); }
+}
+
+/* Botón estilo ChessArcade */
+.btn-primary {
+    background: linear-gradient(45deg, var(--neon-pink), var(--neon-orange));
+    color: white;
+    border: 2px solid var(--neon-pink);
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow:
+        0 0 10px var(--neon-pink),
+        inset 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 20px var(--neon-pink),
+        0 5px 15px rgba(0,0,0,0.3),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+/* Layout principal - CSS Grid simple */
+.game-area {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: start;
+    justify-items: center;
+    margin-bottom: 30px;
+}
+
+/* Contenedor del tablero con efectos neón */
+.board-section {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid var(--neon-cyan);
+    box-shadow:
+        0 0 20px var(--neon-cyan),
+        inset 0 0 20px rgba(0, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+/* Banco de piezas */
+.pieces-section {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid var(--neon-orange);
+    box-shadow:
+        0 0 20px var(--neon-orange),
+        inset 0 0 20px rgba(255, 128, 0, 0.1);
+    backdrop-filter: blur(10px);
+    min-width: 200px;
+}
+
+.pieces-section h3 {
+    color: var(--neon-orange);
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.1rem;
+    text-shadow: 0 0 10px var(--neon-orange);
+}
+
+#piece-bank {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+/* Piezas con efectos neón */
+.draggable-piece {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid var(--neon-green);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 45px;
+    cursor: grab;
+    transition: all 0.3s ease;
+    box-shadow:
+        0 0 15px var(--neon-green),
+        inset 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.draggable-piece:hover {
+    transform: scale(1.1);
+    box-shadow:
+        0 0 25px var(--neon-green),
+        0 5px 15px rgba(0,0,0,0.3),
+        inset 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+.draggable-piece:active {
+    cursor: grabbing;
+    transform: scale(0.95);
+}
+
+/* Status con efecto neón */
+.status {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid var(--gold);
+    box-shadow:
+        0 0 20px var(--gold),
+        inset 0 0 20px rgba(255, 215, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+#status-text {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--gold);
+    text-shadow: 0 0 10px var(--gold);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .game-area {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .header h1 {
+        font-size: 2.5rem;
+    }
+
+    .pieces-section {
+        min-width: auto;
+        width: 100%;
+    }
+
+    #piece-bank {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
+
+/* Asegurar que el tablero tenga un tamaño fijo */
+#chessboard {
+    width: 400px !important;
+    height: 400px !important;
+}

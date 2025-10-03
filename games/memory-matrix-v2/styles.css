@@ -1,0 +1,999 @@
+/**
+ * ============================================
+ * MEMORY MATRIX - ESTILOS CHESSARCADE
+ * ============================================
+ * Diseño: Neón futurista, mobile first
+ * Colores: Negro, morado, cyan neón
+ * Fuente: Orbitron
+ */
+
+/* ============================================
+   VARIABLES CSS
+   ============================================ */
+:root {
+    /* Colores neón */
+    --neon-cyan: #00ffff;
+    --neon-green: #00ff80;
+    --neon-pink: #ff0080;
+    --neon-orange: #ff8000;
+    --neon-purple: #9d4edd;
+    --gold: #ffd700;
+
+    /* Fondo degradado */
+    --bg-gradient: linear-gradient(135deg, #0a0a0a 0%, #1a0033 50%, #330066 100%);
+
+    /* Espaciado */
+    --spacing-xs: 8px;
+    --spacing-sm: 12px;
+    --spacing-md: 20px;
+    --spacing-lg: 32px;
+    --spacing-xl: 48px;
+
+    /* Bordes */
+    --border-radius: 12px;
+}
+
+/* ============================================
+   RESET Y BASE
+   ============================================ */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    /* Fuente principal: Orbitron (futurista) */
+    font-family: 'Orbitron', 'Arial', monospace;
+
+    /* Fondo degradado oscuro */
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+
+    /* Color de texto por defecto */
+    color: white;
+
+    /* Suavizar fuentes */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   FONDO CON GRID ANIMADO
+   Efecto de grid neón que se mueve
+   ============================================ */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    /* Grid de líneas cyan semi-transparentes */
+    background-image:
+        linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+
+    /* Tamaño del grid: 50px x 50px */
+    background-size: 50px 50px;
+
+    /* No interfiere con clicks */
+    pointer-events: none;
+
+    /* Animación: mover el grid */
+    animation: gridMove 20s linear infinite;
+
+    /* Detrás de todo el contenido */
+    z-index: 0;
+}
+
+/* Animación del grid */
+@keyframes gridMove {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(50px, 50px);
+    }
+}
+
+/* ============================================
+   CONTAINER PRINCIPAL
+   ============================================ */
+.game-container {
+    /* Posición relativa para que el contenido esté sobre el grid */
+    position: relative;
+    z-index: 1;
+
+    /* Centrado y espaciado */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-md);
+
+    /* Altura mínima para centrar verticalmente */
+    min-height: 100vh;
+
+    /* Flexbox para organizar elementos verticalmente */
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md); /* Reducido de lg a md para mobile */
+}
+
+/* ============================================
+   HEADER: Botones de navegación
+   ============================================ */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+/* ============================================
+   BOTONES ICONO (HOME, SONIDO)
+   ============================================ */
+.btn-icon {
+    /* Flexbox para centrar icono + texto */
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+
+    /* Tamaño y espaciado */
+    padding: 10px 16px;
+    min-height: 44px;  /* Touch target mínimo */
+
+    /* Fondo semi-transparente */
+    background: rgba(0, 0, 0, 0.6);
+
+    /* Borde neón */
+    border: 2px solid var(--neon-cyan);
+    border-radius: var(--border-radius);
+
+    /* Color de texto */
+    color: var(--neon-cyan);
+
+    /* Fuente */
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+
+    /* Sin borde de botón por defecto */
+    outline: none;
+
+    /* Cursor pointer */
+    cursor: pointer;
+
+    /* Transición suave */
+    transition: all 0.3s ease;
+
+    /* Glow sutil */
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+/* Hover: brillo más intenso */
+.btn-icon:hover {
+    background: rgba(0, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Active: presionado */
+.btn-icon:active {
+    transform: translateY(0);
+}
+
+/* SVG dentro de botones */
+.btn-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+}
+
+/* Label del botón (oculto en mobile muy pequeño) */
+.btn-label {
+    display: none;
+}
+
+/* Mostrar label en pantallas ≥500px */
+@media (min-width: 500px) {
+    .btn-label {
+        display: inline;
+    }
+}
+
+/* Botón HOME: cyan */
+.btn-home {
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+}
+
+.btn-home:hover {
+    box-shadow: 0 0 20px var(--neon-cyan);
+}
+
+/* Botón SONIDO: naranja */
+.btn-sound {
+    border-color: var(--neon-orange);
+    color: var(--neon-orange);
+}
+
+.btn-sound:hover {
+    box-shadow: 0 0 20px var(--neon-orange);
+}
+
+/* ============================================
+   SELECTOR DE ESTILO DE PIEZAS
+   Destacado con borde brillante y tamaño más grande
+   ============================================ */
+.piece-style-selector {
+    /* Flexbox para organizar label + select */
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+
+    /* Fondo semi-transparente */
+    background: rgba(157, 78, 221, 0.15);
+
+    /* Borde neón magenta (más visible) */
+    border: 3px solid var(--neon-pink);
+    border-radius: var(--border-radius);
+
+    /* Padding más generoso */
+    padding: 10px 16px;
+
+    /* Glow intenso */
+    box-shadow:
+        0 0 15px rgba(255, 0, 128, 0.5),
+        0 0 30px rgba(255, 0, 128, 0.2);
+
+    /* Transición */
+    transition: all 0.3s ease;
+}
+
+.piece-style-selector:hover {
+    box-shadow:
+        0 0 25px rgba(255, 0, 128, 0.8),
+        0 0 40px rgba(255, 0, 128, 0.4);
+    background: rgba(255, 0, 128, 0.2);
+    transform: translateY(-1px);
+}
+
+/* Label del selector */
+.selector-label {
+    /* Flexbox para icono + texto */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    /* Color magenta brillante */
+    color: var(--neon-pink);
+
+    /* Fuente */
+    font-family: 'Orbitron', sans-serif;
+    font-size: 15px;
+    font-weight: 900;
+
+    /* Cursor */
+    cursor: pointer;
+
+    /* No margin */
+    margin: 0;
+
+    /* Text shadow para más brillo */
+    text-shadow: 0 0 10px var(--neon-pink);
+}
+
+.selector-label svg {
+    width: 24px;
+    height: 24px;
+    filter: drop-shadow(0 0 8px var(--neon-pink));
+}
+
+/* Select dropdown */
+.style-select {
+    /* Fondo oscuro */
+    background: rgba(0, 0, 0, 0.9);
+
+    /* Borde magenta */
+    border: 2px solid var(--neon-pink);
+    border-radius: 8px;
+
+    /* Color de texto magenta */
+    color: var(--neon-pink);
+
+    /* Fuente */
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+
+    /* Padding */
+    padding: 8px 12px;
+
+    /* Cursor */
+    cursor: pointer;
+
+    /* Sin outline */
+    outline: none;
+
+    /* Transición */
+    transition: all 0.3s ease;
+
+    /* Ancho mínimo */
+    min-width: 140px;
+
+    /* Text shadow */
+    text-shadow: 0 0 5px rgba(255, 0, 128, 0.5);
+}
+
+.style-select:hover {
+    background: rgba(255, 0, 128, 0.2);
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 10px rgba(255, 0, 128, 0.6);
+}
+
+.style-select:focus {
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 15px rgba(255, 0, 128, 0.8);
+}
+
+/* Opciones del select */
+.style-select option {
+    background: #1a0033;
+    color: var(--neon-pink);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 600;
+    padding: 10px;
+}
+
+/* Mobile: ajustar tamaños */
+@media (max-width: 500px) {
+    .piece-style-selector {
+        padding: 8px 12px;
+        gap: 6px;
+    }
+
+    .selector-label {
+        font-size: 13px;
+    }
+
+    .selector-label svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .style-select {
+        min-width: 110px;
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+}
+
+/* ============================================
+   TÍTULO PRINCIPAL
+   ============================================ */
+.title-section {
+    text-align: center;
+    margin: var(--spacing-sm) 0; /* Reducido margen vertical */
+
+    /* Centrar con el tablero usando flexbox */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-title {
+    /* Tamaño de fuente responsive (reducido en mobile) */
+    font-size: clamp(1.8rem, 7vw, 4rem);
+    font-weight: 900;
+
+    /* Color cyan neón */
+    color: var(--neon-cyan);
+
+    /* Efecto de glow neón */
+    text-shadow:
+        0 0 10px var(--neon-cyan),
+        0 0 20px var(--neon-cyan),
+        0 0 30px var(--neon-cyan),
+        0 0 40px var(--neon-cyan);
+
+    /* Animación de pulso */
+    animation: neonGlow 2s ease-in-out infinite alternate;
+
+    /* Spacing entre letra */
+    letter-spacing: 2px;
+
+    /* Ancho máximo para alinearse con tablero */
+    max-width: 90vw;
+}
+
+/* Animación de glow pulsante */
+@keyframes neonGlow {
+    from {
+        text-shadow:
+            0 0 10px var(--neon-cyan),
+            0 0 20px var(--neon-cyan),
+            0 0 30px var(--neon-cyan);
+    }
+    to {
+        text-shadow:
+            0 0 15px var(--neon-cyan),
+            0 0 30px var(--neon-cyan),
+            0 0 45px var(--neon-cyan),
+            0 0 60px var(--neon-cyan);
+    }
+}
+
+/* Icono del cerebro */
+.brain-icon {
+    display: inline-block;
+    font-size: 1.2em;
+    margin-right: 0.2em;
+
+    /* Animación de rebote sutil */
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* ============================================
+   ÁREA DE JUEGO
+   Donde irán tablero y banco de piezas
+   ============================================ */
+.game-area {
+    /* Flexbox para centrar contenido */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-lg);
+
+    /* Espacio para crecer */
+    flex: 1;
+}
+
+/* Desktop: layout horizontal (tablero + banco lado a lado) */
+@media (min-width: 768px) {
+    .game-area {
+        flex-direction: row;
+        justify-content: center;
+        align-items: flex-start;
+        gap: var(--spacing-xl);
+    }
+}
+
+/* ============================================
+   TABLERO DE AJEDREZ
+   Grid 8x8 con coordenadas y borde neón
+   ============================================ */
+
+/* Contenedor del tablero */
+.board-container {
+    /* Centrar tablero */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+
+    /* Padding */
+    padding: var(--spacing-md);
+
+    /* Fondo semi-transparente */
+    background: rgba(0, 0, 0, 0.4);
+
+    /* Borde neón cyan */
+    border: 3px solid var(--neon-cyan);
+    border-radius: var(--border-radius);
+
+    /* Glow neón */
+    box-shadow:
+        0 0 20px var(--neon-cyan),
+        0 0 40px rgba(0, 255, 255, 0.3),
+        inset 0 0 20px rgba(0, 255, 255, 0.05);
+}
+
+/* El tablero 8x8 */
+.chessboard {
+    /* Grid 8x8 */
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+
+    /* Tamaño del tablero (mobile first) */
+    width: 90vw;
+    max-width: 400px;
+    aspect-ratio: 1; /* Mantener cuadrado */
+
+    /* Borde del tablero */
+    border: 2px solid #333;
+
+    /* Sombra interna sutil */
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+
+    /* Posición relativa para coordenadas absolutas */
+    position: relative;
+}
+
+/* Tablet y desktop: tablero más grande */
+@media (min-width: 600px) {
+    .chessboard {
+        max-width: 450px;
+    }
+}
+
+@media (min-width: 900px) {
+    .chessboard {
+        max-width: 500px;
+    }
+}
+
+/* ============================================
+   CASILLAS DEL TABLERO
+   Colores alternados beige/marrón
+   ============================================ */
+.square {
+    /* Centrar contenido (para piezas) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Tamaño se define por el grid */
+    width: 100%;
+    height: 100%;
+
+    /* Posición relativa para piezas absolutas */
+    position: relative;
+
+    /* Cursor pointer cuando sea draggable */
+    cursor: default;
+
+    /* Transición suave */
+    transition: background-color 0.2s ease;
+}
+
+/* Color de casillas claras (beige) */
+.square.light {
+    background-color: #f0d9b5;
+}
+
+/* Color de casillas oscuras (marrón) */
+.square.dark {
+    background-color: #b58863;
+}
+
+/* Hover en casillas (feedback visual) */
+.square:hover {
+    filter: brightness(1.1);
+}
+
+/* ============================================
+   COORDENADAS DEL TABLERO (a-h, 1-8)
+   Posicionadas absolutamente en los bordes
+   ============================================ */
+
+/* Coordenadas horizontales (a-h) */
+.coord-file {
+    position: absolute;
+    bottom: 2px;
+    font-size: 10px;
+    font-weight: 700;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Coordenadas verticales (1-8) */
+.coord-rank {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    font-size: 10px;
+    font-weight: 700;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Color de coordenadas según casilla */
+.square.light .coord-file,
+.square.light .coord-rank {
+    color: #b58863; /* Oscuro en casilla clara */
+}
+
+.square.dark .coord-file,
+.square.dark .coord-rank {
+    color: #f0d9b5; /* Claro en casilla oscura */
+}
+
+/* Tamaño de coordenadas responsive */
+@media (min-width: 600px) {
+    .coord-file,
+    .coord-rank {
+        font-size: 12px;
+    }
+}
+
+@media (min-width: 900px) {
+    .coord-file,
+    .coord-rank {
+        font-size: 14px;
+    }
+}
+
+/* ============================================
+   PIEZAS DE AJEDREZ
+   Imágenes SVG desde CDN Lichess
+   ============================================ */
+
+/**
+ * Pieza: Imagen dentro de casilla
+ *
+ * IMPORTANTE: Las piezas son imágenes <img> con clase .piece
+ * Se colocan dentro de las casillas .square
+ * Tamaño aumentado para mejor visibilidad (95%)
+ */
+.piece {
+    /* Tamaño: ocupar 95% de la casilla (más grande que antes) */
+    width: 95%;
+    height: 95%;
+
+    /* Object-fit para mantener proporción */
+    object-fit: contain;
+
+    /* Cursor pointer para indicar que es interactiva */
+    cursor: pointer;
+
+    /* Transición suave para animaciones futuras */
+    transition: transform 0.2s ease, filter 0.2s ease;
+
+    /* No seleccionable como texto */
+    user-select: none;
+    -webkit-user-drag: none;
+
+    /* Z-index para que esté sobre coordenadas */
+    position: relative;
+    z-index: 10;
+
+    /* Imagen nítida */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+/* Hover en pieza: escalar ligeramente */
+.piece:hover {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6));
+}
+
+/* Active: pieza siendo arrastrada (PASO 6) */
+.piece.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+/* ============================================
+   PASO 5: BANCO DE PIEZAS
+   Panel lateral con piezas disponibles
+   ============================================ */
+
+/* Contenedor del banco */
+.piece-bank-container {
+    /* Centrar contenido */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+
+    /* Fondo semi-transparente */
+    background: rgba(0, 0, 0, 0.4);
+
+    /* Borde neón naranja */
+    border: 3px solid var(--neon-orange);
+    border-radius: var(--border-radius);
+
+    /* Padding */
+    padding: var(--spacing-md);
+
+    /* Glow */
+    box-shadow:
+        0 0 20px var(--neon-orange),
+        0 0 40px rgba(255, 128, 0, 0.3),
+        inset 0 0 20px rgba(255, 128, 0, 0.05);
+
+    /* Ancho en mobile */
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Título del banco */
+.bank-title {
+    /* Color naranja neón */
+    color: var(--neon-orange);
+
+    /* Fuente */
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(16px, 4vw, 20px);
+    font-weight: 900;
+
+    /* Text shadow */
+    text-shadow:
+        0 0 10px var(--neon-orange),
+        0 0 20px var(--neon-orange);
+
+    /* Sin margen */
+    margin: 0;
+
+    /* Uppercase */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Grid del banco */
+.piece-bank {
+    /* Grid de piezas: 6 columnas (6 tipos de piezas) */
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--spacing-sm);
+
+    /* Ancho completo */
+    width: 100%;
+
+    /* Padding */
+    padding: var(--spacing-sm);
+
+    /* Fondo más oscuro */
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+}
+
+/* Slot de pieza en el banco */
+.bank-piece-slot {
+    /* Aspect ratio cuadrado */
+    aspect-ratio: 1;
+
+    /* Centrar pieza */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Fondo de casilla - más visible cuando está vacío */
+    background: rgba(255, 128, 0, 0.05);
+
+    /* Borde sutil - patrón de líneas punteadas cuando vacío */
+    border: 2px dashed rgba(255, 128, 0, 0.4);
+    border-radius: 8px;
+
+    /* Cursor para drag */
+    cursor: grab;
+
+    /* Transición */
+    transition: all 0.3s ease;
+
+    /* Posición relativa para pieza */
+    position: relative;
+}
+
+/* Slot con pieza: borde sólido */
+.bank-piece-slot:has(.piece) {
+    border-style: solid;
+    border-color: rgba(255, 128, 0, 0.6);
+    background: rgba(255, 128, 0, 0.15);
+}
+
+.bank-piece-slot:hover {
+    background: rgba(255, 128, 0, 0.2);
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 15px rgba(255, 128, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+.bank-piece-slot:active {
+    cursor: grabbing;
+}
+
+/* Pieza dentro del banco */
+.bank-piece-slot .piece {
+    /* Tamaño 90% para el banco */
+    width: 90%;
+    height: 90%;
+
+    /* IMPORTANTE: Permitir eventos para drag & drop */
+    pointer-events: auto;
+    cursor: grab;
+}
+
+.bank-piece-slot .piece:active {
+    cursor: grabbing;
+}
+
+/* Label de tipo de pieza (opcional, para debug) */
+.piece-label {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 9px;
+    color: var(--neon-orange);
+    opacity: 0.6;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+/* Responsive: Desktop */
+@media (min-width: 768px) {
+    .piece-bank-container {
+        /* Ancho fijo en desktop */
+        width: 300px;
+        max-width: none;
+    }
+
+    .piece-bank {
+        /* 3 columnas × 4 filas en desktop */
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ============================================
+   MENSAJE DE ESTADO
+   ============================================ */
+.status-section {
+    text-align: center;
+    padding: var(--spacing-sm) var(--spacing-md); /* Reducido padding vertical */
+}
+
+.status-message {
+    /* Fondo semi-transparente */
+    background: rgba(0, 0, 0, 0.6);
+
+    /* Borde dorado */
+    border: 2px solid var(--gold);
+    border-radius: var(--border-radius);
+
+    /* Padding reducido en mobile */
+    padding: var(--spacing-sm);
+
+    /* Color dorado */
+    color: var(--gold);
+
+    /* Fuente */
+    font-size: clamp(13px, 3vw, 18px);
+    font-weight: 500;
+
+    /* Glow sutil */
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+
+    /* Text shadow */
+    text-shadow: 0 0 10px var(--gold);
+}
+
+/* ============================================
+   BOTÓN PRIMARIO (Comenzar, etc.)
+   ============================================ */
+.action-section {
+    text-align: center;
+    padding: var(--spacing-sm) 0; /* Padding reducido */
+}
+
+.btn-primary {
+    /* Tamaño más compacto en mobile */
+    padding: 14px 36px;
+    min-height: 52px;
+    min-width: 180px;
+
+    /* Fondo degradado */
+    background: linear-gradient(45deg, var(--neon-pink), var(--neon-orange));
+
+    /* Borde */
+    border: 2px solid var(--neon-pink);
+    border-radius: var(--border-radius);
+
+    /* Texto */
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+
+    /* Cursor */
+    cursor: pointer;
+
+    /* Sin outline */
+    outline: none;
+
+    /* Transición */
+    transition: all 0.3s ease;
+
+    /* Glow */
+    box-shadow:
+        0 0 20px var(--neon-pink),
+        inset 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* Hover: elevarse */
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 0 30px var(--neon-pink),
+        0 5px 20px rgba(0, 0, 0, 0.4),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+/* Active: presionar */
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* ============================================
+   RESPONSIVE: MOBILE FIRST
+   ============================================ */
+
+/* Mobile pequeño (≤350px) */
+@media (max-width: 350px) {
+    .game-container {
+        padding: var(--spacing-xs);
+        gap: var(--spacing-sm); /* Gap más pequeño */
+    }
+
+    .game-title {
+        font-size: 1.6rem;
+    }
+
+    .btn-primary {
+        padding: 12px 28px;
+        font-size: 16px;
+        min-width: 160px;
+        min-height: 48px;
+    }
+
+    .status-message {
+        font-size: 12px;
+        padding: var(--spacing-xs);
+    }
+}
+
+/* Desktop: Restaurar gaps más grandes */
+@media (min-width: 768px) {
+    .game-container {
+        gap: var(--spacing-lg);
+    }
+
+    .btn-primary {
+        padding: 16px 48px;
+        min-height: 60px;
+        min-width: 200px;
+        font-size: 20px;
+    }
+}
+
+/* Tablet y desktop (≥768px) */
+@media (min-width: 768px) {
+    .game-container {
+        padding: var(--spacing-xl);
+    }
+}
+
+/* ============================================
+   UTILIDADES
+   ============================================ */
+
+/* Ocultar elemento */
+.hidden {
+    display: none !important;
+}
+
+/* Deshabilitar elemento */
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed !important;
+}

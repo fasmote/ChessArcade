@@ -1,0 +1,84 @@
+/* CSS DE PRUEBA PARA ALINEACIÓN LATERAL - EXPERIMENTAL */
+/* MÁXIMA ESPECIFICIDAD: Usar media query + selectores anidados */
+
+@media (min-width: 900px) {
+    body .test-lateral-fix.chess-board-container {
+        /* ESPECIFICIDAD MÁXIMA: Forzar layout horizontal absoluto */
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: flex-start !important; /* CLAVE: flex-start no center */
+        justify-content: center !important;
+        gap: 15px !important;
+        padding: 0 !important; /* Sin padding que cause desplazamiento */
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media (min-width: 900px) {
+    body .test-lateral-fix .piece-bank-container {
+        /* ESPECIFICIDAD MÁXIMA: Contenedor del banco lateral */
+        width: 150px !important;
+        min-width: 150px !important;
+        max-width: 150px !important;
+        flex-shrink: 0 !important;
+
+        /* ALINEACIÓN ABSOLUTA */
+        align-self: flex-start !important;
+        position: relative !important;
+        top: 0 !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+}
+
+@media (min-width: 900px) {
+    body .test-lateral-fix .piece-bank {
+        /* ESPECIFICIDAD MÁXIMA: Banco de piezas en sí */
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important; /* Piezas desde arriba */
+        align-items: center !important;
+
+        /* Sin espaciado que cause desplazamiento */
+        padding: 5px !important; /* Mínimo padding */
+        margin: 0 !important;
+        gap: 5px !important; /* Gap mínimo entre piezas */
+
+        /* Box model forzado */
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+}
+
+@media (min-width: 900px) {
+    body .test-lateral-fix .draggable-piece {
+        /* ESPECIFICIDAD MÁXIMA: Piezas individuales */
+        width: 60px !important;
+        height: 60px !important;
+        flex-shrink: 0 !important;
+        margin: 2px !important;
+    }
+
+    body .test-lateral-fix .chess-board {
+        /* ESPECIFICIDAD MÁXIMA: Tablero principal */
+        flex-shrink: 0 !important;
+        align-self: flex-start !important;
+        margin: 0 !important;
+    }
+}
+
+/* Botón para activar test */
+.test-button {
+    position: fixed !important;
+    top: 150px !important;
+    right: 10px !important;
+    z-index: 10000 !important;
+    background: #ff6600 !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px !important;
+    border-radius: 5px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+}

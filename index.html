@@ -16,7 +16,16 @@
     
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♔</text></svg>">
-    
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N3EKXHPD5Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-N3EKXHPD5Y');
+    </script>
+
     <!-- NeonChess System Styles -->
     <link rel="stylesheet" href="assets/css/neonchess-style.css">
     
@@ -270,10 +279,10 @@
                     console.log(`🎯 Redirecting to Square Rush...`);
                     window.location.href = 'games/square-rush/index.html';
                 } else if (gameId === 'memory-matrix') {
-                    console.log(`🧠 Redirecting to Memory Matrix...`);
-                    const targetUrl = 'games/memory-matrix/with-chessboard2/index.html';
+                    console.log(`🧠 Redirecting to Memory Matrix v2...`);
+                    const targetUrl = 'games/memory-matrix-v2/index.html';
                     console.log(`🔗 Target URL: ${targetUrl}`);
-                    // Usar la versión ChessBoard.js que funciona mejor
+                    // Versión v2 - rebuild desde cero, paso a paso
                     window.location.href = targetUrl;
                 } else {
                     console.log(`🎮 Redirecting to ${gameId}...`);

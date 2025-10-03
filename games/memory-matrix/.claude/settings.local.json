@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/clau/Documents/Multiajedrez 2025/screenshot_errores/**)",
+      "Read(//c/Users/clau/Documents/Multiajedrez 2025/log/**)",
+      "Bash(test:*)",
+      "Read(//c/Users/clau/Documents/ChessArcade_backup/**)",
+      "Bash(grep:*)",
+      "Read(//c/Users/clau/Documents/Multiajedrez 2025/games/**)",
+      "Read(//c/Users/clau/Documents/Multiajedrez 2025/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

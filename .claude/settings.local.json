@@ -12,7 +12,9 @@
       "WebFetch(domain:github.com)",
       "Read(//c/Users/clau/Documents/ChessArcade_backup/**)",
       "Bash(sed:*)",
-      "Bash(start \"C:\\Users\\clau\\Documents\\Multiajedrez 2025\\games\\memory-matrix\\with-chessboard2\\index.html\")"
+      "Bash(start \"C:\\Users\\clau\\Documents\\Multiajedrez 2025\\games\\memory-matrix\\with-chessboard2\\index.html\")",
+      "Bash(find:*)",
+      "Bash(start:*)"
     ],
     "deny": [],
     "ask": []
