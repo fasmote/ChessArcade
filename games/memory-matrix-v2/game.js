@@ -15,6 +15,14 @@ let currentPieceStyle = 'cburnett'; // Estilo actual de piezas
 let gameState = 'idle'; // Valores: 'idle', 'playing', 'memorizing', 'solving'
 let isAnimating = false; // Flag para prevenir clicks durante animación
 
+// PASO 7: Estado del nivel actual
+let currentLevel = 1; // Nivel actual (1-8)
+let currentAttempt = 1; // Intento actual dentro del nivel (1-10)
+let successfulAttempts = 0; // Intentos exitosos en el nivel actual
+let currentPosition = []; // Posición actual a memorizar
+let placedPieces = []; // Piezas que el jugador ha colocado
+let startTime = null; // Tiempo de inicio del intento
+
 // ============================================
 // INICIALIZACIÓN
 // Esperar a que el DOM esté cargado
@@ -227,10 +235,12 @@ function getStyleDisplayName(style) {
 }
 
 // ============================================
-// FUNCIÓN: Comenzar Juego
-// PASO 5: Ahora ejecuta demo de animación al banco
-// TODO PASO 7: Implementar lógica completa del juego
+// PASO 7: FLUJO COMPLETO DEL JUEGO
 // ============================================
+
+/**
+ * Inicia el juego con el nivel actual
+ */
 function startGame() {
     // PREVENIR CLICKS MÚLTIPLES
     if (isAnimating || gameState === 'playing') {
@@ -239,26 +249,283 @@ function startGame() {
         return;
     }
 
-    console.log('🚀 Comenzando juego...');
+    const levelConfig = window.MemoryMatrixLevels.getLevelConfig(currentLevel);
+
+    console.log(`🚀 Nivel ${currentLevel} - Intento ${currentAttempt}/${levelConfig.attemptsRequired}`);
+    console.log(`📊 Progreso: ${successfulAttempts}/${levelConfig.attemptsRequired} exitosos`);
 
     // Cambiar estado
-    gameState = 'playing';
+    gameState = 'memorizing';
     isAnimating = true;
+    startTime = Date.now();
 
-    // Deshabilitar botón visualmente
+    // Deshabilitar botón
     const btnStart = document.getElementById('btnStart');
     if (btnStart) {
         btnStart.classList.add('disabled');
         btnStart.style.opacity = '0.5';
         btnStart.style.cursor = 'not-allowed';
+        btnStart.textContent = 'Jugando...';
     }
 
-    // Limpiar tablero y banco antes de comenzar
+    // Limpiar tablero y banco
     clearBoard();
     clearBankPieces();
+    placedPieces = [];
 
-    // PASO 5: Demo de animación al banco
-    demoAnimationToBank();
+    // Generar posición aleatoria para el nivel actual
+    if (!window.MemoryMatrixLevels) {
+        console.error('❌ Sistema de niveles no cargado');
+        return;
+    }
+
+    currentPosition = window.MemoryMatrixLevels.generateRandomPosition(currentLevel);
+
+    console.log(`👁️ Memoriza ${levelConfig.pieceCount} piezas en ${levelConfig.memorizationTime/1000}s`);
+
+    // Mostrar posición a memorizar
+    showMemorizationPhase(levelConfig);
+}
+
+/**
+ * Fase 1: Mostrar posición para memorizar
+ */
+function showMemorizationPhase(levelConfig) {
+    console.log('👁️ FASE 1: Memorización');
+
+    updateStatus(`Nivel ${currentLevel} (${successfulAttempts}/${levelConfig.attemptsRequired}) - Intento ${currentAttempt} - ¡Memoriza!`);
+
+    // Colocar todas las piezas en el tablero
+    currentPosition.forEach(({ square, piece }) => {
+        showPiece(square, piece);
+    });
+
+    console.log(`⏰ Tienes ${levelConfig.memorizationTime/1000} segundos para memorizar`);
+
+    // Después del tiempo de memorización, ocultar piezas
+    setTimeout(() => {
+        hidePiecesPhase(levelConfig);
+    }, levelConfig.memorizationTime);
+}
+
+/**
+ * Fase 2: Ocultar piezas (vuelan al banco)
+ * Solo oculta las piezas indicadas según el intento actual
+ */
+function hidePiecesPhase(levelConfig) {
+    console.log('✈️ FASE 2: Ocultando piezas');
+
+    const { hidePiecesWithAnimation } = window.ChessGameLibrary.PieceAnimations;
+
+    // Determinar qué piezas ocultar según el intento
+    const piecesToHide = window.MemoryMatrixLevels.getPiecesToHide(
+        currentLevel,
+        currentAttempt,
+        currentPosition
+    );
+
+    const hideCount = piecesToHide.length;
+    const totalCount = currentPosition.length;
+    const remainingPieces = totalCount - hideCount;
+
+    if (remainingPieces > 0) {
+        updateStatus(`¡${hideCount} pieza${hideCount > 1 ? 's' : ''} al banco! ${remainingPieces} pieza${remainingPieces > 1 ? 's quedan' : ' queda'} de referencia`);
+    } else {
+        updateStatus('¡Todas las piezas al banco! Reconstruye la posición...');
+    }
+
+    // Obtener casillas de las piezas a ocultar
+    const squares = piecesToHide.map(pos => pos.square);
+
+    // Animar piezas al banco
+    hidePiecesWithAnimation(squares, {
+        stagger: 150,
+        duration: 600,
+        onComplete: () => {
+            startSolvingPhase(piecesToHide);
+        }
+    });
+}
+
+/**
+ * Fase 3: Jugador reconstruye la posición
+ * @param {Array} piecesToPlace - Piezas que debe colocar el jugador
+ */
+function startSolvingPhase(piecesToPlace) {
+    console.log('🎮 FASE 3: Reconstrucción');
+
+    gameState = 'solving';
+    isAnimating = false;
+
+    const pieceCount = piecesToPlace.length;
+    updateStatus(`Arrastra ${pieceCount > 1 ? `las ${pieceCount} piezas` : 'la pieza'} del banco al tablero`);
+
+    console.log('✅ Listo para drag & drop');
+}
+
+/**
+ * Valida si la posición del jugador es correcta
+ * Solo valida las piezas que fueron ocultadas
+ */
+function validatePosition() {
+    console.log('🔍 Validando posición...');
+
+    // Obtener piezas que fueron ocultadas (las que el jugador debía colocar)
+    const piecesToValidate = window.MemoryMatrixLevels.getPiecesToHide(
+        currentLevel,
+        currentAttempt,
+        currentPosition
+    );
+
+    if (placedPieces.length !== piecesToValidate.length) {
+        console.log(`⚠️ Faltan piezas: ${placedPieces.length}/${piecesToValidate.length}`);
+        return false;
+    }
+
+    // Convertir a Maps para comparar
+    const correctMap = new Map(piecesToValidate.map(p => [p.square, p.piece]));
+    const playerMap = new Map(placedPieces.map(p => [p.square, p.piece]));
+
+    let correctCount = 0;
+    const incorrectPieces = [];
+
+    for (const [square, piece] of correctMap) {
+        if (playerMap.get(square) === piece) {
+            correctCount++;
+        } else {
+            incorrectPieces.push({
+                square,
+                expected: piece,
+                actual: playerMap.get(square) || 'vacío'
+            });
+        }
+    }
+
+    const isComplete = correctCount === piecesToValidate.length;
+
+    console.log(`✓ ${correctCount}/${piecesToValidate.length} piezas correctas`);
+
+    if (isComplete) {
+        onAttemptSuccess();
+    } else {
+        onAttemptFailed(incorrectPieces);
+    }
+
+    return isComplete;
+}
+
+/**
+ * Intento exitoso
+ */
+function onAttemptSuccess() {
+    console.log('✅ ¡Intento correcto!');
+
+    successfulAttempts++;
+    gameState = 'completed';
+
+    const levelConfig = window.MemoryMatrixLevels.getLevelConfig(currentLevel);
+
+    updateStatus(`✅ ¡Correcto! (${successfulAttempts}/${levelConfig.attemptsRequired})`);
+
+    setTimeout(() => {
+        if (successfulAttempts >= levelConfig.attemptsRequired) {
+            // Nivel completado
+            onLevelComplete();
+        } else {
+            // Siguiente intento en el mismo nivel
+            currentAttempt++;
+            updateStatus(`¡Bien! Presiona COMENZAR para el intento ${currentAttempt}`);
+
+            const btnStart = document.getElementById('btnStart');
+            if (btnStart) {
+                btnStart.classList.remove('disabled');
+                btnStart.style.opacity = '1';
+                btnStart.style.cursor = 'pointer';
+                btnStart.textContent = 'Siguiente Intento';
+            }
+
+            gameState = 'idle';
+        }
+    }, 1500);
+}
+
+/**
+ * Intento fallido
+ */
+function onAttemptFailed(incorrectPieces) {
+    console.log('❌ Intento incorrecto');
+
+    gameState = 'failed';
+
+    // Mostrar qué está mal
+    incorrectPieces.forEach(({ square, expected, actual }) => {
+        const expectedName = getPieceName(expected);
+        console.log(`❌ ${square}: esperaba ${expectedName}, colocaste ${actual !== 'vacío' ? getPieceName(actual) : 'vacío'}`);
+    });
+
+    const levelConfig = window.MemoryMatrixLevels.getLevelConfig(currentLevel);
+
+    updateStatus(`❌ Incorrecto. Intenta de nuevo (${successfulAttempts}/${levelConfig.attemptsRequired} correctos)`);
+
+    setTimeout(() => {
+        // Siguiente intento (no se incrementa successfulAttempts)
+        currentAttempt++;
+        updateStatus(`Intenta de nuevo. Presiona COMENZAR`);
+
+        const btnStart = document.getElementById('btnStart');
+        if (btnStart) {
+            btnStart.classList.remove('disabled');
+            btnStart.style.opacity = '1';
+            btnStart.style.cursor = 'pointer';
+            btnStart.textContent = 'Intentar de Nuevo';
+        }
+
+        gameState = 'idle';
+    }, 2500);
+}
+
+/**
+ * Nivel completado - avanza al siguiente
+ */
+function onLevelComplete() {
+    console.log('🎉 ¡NIVEL COMPLETADO!');
+
+    gameState = 'completed';
+
+    const levelConfig = window.MemoryMatrixLevels.getLevelConfig(currentLevel);
+
+    updateStatus(`🎉 ¡Nivel ${currentLevel}: ${levelConfig.name} COMPLETADO!`);
+
+    // Reset para el siguiente nivel
+    setTimeout(() => {
+        currentLevel++;
+        currentAttempt = 1;
+        successfulAttempts = 0;
+
+        const totalLevels = window.MemoryMatrixLevels.getTotalLevels();
+
+        if (currentLevel > totalLevels) {
+            // Juego completado
+            updateStatus('🏆 ¡FELICIDADES! Completaste todos los niveles');
+            currentLevel = 1; // Volver al nivel 1
+            currentAttempt = 1;
+            successfulAttempts = 0;
+        } else {
+            const nextLevel = window.MemoryMatrixLevels.getLevelConfig(currentLevel);
+            updateStatus(`Siguiente: Nivel ${currentLevel} - ${nextLevel.name}. Presiona COMENZAR`);
+        }
+
+        // Re-habilitar botón
+        const btnStart = document.getElementById('btnStart');
+        if (btnStart) {
+            btnStart.classList.remove('disabled');
+            btnStart.style.opacity = '1';
+            btnStart.style.cursor = 'pointer';
+            btnStart.textContent = currentLevel <= totalLevels ? 'Siguiente Nivel' : 'Comenzar';
+        }
+
+        gameState = 'idle';
+    }, 3000);
 }
 
 /**
@@ -710,13 +977,39 @@ function initDragAndDrop() {
         onPiecePlaced: (piece, square) => {
             console.log(`✅ Pieza colocada: ${piece} en ${square}`);
 
-            // Mostrar feedback con nombre legible
+            // Registrar pieza colocada
+            placedPieces.push({ square, piece });
+
+            // Calcular cuántas piezas faltan (solo las que fueron ocultadas)
+            const piecesToPlace = window.MemoryMatrixLevels.getPiecesToHide(
+                currentLevel,
+                currentAttempt,
+                currentPosition
+            );
+
             const pieceName = getPieceName(piece);
-            updateStatus(`✓ ${pieceName} colocado en ${square.toUpperCase()}`);
+            const remaining = piecesToPlace.length - placedPieces.length;
+
+            if (remaining > 0) {
+                updateStatus(`✓ ${pieceName} en ${square.toUpperCase()} - Faltan ${remaining} pieza${remaining > 1 ? 's' : ''}`);
+            } else {
+                updateStatus(`✓ ${pieceName} en ${square.toUpperCase()} - ¡Validando...!`);
+
+                // Validar automáticamente cuando se colocan todas las piezas
+                setTimeout(() => {
+                    validatePosition();
+                }, 500);
+            }
         },
 
         // Validación: verificar si se puede colocar la pieza
         canPlacePiece: (piece, square) => {
+            // Solo permitir durante la fase de resolución
+            if (gameState !== 'solving') {
+                updateStatus('⚠️ Espera a que comience la fase de resolución');
+                return false;
+            }
+
             // Verificar que no haya pieza en la casilla
             const squareElement = document.querySelector(`[data-square="${square}"]`);
             const hasPiece = squareElement?.querySelector('.piece');
