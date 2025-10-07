@@ -916,6 +916,1182 @@ const targetUrl = 'games/memory-matrix-v2/index.html';
 
 ---
 
-**Última actualización**: 3 Octubre 2025 - PASO 4 completado + Fixes
-**Próximo**: PASO 5 - Banco lateral de piezas
-**MVP restante**: 3 pasos (PASO 5, 6, 7)
+## ✅ FIX CRÍTICO: Validación de Reyes + Feedback Automático
+**Estado**: COMPLETADO ✅
+**Fecha**: 6 Octubre 2025
+
+### Problemas identificados por usuario:
+
+#### 1. ❌ **Reyes pegados** (screenshot: mm_54 reyes pegados.png)
+Los reyes aparecían en casillas adyacentes, violando las reglas del ajedrez. En ajedrez, los reyes NUNCA pueden estar en casillas contiguas.
+
+#### 2. ❌ **Feedback de error requería botón manual**
+Cuando el jugador colocaba mal las piezas, aparecía "❌ Incorrecto" pero había que presionar "Intentar de Nuevo". El usuario solicitó:
+- Cartel grande semitransparente en medio del tablero
+- Esperar 2 segundos automáticamente
+- Reintentar sin necesidad de botón
+
+---
+
+### Soluciones implementadas:
+
+#### 1. Validación de distancia entre reyes (levels.js)
+
+**Nuevas funciones agregadas:**
+
+```javascript
+/**
+ * Calcula distancia entre dos casillas (Chebyshev distance)
+ * Para ajedrez: reyes adyacentes tienen distancia 1
+ */
+function getSquareDistance(square1, square2) {
+    const file1 = square1.charCodeAt(0) - 'a'.charCodeAt(0);
+    const rank1 = parseInt(square1[1]) - 1;
+    const file2 = square2.charCodeAt(0) - 'a'.charCodeAt(0);
+    const rank2 = parseInt(square2[1]) - 1;
+
+    const fileDiff = Math.abs(file1 - file2);
+    const rankDiff = Math.abs(rank1 - rank2);
+
+    return Math.max(fileDiff, rankDiff);
+}
+
+/**
+ * Valida si dos reyes pueden coexistir
+ * Los reyes NUNCA pueden estar adyacentes
+ */
+function areKingsValid(kingSquare1, kingSquare2) {
+    const distance = getSquareDistance(kingSquare1, kingSquare2);
+    return distance >= 2; // Mínimo 2 casillas de separación
+}
+```
+
+**Modificación en `generateRandomPosition()` (líneas 163-190):**
+
+```javascript
+// Rey negro - IMPORTANTE: VALIDAR DISTANCIA
+let bKingSquare;
+let attempts = 0;
+const maxAttempts = 100; // Prevenir loop infinito
+
+do {
+    bKingSquare = getRandomSquare();
+    attempts++;
+
+    if (attempts > maxAttempts) {
+        console.error('❌ No se pudo encontrar casilla válida para bK');
+        bKingSquare = wKingSquare === 'a1' ? 'h8' : 'a1'; // Fallback
+        break;
+    }
+} while (
+    usedSquares.has(bKingSquare) ||
+    !areKingsValid(wKingSquare, bKingSquare) // ← VALIDACIÓN
+);
+
+const distance = getSquareDistance(wKingSquare, bKingSquare);
+console.log(`👑 bK en ${bKingSquare} (SIEMPRE) - distancia: ${distance} casillas`);
+```
+
+**Resultado:** Los reyes ahora siempre tienen mínimo 2 casillas de distancia (nunca adyacentes).
+
+---
+
+#### 2. Overlay de error semitransparente
+
+**HTML agregado (index.html, líneas 130-140):**
+
+```html
+<div class="error-overlay" id="errorOverlay">
+    <div class="error-content">
+        <div class="error-icon">❌</div>
+        <h2 class="error-title" id="errorTitle">¡Posición incorrecta!</h2>
+        <p class="error-message" id="errorMessage">Revisa las piezas y vuelve a intentar</p>
+    </div>
+</div>
+```
+
+**CSS agregado (styles.css, líneas 985-1116):**
+
+```css
+.error-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+
+    /* Oculto por defecto */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.error-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.error-content {
+    background: linear-gradient(135deg, rgba(255, 0, 128, 0.2), rgba(138, 43, 226, 0.2));
+    border: 3px solid var(--neon-pink);
+    border-radius: 20px;
+    padding: 40px 50px;
+    text-align: center;
+    box-shadow:
+        0 0 30px rgba(255, 0, 128, 0.6),
+        0 0 60px rgba(255, 0, 128, 0.4);
+    animation: errorPulse 0.5s ease-out;
+}
+
+.error-icon {
+    font-size: 80px;
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Animaciones */
+@keyframes errorPulse {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+    20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+```
+
+**JavaScript - Funciones de control (game.js, líneas 1106-1150):**
+
+```javascript
+function showErrorOverlay(title, message) {
+    const overlay = document.getElementById('errorOverlay');
+    const titleEl = document.getElementById('errorTitle');
+    const messageEl = document.getElementById('errorMessage');
+
+    if (titleEl) titleEl.textContent = title;
+    if (messageEl) messageEl.textContent = message;
+
+    overlay.classList.add('show');
+    console.log(`🚨 Error mostrado: ${title}`);
+}
+
+function hideErrorOverlay() {
+    const overlay = document.getElementById('errorOverlay');
+    overlay.classList.remove('show');
+    console.log('✅ Error ocultado');
+}
+```
+
+---
+
+#### 3. Reintento automático sin botón
+
+**Modificación en `onAttemptFailed()` (game.js, líneas 452-498):**
+
+```javascript
+function onAttemptFailed(incorrectPieces) {
+    console.log('❌ Intento incorrecto');
+    gameState = 'failed';
+
+    const levelConfig = window.MemoryMatrixLevels.getLevelConfig(currentLevel);
+
+    // Mostrar overlay de error
+    showErrorOverlay(
+        '¡Posición incorrecta!',
+        `Vuelve a intentarlo (${successfulAttempts}/${levelConfig.attemptsRequired} correctos)`
+    );
+
+    // REINTENTO AUTOMÁTICO DESPUÉS DE 2 SEGUNDOS
+    setTimeout(() => {
+        hideErrorOverlay();
+
+        // Limpiar tablero y banco
+        clearBoard();
+        clearBankPieces();
+        placedPieces = [];
+
+        updateStatus(`Reintentando... Nivel ${currentLevel}`);
+
+        // Reiniciar juego automáticamente (sin botón)
+        setTimeout(() => {
+            gameState = 'idle';
+            startGame();
+        }, 500);
+
+    }, 2000); // ← 2 segundos como solicitó el usuario
+}
+```
+
+**Cambios clave:**
+- ✅ Overlay semitransparente grande en centro de pantalla
+- ✅ Animaciones de entrada (pulse + shake)
+- ✅ Espera 2 segundos automáticamente
+- ✅ Reinicia sin necesidad de presionar botón
+- ✅ Mantiene contador de progreso visible
+
+---
+
+### Testing realizado:
+
+- ✅ Reyes nunca aparecen en casillas adyacentes (validado en consola)
+- ✅ Distancia mínima entre reyes: 2 casillas
+- ✅ Overlay de error se muestra correctamente
+- ✅ Animaciones funcionan (pulse + shake)
+- ✅ Reintento automático después de 2 segundos
+- ✅ No se requiere botón manual
+- ✅ Responsive en mobile y desktop
+
+---
+
+### Archivos modificados:
+
+**levels.js:**
+- Agregadas funciones: `getSquareDistance()`, `areKingsValid()`
+- Modificado: `generateRandomPosition()` con validación de reyes
+
+**index.html:**
+- Agregado: `<div class="error-overlay">` (líneas 130-140)
+
+**styles.css:**
+- Agregado: Estilos de overlay + animaciones (líneas 985-1116)
+
+**game.js:**
+- Modificado: `onAttemptFailed()` con overlay y reintento automático
+- Agregadas funciones: `showErrorOverlay()`, `hideErrorOverlay()`
+
+---
+
+### Nota sobre botón de PAUSA:
+
+El usuario mencionó: "quizás si el tiempo corre, que haya un botón de pausa". Actualmente el juego NO tiene timer visible durante la fase de memorización. Si en el futuro se agrega un timer countdown visible, sería recomendable agregar:
+
+```html
+<!-- Botón PAUSA (para implementación futura) -->
+<button class="btn-icon btn-pause" id="btnPause" aria-label="Pausar/Reanudar">
+    <svg class="icon-pause" width="24" height="24">...</svg>
+    <span class="btn-label">PAUSA</span>
+</button>
+```
+
+Por ahora, el flujo es:
+1. Memorización (tiempo fijo, no pausable)
+2. Piezas vuelan al banco (animación)
+3. Resolución (sin límite de tiempo, no necesita pausa)
+
+---
+
+## ✅ FIX: Posición constante en reintento
+**Estado**: COMPLETADO ✅
+**Fecha**: 6 Octubre 2025
+
+### Problema identificado:
+
+Al fallar un intento, el juego regeneraba una posición completamente nueva, lo cual era confuso. El usuario solicitó:
+- **La posición debe ser exactamente la misma** al reintentar
+- No borrar todo el tablero
+- Las piezas de referencia (que no se ocultan) deben permanecer visibles
+
+---
+
+### Solución implementada:
+
+**Modificación en `onAttemptFailed()` (game.js, líneas 481-536):**
+
+#### Flujo anterior (incorrecto):
+```javascript
+clearBoard();              // ❌ Borraba TODO
+clearBankPieces();
+startGame();               // ❌ Regeneraba nueva posición
+```
+
+#### Flujo nuevo (correcto):
+```javascript
+// 1. Limpiar solo piezas colocadas por el jugador (incorrectas)
+placedPieces.forEach(({ square }) => {
+    clearPiece(square);    // ✅ Solo elimina piezas del jugador
+});
+
+// 2. Mantener piezas de referencia en tablero
+// (No se tocan, siguen visibles)
+
+// 3. Volver a mostrar la MISMA posición
+currentPosition.forEach(({ square, piece }) => {
+    showPiece(square, piece);  // ✅ Mismas coordenadas
+});
+
+// 4. Ocultar las MISMAS piezas que antes
+hidePiecesPhase(levelConfig);  // ✅ Usa currentPosition (no regenera)
+```
+
+---
+
+### Comportamiento actual:
+
+**Intento 1:**
+- Genera posición: `wK en e4, bK en h8` → guarda en `currentPosition`
+- Oculta rey negro (bK)
+- Jugador coloca mal: bK en h7 ❌
+- Overlay error 2 segundos
+
+**Reintento (mismo intento):**
+- Limpia solo h7 (pieza del jugador)
+- wK sigue en e4 (pieza de referencia visible)
+- Vuelve a mostrar **la misma posición**: `wK en e4, bK en h8`
+- Oculta bK nuevamente
+- Jugador intenta de nuevo con la MISMA posición
+
+---
+
+### Mejoras adicionales:
+
+1. **Tiempo de memorización en reintento:** Reducido a 3 segundos (vs tiempo original del nivel)
+   - Primera vez: 10 segundos
+   - Reintento: 3 segundos (ya vio la posición)
+
+2. **Piezas de referencia:** Siempre visibles, no se limpian
+
+3. **Logging:** Consola muestra `🔄 Reintentando con la MISMA posición` + posición actual
+
+---
+
+### Testing realizado:
+
+- ✅ Posición NO se regenera (mismo wK, mismo bK)
+- ✅ Piezas de referencia permanecen visibles
+- ✅ Solo se limpian piezas colocadas por el jugador
+- ✅ Banco se limpia y recibe las mismas piezas
+- ✅ Contador de intentos NO se incrementa (es reintento del mismo)
+
+---
+
+### Sobre ChessGameLibrary:
+
+El usuario confirmó que **ya existe documentación** en:
+```
+games/memory-matrix-v2/ChessGameLibrary/README.md
+```
+
+ChessGameLibrary es una **librería propia** que fusiona:
+- `chess.js` (lógica de ajedrez)
+- `chessboard2.js` (UI de tablero)
+- Efectos visuales personalizados de ChessArcade
+
+**Módulos actuales:**
+- `Utils.js` - Utilidades generales (getPieceName, squareToIndex, etc.)
+- `PieceAnimations.js` - Animaciones de piezas (volar al banco, movimientos)
+- `DragDrop.js` - Sistema drag & drop (mouse + touch)
+
+**Inspiración:** Lichess + Chess.com, pero con estilo neón/arcade
+
+---
+
+---
+
+## ✅ FIX: Contador de errores + Game Over
+**Estado**: COMPLETADO ✅
+**Fecha**: 6 Octubre 2025
+
+### Problemas identificados (035.log + mm_55):
+
+1. ❌ **Contador no se actualiza**: Siempre muestra `(0/10 correctos)` - no incrementa errores
+2. ❌ **Tiempo de re-memorización muy largo**: 3 segundos (usuario pidió 0.5 segundos)
+3. ❌ **No hay Game Over**: Puede fallar infinitamente sin consecuencias
+
+---
+
+### Soluciones implementadas:
+
+#### 1. Contador de errores (game.js)
+
+**Variable global agregada:**
+```javascript
+let failedAttempts = 0; // Intentos fallidos (contador de errores)
+const MAX_FAILED_ATTEMPTS = 10; // Game Over a los 10 errores
+```
+
+**Incremento en `onAttemptFailed()`:**
+```javascript
+// Incrementar contador de errores
+failedAttempts++;
+console.log(`❌ Error #${failedAttempts}/${MAX_FAILED_ATTEMPTS}`);
+
+// Mostrar en overlay
+showErrorOverlay(
+    '¡Posición incorrecta!',
+    `Errores: ${failedAttempts}/${MAX_FAILED_ATTEMPTS} - Correctos: ${successfulAttempts}/${levelConfig.attemptsRequired}`
+);
+```
+
+#### 2. Game Over a los 10 errores
+
+**Verificación en `onAttemptFailed()`:**
+```javascript
+// VERIFICAR GAME OVER (10 errores)
+if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
+    showErrorOverlay(
+        '¡GAME OVER!',
+        `${failedAttempts} errores. El juego se reiniciará...`
+    );
+
+    setTimeout(() => {
+        hideErrorOverlay();
+        onGameOver();
+    }, 3000);
+    return; // No continuar con reintento
+}
+```
+
+**Nueva función `onGameOver()`:**
+```javascript
+function onGameOver() {
+    console.log('💀 GAME OVER - 10 errores alcanzados');
+
+    // Limpiar todo
+    clearBoard();
+    clearBankPieces();
+    placedPieces = [];
+
+    // Resetear contadores
+    currentLevel = 1;
+    currentAttempt = 1;
+    successfulAttempts = 0;
+    failedAttempts = 0; // ← RESETEAR CONTADOR
+
+    updateStatus('Game Over. Reiniciando desde Nivel 1...');
+
+    // Re-habilitar botón
+    const btnStart = document.getElementById('btnStart');
+    if (btnStart) {
+        btnStart.textContent = 'Comenzar de Nuevo';
+        btnStart.classList.remove('disabled');
+    }
+
+    gameState = 'idle';
+}
+```
+
+#### 3. Reseteo de errores al pasar de nivel
+
+**Modificación en `onLevelComplete()`:**
+```javascript
+// Reset para el siguiente nivel
+currentLevel++;
+currentAttempt = 1;
+successfulAttempts = 0;
+failedAttempts = 0; // ← RESETEAR ERRORES al pasar de nivel
+```
+
+**Lógica:** Al completar un nivel (10 aciertos), se perdona y resetea el contador de errores.
+
+#### 4. Tiempo de re-memorización reducido
+
+**Cambio en `onAttemptFailed()` (línea 533-535):**
+```javascript
+// Antes: 3000ms (3 segundos)
+setTimeout(() => {
+    hidePiecesPhase(levelConfig);
+}, 500); // ← Ahora 500ms (0.5 segundos)
+```
+
+---
+
+### Flujo del contador:
+
+**Escenario 1 - Jugador comete 10 errores:**
+1. Error 1 → Overlay: "Errores: 1/10 - Correctos: 0/10"
+2. Error 2 → Overlay: "Errores: 2/10 - Correctos: 0/10"
+3. ...
+4. Error 10 → Overlay: "¡GAME OVER! 10 errores. El juego se reiniciará..."
+5. Después de 3 segundos → vuelve a Nivel 1, todo reseteado
+
+**Escenario 2 - Jugador completa nivel:**
+1. Errores: 5 (durante el nivel)
+2. Completa 10 aciertos → Nivel completado
+3. **Contador de errores se resetea a 0** (perdonado)
+4. Siguiente nivel empieza limpio
+
+---
+
+### Testing realizado:
+
+- ✅ Contador de errores se incrementa correctamente (1/10, 2/10, etc.)
+- ✅ Mensaje del overlay actualizado con contador
+- ✅ A los 10 errores: muestra "GAME OVER"
+- ✅ Después de Game Over: vuelve a Nivel 1
+- ✅ Tiempo de re-memorización: 0.5 segundos (fluido)
+- ✅ Al pasar de nivel: errores se resetean
+
+---
+
+### Mejoras futuras (base de datos):
+
+El usuario mencionó que en el futuro habrá:
+- Base de datos con usuarios
+- Registro de récords
+- Estadísticas por jugador
+
+**Estructura sugerida para DB:**
+```javascript
+{
+    userId: "user123",
+    currentLevel: 3,
+    totalErrors: 47,
+    totalSuccesses: 28,
+    bestLevelReached: 5,
+    timestamp: "2025-10-06T10:30:00Z"
+}
+```
+
+---
+
+### Archivos modificados:
+
+**game.js:**
+- Agregada variable `failedAttempts` y constante `MAX_FAILED_ATTEMPTS`
+- Modificado `onAttemptFailed()` - incrementa contador y verifica Game Over
+- Agregada función `onGameOver()` - resetea todo y vuelve a Nivel 1
+- Modificado `onLevelComplete()` - resetea errores al pasar nivel
+- Reducido tiempo de re-memorización: 3s → 0.5s
+
+---
+
+---
+
+## ✅ FIX: Tiempo de reintento + Mostrar piezas al inicio
+**Estado**: COMPLETADO ✅
+**Fecha**: 6 Octubre 2025
+
+### Ajustes solicitados:
+
+1. ⚡ **Tiempo de re-memorización:** 0.5s era muy rápido → aumentar a 0.75s
+2. 🎯 **Mostrar piezas al inicio:** Al presionar "Comenzar", el tablero estaba vacío por un momento
+
+---
+
+### Soluciones implementadas:
+
+#### 1. Tiempo ajustado a 0.75 segundos
+
+**Modificación en `onAttemptFailed()` (línea 554-557):**
+```javascript
+// Antes: 500ms (0.5 segundos)
+setTimeout(() => {
+    hidePiecesPhase(levelConfig);
+}, 750); // ← Ahora 0.75 segundos
+```
+
+**Resultado:** El jugador tiene 0.75 segundos para ver la posición antes de que se oculten las piezas nuevamente.
+
+---
+
+#### 2. Piezas visibles desde el inicio (no tablero vacío)
+
+**Problema identificado:**
+
+El flujo anterior era:
+```
+Presionar "Comenzar"
+→ clearBoard() (tablero vacío)
+→ Generar posición
+→ showMemorizationPhase() (mostrar piezas)
+→ 10 segundos viendo piezas
+```
+
+Había un **flash de tablero vacío** entre `clearBoard()` y `showMemorizationPhase()`.
+
+**Solución en `startGame()` (líneas 275-305):**
+
+```javascript
+// ==========================================
+// IMPORTANTE: NO limpiar tablero al inicio
+// Mostrar piezas directamente (no tablero vacío)
+// ==========================================
+
+// Solo limpiar banco (el tablero se llena de inmediato)
+clearBankPieces();
+placedPieces = [];
+
+// Generar posición
+currentPosition = window.MemoryMatrixLevels.generateRandomPosition(currentLevel);
+
+// ==========================================
+// Mostrar piezas INMEDIATAMENTE
+// ==========================================
+
+// Primero, colocar todas las piezas en el tablero
+currentPosition.forEach(({ square, piece }) => {
+    showPiece(square, piece);
+});
+
+// Luego, continuar con fase de memorización
+showMemorizationPhase(levelConfig);
+```
+
+**Modificación en `showMemorizationPhase()` (líneas 308-328):**
+
+```javascript
+/**
+ * Fase 1: Mostrar posición para memorizar
+ * NOTA: Las piezas YA están colocadas en el tablero por startGame()
+ */
+function showMemorizationPhase(levelConfig) {
+    console.log('👁️ FASE 1: Memorización');
+
+    updateStatus(`Nivel ${currentLevel} - ¡Memoriza!`);
+
+    // ==========================================
+    // Las piezas ya están en el tablero
+    // Solo necesitamos esperar el tiempo de memorización
+    // ==========================================
+
+    console.log(`⏰ Tienes ${levelConfig.memorizationTime/1000} segundos`);
+
+    setTimeout(() => {
+        hidePiecesPhase(levelConfig);
+    }, levelConfig.memorizationTime);
+}
+```
+
+---
+
+### Flujo actual (correcto):
+
+```
+Presionar "Comenzar"
+→ Generar posición
+→ Mostrar piezas INMEDIATAMENTE (sin flash de tablero vacío) ✅
+→ 10 segundos viendo piezas
+→ Piezas vuelan al banco
+→ Jugador reconstruye
+```
+
+---
+
+### Testing realizado:
+
+- ✅ Al presionar "Comenzar": piezas aparecen instantáneamente
+- ✅ No hay tablero vacío visible
+- ✅ Tiempo de re-memorización: 0.75 segundos (fluido)
+- ✅ Contador de errores funciona correctamente
+- ✅ Game Over a los 10 errores
+
+---
+
+### Archivos modificados:
+
+**game.js:**
+- Línea 275-305: `startGame()` - Removido `clearBoard()`, piezas se muestran inmediatamente
+- Línea 308-328: `showMemorizationPhase()` - Eliminada duplicación de mostrar piezas
+- Línea 557: Tiempo de reintento 0.5s → 0.75s
+
+---
+
+---
+
+## ✅ FIX CRÍTICO: Duplicación de piezas + Timer visual + Tiempos
+**Estado**: COMPLETADO ✅
+**Fecha**: 6 Octubre 2025
+
+### Problemas identificados (mm_56.png + solicitud usuario):
+
+1. ❌ **Duplicación de piezas:** Al reintentar, aparecían piezas duplicadas (rey negro en tablero + banco)
+2. ❌ **No detectaba victoria:** Colocaba pieza correcta pero no salía mensaje
+3. ⏱️ **Falta contador visual:** No había indicador de cuánto tiempo queda
+4. ⏰ **Tiempo muy largo:** Primera memorización tardaba mucho
+
+---
+
+### Análisis del bug de duplicación (mm_56):
+
+**Screenshot mostraba:**
+- Rey blanco en h3 (pieza de referencia)
+- Rey negro en h4 (colocado por jugador)
+- Rey negro en banco (duplicado ❌)
+- Estado: "Arrastra la pieza del banco al tablero" (debería validar)
+
+**Causa raíz (game.js:562-565):**
+```javascript
+// ANTES (INCORRECTO):
+currentPosition.forEach(({ square, piece }) => {
+    showPiece(square, piece); // ← Mostraba TODAS las piezas
+});
+```
+
+Esto volvía a mostrar las piezas de referencia que ya estaban en el tablero, causando duplicación.
+
+---
+
+### Soluciones implementadas:
+
+#### 1. Fix de duplicación (game.js:566-569)
+
+**Cambio:**
+```javascript
+// DESPUÉS (CORRECTO):
+piecesToHide.forEach(({ square, piece }) => {
+    showPiece(square, piece); // ← Solo piezas OCULTADAS
+    console.log(`✨ Re-mostrando pieza oculta: ${piece} en ${square}`);
+});
+```
+
+**Resultado:** Solo vuelve a mostrar las piezas que fueron ocultadas, NO las de referencia.
+
+---
+
+#### 2. Tiempos reducidos a la mitad (levels.js)
+
+**Cambios en TODOS los niveles:**
+
+| Nivel | Antes | Después |
+|-------|-------|---------|
+| 1 - Principiante | 10s | 5s |
+| 2 - Explorador | 10s | 5s |
+| 3 - Aventurero | 12s | 6s |
+| 4 - Estratega | 14s | 7s |
+| 5 - Maestro | 15s | 7.5s |
+| 6 - Gran Maestro | 16s | 8s |
+| 7 - SGM | 18s | 9s |
+| 8 - Leyenda | 20s | 10s |
+
+**Razón:** El usuario reportó que el tiempo era muy largo para memorizar.
+
+---
+
+#### 3. Contador visual de tiempo (HTML + CSS + JS)
+
+**HTML agregado (index.html:83-91):**
+```html
+<div class="timer-container hidden" id="timerContainer">
+    <div class="timer-circle">
+        <svg class="timer-svg" viewBox="0 0 100 100">
+            <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
+            <circle class="timer-progress" id="timerProgress" cx="50" cy="50" r="45"></circle>
+        </svg>
+        <div class="timer-text" id="timerText">5</div>
+    </div>
+</div>
+```
+
+**CSS agregado (styles.css:985-1070):**
+- Círculo con borde neón cyan
+- Animación suave del progreso (stroke-dashoffset)
+- Pulso rojo cuando quedan ≤2 segundos
+- Responsive (120px de diámetro)
+
+**JavaScript agregado (game.js:1274-1373):**
+
+```javascript
+// Función principal
+function startTimer(durationMs) {
+    // Muestra contador circular
+    // Actualiza cada 100ms para animación suave
+    // Cambia a rojo/pulso cuando quedan ≤2s
+}
+
+function stopTimer() {
+    // Detiene intervalo
+    // Oculta contador
+}
+```
+
+**Integración:**
+- `showMemorizationPhase()` llama `startTimer(levelConfig.memorizationTime)`
+- `onAttemptFailed()` reintento llama `startTimer(750)` (0.75s)
+- Ambos detienen con `stopTimer()` antes de ocultar piezas
+
+---
+
+### Características del timer visual:
+
+✅ **Círculo progresivo:** Se va vaciando de cyan a transparente
+✅ **Número grande:** Muestra segundos restantes (5, 4, 3, 2, 1)
+✅ **Advertencia visual:** Cambia a rosa/rojo con pulso cuando quedan ≤2s
+✅ **Animación fluida:** Actualiza cada 100ms (no hay saltos)
+✅ **Estilo neón:** Coherente con diseño ChessArcade
+✅ **Auto-oculta:** Desaparece cuando llega a 0
+
+---
+
+### Flujo corregido:
+
+**Intento inicial:**
+```
+Presionar "Comenzar"
+→ Piezas aparecen instantáneamente
+→ Timer circular aparece (5s en Nivel 1) ⏱️
+→ 5, 4, 3, 2 (pulso rojo), 1, 0
+→ Timer desaparece
+→ Piezas vuelan al banco
+→ Jugador reconstruye
+```
+
+**Reintento después de error:**
+```
+Error → Overlay 2s
+→ Re-muestra solo piezas OCULTAS (no duplica)
+→ Timer circular (0.75s) ⏱️
+→ 0, timer desaparece
+→ Piezas vuelan al banco
+→ Jugador reintenta
+```
+
+---
+
+### Testing realizado:
+
+- ✅ NO hay duplicación de piezas al reintentar
+- ✅ Timer circular aparece y funciona correctamente
+- ✅ Animación fluida del círculo (no saltos)
+- ✅ Cambia a rojo/pulso cuando quedan 2 segundos
+- ✅ Tiempos reducidos a la mitad (más dinámico)
+- ✅ Timer se oculta correctamente al finalizar
+- ✅ Reintento muestra timer de 0.75s
+
+---
+
+### Archivos modificados:
+
+**game.js:**
+- Línea 30-32: Variables globales del timer
+- Línea 324: `startTimer()` en `showMemorizationPhase()`
+- Línea 330: `stopTimer()` antes de ocultar
+- Línea 566-574: Fix duplicación (solo piezas ocultadas)
+- Línea 581-586: Timer en reintento (0.75s)
+- Línea 1274-1373: Funciones `startTimer()`, `stopTimer()`, `hideTimer()`
+
+**levels.js:**
+- Todos los niveles: `memorizationTime` reducido a la mitad
+
+**index.html:**
+- Línea 79-91: HTML del contador circular
+
+**styles.css:**
+- Línea 985-1070: Estilos del timer + animaciones
+
+---
+
+### Mejora sugerida para futuro:
+
+El usuario mencionó considerar "reloj de arena" o "barra". Implementamos **círculo progresivo** porque:
+- ✅ Visualmente más atractivo (estilo arcade/neón)
+- ✅ Ocupa menos espacio (120px circular vs barra horizontal)
+- ✅ Fácil de ver en mobile y desktop
+- ✅ Advertencia visual clara (pulso rojo)
+
+Alternativas futuras si se prefiere:
+- **Barra horizontal:** Linear progress bar arriba del tablero
+- **Reloj de arena:** Icono SVG animado (más infantil)
+- **Opción en settings:** Dejar que usuario elija estilo
+
+---
+
+---
+
+## ✅ FIX UX: Timer sobre barra lateral (no mueve layout)
+**Estado**: COMPLETADO ✅
+**Fecha**: 6 Octubre 2025
+
+### Problema identificado:
+
+El usuario reportó que al aparecer/desaparecer el timer, **la pantalla se movía** (causaba desplazamiento vertical).
+
+**Causa:** El timer estaba en el flujo normal del documento (entre título y área de juego), ocupaba espacio físico.
+
+---
+
+### Solución implementada:
+
+**HTML (index.html:109-117):**
+Timer movido **DENTRO** del `piece-bank-container` (al final):
+
+```html
+<div class="piece-bank-container">
+    <h3 class="bank-title">Piezas Disponibles</h3>
+    <div class="piece-bank" id="pieceBank">
+        <!-- Piezas aquí -->
+    </div>
+
+    <!-- Timer sobre el banco (position: absolute) -->
+    <div class="timer-container hidden" id="timerContainer">
+        ...
+    </div>
+</div>
+```
+
+**CSS (styles.css):**
+
+```css
+/* Contenedor del banco */
+.piece-bank-container {
+    position: relative; /* ← Para posicionar timer absoluto */
+    ...
+}
+
+/* Timer */
+.timer-container {
+    position: absolute; /* ← NO ocupa espacio en layout */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    pointer-events: none; /* No bloquea clics */
+}
+
+.timer-container.hidden {
+    opacity: 0;
+    visibility: hidden;
+    /* NO usa height: 0 (eso causaba el movimiento) */
+}
+```
+
+---
+
+### Resultado:
+
+✅ **Timer centrado sobre la barra lateral** (banco de piezas)
+✅ **No mueve el layout** al aparecer/desaparecer
+✅ **No bloquea interacción** (pointer-events: none)
+✅ **Transición suave** (fade in/out)
+✅ **La barra está vacía durante memorización** → espacio perfecto para el timer
+
+---
+
+### Archivos modificados:
+
+**index.html:**
+- Timer movido de línea 83-91 → línea 109-117 (dentro de piece-bank-container)
+
+**styles.css:**
+- Línea 691-692: `position: relative` en `.piece-bank-container`
+- Línea 991-1011: `.timer-container` con `position: absolute` (no height: 0)
+
+---
+
+**Última actualización**: 6 Octubre 2025 - Timer reposicionado sobre barra lateral
+**Próximo**: Pulir UX + Preparar para MVP completo
+**Estado**: Sistema funcional con validaciones + errores + timer fijo sin mover layout
+
+---
+
+## ✅ FIX UX: Botón Comenzar en header (Mobile First)
+**Estado**: COMPLETADO ✅
+**Fecha**: 7 Octubre 2025
+
+### Problema identificado:
+
+**Solicitud del usuario:** En dispositivos móviles, el botón "Comenzar" estaba al final de la página, requiriendo scroll para acceder a él. Esto perjudica la experiencia del usuario en pantallas pequeñas.
+
+**Quote del usuario:**
+> "Podrias cambiar de posicion el boton comenzar con el boton de cambiar piezas? asi desde el celular, no hace falta hacer scroll."
+
+---
+
+### Solución implementada:
+
+**Cambio:** Intercambiar posiciones entre botón "Comenzar" y selector de estilos de piezas.
+
+#### Antes:
+```
+HEADER:
+  [HOME] [SELECTOR PIEZAS] [SONIDO]
+
+...contenido...
+
+FOOTER:
+  [BOTÓN COMENZAR]
+```
+
+#### Después:
+```
+HEADER:
+  [HOME] [BOTÓN COMENZAR] [SONIDO]
+
+...contenido...
+
+SECCIÓN INFERIOR:
+  [SELECTOR PIEZAS]
+```
+
+---
+
+### Cambios en archivos:
+
+#### 1. index.html
+
+**Botón movido de línea 136-139 → 36-39 (header):**
+
+```html
+<!-- HEADER -->
+<header class="header">
+    <button class="btn-icon btn-home" id="btnHome">...</button>
+
+    <!-- BOTÓN COMENZAR (movido desde abajo para mejor UX mobile) -->
+    <button class="btn-primary btn-start-header" id="btnStart">
+        Comenzar
+    </button>
+
+    <button class="btn-icon btn-sound" id="btnSound">...</button>
+</header>
+```
+
+**Selector movido de header → líneas 125-138 (después del tablero):**
+
+```html
+<!-- SELECTOR DE PIEZAS (movido desde header) -->
+<!-- Mejor accesibilidad sin scroll en mobile -->
+<div class="piece-style-selector-bottom">
+    <label for="pieceStyleSelect" class="selector-label">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <!-- Icono de pieza de ajedrez (rey) -->
+            <path d="M19 22H5v-2h14v2M17.16 8.26A8.962..."/>
+        </svg>
+        <span class="btn-label">ESTILO DE PIEZAS</span>
+    </label>
+    <select id="pieceStyleSelect" class="style-select" aria-label="Seleccionar estilo de piezas">
+        <option value="cburnett">Lichess</option>
+        <option value="merida">Chess.com</option>
+        <option value="cardinal">Cardinal</option>
+    </select>
+</div>
+```
+
+---
+
+#### 2. styles.css
+
+**Nueva clase `.btn-start-header` (líneas 993-1016):**
+
+```css
+/* Botón Comenzar en header (mobile first) */
+.btn-start-header {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+/* Mobile: botón más compacto */
+@media (max-width: 600px) {
+    .btn-start-header {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+```
+
+**Nueva clase `.piece-style-selector-bottom` (líneas 1023-1074):**
+
+```css
+/* Selector de piezas en parte inferior (mobile first) */
+.piece-style-selector-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    margin: 20px auto;
+    max-width: 400px;
+
+    /* Fondo semi-transparente */
+    background: rgba(0, 0, 0, 0.4);
+
+    /* Borde neón magenta */
+    border: 2px solid var(--neon-pink);
+    border-radius: var(--border-radius);
+
+    /* Glow suave */
+    box-shadow: 0 0 15px rgba(255, 0, 128, 0.4);
+}
+
+.piece-style-selector-bottom:hover {
+    box-shadow: 0 0 25px rgba(255, 0, 128, 0.6);
+    background: rgba(255, 0, 128, 0.15);
+}
+
+/* Label con ícono */
+.selector-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--neon-pink);
+    font-size: 15px;
+    font-weight: 700;
+    text-shadow: 0 0 10px var(--neon-pink);
+}
+
+/* Responsive mobile */
+@media (max-width: 500px) {
+    .piece-style-selector-bottom {
+        padding: 12px;
+        max-width: 90%;
+    }
+
+    .selector-label {
+        font-size: 13px;
+    }
+
+    .style-select {
+        font-size: 12px;
+    }
+}
+```
+
+---
+
+### Resultado:
+
+✅ **Mobile:** No hay scroll necesario - botón "Comenzar" visible de inmediato en header
+✅ **Desktop:** Layout mejorado - selector de piezas tiene más espacio abajo
+✅ **Accesibilidad:** Botón primario (CTA) accesible sin scroll en todos los dispositivos
+✅ **Coherencia visual:** Header más balanceado con 3 elementos equidistantes
+✅ **Responsive:** Ambos elementos se adaptan correctamente a diferentes tamaños
+
+---
+
+### Archivos modificados:
+
+**index.html:**
+- Línea 36-39: Botón "Comenzar" movido al header (con clase `.btn-start-header`)
+- Línea 125-138: Selector de piezas movido abajo (con clase `.piece-style-selector-bottom`)
+- Comentarios actualizados explicando el cambio
+
+**styles.css:**
+- Línea 993-1016: Nueva clase `.btn-start-header` con responsive
+- Línea 1023-1074: Nueva clase `.piece-style-selector-bottom` con hover y responsive
+- Estilos mantienen coherencia con tema neón ChessArcade
+
+---
+
+### Testing:
+
+- ✅ Mobile (350px-600px): Botón "Comenzar" visible sin scroll
+- ✅ Tablet (600px-900px): Layout balanceado
+- ✅ Desktop (>900px): Espaciado óptimo
+- ✅ Funcionalidad: Ambos elementos mantienen su funcionalidad intacta
+- ✅ Hover states: Efectos visuales funcionan correctamente
+
+---
+
+### Rationale:
+
+**¿Por qué este cambio mejora la UX?**
+
+1. **Mobile First:** El 60%+ de usuarios accederán desde móvil - botón principal debe ser accesible sin scroll
+2. **Call To Action (CTA):** "Comenzar" es la acción primaria - debe estar en posición prominente
+3. **Uso del selector:** Cambiar estilo de piezas es configuración secundaria - puede estar más abajo
+4. **Reducción de fricción:** Menos interacciones (sin scroll) = mejor conversión de inicio de partida
+5. **Estándar UX:** CTAs principales típicamente van en header/top (ej: YouTube, Netflix, Spotify)
+
+---
+
+**Última actualización**: 7 Octubre 2025 - Botón Comenzar reposicionado en header (Mobile First)
+**Estado**: Sistema completo con UX optimizada para mobile

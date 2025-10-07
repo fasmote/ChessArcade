@@ -18,7 +18,7 @@ const LEVELS = [
         description: 'Perfecto para comenzar',
         ageRange: '4-5 años',
         pieceCount: 2,  // 2 reyes (siempre están ambos)
-        memorizationTime: 10000,  // 10 segundos (más generoso)
+        memorizationTime: 5000,  // 5 segundos (mitad del original)
         difficulty: 'easy',
         pieceTypes: ['K', 'Q'],
         allowedColors: ['w', 'b'],
@@ -40,7 +40,7 @@ const LEVELS = [
         description: '¡Vas mejorando!',
         ageRange: '6-7 años',
         pieceCount: 3,
-        memorizationTime: 10000, // 10 segundos
+        memorizationTime: 5000, // 5 segundos
         difficulty: 'easy',
         pieceTypes: ['K', 'Q', 'R'], // Agregar torres
         allowedColors: ['w', 'b']
@@ -53,7 +53,7 @@ const LEVELS = [
         description: 'Buen trabajo',
         ageRange: '8-10 años',
         pieceCount: 4,
-        memorizationTime: 12000, // 12 segundos
+        memorizationTime: 6000, // 6 segundos
         difficulty: 'medium',
         pieceTypes: ['K', 'Q', 'R', 'B'], // Agregar alfiles
         allowedColors: ['w', 'b']
@@ -66,7 +66,7 @@ const LEVELS = [
         description: '¡Impresionante!',
         ageRange: '11-14 años',
         pieceCount: 5,
-        memorizationTime: 14000, // 14 segundos
+        memorizationTime: 7000, // 7 segundos
         difficulty: 'medium',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N'], // Agregar caballos
         allowedColors: ['w', 'b']
@@ -79,7 +79,7 @@ const LEVELS = [
         description: 'Nivel avanzado',
         ageRange: '15+ años',
         pieceCount: 6,
-        memorizationTime: 15000, // 15 segundos
+        memorizationTime: 7500, // 7.5 segundos
         difficulty: 'hard',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'], // Todas las piezas
         allowedColors: ['w', 'b']
@@ -92,7 +92,7 @@ const LEVELS = [
         description: '¡Extraordinario!',
         ageRange: 'Experto',
         pieceCount: 7,
-        memorizationTime: 16000,
+        memorizationTime: 8000,
         difficulty: 'hard',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'],
         allowedColors: ['w', 'b']
@@ -105,7 +105,7 @@ const LEVELS = [
         description: 'Nivel élite',
         ageRange: 'Élite',
         pieceCount: 8,
-        memorizationTime: 18000,
+        memorizationTime: 9000,
         difficulty: 'expert',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'],
         allowedColors: ['w', 'b']
@@ -118,7 +118,7 @@ const LEVELS = [
         description: '¡Increíble memoria!',
         ageRange: 'Leyenda',
         pieceCount: 10,
-        memorizationTime: 20000,
+        memorizationTime: 10000,
         difficulty: 'expert',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'],
         allowedColors: ['w', 'b']
@@ -160,18 +160,34 @@ function generateRandomPosition(levelNumber) {
     });
     console.log(`  👑 wK en ${wKingSquare} (SIEMPRE)`);
 
-    // Rey negro
+    // Rey negro - IMPORTANTE: VALIDAR DISTANCIA
+    // Los reyes NUNCA pueden estar adyacentes (regla de ajedrez)
     let bKingSquare;
+    let attempts = 0;
+    const maxAttempts = 100; // Prevenir loop infinito
+
     do {
         bKingSquare = getRandomSquare();
-    } while (usedSquares.has(bKingSquare));
+        attempts++;
 
+        if (attempts > maxAttempts) {
+            console.error('❌ No se pudo encontrar casilla válida para bK');
+            // Fallback: colocar en esquina opuesta
+            bKingSquare = wKingSquare === 'a1' ? 'h8' : 'a1';
+            break;
+        }
+    } while (
+        usedSquares.has(bKingSquare) ||
+        !areKingsValid(wKingSquare, bKingSquare) // ← VALIDACIÓN DE DISTANCIA
+    );
+
+    const distance = getSquareDistance(wKingSquare, bKingSquare);
     usedSquares.add(bKingSquare);
     position.push({
         square: bKingSquare,
         piece: 'bK'
     });
-    console.log(`  👑 bK en ${bKingSquare} (SIEMPRE)`);
+    console.log(`  👑 bK en ${bKingSquare} (SIEMPRE) - distancia: ${distance} casillas`);
 
     // ============================================
     // PASO 2: Agregar piezas adicionales
@@ -220,6 +236,41 @@ function getRandomSquare() {
     const rank = ranks[Math.floor(Math.random() * ranks.length)];
 
     return file + rank;
+}
+
+/**
+ * Calcula distancia entre dos casillas
+ * IMPORTANTE: Los reyes nunca pueden estar adyacentes en ajedrez
+ * @param {string} square1 - Primera casilla (ej: 'e4')
+ * @param {string} square2 - Segunda casilla (ej: 'e5')
+ * @returns {number} Distancia máxima en filas o columnas (Chebyshev distance)
+ */
+function getSquareDistance(square1, square2) {
+    // Convertir a índices numéricos
+    const file1 = square1.charCodeAt(0) - 'a'.charCodeAt(0); // 0-7
+    const rank1 = parseInt(square1[1]) - 1; // 0-7
+
+    const file2 = square2.charCodeAt(0) - 'a'.charCodeAt(0);
+    const rank2 = parseInt(square2[1]) - 1;
+
+    // Distancia Chebyshev (máximo de diferencias absolutas)
+    // Para ajedrez: reyes adyacentes tienen distancia 1
+    const fileDiff = Math.abs(file1 - file2);
+    const rankDiff = Math.abs(rank1 - rank2);
+
+    return Math.max(fileDiff, rankDiff);
+}
+
+/**
+ * Valida si dos reyes pueden coexistir en estas casillas
+ * Los reyes NUNCA pueden estar en casillas adyacentes
+ * @param {string} kingSquare1 - Casilla del primer rey
+ * @param {string} kingSquare2 - Casilla del segundo rey
+ * @returns {boolean} true si es válido (distancia >= 2)
+ */
+function areKingsValid(kingSquare1, kingSquare2) {
+    const distance = getSquareDistance(kingSquare1, kingSquare2);
+    return distance >= 2; // Mínimo 2 casillas de separación
 }
 
 /**

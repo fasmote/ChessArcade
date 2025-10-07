@@ -19,9 +19,17 @@ let isAnimating = false; // Flag para prevenir clicks durante animación
 let currentLevel = 1; // Nivel actual (1-8)
 let currentAttempt = 1; // Intento actual dentro del nivel (1-10)
 let successfulAttempts = 0; // Intentos exitosos en el nivel actual
+let failedAttempts = 0; // Intentos fallidos (contador de errores)
 let currentPosition = []; // Posición actual a memorizar
 let placedPieces = []; // Piezas que el jugador ha colocado
 let startTime = null; // Tiempo de inicio del intento
+
+// LÍMITE DE ERRORES
+const MAX_FAILED_ATTEMPTS = 10; // Game Over a los 10 errores
+
+// TIMER
+let timerInterval = null; // Intervalo del contador
+const TIMER_CIRCLE_CIRCUMFERENCE = 283; // 2 * PI * 45 (radio del círculo)
 
 // ============================================
 // INICIALIZACIÓN
@@ -268,8 +276,12 @@ function startGame() {
         btnStart.textContent = 'Jugando...';
     }
 
-    // Limpiar tablero y banco
-    clearBoard();
+    // ==========================================
+    // IMPORTANTE: NO limpiar tablero al inicio
+    // Mostrar piezas directamente (no tablero vacío)
+    // ==========================================
+
+    // Solo limpiar banco (el tablero se llena de inmediato)
     clearBankPieces();
     placedPieces = [];
 
@@ -283,27 +295,39 @@ function startGame() {
 
     console.log(`👁️ Memoriza ${levelConfig.pieceCount} piezas en ${levelConfig.memorizationTime/1000}s`);
 
-    // Mostrar posición a memorizar
+    // ==========================================
+    // Mostrar piezas INMEDIATAMENTE (no esperar)
+    // El tablero muestra las piezas desde el inicio
+    // ==========================================
+
+    // Primero, colocar todas las piezas en el tablero
+    currentPosition.forEach(({ square, piece }) => {
+        showPiece(square, piece);
+    });
+
+    // Luego, continuar con fase de memorización
     showMemorizationPhase(levelConfig);
 }
 
 /**
  * Fase 1: Mostrar posición para memorizar
+ * NOTA: Las piezas YA están colocadas en el tablero por startGame()
  */
 function showMemorizationPhase(levelConfig) {
     console.log('👁️ FASE 1: Memorización');
 
     updateStatus(`Nivel ${currentLevel} (${successfulAttempts}/${levelConfig.attemptsRequired}) - Intento ${currentAttempt} - ¡Memoriza!`);
 
-    // Colocar todas las piezas en el tablero
-    currentPosition.forEach(({ square, piece }) => {
-        showPiece(square, piece);
-    });
+    // ==========================================
+    // Iniciar contador visual de tiempo
+    // ==========================================
+    startTimer(levelConfig.memorizationTime);
 
     console.log(`⏰ Tienes ${levelConfig.memorizationTime/1000} segundos para memorizar`);
 
     // Después del tiempo de memorización, ocultar piezas
     setTimeout(() => {
+        stopTimer(); // Detener timer antes de ocultar
         hidePiecesPhase(levelConfig);
     }, levelConfig.memorizationTime);
 }
@@ -450,38 +474,155 @@ function onAttemptSuccess() {
 }
 
 /**
- * Intento fallido
+ * Intento fallido - Muestra overlay y reintenta automáticamente
+ * IMPORTANTE: NO regenera la posición, usa la MISMA
  */
 function onAttemptFailed(incorrectPieces) {
     console.log('❌ Intento incorrecto');
 
     gameState = 'failed';
 
-    // Mostrar qué está mal
+    // Mostrar qué está mal en consola para debugging
     incorrectPieces.forEach(({ square, expected, actual }) => {
         const expectedName = getPieceName(expected);
         console.log(`❌ ${square}: esperaba ${expectedName}, colocaste ${actual !== 'vacío' ? getPieceName(actual) : 'vacío'}`);
     });
 
+    // ==========================================
+    // INCREMENTAR CONTADOR DE ERRORES
+    // ==========================================
+    failedAttempts++;
+    console.log(`❌ Error #${failedAttempts}/${MAX_FAILED_ATTEMPTS}`);
+
     const levelConfig = window.MemoryMatrixLevels.getLevelConfig(currentLevel);
 
-    updateStatus(`❌ Incorrecto. Intenta de nuevo (${successfulAttempts}/${levelConfig.attemptsRequired} correctos)`);
+    // ==========================================
+    // VERIFICAR GAME OVER (10 errores)
+    // ==========================================
+    if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
+        showErrorOverlay(
+            '¡GAME OVER!',
+            `${failedAttempts} errores. El juego se reiniciará...`
+        );
 
+        setTimeout(() => {
+            hideErrorOverlay();
+            onGameOver();
+        }, 3000);
+        return;
+    }
+
+    // ==========================================
+    // MOSTRAR OVERLAY DE ERROR (con contador)
+    // ==========================================
+    showErrorOverlay(
+        '¡Posición incorrecta!',
+        `Errores: ${failedAttempts}/${MAX_FAILED_ATTEMPTS} - Correctos: ${successfulAttempts}/${levelConfig.attemptsRequired}`
+    );
+
+    // ==========================================
+    // REINTENTO AUTOMÁTICO DESPUÉS DE 2 SEGUNDOS
+    // NO REGENERAR - USAR LA MISMA POSICIÓN
+    // ==========================================
     setTimeout(() => {
-        // Siguiente intento (no se incrementa successfulAttempts)
-        currentAttempt++;
-        updateStatus(`Intenta de nuevo. Presiona COMENZAR`);
+        // Ocultar overlay
+        hideErrorOverlay();
 
-        const btnStart = document.getElementById('btnStart');
-        if (btnStart) {
-            btnStart.classList.remove('disabled');
-            btnStart.style.opacity = '1';
-            btnStart.style.cursor = 'pointer';
-            btnStart.textContent = 'Intentar de Nuevo';
-        }
+        // ==========================================
+        // IMPORTANTE: Limpiar solo piezas del jugador
+        // Mantener piezas de referencia en tablero
+        // ==========================================
 
-        gameState = 'idle';
-    }, 2500);
+        // Obtener qué piezas fueron ocultadas (las que el jugador debía colocar)
+        const piecesToHide = window.MemoryMatrixLevels.getPiecesToHide(
+            currentLevel,
+            currentAttempt,
+            currentPosition
+        );
+
+        // Limpiar solo las piezas colocadas por el jugador (incorrectas)
+        placedPieces.forEach(({ square }) => {
+            clearPiece(square);
+        });
+
+        // Limpiar banco
+        clearBankPieces();
+        placedPieces = [];
+
+        // NO incrementar currentAttempt (es el mismo intento, solo reintentar)
+        updateStatus(`Reintentando... Nivel ${currentLevel} (${successfulAttempts}/${levelConfig.attemptsRequired})`);
+
+        // ==========================================
+        // VOLVER A MOSTRAR LA MISMA POSICIÓN
+        // Las piezas de referencia YA están en el tablero (no se limpiaron)
+        // Solo necesitamos volver a mostrar las piezas OCULTAS
+        // ==========================================
+        setTimeout(() => {
+            gameState = 'memorizing';
+            isAnimating = false;
+
+            console.log('🔄 Reintentando con la MISMA posición');
+            console.log(`📍 Posición actual:`, currentPosition);
+
+            // ==========================================
+            // IMPORTANTE: Solo volver a mostrar las piezas que fueron OCULTADAS
+            // Las piezas de referencia ya están en el tablero
+            // ==========================================
+            piecesToHide.forEach(({ square, piece }) => {
+                showPiece(square, piece);
+                console.log(`✨ Re-mostrando pieza oculta: ${piece} en ${square}`);
+            });
+
+            updateStatus(`Nivel ${currentLevel} - ¡Memoriza de nuevo!`);
+
+            // ==========================================
+            // Iniciar timer en reintento (0.75 segundos)
+            // ==========================================
+            startTimer(750);
+
+            // Después de 0.75 segundos, ocultar las MISMAS piezas
+            setTimeout(() => {
+                stopTimer();
+                hidePiecesPhase(levelConfig);
+            }, 750); // 0.75 segundos (el usuario ya vio la posición)
+
+        }, 500);
+
+    }, 2000); // 2 segundos como pediste
+}
+
+/**
+ * Game Over - 10 errores alcanzados
+ * Reinicia el juego desde el nivel 1
+ */
+function onGameOver() {
+    console.log('💀 GAME OVER - 10 errores alcanzados');
+
+    // Limpiar todo
+    clearBoard();
+    clearBankPieces();
+    placedPieces = [];
+
+    // Resetear contadores
+    currentLevel = 1;
+    currentAttempt = 1;
+    successfulAttempts = 0;
+    failedAttempts = 0; // ← RESETEAR CONTADOR DE ERRORES
+
+    updateStatus('Game Over. Reiniciando desde Nivel 1...');
+
+    // Re-habilitar botón
+    const btnStart = document.getElementById('btnStart');
+    if (btnStart) {
+        btnStart.classList.remove('disabled');
+        btnStart.style.opacity = '1';
+        btnStart.style.cursor = 'pointer';
+        btnStart.textContent = 'Comenzar de Nuevo';
+    }
+
+    gameState = 'idle';
+
+    console.log('🔄 Juego reiniciado - Nivel 1');
 }
 
 /**
@@ -501,6 +642,7 @@ function onLevelComplete() {
         currentLevel++;
         currentAttempt = 1;
         successfulAttempts = 0;
+        failedAttempts = 0; // ← RESETEAR ERRORES al pasar de nivel
 
         const totalLevels = window.MemoryMatrixLevels.getTotalLevels();
 
@@ -1089,3 +1231,150 @@ function testEventManual() {
 // Exponer para debugging
 window.testDragDrop = testDragDrop;
 window.testEventManual = testEventManual;
+
+// ============================================
+// OVERLAY DE ERROR
+// ============================================
+
+/**
+ * Muestra overlay de error con mensaje personalizado
+ * @param {string} title - Título del error
+ * @param {string} message - Mensaje descriptivo
+ */
+function showErrorOverlay(title, message) {
+    const overlay = document.getElementById('errorOverlay');
+    const titleEl = document.getElementById('errorTitle');
+    const messageEl = document.getElementById('errorMessage');
+
+    if (!overlay) {
+        console.error('❌ Overlay de error no encontrado');
+        return;
+    }
+
+    // Actualizar textos
+    if (titleEl) titleEl.textContent = title;
+    if (messageEl) messageEl.textContent = message;
+
+    // Mostrar overlay
+    overlay.classList.add('show');
+
+    console.log(`🚨 Error mostrado: ${title} - ${message}`);
+}
+
+/**
+ * Oculta el overlay de error
+ */
+function hideErrorOverlay() {
+    const overlay = document.getElementById('errorOverlay');
+
+    if (!overlay) {
+        console.error('❌ Overlay de error no encontrado');
+        return;
+    }
+
+    // Ocultar overlay
+    overlay.classList.remove('show');
+
+    console.log('✅ Error ocultado');
+}
+
+// ============================================
+// CONTADOR DE TIEMPO (TIMER)
+// ============================================
+
+/**
+ * Inicia el contador visual de tiempo
+ * @param {number} durationMs - Duración en milisegundos
+ */
+function startTimer(durationMs) {
+    const container = document.getElementById('timerContainer');
+    const textEl = document.getElementById('timerText');
+    const progressEl = document.getElementById('timerProgress');
+    const circle = container?.querySelector('.timer-circle');
+
+    if (!container || !textEl || !progressEl) {
+        console.warn('⚠️ Elementos del timer no encontrados');
+        return;
+    }
+
+    // Mostrar container
+    container.classList.remove('hidden');
+
+    const durationSeconds = Math.ceil(durationMs / 1000);
+    let remaining = durationSeconds;
+
+    // Inicializar
+    textEl.textContent = remaining;
+    progressEl.style.strokeDashoffset = '0';
+    circle?.classList.remove('warning');
+
+    console.log(`⏱️ Timer iniciado: ${durationSeconds}s`);
+
+    // Limpiar timer anterior si existe
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+
+    // Actualizar cada 100ms para animación suave
+    const updateInterval = 100;
+    const totalUpdates = durationMs / updateInterval;
+    let currentUpdate = 0;
+
+    timerInterval = setInterval(() => {
+        currentUpdate++;
+        const elapsed = (currentUpdate / totalUpdates) * durationMs;
+        const remainingMs = durationMs - elapsed;
+        const remainingSeconds = Math.ceil(remainingMs / 1000);
+
+        // Actualizar texto solo cuando cambia el segundo
+        if (remainingSeconds !== remaining) {
+            remaining = remainingSeconds;
+            textEl.textContent = remaining;
+
+            // Advertencia cuando quedan 2 segundos o menos
+            if (remaining <= 2 && remaining > 0) {
+                circle?.classList.add('warning');
+            }
+
+            console.log(`⏱️ ${remaining}s restantes`);
+        }
+
+        // Actualizar progreso del círculo
+        const progress = (remainingMs / durationMs);
+        const offset = TIMER_CIRCLE_CIRCUMFERENCE * (1 - progress);
+        progressEl.style.strokeDashoffset = offset.toString();
+
+        // Terminar cuando se acaba el tiempo
+        if (currentUpdate >= totalUpdates) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            hideTimer();
+        }
+    }, updateInterval);
+}
+
+/**
+ * Detiene y oculta el contador
+ */
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    hideTimer();
+}
+
+/**
+ * Oculta el contador
+ */
+function hideTimer() {
+    const container = document.getElementById('timerContainer');
+    const circle = container?.querySelector('.timer-circle');
+
+    if (container) {
+        container.classList.add('hidden');
+        circle?.classList.remove('warning');
+    }
+
+    console.log('⏱️ Timer ocultado');
+}

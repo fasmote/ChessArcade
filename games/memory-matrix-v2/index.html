@@ -33,21 +33,10 @@
                 <span class="btn-label">HOME</span>
             </button>
 
-            <!-- Selector de estilo de piezas -->
-            <div class="piece-style-selector">
-                <label for="pieceStyleSelect" class="selector-label">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <!-- Icono de pieza de ajedrez (rey) -->
-                        <path d="M19 22H5v-2h14v2M17.16 8.26A8.962 8.962 0 0 0 11 6c-2.38 0-4.5.93-6.08 2.45A1.49 1.49 0 0 0 4 9.5V10c0 3.31 2.69 6 6 6h4c3.31 0 6-2.69 6-6v-.5c0-.39-.15-.77-.42-1.06-.09-.09-.17-.17-.26-.24M11 2l-2 5h6l-2-5h-2z"/>
-                    </svg>
-                    <span class="btn-label">PIEZAS</span>
-                </label>
-                <select id="pieceStyleSelect" class="style-select" aria-label="Seleccionar estilo de piezas">
-                    <option value="cburnett">Lichess</option>
-                    <option value="merida">Chess.com</option>
-                    <option value="cardinal">Cardinal</option>
-                </select>
-            </div>
+            <!-- BOTÓN COMENZAR (movido desde abajo para mejor UX mobile) -->
+            <button class="btn-primary btn-start-header" id="btnStart">
+                Comenzar
+            </button>
 
             <!-- Botón SONIDO: Mute/Unmute audio -->
             <button class="btn-icon btn-sound" id="btnSound" aria-label="Activar/desactivar sonido">
@@ -101,6 +90,20 @@
                 <div class="piece-bank" id="pieceBank">
                     <!-- Las piezas se generarán con JavaScript -->
                 </div>
+
+                <!-- ================================================
+                     CONTADOR DE TIEMPO (sobre el banco)
+                     Muestra cuenta regresiva durante memorización
+                     ================================================ -->
+                <div class="timer-container hidden" id="timerContainer">
+                    <div class="timer-circle">
+                        <svg class="timer-svg" viewBox="0 0 100 100">
+                            <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
+                            <circle class="timer-progress" id="timerProgress" cx="50" cy="50" r="45"></circle>
+                        </svg>
+                        <div class="timer-text" id="timerText">5</div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -116,15 +119,36 @@
         </div>
 
         <!-- ==================================================
-             BOTÓN DE ACCIÓN PRINCIPAL
-             "Comenzar" / "Siguiente Nivel" / "Jugar de Nuevo"
+             SELECTOR DE PIEZAS (movido desde header)
+             Mejor accesibilidad sin scroll en mobile
              ================================================== -->
-        <div class="action-section">
-            <button class="btn-primary" id="btnStart">
-                Comenzar
-            </button>
+        <div class="piece-style-selector-bottom">
+            <label for="pieceStyleSelect" class="selector-label">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <!-- Icono de pieza de ajedrez (rey) -->
+                    <path d="M19 22H5v-2h14v2M17.16 8.26A8.962 8.962 0 0 0 11 6c-2.38 0-4.5.93-6.08 2.45A1.49 1.49 0 0 0 4 9.5V10c0 3.31 2.69 6 6 6h4c3.31 0 6-2.69 6-6v-.5c0-.39-.15-.77-.42-1.06-.09-.09-.17-.17-.26-.24M11 2l-2 5h6l-2-5h-2z"/>
+                </svg>
+                <span class="btn-label">ESTILO DE PIEZAS</span>
+            </label>
+            <select id="pieceStyleSelect" class="style-select" aria-label="Seleccionar estilo de piezas">
+                <option value="cburnett">Lichess</option>
+                <option value="merida">Chess.com</option>
+                <option value="cardinal">Cardinal</option>
+            </select>
         </div>
 
+    </div>
+
+    <!-- ==================================================
+         OVERLAY DE ERROR
+         Mensaje grande semitransparente cuando hay error
+         ================================================== -->
+    <div class="error-overlay" id="errorOverlay">
+        <div class="error-content">
+            <div class="error-icon">❌</div>
+            <h2 class="error-title" id="errorTitle">¡Posición incorrecta!</h2>
+            <p class="error-message" id="errorMessage">Revisa las piezas y vuelve a intentar</p>
+        </div>
     </div>
 
     <!-- ==================================================
