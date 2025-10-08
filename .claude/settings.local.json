@@ -1,22 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python:*)",
-      "WebFetch(domain:unpkg.com)",
-      "WebFetch(domain:cdn.jsdelivr.net)",
-      "Bash(start test-lib.html)",
-      "Bash(start index.html)",
-      "Bash(start simple-test.html)",
-      "Bash(start force-test.html)",
-      "WebSearch",
-      "WebFetch(domain:github.com)",
-      "Read(//c/Users/clau/Documents/ChessArcade_backup/**)",
-      "Bash(sed:*)",
-      "Bash(start \"C:\\Users\\clau\\Documents\\Multiajedrez 2025\\games\\memory-matrix\\with-chessboard2\\index.html\")",
-      "Bash(find:*)",
-      "Bash(start:*)",
-      "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\n✨ fix(memory-matrix): UX mobile + validaciones críticas\n\nCambios principales:\n- Botón \"Comenzar\" movido a header (sin scroll en mobile)\n- Selector de piezas reubicado en footer\n- Validación de distancia entre reyes (Chebyshev)\n- Overlay de error automático (2s reintento)\n- Contador de errores + Game Over (10 errores)\n- Timer visual circular con animación neón\n- Fix duplicación de piezas al reintentar\n- Tiempos de memorización reducidos 50%\n- Timer posicionado sobre barra lateral (no mueve layout)\n\nArchivos modificados:\n- index.html: Reordenación de elementos, timer HTML, overlay\n- styles.css: Nuevas clases responsive, animaciones timer/error\n- game.js: Sistema de errores, timer circular, auto-retry\n- levels.js: Validación reyes, tiempos ajustados\n- PROGRESO_SESION.md: 7 fixes documentados\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

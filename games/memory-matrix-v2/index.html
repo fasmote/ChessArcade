@@ -33,9 +33,9 @@
                 <span class="btn-label">HOME</span>
             </button>
 
-            <!-- BOTÓN COMENZAR (movido desde abajo para mejor UX mobile) -->
+            <!-- BOTÓN COMENZAR / PAUSA (dinámico) -->
             <button class="btn-primary btn-start-header" id="btnStart">
-                Comenzar
+                ▶ Comenzar
             </button>
 
             <!-- Botón SONIDO: Mute/Unmute audio -->
@@ -51,6 +51,12 @@
                 </svg>
                 <span class="btn-label">SONIDO</span>
             </button>
+
+            <!-- Timer Global -->
+            <div class="global-timer hidden" id="globalTimer">
+                <span class="timer-icon">⏱️</span>
+                <span class="timer-display" id="globalTimerDisplay">00:00</span>
+            </div>
 
         </header>
 

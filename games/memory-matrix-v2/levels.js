@@ -43,7 +43,16 @@ const LEVELS = [
         memorizationTime: 5000, // 5 segundos
         difficulty: 'easy',
         pieceTypes: ['K', 'Q', 'R'], // Agregar torres
-        allowedColors: ['w', 'b']
+        allowedColors: ['w', 'b'],
+        attemptsRequired: 10,
+        hidePiecesConfig: {
+            // Intentos 1-7: Rey blanco (wK) siempre visible como referencia
+            // Intentos 8-10: Todas las piezas desaparecen
+            progressiveHiding: [
+                { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 2, hideIndices: [1, 2] }, // Oculta rey negro + 1 más
+                { attempts: [8, 9, 10], hideCount: 3, hideIndices: [0, 1, 2] }  // Todas
+            ]
+        }
     },
 
     // NIVEL 3: Junior (8-10 años)
@@ -56,7 +65,16 @@ const LEVELS = [
         memorizationTime: 6000, // 6 segundos
         difficulty: 'medium',
         pieceTypes: ['K', 'Q', 'R', 'B'], // Agregar alfiles
-        allowedColors: ['w', 'b']
+        allowedColors: ['w', 'b'],
+        attemptsRequired: 10,
+        hidePiecesConfig: {
+            // Intentos 1-7: Rey blanco (wK) siempre visible como referencia
+            // Intentos 8-10: Todas las piezas desaparecen
+            progressiveHiding: [
+                { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 3, hideIndices: [1, 2, 3] }, // Oculta bK + 2 más
+                { attempts: [8, 9, 10], hideCount: 4, hideIndices: [0, 1, 2, 3] }  // Todas
+            ]
+        }
     },
 
     // NIVEL 4: Intermedio (11-14 años)
@@ -69,7 +87,16 @@ const LEVELS = [
         memorizationTime: 7000, // 7 segundos
         difficulty: 'medium',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N'], // Agregar caballos
-        allowedColors: ['w', 'b']
+        allowedColors: ['w', 'b'],
+        attemptsRequired: 10,
+        hidePiecesConfig: {
+            // Intentos 1-7: Rey blanco (wK) siempre visible como referencia
+            // Intentos 8-10: Todas las piezas desaparecen
+            progressiveHiding: [
+                { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 4, hideIndices: [1, 2, 3, 4] }, // Oculta bK + 3 más
+                { attempts: [8, 9, 10], hideCount: 5, hideIndices: [0, 1, 2, 3, 4] }  // Todas
+            ]
+        }
     },
 
     // NIVEL 5: Avanzado (15+ años)
@@ -82,7 +109,16 @@ const LEVELS = [
         memorizationTime: 7500, // 7.5 segundos
         difficulty: 'hard',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'], // Todas las piezas
-        allowedColors: ['w', 'b']
+        allowedColors: ['w', 'b'],
+        attemptsRequired: 10,
+        hidePiecesConfig: {
+            // Intentos 1-7: Rey blanco (wK) siempre visible como referencia
+            // Intentos 8-10: Todas las piezas desaparecen
+            progressiveHiding: [
+                { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 5, hideIndices: [1, 2, 3, 4, 5] }, // Oculta bK + 4 más
+                { attempts: [8, 9, 10], hideCount: 6, hideIndices: [0, 1, 2, 3, 4, 5] }  // Todas
+            ]
+        }
     },
 
     // NIVEL 6: Experto
@@ -95,7 +131,16 @@ const LEVELS = [
         memorizationTime: 8000,
         difficulty: 'hard',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'],
-        allowedColors: ['w', 'b']
+        allowedColors: ['w', 'b'],
+        attemptsRequired: 10,
+        hidePiecesConfig: {
+            // Intentos 1-7: Rey blanco (wK) siempre visible como referencia
+            // Intentos 8-10: Todas las piezas desaparecen
+            progressiveHiding: [
+                { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 6, hideIndices: [1, 2, 3, 4, 5, 6] }, // Oculta bK + 5 más
+                { attempts: [8, 9, 10], hideCount: 7, hideIndices: [0, 1, 2, 3, 4, 5, 6] }  // Todas
+            ]
+        }
     },
 
     // NIVEL 7: Élite
@@ -108,7 +153,16 @@ const LEVELS = [
         memorizationTime: 9000,
         difficulty: 'expert',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'],
-        allowedColors: ['w', 'b']
+        allowedColors: ['w', 'b'],
+        attemptsRequired: 10,
+        hidePiecesConfig: {
+            // Intentos 1-7: Rey blanco (wK) siempre visible como referencia
+            // Intentos 8-10: Todas las piezas desaparecen
+            progressiveHiding: [
+                { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 7, hideIndices: [1, 2, 3, 4, 5, 6, 7] }, // Oculta bK + 6 más
+                { attempts: [8, 9, 10], hideCount: 8, hideIndices: [0, 1, 2, 3, 4, 5, 6, 7] }  // Todas
+            ]
+        }
     },
 
     // NIVEL 8: Leyenda
@@ -121,7 +175,16 @@ const LEVELS = [
         memorizationTime: 10000,
         difficulty: 'expert',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'],
-        allowedColors: ['w', 'b']
+        allowedColors: ['w', 'b'],
+        attemptsRequired: 10,
+        hidePiecesConfig: {
+            // Intentos 1-7: Rey blanco (wK) siempre visible como referencia
+            // Intentos 8-10: Todas las piezas desaparecen
+            progressiveHiding: [
+                { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 9, hideIndices: [1, 2, 3, 4, 5, 6, 7, 8, 9] }, // Oculta bK + 8 más
+                { attempts: [8, 9, 10], hideCount: 10, hideIndices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }  // Todas
+            ]
+        }
     }
 ];
 

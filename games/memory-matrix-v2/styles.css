@@ -196,6 +196,69 @@ body::before {
     stroke: currentColor;
 }
 
+/* ============================================
+   COORDENADAS EN CASILLAS (HINT)
+   ============================================ */
+
+/* Coordenada centrada en casilla vacía */
+.square-hint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    /* Tipografía */
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(20px, 4vw, 32px);
+    font-weight: 900;
+
+    /* Color neón cyan brillante */
+    color: var(--neon-cyan);
+    text-shadow:
+        0 0 10px var(--neon-cyan),
+        0 0 20px var(--neon-cyan),
+        0 0 30px rgba(0, 255, 255, 0.5);
+
+    /* Z-index sobre coordenadas de borde */
+    z-index: 15;
+
+    /* No seleccionable */
+    user-select: none;
+    pointer-events: none;
+
+    /* Animación de entrada */
+    animation: hintAppear 0.3s ease-out;
+}
+
+/* Animación de aparición (escala) */
+@keyframes hintAppear {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Clase para fade-out */
+.square-hint.fade-out {
+    animation: hintFadeOut 0.8s ease-out forwards;
+}
+
+/* Animación de desaparición */
+@keyframes hintFadeOut {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+}
+
 /* Label del botón (oculto en mobile muy pequeño) */
 .btn-label {
     display: none;
@@ -373,6 +436,32 @@ body::before {
         font-size: 12px;
         padding: 6px 10px;
     }
+}
+
+/* Timer Global (tiempo de sesión) */
+.global-timer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid var(--gold);
+    border-radius: var(--border-radius);
+    font-family: 'Orbitron', sans-serif;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.global-timer .timer-icon {
+    font-size: 18px;
+}
+
+.global-timer .timer-display {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gold);
+    text-shadow: 0 0 10px var(--gold);
+    min-width: 50px;
+    text-align: center;
 }
 
 /* ============================================

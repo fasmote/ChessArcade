@@ -31,6 +31,13 @@ const MAX_FAILED_ATTEMPTS = 10; // Game Over a los 10 errores
 let timerInterval = null; // Intervalo del contador
 const TIMER_CIRCLE_CIRCUMFERENCE = 283; // 2 * PI * 45 (radio del círculo)
 
+// PAUSA
+let isPaused = false; // Estado de pausa
+let pausedTimeouts = []; // Timeouts activos para pausar
+let globalStartTime = null; // Tiempo de inicio de la sesión global
+let globalElapsedTime = 0; // Tiempo total acumulado (en ms)
+let globalTimerInterval = null; // Intervalo del timer global
+
 // ============================================
 // INICIALIZACIÓN
 // Esperar a que el DOM esté cargado
@@ -81,10 +88,10 @@ function initButtons() {
         pieceStyleSelect.addEventListener('change', onPieceStyleChange);
     }
 
-    // Botón COMENZAR
+    // Botón COMENZAR / PAUSA
     const btnStart = document.getElementById('btnStart');
     if (btnStart) {
-        btnStart.addEventListener('click', startGame);
+        btnStart.addEventListener('click', togglePause);
     }
 }
 
@@ -267,22 +274,28 @@ function startGame() {
     isAnimating = true;
     startTime = Date.now();
 
-    // Deshabilitar botón
+    // Iniciar timer global (si es el primer juego)
+    if (!globalStartTime && globalElapsedTime === 0) {
+        startGlobalTimer();
+    }
+
+    // Cambiar botón a PAUSA
     const btnStart = document.getElementById('btnStart');
     if (btnStart) {
-        btnStart.classList.add('disabled');
-        btnStart.style.opacity = '0.5';
-        btnStart.style.cursor = 'not-allowed';
-        btnStart.textContent = 'Jugando...';
+        btnStart.textContent = '⏸ Pausa';
+        btnStart.classList.remove('disabled');
+        btnStart.style.opacity = '1';
+        btnStart.style.cursor = 'pointer';
     }
 
     // ==========================================
     // LIMPIAR tablero y banco para nuevo intento
     // ==========================================
 
-    clearBoard();       // Limpiar piezas del intento anterior
-    clearBankPieces();  // Limpiar banco
-    placedPieces = [];  // Resetear array de piezas colocadas
+    clearBoard();          // Limpiar piezas del intento anterior
+    clearBankPieces();     // Limpiar banco
+    clearAllSquareHints(); // Limpiar coordenadas anteriores
+    placedPieces = [];     // Resetear array de piezas colocadas
 
     // Generar posición aleatoria para el nivel actual
     if (!window.MemoryMatrixLevels) {
@@ -390,11 +403,22 @@ function hidePiecesPhase(levelConfig) {
     // Obtener casillas de las piezas a ocultar
     const squares = piecesToHide.map(pos => pos.square);
 
+    // ==========================================
+    // MOSTRAR COORDENADAS cuando piezas despegan
+    // ==========================================
+    showSquareHints(squares);
+
     // Animar piezas al banco
     hidePiecesWithAnimation(squares, {
         stagger: 150,
         duration: 600,
         onComplete: () => {
+            // ==========================================
+            // DESVANECER COORDENADAS después del vuelo
+            // Delay: 800ms para que el jugador las vea
+            // ==========================================
+            hideSquareHints(squares, 800);
+
             startSolvingPhase(piecesToHide);
         }
     });
@@ -496,19 +520,17 @@ function onAttemptSuccess() {
             // Nivel completado
             onLevelComplete();
         } else {
-            // Siguiente intento en el mismo nivel
+            // ==========================================
+            // AUTO-START siguiente intento (sin botón)
+            // ==========================================
             currentAttempt++;
-            updateStatus(`¡Bien! Presiona COMENZAR para el intento ${currentAttempt}`);
+            updateStatus(`Preparando siguiente intento...`);
 
-            const btnStart = document.getElementById('btnStart');
-            if (btnStart) {
-                btnStart.classList.remove('disabled');
-                btnStart.style.opacity = '1';
-                btnStart.style.cursor = 'pointer';
-                btnStart.textContent = 'Siguiente Intento';
-            }
-
-            gameState = 'idle';
+            // Esperar 1 segundo y auto-iniciar
+            setTimeout(() => {
+                gameState = 'idle';
+                startGame(); // ← Auto-start
+            }, 1000);
         }
     }, 1500);
 }
@@ -662,6 +684,9 @@ function onGameOver() {
     successfulAttempts = 0;
     failedAttempts = 0; // ← RESETEAR CONTADOR DE ERRORES
 
+    // Resetear timer global
+    resetGlobalTimer();
+
     updateStatus('Game Over. Reiniciando desde Nivel 1...');
 
     // Re-habilitar botón
@@ -670,10 +695,11 @@ function onGameOver() {
         btnStart.classList.remove('disabled');
         btnStart.style.opacity = '1';
         btnStart.style.cursor = 'pointer';
-        btnStart.textContent = 'Comenzar de Nuevo';
+        btnStart.textContent = '▶ Comenzar';
     }
 
     gameState = 'idle';
+    isPaused = false;
 
     console.log('🔄 Juego reiniciado - Nivel 1');
 }
@@ -1551,6 +1577,68 @@ function launchConfetti(count = 50) {
 }
 
 // ==========================================
+// COORDENADAS EN CASILLAS (HINTS)
+// Muestra coordenadas en casillas cuando piezas desaparecen
+// ==========================================
+
+/**
+ * Muestra coordenadas en las casillas que quedaron vacías
+ * @param {Array<string>} squares - Casillas donde mostrar coordenadas
+ */
+function showSquareHints(squares) {
+    squares.forEach(square => {
+        const squareElement = getSquareElement(square);
+        if (!squareElement) return;
+
+        // Crear elemento de coordenada
+        const hintElement = document.createElement('div');
+        hintElement.className = 'square-hint';
+        hintElement.textContent = square; // ej: "a5", "b4"
+        hintElement.dataset.hint = 'true';
+
+        // Agregar a la casilla
+        squareElement.appendChild(hintElement);
+
+        console.log(`📍 Coordenada mostrada: ${square}`);
+    });
+}
+
+/**
+ * Oculta coordenadas con animación fade-out
+ * @param {Array<string>} squares - Casillas de las coordenadas a ocultar
+ * @param {number} delay - Delay antes de iniciar fade-out (ms)
+ */
+function hideSquareHints(squares, delay = 0) {
+    setTimeout(() => {
+        squares.forEach(square => {
+            const squareElement = getSquareElement(square);
+            if (!squareElement) return;
+
+            const hintElement = squareElement.querySelector('.square-hint');
+            if (!hintElement) return;
+
+            // Agregar clase para fade-out
+            hintElement.classList.add('fade-out');
+
+            // Remover del DOM después de la animación
+            setTimeout(() => {
+                hintElement.remove();
+                console.log(`✨ Coordenada removida: ${square}`);
+            }, 800); // Duración de la animación fade-out
+        });
+    }, delay);
+}
+
+/**
+ * Limpia todas las coordenadas inmediatamente (sin animación)
+ */
+function clearAllSquareHints() {
+    const hints = document.querySelectorAll('.square-hint');
+    hints.forEach(hint => hint.remove());
+    console.log(`🧹 ${hints.length} coordenadas limpiadas`);
+}
+
+// ==========================================
 // EFECTO GLITCH MATRIX
 // Animación de advertencia para piezas que van a desaparecer
 // ==========================================
@@ -1598,4 +1686,102 @@ function removeGlitchEffect(squares) {
     });
 
     console.log('🔹 Efectos glitch removidos');
+}
+
+// ==========================================
+// TIMER GLOBAL Y SISTEMA DE PAUSA
+// ==========================================
+
+/**
+ * Inicia el timer global de la sesión
+ */
+function startGlobalTimer() {
+    if (globalStartTime === null) {
+        globalStartTime = Date.now();
+    }
+
+    const timerDisplay = document.getElementById('globalTimerDisplay');
+    const timerContainer = document.getElementById('globalTimer');
+
+    if (timerContainer) {
+        timerContainer.classList.remove('hidden');
+    }
+
+    globalTimerInterval = setInterval(() => {
+        if (!isPaused) {
+            const currentTime = Date.now();
+            const elapsed = currentTime - globalStartTime + globalElapsedTime;
+
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+
+            if (timerDisplay) {
+                timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+        }
+    }, 100);
+
+    console.log('⏱️ Timer global iniciado');
+}
+
+/**
+ * Detiene el timer global
+ */
+function stopGlobalTimer() {
+    if (globalTimerInterval) {
+        clearInterval(globalTimerInterval);
+        globalTimerInterval = null;
+    }
+
+    if (globalStartTime) {
+        globalElapsedTime += Date.now() - globalStartTime;
+        globalStartTime = null;
+    }
+}
+
+/**
+ * Resetea el timer global
+ */
+function resetGlobalTimer() {
+    stopGlobalTimer();
+    globalElapsedTime = 0;
+    globalStartTime = null;
+
+    const timerDisplay = document.getElementById('globalTimerDisplay');
+    if (timerDisplay) {
+        timerDisplay.textContent = '00:00';
+    }
+}
+
+/**
+ * Alterna entre pausa y continuar
+ */
+function togglePause() {
+    const btnStart = document.getElementById('btnStart');
+
+    if (gameState === 'idle') {
+        // Iniciar juego
+        startGame();
+        if (btnStart) {
+            btnStart.textContent = '⏸ Pausa';
+        }
+    } else if (isPaused) {
+        // Reanudar juego
+        isPaused = false;
+        startGlobalTimer();
+        if (btnStart) {
+            btnStart.textContent = '⏸ Pausa';
+        }
+        updateStatus('Continuando...');
+        console.log('▶️ Juego reanudado');
+    } else {
+        // Pausar juego
+        isPaused = true;
+        stopGlobalTimer();
+        if (btnStart) {
+            btnStart.textContent = '▶ Continuar';
+        }
+        updateStatus('⏸ Juego en pausa');
+        console.log('⏸ Juego pausado');
+    }
 }

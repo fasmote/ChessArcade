@@ -2535,3 +2535,171 @@ placedPieces = [];
 **Última actualización**: 8 Octubre 2025 - Efectos Glitch + Feedback Visual Completo
 **Próximo**: Agregar sistema de audio (sonidos para glitch, error, confeti)
 **Estado**: Sistema de feedback visual 100% implementado y funcional
+
+---
+
+## ✅ FIX: Sistema de referencia visual (wK visible en primeros intentos)
+**Estado**: COMPLETADO ✅
+**Fecha**: 8 Octubre 2025
+
+### Problema identificado:
+
+**Solicitud del usuario:**
+> "te pido que al comenzar otro nivel, sea al reves, al principio que quede al menos el rey blanco, eso sirve como ayuda para tener una referencia visual.. esta quedando un lujo este juego"
+
+Al comenzar un nivel nuevo, todas las piezas desaparecían, lo cual era muy difícil. El usuario solicitó que el **rey blanco (wK)** permanezca visible en los primeros intentos como referencia visual.
+
+---
+
+### Solución implementada:
+
+**Modificación en `levels.js`:**
+
+Agregado el parámetro `hidePiecesConfig` a TODOS los niveles (2-8), siguiendo el patrón del Nivel 1.
+
+**Patrón implementado:**
+- **Intentos 1-7:** Rey blanco (wK) siempre visible como referencia
+- **Intentos 8-10:** Todas las piezas desaparecen (máxima dificultad)
+
+#### Nivel 1 (ya configurado):
+```javascript
+hidePiecesConfig: {
+    progressiveHiding: [
+        { attempts: [1, 2, 3, 4, 5, 6, 7, 8], hideCount: 1, hideIndices: [1] }, // Solo bK
+        { attempts: [9, 10], hideCount: 2, hideIndices: [0, 1] }  // Ambos
+    ]
+}
+```
+
+#### Nivel 2 (3 piezas):
+```javascript
+hidePiecesConfig: {
+    progressiveHiding: [
+        { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 2, hideIndices: [1, 2] }, // Oculta bK + 1 más
+        { attempts: [8, 9, 10], hideCount: 3, hideIndices: [0, 1, 2] }  // Todas
+    ]
+}
+```
+
+#### Nivel 3 (4 piezas):
+```javascript
+hidePiecesConfig: {
+    progressiveHiding: [
+        { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 3, hideIndices: [1, 2, 3] }, // Oculta bK + 2 más
+        { attempts: [8, 9, 10], hideCount: 4, hideIndices: [0, 1, 2, 3] }  // Todas
+    ]
+}
+```
+
+#### Nivel 4 (5 piezas):
+```javascript
+hidePiecesConfig: {
+    progressiveHiding: [
+        { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 4, hideIndices: [1, 2, 3, 4] }, // Oculta bK + 3 más
+        { attempts: [8, 9, 10], hideCount: 5, hideIndices: [0, 1, 2, 3, 4] }  // Todas
+    ]
+}
+```
+
+#### Nivel 5 (6 piezas):
+```javascript
+hidePiecesConfig: {
+    progressiveHiding: [
+        { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 5, hideIndices: [1, 2, 3, 4, 5] }, // Oculta bK + 4 más
+        { attempts: [8, 9, 10], hideCount: 6, hideIndices: [0, 1, 2, 3, 4, 5] }  // Todas
+    ]
+}
+```
+
+#### Nivel 6 (7 piezas):
+```javascript
+hidePiecesConfig: {
+    progressiveHiding: [
+        { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 6, hideIndices: [1, 2, 3, 4, 5, 6] }, // Oculta bK + 5 más
+        { attempts: [8, 9, 10], hideCount: 7, hideIndices: [0, 1, 2, 3, 4, 5, 6] }  // Todas
+    ]
+}
+```
+
+#### Nivel 7 (8 piezas):
+```javascript
+hidePiecesConfig: {
+    progressiveHiding: [
+        { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 7, hideIndices: [1, 2, 3, 4, 5, 6, 7] }, // Oculta bK + 6 más
+        { attempts: [8, 9, 10], hideCount: 8, hideIndices: [0, 1, 2, 3, 4, 5, 6, 7] }  // Todas
+    ]
+}
+```
+
+#### Nivel 8 (10 piezas):
+```javascript
+hidePiecesConfig: {
+    progressiveHiding: [
+        { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 9, hideIndices: [1, 2, 3, 4, 5, 6, 7, 8, 9] }, // Oculta bK + 8 más
+        { attempts: [8, 9, 10], hideCount: 10, hideIndices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }  // Todas
+    ]
+}
+```
+
+---
+
+### Lógica del sistema:
+
+**Función existente `getPiecesToHide()` (levels.js:309-333):**
+- Recibe: `levelNumber`, `attemptNumber`, `position`
+- Busca configuración para el intento actual
+- Retorna solo las piezas indicadas en `hideIndices`
+
+**Beneficios:**
+1. ✅ **Progresión gradual:** Los primeros 7 intentos tienen el rey blanco como referencia
+2. ✅ **Desafío final:** Los últimos 3 intentos no tienen referencia (máxima dificultad)
+3. ✅ **Ayuda visual:** Facilita la orientación espacial en el tablero
+4. ✅ **Menos frustración:** Al comenzar un nivel nuevo, hay apoyo visual
+5. ✅ **Curva de aprendizaje:** Gradual dentro de cada nivel
+
+**Comportamiento esperado:**
+
+**Nivel 2, Intento 1:**
+- Genera: wK en e4, bK en h8, wR en d3
+- Oculta: bK, wR (índices 1, 2)
+- Visible: wK en e4 (índice 0) ← Referencia
+
+**Nivel 2, Intento 9:**
+- Misma posición
+- Oculta: wK, bK, wR (índices 0, 1, 2)
+- Visible: Ninguna ← Máxima dificultad
+
+---
+
+### Testing realizado:
+
+- ✅ Todos los niveles (1-8) tienen `hidePiecesConfig`
+- ✅ Todos los niveles tienen `attemptsRequired: 10`
+- ✅ Patrón consistente: wK visible en intentos 1-7
+- ✅ Nivel 1 mantiene configuración original (más fácil para niños 4-5 años)
+- ✅ Función `getPiecesToHide()` ya existía y funciona correctamente
+
+---
+
+### Archivos modificados:
+
+**levels.js:**
+- Línea 68-77: Nivel 2 - Agregado `hidePiecesConfig`
+- Línea 90-99: Nivel 3 - Agregado `hidePiecesConfig`
+- Línea 113-122: Nivel 4 - Agregado `hidePiecesConfig`
+- Línea 135-144: Nivel 5 - Agregado `hidePiecesConfig`
+- Línea 157-166: Nivel 6 - Agregado `hidePiecesConfig`
+- Línea 179-188: Nivel 7 - Agregado `hidePiecesConfig`
+- Línea 188-197: Nivel 8 - Agregado `hidePiecesConfig`
+
+---
+
+### Feedback del usuario:
+
+✅ "me encanta, cada dia mas"
+
+---
+
+**Última actualización**: 8 Octubre 2025 - Sistema de referencia visual implementado en todos los niveles
+**Estado**: Niveles 1-8 con progresión gradual (wK visible → todas ocultas)
+**Próximo**: Sistema de audio + preparar para MVP completo
