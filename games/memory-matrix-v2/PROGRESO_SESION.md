@@ -2095,3 +2095,443 @@ SECCIÓN INFERIOR:
 
 **Última actualización**: 7 Octubre 2025 - Botón Comenzar reposicionado en header (Mobile First)
 **Estado**: Sistema completo con UX optimizada para mobile
+
+---
+
+## ✅ SESIÓN 8 OCTUBRE 2025 - Efectos Glitch + Feedback Visual
+
+### Mejoras implementadas:
+
+#### 1. ✅ Efecto Glitch Matrix para piezas que van a desaparecer
+**Estado**: COMPLETADO ✅
+**Fecha**: 8 Octubre 2025
+
+**Problema identificado:**
+- No había advertencia visual de qué piezas iban a desaparecer
+- Usuario solicitó efecto "tipo TV descompuesto" o "error en Matrix"
+
+**Solución implementada:**
+
+##### CSS (styles.css: líneas 1335-1443)
+
+**Dos niveles de intensidad:**
+
+1. **Glitch Warning (sutil):**
+```css
+.piece.glitch-warning {
+    animation: glitchMatrix 2.5s ease-in-out infinite;
+}
+```
+- Parpadeos sutiles de opacidad
+- Distorsión horizontal leve (translateX 1px)
+- Rotación de colores (hue-rotate)
+- Split RGB suave (separación rojo/cyan)
+
+2. **Glitch Critical (intenso):**
+```css
+.piece.glitch-critical {
+    animation: glitchMatrixIntense 1s ease-in-out infinite;
+}
+```
+- Parpadeos más intensos y rápidos
+- Desplazamientos horizontales notorios (±2-3px)
+- Split RGB intenso (drop-shadow rojo/cyan)
+- Cambios de brillo y hue-rotate
+
+##### JavaScript (game.js: líneas 1532-1570)
+
+**Funciones agregadas:**
+```javascript
+applyGlitchEffect(squares, intensity)  // 'warning' o 'critical'
+removeGlitchEffect(squares)
+```
+
+**Timeline del efecto glitch:**
+- **0% - 40%**: Piezas normales
+- **40% - 80%**: Glitch sutil (parpadeos, distorsión leve)
+- **80% - 100%**: Glitch crítico (efecto intenso tipo Matrix)
+- **Al volar al banco**: Efecto se limpia
+
+**Modificación en `showMemorizationPhase()` (líneas 328-362):**
+- Calcula tiempos basados en `memorizationTime`
+- `glitchWarningStart = totalTime * 0.4`
+- `glitchCriticalStart = totalTime * 0.8`
+- Aplica glitch progresivamente con `setTimeout()`
+
+**En reintento después de error:**
+- NO muestra timer (líneas 607-621)
+- Solo glitch crítico por 1 segundo
+- Más inmersivo y coherente
+
+**Testing realizado:**
+- ✅ Glitch empieza al 40% del tiempo
+- ✅ Intensidad aumenta progresivamente
+- ✅ Split RGB funciona correctamente
+- ✅ En reintento: glitch sin timer (1s)
+
+---
+
+#### 2. ✅ Sistema de feedback visual sutil (sin overlay agresivo)
+**Estado**: COMPLETADO ✅
+**Fecha**: 8 Octubre 2025
+
+**Problema identificado:**
+- Overlay de error era muy agresivo
+- Tapaba toda la pantalla
+- Rompía la concentración
+- Usuario: "es como muy agresivo: viene de golpe y te tapa el tablero"
+
+**Solución: Shake + Parpadeo rojo + Barra animada**
+
+##### CSS (styles.css: líneas 1305-1403)
+
+**1. Shake del tablero:**
+```css
+.board-container.shake {
+    animation: boardShake 0.5s ease-in-out;
+}
+
+@keyframes boardShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+    20%, 40%, 60%, 80% { transform: translateX(8px); }
+}
+```
+
+**2. Parpadeo rojo en piezas incorrectas:**
+```css
+.piece.incorrect-flash {
+    animation: incorrectPulse 0.6s ease-in-out 3;
+}
+
+@keyframes incorrectPulse {
+    0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+    50% {
+        filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9))
+                drop-shadow(0 0 25px rgba(255, 0, 0, 0.6));
+    }
+}
+```
+- 3 parpadeos (1.8 segundos total)
+- Drop-shadow rojo intenso
+
+**3. Barra de estado con animación:**
+
+**Estado Error (rosa neón):**
+```css
+.status-message.error {
+    color: var(--neon-pink);
+    border-color: var(--neon-pink);
+    background: rgba(255, 0, 128, 0.15);
+    box-shadow:
+        0 0 25px rgba(255, 0, 128, 0.6),
+        0 0 40px rgba(255, 0, 128, 0.4);
+    animation: statusPulse 1.5s ease-in-out;
+}
+```
+
+**Estado Success (verde neón):**
+```css
+.status-message.success {
+    color: var(--neon-green);
+    border-color: var(--neon-green);
+    background: rgba(0, 255, 128, 0.15);
+    box-shadow:
+        0 0 25px rgba(0, 255, 128, 0.6),
+        0 0 40px rgba(0, 255, 128, 0.4);
+    animation: statusPulse 1.5s ease-in-out;
+}
+```
+
+**Animación de "respiración":**
+```css
+@keyframes statusPulse {
+    0%   { transform: scale(1); }
+    25%  { transform: scale(1.05); }
+    50%  { transform: scale(1.08); }  /* Máximo inflado */
+    75%  { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+```
+
+##### JavaScript (game.js)
+
+**Funciones agregadas (líneas 1424-1461):**
+
+```javascript
+shakeBoardOnError()  // Shake del tablero (500ms)
+
+flashIncorrectPieces(squares)  // Parpadeo rojo (1.8s, 3 veces)
+```
+
+**Modificación en `updateStatus()` (líneas 727-757):**
+- Antes: `updateStatus(message, isError = false)`
+- Ahora: `updateStatus(message, type = 'normal')`
+- Tipos: `'normal'`, `'error'`, `'success'`
+- Agrega/remueve clases CSS automáticamente
+- Timeout de 1.5s para volver a normal
+
+**Modificación en `onAttemptFailed()` (líneas 544-560):**
+```javascript
+// Feedback visual sutil (sin overlay)
+shakeBoardOnError();
+flashIncorrectPieces(incorrectSquares);
+updateStatus(
+    `❌ Incorrecto - Errores: ${failedAttempts}/${MAX_FAILED_ATTEMPTS}...`,
+    'error'
+);
+```
+
+**Overlay solo para Game Over:**
+- Se mantiene overlay cuando llegas a 10 errores
+- Es apropiado porque es fin de partida (evento importante)
+
+**Timeline del error:**
+```
+Error detectado
+    ↓
+1. Shake del tablero (500ms)
+2. Piezas incorrectas parpadean en rojo (1.8s)
+3. Barra rosa se infla/desinfla (1.5s)
+    ↓
+Espera 2s
+    ↓
+Glitch crítico (1s)
+    ↓
+Reintento
+```
+
+**Testing realizado:**
+- ✅ Shake funciona sin bloquear vista
+- ✅ Solo piezas incorrectas parpadean
+- ✅ Barra rosa se infla/desinfla suavemente
+- ✅ No rompe la concentración
+- ✅ Mucho más elegante que overlay
+
+---
+
+#### 3. ✅ Sistema de confeti para celebración de victoria
+**Estado**: COMPLETADO ✅
+**Fecha**: 8 Octubre 2025
+
+**Problema identificado:**
+- Solo había feedback de error (rosa)
+- Faltaba celebración visual al acertar
+- Usuario: "ahora al revés, cuando sí aciertas, debería hacer lo mismo la barrita, pero verde y con pequeños confetis"
+
+**Solución: Barra verde + Lluvia de confeti neón**
+
+##### HTML (index.html: línea 157)
+
+```html
+<div class="confetti-container" id="confettiContainer"></div>
+```
+
+##### CSS (styles.css: líneas 1405-1447)
+
+**Contenedor de confeti:**
+```css
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;  /* No bloquea interacción */
+    z-index: 1000;
+    overflow: hidden;
+}
+```
+
+**Pieza de confeti:**
+```css
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: var(--neon-green);
+    opacity: 0;
+    animation: confettiFall 2s ease-out forwards;
+}
+
+/* Variantes de colores */
+.confetti.cyan { background: var(--neon-cyan); }
+.confetti.pink { background: var(--neon-pink); }
+.confetti.orange { background: var(--neon-orange); }
+.confetti.gold { background: var(--gold); }
+```
+
+**Animación de caída:**
+```css
+@keyframes confettiFall {
+    0% {
+        opacity: 1;
+        transform: translateY(-20px) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(720deg);  /* 2 rotaciones completas */
+    }
+}
+```
+
+##### JavaScript (game.js: líneas 1485-1530)
+
+**Función agregada:**
+```javascript
+function launchConfetti(count = 50) {
+    const container = document.getElementById('confettiContainer');
+    const colors = ['cyan', 'pink', 'orange', 'gold', ''];
+    const windowWidth = window.innerWidth;
+
+    for (let i = 0; i < count; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+
+        // Color aleatorio
+        const colorClass = colors[Math.floor(Math.random() * colors.length)];
+        if (colorClass) confetti.classList.add(colorClass);
+
+        // Posición horizontal aleatoria
+        confetti.style.left = `${Math.random() * windowWidth}px`;
+
+        // Delay aleatorio (efecto escalonado)
+        confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+
+        // Duración aleatoria (1.5s - 2.5s)
+        confetti.style.animationDuration = `${1.5 + Math.random()}s`;
+
+        container.appendChild(confetti);
+
+        // Auto-limpieza después de 3s
+        setTimeout(() => confetti.remove(), 3000);
+    }
+}
+```
+
+**Modificación en `onAttemptSuccess()` (líneas 481-492):**
+```javascript
+// Celebración visual
+updateStatus(
+    `✅ ¡Correcto! (${successfulAttempts}/${levelConfig.attemptsRequired})`,
+    'success'  // Barra verde + inflado
+);
+
+launchConfetti(50);  // 50 confetis neón
+```
+
+**Características del confeti:**
+- ✅ 50 piezas por acierto
+- ✅ 5 colores neón aleatorios (cyan, pink, orange, gold, green)
+- ✅ Posición horizontal aleatoria (toda la pantalla)
+- ✅ Velocidad de caída aleatoria (1.5s - 2.5s)
+- ✅ Delay aleatorio (efecto escalonado)
+- ✅ Rotación completa (720°) mientras cae
+- ✅ Se desvanece al llegar abajo (opacity 0)
+- ✅ Auto-limpieza (se remueve del DOM)
+
+**Testing realizado:**
+- ✅ Confeti cae desde arriba
+- ✅ Colores neón se ven bien
+- ✅ Rotación fluida
+- ✅ No bloquea interacción (pointer-events: none)
+- ✅ Se limpia automáticamente
+- ✅ Performance óptimo (50 elementos animados)
+
+---
+
+#### 4. ✅ Fix: Limpieza de piezas entre intentos
+**Estado**: COMPLETADO ✅
+**Fecha**: 8 Octubre 2025
+
+**Problema identificado:**
+- Al pasar al siguiente intento, las piezas del intento anterior no se borraban
+- Se acumulaban piezas en el tablero
+- Screenshot: `mm_57_no se borran las piezas anteriores.png`
+
+**Solución implementada:**
+
+**Modificación en `startGame()` (líneas 279-285):**
+
+**Antes:**
+```javascript
+// NO limpiar tablero al inicio
+// Mostrar piezas directamente (no tablero vacío)
+
+// Solo limpiar banco
+clearBankPieces();
+```
+
+**Después:**
+```javascript
+// LIMPIAR tablero y banco para nuevo intento
+
+clearBoard();       // ← AGREGADO
+clearBankPieces();
+placedPieces = [];
+```
+
+**Resultado:**
+- ✅ Tablero se limpia antes de mostrar nuevas piezas
+- ✅ No hay acumulación entre intentos
+- ✅ No hay flash de tablero vacío (limpia y muestra inmediatamente)
+
+---
+
+### Resumen de cambios de la sesión:
+
+**Archivos modificados:**
+- `styles.css` - +143 líneas (animaciones glitch, shake, confeti, barra error/success)
+- `game.js` - +155 líneas (funciones glitch, shake, confeti, updateStatus mejorado)
+- `index.html` - +4 líneas (contenedor de confeti)
+
+**Líneas de código actuales:**
+- HTML: ~165 líneas (+4)
+- CSS: ~1530 líneas (+143)
+- JS: ~1570 líneas (+155)
+- **Total**: ~3,265 líneas
+
+**Nuevas funciones JavaScript:**
+- `applyGlitchEffect(squares, intensity)`
+- `removeGlitchEffect(squares)`
+- `shakeBoardOnError()`
+- `flashIncorrectPieces(squares)`
+- `launchConfetti(count)`
+- `updateStatus(message, type)` - Mejorada con 3 estados
+
+**Nuevas animaciones CSS:**
+- `@keyframes glitchMatrix` - Glitch sutil (2.5s)
+- `@keyframes glitchMatrixIntense` - Glitch crítico (1s)
+- `@keyframes boardShake` - Shake tablero (0.5s)
+- `@keyframes incorrectPulse` - Parpadeo rojo (0.6s × 3)
+- `@keyframes statusPulse` - Inflado barra (1.5s)
+- `@keyframes confettiFall` - Caída confeti (2s)
+
+**Mejoras en UX:**
+1. ✅ Advertencia visual progresiva (glitch) antes de ocultar piezas
+2. ✅ Feedback de error sutil sin overlay agresivo
+3. ✅ Celebración visual atractiva (confeti + barra verde)
+4. ✅ Mantiene concentración (sin interrupciones bruscas)
+5. ✅ Todo el feedback es no-bloqueante
+
+**Comparación Error vs Success:**
+
+| Aspecto | Error ❌ | Success ✅ |
+|---------|---------|-----------|
+| Tablero | Shake (500ms) | Normal |
+| Piezas | Parpadeo rojo | Normal |
+| Barra | Rosa neón inflándose | Verde neón inflándose |
+| Confeti | No | 50 piezas cayendo |
+| Duración | ~2s total | ~2s total |
+| Bloqueante | No | No |
+
+**Feedback del usuario:**
+- ✅ "Me encanta como resalta el efecto glitch!!"
+- ✅ "Me gusta, me gusta !!"
+- ✅ "Perfecto !!! me gusta"
+
+---
+
+**Última actualización**: 8 Octubre 2025 - Efectos Glitch + Feedback Visual Completo
+**Próximo**: Agregar sistema de audio (sonidos para glitch, error, confeti)
+**Estado**: Sistema de feedback visual 100% implementado y funcional

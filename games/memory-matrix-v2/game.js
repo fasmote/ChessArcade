@@ -277,13 +277,12 @@ function startGame() {
     }
 
     // ==========================================
-    // IMPORTANTE: NO limpiar tablero al inicio
-    // Mostrar piezas directamente (no tablero vacío)
+    // LIMPIAR tablero y banco para nuevo intento
     // ==========================================
 
-    // Solo limpiar banco (el tablero se llena de inmediato)
-    clearBankPieces();
-    placedPieces = [];
+    clearBoard();       // Limpiar piezas del intento anterior
+    clearBankPieces();  // Limpiar banco
+    placedPieces = [];  // Resetear array de piezas colocadas
 
     // Generar posición aleatoria para el nivel actual
     if (!window.MemoryMatrixLevels) {
@@ -300,7 +299,7 @@ function startGame() {
     // El tablero muestra las piezas desde el inicio
     // ==========================================
 
-    // Primero, colocar todas las piezas en el tablero
+    // Colocar todas las piezas en el tablero
     currentPosition.forEach(({ square, piece }) => {
         showPiece(square, piece);
     });
@@ -325,9 +324,39 @@ function showMemorizationPhase(levelConfig) {
 
     console.log(`⏰ Tienes ${levelConfig.memorizationTime/1000} segundos para memorizar`);
 
+    // ==========================================
+    // EFECTO GLITCH MATRIX - Advertencia progresiva
+    // ==========================================
+
+    // Determinar qué piezas van a desaparecer
+    const piecesToHide = window.MemoryMatrixLevels.getPiecesToHide(
+        currentLevel,
+        currentAttempt,
+        currentPosition
+    );
+    const squaresToGlitch = piecesToHide.map(pos => pos.square);
+
+    // Calcular tiempos para efectos glitch
+    const totalTime = levelConfig.memorizationTime;
+    const glitchWarningStart = totalTime * 0.4;  // Inicia glitch sutil al 40% del tiempo
+    const glitchCriticalStart = totalTime * 0.80; // Glitch intenso al 80% del tiempo
+
+    // Glitch sutil (empieza a mitad del tiempo)
+    setTimeout(() => {
+        applyGlitchEffect(squaresToGlitch, 'warning');
+        console.log('⚠️ Glitch sutil activado');
+    }, glitchWarningStart);
+
+    // Glitch crítico (últimos segundos)
+    setTimeout(() => {
+        applyGlitchEffect(squaresToGlitch, 'critical');
+        console.log('🚨 Glitch CRÍTICO activado');
+    }, glitchCriticalStart);
+
     // Después del tiempo de memorización, ocultar piezas
     setTimeout(() => {
         stopTimer(); // Detener timer antes de ocultar
+        removeGlitchEffect(squaresToGlitch); // Limpiar efectos glitch
         hidePiecesPhase(levelConfig);
     }, levelConfig.memorizationTime);
 }
@@ -449,7 +478,18 @@ function onAttemptSuccess() {
 
     const levelConfig = window.MemoryMatrixLevels.getLevelConfig(currentLevel);
 
-    updateStatus(`✅ ¡Correcto! (${successfulAttempts}/${levelConfig.attemptsRequired})`);
+    // ==========================================
+    // CELEBRACIÓN VISUAL
+    // ==========================================
+
+    // 1. Barra de estado verde con animación de inflado
+    updateStatus(
+        `✅ ¡Correcto! (${successfulAttempts}/${levelConfig.attemptsRequired})`,
+        'success' // Activa animación verde + inflado
+    );
+
+    // 2. Lanzar confeti 🎉
+    launchConfetti(50);
 
     setTimeout(() => {
         if (successfulAttempts >= levelConfig.attemptsRequired) {
@@ -513,11 +553,21 @@ function onAttemptFailed(incorrectPieces) {
     }
 
     // ==========================================
-    // MOSTRAR OVERLAY DE ERROR (con contador)
+    // FEEDBACK VISUAL SUTIL (shake + parpadeo rojo)
+    // NO usar overlay - mantener concentración
     // ==========================================
-    showErrorOverlay(
-        '¡Posición incorrecta!',
-        `Errores: ${failedAttempts}/${MAX_FAILED_ATTEMPTS} - Correctos: ${successfulAttempts}/${levelConfig.attemptsRequired}`
+
+    // 1. Shake del tablero
+    shakeBoardOnError();
+
+    // 2. Parpadear piezas incorrectas en rojo
+    const incorrectSquares = incorrectPieces.map(item => item.square);
+    flashIncorrectPieces(incorrectSquares);
+
+    // 3. Actualizar mensaje de estado con animación de error
+    updateStatus(
+        `❌ Incorrecto - Errores: ${failedAttempts}/${MAX_FAILED_ATTEMPTS} | Correctos: ${successfulAttempts}/${levelConfig.attemptsRequired}`,
+        'error' // Activa animación rosa + inflado
     );
 
     // ==========================================
@@ -525,8 +575,6 @@ function onAttemptFailed(incorrectPieces) {
     // NO REGENERAR - USAR LA MISMA POSICIÓN
     // ==========================================
     setTimeout(() => {
-        // Ocultar overlay
-        hideErrorOverlay();
 
         // ==========================================
         // IMPORTANTE: Limpiar solo piezas del jugador
@@ -576,15 +624,20 @@ function onAttemptFailed(incorrectPieces) {
             updateStatus(`Nivel ${currentLevel} - ¡Memoriza de nuevo!`);
 
             // ==========================================
-            // Iniciar timer en reintento (0.75 segundos)
+            // EFECTO GLITCH en reintento (1 segundo)
+            // NO mostrar timer, solo glitch crítico
             // ==========================================
-            startTimer(750);
+            const squaresToGlitch = piecesToHide.map(pos => pos.square);
 
-            // Después de 0.75 segundos, ocultar las MISMAS piezas
+            // Activar glitch crítico inmediatamente
+            applyGlitchEffect(squaresToGlitch, 'critical');
+            console.log('🚨 Glitch crítico activado en reintento');
+
+            // Después de 1 segundo, ocultar las MISMAS piezas
             setTimeout(() => {
-                stopTimer();
+                removeGlitchEffect(squaresToGlitch);
                 hidePiecesPhase(levelConfig);
-            }, 750); // 0.75 segundos (el usuario ya vio la posición)
+            }, 1000); // 1 segundo de glitch antes de ocultar
 
         }, 500);
 
@@ -682,11 +735,35 @@ function clearBankPieces() {
 // ============================================
 // FUNCIÓN: Actualizar mensaje de estado
 // ============================================
-function updateStatus(message) {
+function updateStatus(message, type = 'normal') {
     const statusEl = document.getElementById('statusMessage');
     if (statusEl) {
         statusEl.textContent = message;
-        console.log(`📢 Status: ${message}`);
+
+        // Remover clases anteriores
+        statusEl.classList.remove('error', 'success');
+
+        // Aplicar clase según tipo
+        if (type === 'error') {
+            statusEl.classList.add('error');
+            console.log(`❌ Status ERROR: ${message}`);
+
+            // Remover clase después de la animación (1.5s)
+            setTimeout(() => {
+                statusEl.classList.remove('error');
+            }, 1500);
+        } else if (type === 'success') {
+            statusEl.classList.add('success');
+            console.log(`✅ Status SUCCESS: ${message}`);
+
+            // Remover clase después de la animación (1.5s)
+            setTimeout(() => {
+                statusEl.classList.remove('success');
+            }, 1500);
+        } else {
+            // Normal (dorado)
+            console.log(`📢 Status: ${message}`);
+        }
     }
 }
 
@@ -1377,4 +1454,148 @@ function hideTimer() {
     }
 
     console.log('⏱️ Timer ocultado');
+}
+
+// ==========================================
+// FEEDBACK DE ERROR SUTIL
+// Shake del tablero + parpadeo rojo en piezas incorrectas
+// ==========================================
+
+/**
+ * Aplica shake al tablero (error visual sutil)
+ */
+function shakeBoardOnError() {
+    const boardContainer = document.querySelector('.board-container');
+    if (!boardContainer) return;
+
+    // Agregar clase shake
+    boardContainer.classList.add('shake');
+
+    // Remover después de la animación (500ms)
+    setTimeout(() => {
+        boardContainer.classList.remove('shake');
+    }, 500);
+
+    console.log('📳 Shake del tablero activado');
+}
+
+/**
+ * Aplica parpadeo rojo a piezas incorrectas
+ * @param {Array<string>} squares - Casillas de las piezas incorrectas
+ */
+function flashIncorrectPieces(squares) {
+    squares.forEach(square => {
+        const squareElement = getSquareElement(square);
+        if (!squareElement) return;
+
+        const pieceImg = squareElement.querySelector('.piece');
+        if (!pieceImg) return;
+
+        // Agregar clase de parpadeo
+        pieceImg.classList.add('incorrect-flash');
+
+        // Remover después de 3 parpadeos (1.8s)
+        setTimeout(() => {
+            pieceImg.classList.remove('incorrect-flash');
+        }, 1800);
+    });
+
+    console.log(`🔴 ${squares.length} pieza${squares.length > 1 ? 's' : ''} parpadeando en rojo`);
+}
+
+// ==========================================
+// CONFETI - Celebración de victoria
+// ==========================================
+
+/**
+ * Lanza confeti desde la parte superior de la pantalla
+ * @param {number} count - Cantidad de piezas de confeti (default: 50)
+ */
+function launchConfetti(count = 50) {
+    const container = document.getElementById('confettiContainer');
+    if (!container) return;
+
+    const colors = ['cyan', 'pink', 'orange', 'gold', ''];
+    const windowWidth = window.innerWidth;
+
+    for (let i = 0; i < count; i++) {
+        // Crear pieza de confeti
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+
+        // Color aleatorio
+        const colorClass = colors[Math.floor(Math.random() * colors.length)];
+        if (colorClass) {
+            confetti.classList.add(colorClass);
+        }
+
+        // Posición horizontal aleatoria
+        confetti.style.left = `${Math.random() * windowWidth}px`;
+
+        // Delay aleatorio para efecto escalonado
+        confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+
+        // Duración aleatoria (1.5s a 2.5s)
+        confetti.style.animationDuration = `${1.5 + Math.random()}s`;
+
+        // Agregar al contenedor
+        container.appendChild(confetti);
+
+        // Remover después de la animación
+        setTimeout(() => {
+            confetti.remove();
+        }, 3000);
+    }
+
+    console.log(`🎉 ${count} confetis lanzados`);
+}
+
+// ==========================================
+// EFECTO GLITCH MATRIX
+// Animación de advertencia para piezas que van a desaparecer
+// ==========================================
+
+/**
+ * Aplica efecto glitch a las piezas que van a desaparecer
+ * @param {Array<string>} squares - Casillas de las piezas a marcar
+ * @param {string} intensity - 'warning' (sutil) o 'critical' (intenso)
+ */
+function applyGlitchEffect(squares, intensity = 'warning') {
+    squares.forEach(square => {
+        const squareElement = getSquareElement(square);
+        if (!squareElement) return;
+
+        const pieceImg = squareElement.querySelector('.piece');
+        if (!pieceImg) return;
+
+        // Remover clase anterior si existe
+        pieceImg.classList.remove('glitch-warning', 'glitch-critical');
+
+        // Agregar nueva clase según intensidad
+        if (intensity === 'critical') {
+            pieceImg.classList.add('glitch-critical');
+            console.log(`⚡ Glitch CRÍTICO en ${square}`);
+        } else {
+            pieceImg.classList.add('glitch-warning');
+            console.log(`✨ Glitch sutil en ${square}`);
+        }
+    });
+}
+
+/**
+ * Remueve efecto glitch de las piezas
+ * @param {Array<string>} squares - Casillas de las piezas
+ */
+function removeGlitchEffect(squares) {
+    squares.forEach(square => {
+        const squareElement = getSquareElement(square);
+        if (!squareElement) return;
+
+        const pieceImg = squareElement.querySelector('.piece');
+        if (!pieceImg) return;
+
+        pieceImg.classList.remove('glitch-warning', 'glitch-critical');
+    });
+
+    console.log('🔹 Efectos glitch removidos');
 }
