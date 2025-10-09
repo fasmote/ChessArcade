@@ -2703,3 +2703,293 @@ hidePiecesConfig: {
 **Última actualización**: 8 Octubre 2025 - Sistema de referencia visual implementado en todos los niveles
 **Estado**: Niveles 1-8 con progresión gradual (wK visible → todas ocultas)
 **Próximo**: Sistema de audio + preparar para MVP completo
+
+---
+
+## ✅ FEATURE: Coordenadas en casillas vacías (Hints visuales)
+**Estado**: COMPLETADO ✅
+**Fecha**: 8 Octubre 2025
+
+### Problema identificado:
+
+**Solicitud del usuario:**
+> "cuando las piezas dejen su casilla, las que tienen que desaparecer, en la casilla que dejan que aparezca centrado, y bien claro, la casilla, por ejemplo a5, b4 y luego que las piezas llegan a la barra lateral, un breve tiempo, las coordenadas que aparecieron, se van.."
+
+Al volar las piezas al banco, el jugador perdía referencia visual de qué casillas quedaron vacías. Se solicitó mostrar las coordenadas (ej: "a5", "b4") centradas en las casillas vacías.
+
+---
+
+### Solución implementada:
+
+**Timeline del efecto:**
+1. ✈️ **Piezas despegan** → Coordenadas aparecen centradas (animación escala 0.5 → 1.0)
+2. 🎯 **Piezas vuelan al banco** (600ms de vuelo)
+3. ⏱️ **Espera 800ms** → Jugador ve claramente las coordenadas
+4. 🌫️ **Fade-out** → Coordenadas se desvanecen (0.8s, escala 1 → 0.8)
+5. 🎮 **Fase de reconstrucción** → Jugador coloca piezas
+
+---
+
+### CSS agregado (styles.css: líneas 199-260)
+
+#### Estilo base de coordenada:
+```css
+.square-hint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    /* Tipografía */
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(20px, 4vw, 32px);
+    font-weight: 900;
+
+    /* Color neón cyan brillante */
+    color: var(--neon-cyan);
+    text-shadow:
+        0 0 10px var(--neon-cyan),
+        0 0 20px var(--neon-cyan),
+        0 0 30px rgba(0, 255, 255, 0.5);
+
+    /* Z-index sobre coordenadas de borde */
+    z-index: 15;
+
+    /* No seleccionable */
+    user-select: none;
+    pointer-events: none;
+
+    /* Animación de entrada */
+    animation: hintAppear 0.3s ease-out;
+}
+```
+
+#### Animación de aparición:
+```css
+@keyframes hintAppear {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+```
+
+#### Animación de desaparición:
+```css
+.square-hint.fade-out {
+    animation: hintFadeOut 0.8s ease-out forwards;
+}
+
+@keyframes hintFadeOut {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+}
+```
+
+---
+
+### JavaScript agregado (game.js: líneas 1567-1627)
+
+#### 1. Mostrar coordenadas:
+```javascript
+/**
+ * Muestra coordenadas en las casillas que quedaron vacías
+ * @param {Array<string>} squares - Casillas donde mostrar coordenadas
+ */
+function showSquareHints(squares) {
+    squares.forEach(square => {
+        const squareElement = getSquareElement(square);
+        if (!squareElement) return;
+
+        // Crear elemento de coordenada
+        const hintElement = document.createElement('div');
+        hintElement.className = 'square-hint';
+        hintElement.textContent = square; // ej: "a5", "b4"
+        hintElement.dataset.hint = 'true';
+
+        // Agregar a la casilla
+        squareElement.appendChild(hintElement);
+
+        console.log(`📍 Coordenada mostrada: ${square}`);
+    });
+}
+```
+
+#### 2. Ocultar coordenadas con fade-out:
+```javascript
+/**
+ * Oculta coordenadas con animación fade-out
+ * @param {Array<string>} squares - Casillas de las coordenadas a ocultar
+ * @param {number} delay - Delay antes de iniciar fade-out (ms)
+ */
+function hideSquareHints(squares, delay = 0) {
+    setTimeout(() => {
+        squares.forEach(square => {
+            const squareElement = getSquareElement(square);
+            if (!squareElement) return;
+
+            const hintElement = squareElement.querySelector('.square-hint');
+            if (!hintElement) return;
+
+            // Agregar clase para fade-out
+            hintElement.classList.add('fade-out');
+
+            // Remover del DOM después de la animación
+            setTimeout(() => {
+                hintElement.remove();
+                console.log(`✨ Coordenada removida: ${square}`);
+            }, 800); // Duración de la animación fade-out
+        });
+    }, delay);
+}
+```
+
+#### 3. Limpieza inmediata:
+```javascript
+/**
+ * Limpia todas las coordenadas inmediatamente (sin animación)
+ */
+function clearAllSquareHints() {
+    const hints = document.querySelectorAll('.square-hint');
+    hints.forEach(hint => hint.remove());
+    console.log(`🧹 ${hints.length} coordenadas limpiadas`);
+}
+```
+
+---
+
+### Integración en el flujo del juego:
+
+#### Modificación en `hidePiecesPhase()` (líneas 405-419):
+```javascript
+// Obtener casillas de las piezas a ocultar
+const squares = piecesToHide.map(pos => pos.square);
+
+// ==========================================
+// MOSTRAR COORDENADAS cuando piezas despegan
+// ==========================================
+showSquareHints(squares);
+
+// Animar piezas al banco
+hidePiecesWithAnimation(squares, {
+    stagger: 150,
+    duration: 600,
+    onComplete: () => {
+        // ==========================================
+        // DESVANECER COORDENADAS después del vuelo
+        // Delay: 800ms para que el jugador las vea
+        // ==========================================
+        hideSquareHints(squares, 800);
+
+        startSolvingPhase(piecesToHide);
+    }
+});
+```
+
+#### Modificación en `startGame()` (línea 297):
+```javascript
+clearBoard();          // Limpiar piezas del intento anterior
+clearBankPieces();     // Limpiar banco
+clearAllSquareHints(); // ← NUEVO: Limpiar coordenadas anteriores
+placedPieces = [];     // Resetear array de piezas colocadas
+```
+
+---
+
+### Características del sistema:
+
+✅ **Aparición sincronizada**: Coordenadas aparecen justo cuando las piezas despegan
+✅ **Centrado perfecto**: Absolutamente centradas en cada casilla
+✅ **Tipografía clara**: Orbitron 900, tamaño responsive (20-32px)
+✅ **Color neón**: Cyan brillante con triple glow (coherente con ChessArcade)
+✅ **No bloquea interacción**: `pointer-events: none`
+✅ **Animación de entrada**: Escala suave (0.3s)
+✅ **Timing perfecto**: 800ms visible después del vuelo
+✅ **Fade-out elegante**: Desaparición suave (0.8s)
+✅ **Limpieza automática**: Se remueven del DOM
+✅ **Responsive**: Funciona en mobile y desktop
+
+---
+
+### Ejemplo de flujo completo:
+
+**Nivel 2, Intento 1:**
+```
+1. Memorización (5s)
+   → wK en e4, bK en h8, wR en d3
+
+2. Glitch progresivo
+   → bK y wR parpadean (40%-80%-100%)
+
+3. Piezas despegan
+   → Aparecen "h8" y "d3" en cyan neón (centradas)
+
+4. Vuelo al banco (600ms)
+   → Coordenadas siguen visibles
+
+5. Espera 800ms
+   → "h8" y "d3" muy visibles, jugador memoriza
+
+6. Fade-out (800ms)
+   → Coordenadas se desvanecen
+
+7. Reconstrucción
+   → Jugador arrastra piezas del banco
+```
+
+---
+
+### Testing realizado:
+
+- ✅ Coordenadas aparecen centradas en casillas correctas
+- ✅ Timing sincronizado con vuelo de piezas
+- ✅ Fade-out suave después de 800ms
+- ✅ No hay acumulación entre intentos
+- ✅ Responsive en mobile (20px) y desktop (32px)
+- ✅ Color cyan con glow triple (muy visible)
+- ✅ No bloquea drag & drop
+- ✅ Se limpian al comenzar nuevo intento
+
+---
+
+### Archivos modificados:
+
+**styles.css:**
+- Líneas 199-260: Estilos `.square-hint` + animaciones `hintAppear` y `hintFadeOut`
+
+**game.js:**
+- Líneas 1567-1627: Funciones `showSquareHints()`, `hideSquareHints()`, `clearAllSquareHints()`
+- Líneas 405-419: Integración en `hidePiecesPhase()` con timing
+- Línea 297: Limpieza en `startGame()`
+
+---
+
+### Beneficios para UX:
+
+1. **Ayuda visual clara**: El jugador ve exactamente qué casillas quedaron vacías
+2. **Refuerzo de memoria**: Las coordenadas refuerzan la memoria espacial
+3. **Menos frustración**: Especialmente útil en niveles con muchas piezas
+4. **Elegante y no invasivo**: No interrumpe el flujo del juego
+5. **Coherente con estilo arcade**: Neón cyan brillante
+
+---
+
+### Feedback del usuario:
+
+✅ **"Espectacular!!!"**
+
+---
+
+**Última actualización**: 8 Octubre 2025 - Sistema de hints visuales (coordenadas en casillas)
+**Estado**: Feature completo con animaciones entrada/salida
+**Próximo**: Sistema de audio + git commit
