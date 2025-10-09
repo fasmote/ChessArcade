@@ -411,6 +411,70 @@
             border: 1px solid rgba(255,255,255,0.3);
         }
 
+        /* ICON BUTTONS (HOME, SOUND) - Estilo Memory Matrix */
+        .btn-icon {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 10px 16px;
+            min-height: 44px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 8px;
+            color: var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .btn-icon:hover {
+            background: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-icon:active {
+            transform: translateY(0);
+        }
+
+        .btn-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+        }
+
+        .btn-icon .btn-label {
+            display: none;
+        }
+
+        @media (min-width: 500px) {
+            .btn-icon .btn-label {
+                display: inline;
+            }
+        }
+
+        .btn-home {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        .btn-home:hover {
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        .btn-sound {
+            border-color: var(--neon-orange);
+            color: var(--neon-orange);
+        }
+
+        .btn-sound:hover {
+            box-shadow: 0 0 20px var(--neon-orange);
+        }
+
         /* ARCADE BUTTONS */
         .game-controls {
             display: flex;
@@ -926,13 +990,35 @@
         
         <!-- Game Controls -->
         <div class="game-controls">
+            <!-- Botón HOME con estilo icon -->
+            <a href="../../index.html" class="btn-icon btn-home" aria-label="Volver al inicio">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span class="btn-label">HOME</span>
+            </a>
+
+            <!-- Botón SOUND con estilo icon -->
+            <button class="btn-icon btn-sound" onclick="toggleSound()" id="soundBtn" aria-label="Activar/desactivar sonido">
+                <svg class="icon-sound-on" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+                <svg class="icon-sound-off" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                </svg>
+                <span class="btn-label">SOUND</span>
+            </button>
+
+            <!-- Botones de juego mantienen su estilo arcade -->
             <button class="btn btn-primary" onclick="newGame()">🎮 NEW GAME</button>
             <button class="btn btn-secondary" onclick="getHint()" id="hintBtn">💡 HINT (3)</button>
             <button class="btn btn-secondary" onclick="undoMove()" id="undoBtn" disabled>↩️ UNDO</button>
-            <button class="btn btn-secondary" onclick="toggleSound()" id="soundBtn">🔊 SOUND</button>
             <button class="btn btn-secondary" onclick="showVictoryModal()" id="showVictoryBtn" style="display: none;">📊 SHOW STATS</button>
             <button class="btn btn-secondary" onclick="showGameOverModal()" id="showGameOverBtn" style="display: none;">⚔️ SHOW RESULT</button>
-            <a href="../../index.html" class="btn btn-secondary">🏠 HOME</a>
         </div>
         
         <!-- Instructions -->
@@ -1548,8 +1634,19 @@
         // Toggle sound
         function toggleSound() {
             gameState.soundEnabled = !gameState.soundEnabled;
-            const btn = document.getElementById('soundBtn');
-            btn.textContent = gameState.soundEnabled ? '🔊 SOUND' : '🔇 SOUND';
+
+            // Actualizar iconos SVG
+            const iconOn = document.querySelector('.icon-sound-on');
+            const iconOff = document.querySelector('.icon-sound-off');
+
+            if (gameState.soundEnabled) {
+                iconOn.style.display = 'block';
+                iconOff.style.display = 'none';
+            } else {
+                iconOn.style.display = 'none';
+                iconOff.style.display = 'block';
+            }
+
             console.log(`🔊 Sound ${gameState.soundEnabled ? 'enabled' : 'disabled'}`);
         }
         
