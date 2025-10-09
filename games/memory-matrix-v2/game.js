@@ -110,15 +110,25 @@ function goHome() {
 // FUNCIÓN: Toggle Sonido
 // ============================================
 function toggleSound() {
-    soundEnabled = !soundEnabled;
+    // Usar el nuevo sistema de audio
+    if (window.MemoryMatrixAudio) {
+        const muted = window.MemoryMatrixAudio.toggleMute();
+        soundEnabled = !muted;
+
+        // Reproducir sonido de prueba al activar
+        if (soundEnabled) {
+            window.MemoryMatrixAudio.playSuccessSound();
+        }
+    } else {
+        // Fallback: sistema antiguo
+        soundEnabled = !soundEnabled;
+        saveAudioPreference();
+    }
 
     console.log(soundEnabled ? '🔊 Audio activado' : '🔇 Audio desactivado');
 
     // Actualizar iconos
     updateSoundIcon();
-
-    // Guardar preferencia en localStorage
-    saveAudioPreference();
 }
 
 // ============================================
@@ -148,13 +158,20 @@ function saveAudioPreference() {
 // FUNCIÓN: Cargar preferencia de audio
 // ============================================
 function loadAudioPreference() {
-    const saved = localStorage.getItem('memory_matrix_sound');
-
-    if (saved === 'off') {
-        soundEnabled = false;
+    // Cargar preferencia del nuevo sistema de audio
+    if (window.MemoryMatrixAudio) {
+        window.MemoryMatrixAudio.loadMutePreference();
+        soundEnabled = !window.MemoryMatrixAudio.isMuted();
+    } else {
+        // Fallback: cargar del localStorage antiguo
+        const saved = localStorage.getItem('memory_matrix_sound');
+        if (saved === 'off') {
+            soundEnabled = false;
+        }
     }
 
     updateSoundIcon();
+    console.log(`🔊 Audio ${soundEnabled ? 'activado' : 'desactivado'}`);
 }
 
 // ============================================
@@ -408,6 +425,13 @@ function hidePiecesPhase(levelConfig) {
     // ==========================================
     showSquareHints(squares);
 
+    // ==========================================
+    // SONIDO DE VUELO (whoosh)
+    // ==========================================
+    if (window.MemoryMatrixAudio) {
+        window.MemoryMatrixAudio.playFlySound();
+    }
+
     // Animar piezas al banco
     hidePiecesWithAnimation(squares, {
         stagger: 150,
@@ -503,7 +527,7 @@ function onAttemptSuccess() {
     const levelConfig = window.MemoryMatrixLevels.getLevelConfig(currentLevel);
 
     // ==========================================
-    // CELEBRACIÓN VISUAL
+    // CELEBRACIÓN VISUAL Y SONORA
     // ==========================================
 
     // 1. Barra de estado verde con animación de inflado
@@ -512,7 +536,12 @@ function onAttemptSuccess() {
         'success' // Activa animación verde + inflado
     );
 
-    // 2. Lanzar confeti 🎉
+    // 2. Sonido de éxito (chime)
+    if (window.MemoryMatrixAudio) {
+        window.MemoryMatrixAudio.playSuccessSound();
+    }
+
+    // 3. Lanzar confeti 🎉 (incluye sonido de confeti)
     launchConfetti(50);
 
     setTimeout(() => {
@@ -1502,6 +1531,13 @@ function shakeBoardOnError() {
         boardContainer.classList.remove('shake');
     }, 500);
 
+    // ==========================================
+    // REPRODUCIR SONIDO DE ERROR
+    // ==========================================
+    if (window.MemoryMatrixAudio) {
+        window.MemoryMatrixAudio.playErrorSound();
+    }
+
     console.log('📳 Shake del tablero activado');
 }
 
@@ -1571,6 +1607,13 @@ function launchConfetti(count = 50) {
         setTimeout(() => {
             confetti.remove();
         }, 3000);
+    }
+
+    // ==========================================
+    // REPRODUCIR SONIDO DE CONFETI
+    // ==========================================
+    if (window.MemoryMatrixAudio) {
+        window.MemoryMatrixAudio.playConfettiSound();
     }
 
     console.log(`🎉 ${count} confetis lanzados`);
@@ -1668,6 +1711,13 @@ function applyGlitchEffect(squares, intensity = 'warning') {
             console.log(`✨ Glitch sutil en ${square}`);
         }
     });
+
+    // ==========================================
+    // REPRODUCIR SONIDO DE GLITCH
+    // ==========================================
+    if (window.MemoryMatrixAudio) {
+        window.MemoryMatrixAudio.playGlitchSound(intensity);
+    }
 }
 
 /**

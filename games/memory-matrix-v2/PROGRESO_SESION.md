@@ -2993,3 +2993,230 @@ placedPieces = [];     // Resetear array de piezas colocadas
 **Última actualización**: 8 Octubre 2025 - Sistema de hints visuales (coordenadas en casillas)
 **Estado**: Feature completo con animaciones entrada/salida
 **Próximo**: Sistema de audio + git commit
+
+---
+
+## ✅ FEATURE: Sistema de Audio Completo (Web Audio API)
+**Estado**: COMPLETADO ✅
+**Fecha**: 8 Octubre 2025
+
+### Implementación:
+
+Se implementó un sistema de audio completo usando **Web Audio API** para generar sonidos sintéticos tipo arcade/neón, coherentes con el estilo visual del juego.
+
+---
+
+### Archivo creado: `audio.js` (+450 líneas)
+
+**Características del sistema:**
+- ✅ Sin archivos externos (todo generado en tiempo real)
+- ✅ Muy liviano (sin MP3/WAV)
+- ✅ Control total de frecuencias y efectos
+- ✅ Código super comentado (explicaciones didácticas)
+- ✅ Sistema de mute con persistencia en localStorage
+
+---
+
+### 🎵 Sonidos implementados:
+
+#### 1. **Glitch Matrix** - Distorsión digital
+```javascript
+playGlitchSound(intensity) // 'warning' o 'critical'
+```
+- **Técnica**: Ruido blanco + filtro bandpass
+- **Warning**: 800 Hz, sutil
+- **Critical**: 1500 Hz, intenso y urgente
+- **Duración**: 100ms
+- **Uso**: Al aplicar efecto glitch visual
+
+#### 2. **Error** - Buzz disonante
+```javascript
+playErrorSound()
+```
+- **Técnica**: 2 osciladores desafinados (150 Hz + 170 Hz)
+- **Onda**: Cuadrada (sonido digital/duro)
+- **Duración**: 300ms
+- **Uso**: Al fallar intento (shake del tablero)
+
+#### 3. **Éxito** - Chime ascendente
+```javascript
+playSuccessSound()
+```
+- **Técnica**: Arpeggio Do-Mi-Sol (523-659-783 Hz)
+- **Onda**: Seno (suave y agradable)
+- **Duración**: 3 notas × 150ms = 450ms
+- **Uso**: Al completar intento correctamente
+
+#### 4. **Confeti** - Cascada de notas
+```javascript
+playConfettiSound()
+```
+- **Técnica**: 8 notas aleatorias agudas (1000-2500 Hz)
+- **Delays**: Aleatorios (efecto lluvia/cascada)
+- **Duración**: 400ms total
+- **Uso**: Al lanzar confeti (victoria)
+
+#### 5. **Vuelo** - Whoosh
+```javascript
+playFlySound()
+```
+- **Técnica**: Ruido blanco + sweep descendente (500→100 Hz)
+- **Efecto**: Doppler (sonido que se aleja)
+- **Duración**: 300ms (sincronizado con animación)
+- **Uso**: Al volar piezas al banco
+
+---
+
+### 🔌 Integración en el juego:
+
+**Modificaciones en `game.js`:**
+
+1. **loadAudioPreference()** - Cargar estado de mute
+```javascript
+if (window.MemoryMatrixAudio) {
+    window.MemoryMatrixAudio.loadMutePreference();
+    soundEnabled = !window.MemoryMatrixAudio.isMuted();
+}
+```
+
+2. **toggleSound()** - Toggle mute + sonido de prueba
+```javascript
+const muted = window.MemoryMatrixAudio.toggleMute();
+if (!muted) {
+    window.MemoryMatrixAudio.playSuccessSound(); // Feedback al activar
+}
+```
+
+3. **applyGlitchEffect()** - Sonido glitch
+```javascript
+window.MemoryMatrixAudio.playGlitchSound(intensity);
+```
+
+4. **shakeBoardOnError()** - Sonido error
+```javascript
+window.MemoryMatrixAudio.playErrorSound();
+```
+
+5. **onAttemptSuccess()** - Sonido éxito
+```javascript
+window.MemoryMatrixAudio.playSuccessSound();
+```
+
+6. **launchConfetti()** - Sonido confeti
+```javascript
+window.MemoryMatrixAudio.playConfettiSound();
+```
+
+7. **hidePiecesPhase()** - Sonido vuelo
+```javascript
+window.MemoryMatrixAudio.playFlySound();
+```
+
+---
+
+### 📚 Código educativo:
+
+El archivo `audio.js` incluye comentarios extensos sobre:
+- Conceptos básicos de Web Audio API
+- Qué es un AudioContext, Oscillator, GainNode
+- Rangos de frecuencias (grave → agudo)
+- Técnicas de síntesis: ruido blanco, filtros, envelopes
+- Diferencia entre tipos de onda (seno, cuadrada, triangular)
+
+**Ejemplo de comentario:**
+```javascript
+/**
+ * CONCEPTOS BÁSICOS DE WEB AUDIO API:
+ * 1. AudioContext: Motor principal de audio del navegador
+ * 2. Oscillator: Generador de ondas sonoras
+ * 3. GainNode: Controla el volumen
+ * 4. Frequency: Frecuencia en Hz (grave=bajo, agudo=alto)
+ * 5. connect(): Conecta nodos de audio
+ */
+```
+
+---
+
+### 🎮 Experiencia de usuario:
+
+**Flujo completo con audio:**
+1. 🎵 **Memorización**: Silencio (concentración)
+2. ⚡ **Glitch warning** (40% del tiempo): Sonido sutil
+3. 🚨 **Glitch critical** (80% del tiempo): Sonido intenso
+4. ✈️ **Piezas vuelan**: Whoosh
+5. 📍 **Coordenadas aparecen**: Silencio (lectura)
+6. **Jugador coloca piezas**: Silencio
+7a. ✅ **Acierto**: Chime + confeti cascada
+7b. ❌ **Error**: Buzz disonante + shake
+
+---
+
+### 🎨 Mejora de visibilidad: Coordenadas en casillas blancas
+
+**Problema identificado:**
+> "en monitores grandes, cuando la pieza desaparece, no se ve bien la coordenada que aparece en el centro, sobre todo en las casillas blancas"
+
+**Solución implementada en `styles.css`:**
+
+```css
+.square-hint {
+    /* Tamaño más grande en desktop */
+    font-size: clamp(24px, 5vw, 42px); /* Antes: 20-32px */
+
+    /* Fondo oscuro semitransparente */
+    background: rgba(0, 0, 0, 0.75);
+    padding: 8px 16px;
+    border-radius: 8px;
+
+    /* Borde neón para destacar */
+    border: 2px solid var(--neon-cyan);
+    box-shadow:
+        0 0 15px rgba(0, 255, 255, 0.6),
+        0 0 25px rgba(0, 255, 255, 0.4),
+        inset 0 0 10px rgba(0, 255, 255, 0.2);
+
+    /* Desenfoque del fondo (elegante) */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+```
+
+**Mejoras aplicadas:**
+1. ✅ **Fondo oscuro 75% opaco** → Contraste perfecto en casillas blancas
+2. ✅ **Borde neón cyan** → Marco que destaca la coordenada
+3. ✅ **Box-shadow triple** → Glow exterior + interior (profundidad)
+4. ✅ **Backdrop-filter blur** → Desenfoca fondo (efecto vidrio esmerilado)
+5. ✅ **Padding 8x16** → Espacio respirable alrededor del texto
+6. ✅ **Border-radius 8px** → Esquinas redondeadas suaves
+7. ✅ **Tamaño mayor** → 24-42px (antes 20-32px) para monitores grandes
+
+**Resultado:**
+- Perfectamente visible en casillas blancas Y oscuras
+- Estilo neón coherente con el diseño
+- Efecto de "hologram" o "display futurista"
+- No invasivo, sigue siendo elegante
+
+---
+
+### Archivos modificados:
+
+**Nuevos:**
+- `audio.js` - Sistema completo de audio (+450 líneas)
+
+**Modificados:**
+- `index.html` - Import de audio.js (línea 175)
+- `game.js` - Integración de sonidos (7 funciones modificadas)
+- `styles.css` - Mejora de .square-hint (líneas 204-247)
+
+---
+
+### Feedback del usuario:
+
+✅ **"Cada vez me gusta mas, lo jugue bastante, empieza facil y se hace dificil"**
+✅ Audio funcionando correctamente (037_con_sonido_OK.log)
+
+---
+
+**Última actualización**: 8 Octubre 2025 - Sistema de audio + mejora de visibilidad de hints
+**Estado**: Sistema de audio completo + coordenadas mejoradas
+**Próximo**: Pantalla de nivel completo / Sistema de pausa mejorado / Botones deshacer-limpiar
