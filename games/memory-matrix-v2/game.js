@@ -24,6 +24,10 @@ let currentPosition = []; // Posición actual a memorizar
 let placedPieces = []; // Piezas que el jugador ha colocado
 let startTime = null; // Tiempo de inicio del intento
 
+// SISTEMA DE HINTS
+let hintsLeft = 10; // Hints disponibles para TODO EL JUEGO (no se resetean)
+const TOTAL_HINTS = 10; // Total de hints para toda la partida
+
 // LÍMITE DE ERRORES
 const MAX_FAILED_ATTEMPTS = 10; // Game Over a los 10 errores
 
@@ -92,6 +96,12 @@ function initButtons() {
     const btnStart = document.getElementById('btnStart');
     if (btnStart) {
         btnStart.addEventListener('click', togglePause);
+    }
+
+    // Botón HINT
+    const btnHint = document.getElementById('btnHint');
+    if (btnHint) {
+        btnHint.addEventListener('click', showHint);
     }
 }
 
@@ -305,6 +315,9 @@ function startGame() {
         btnStart.style.cursor = 'pointer';
     }
 
+    // Deshabilitar botón de hints durante memorización
+    updateHintButton();
+
     // ==========================================
     // LIMPIAR tablero y banco para nuevo intento
     // ==========================================
@@ -346,6 +359,9 @@ function showMemorizationPhase(levelConfig) {
     console.log('👁️ FASE 1: Memorización');
 
     updateStatus(`Nivel ${currentLevel} (${successfulAttempts}/${levelConfig.attemptsRequired}) - Intento ${currentAttempt} - ¡Memoriza!`);
+
+    // Deshabilitar botón de hints durante memorización
+    updateHintButton();
 
     // ==========================================
     // Iniciar contador visual de tiempo
@@ -460,6 +476,9 @@ function startSolvingPhase(piecesToPlace) {
 
     const pieceCount = piecesToPlace.length;
     updateStatus(`Arrastra ${pieceCount > 1 ? `las ${pieceCount} piezas` : 'la pieza'} del banco al tablero`);
+
+    // Habilitar botón de hints durante fase de resolución
+    updateHintButton();
 
     console.log('✅ Listo para drag & drop');
 }
@@ -712,6 +731,7 @@ function onGameOver() {
     currentAttempt = 1;
     successfulAttempts = 0;
     failedAttempts = 0; // ← RESETEAR CONTADOR DE ERRORES
+    hintsLeft = TOTAL_HINTS; // ← RESETEAR HINTS solo en Game Over
 
     // Resetear timer global
     resetGlobalTimer();
@@ -726,6 +746,9 @@ function onGameOver() {
         btnStart.style.cursor = 'pointer';
         btnStart.textContent = '▶ Comenzar';
     }
+
+    // Actualizar botón de hints
+    updateHintButton();
 
     gameState = 'idle';
     isPaused = false;
@@ -751,6 +774,7 @@ function onLevelComplete() {
         currentAttempt = 1;
         successfulAttempts = 0;
         failedAttempts = 0; // ← RESETEAR ERRORES al pasar de nivel
+        // NO resetear hints - son para todo el juego
 
         const totalLevels = window.MemoryMatrixLevels.getTotalLevels();
 
@@ -773,6 +797,9 @@ function onLevelComplete() {
             btnStart.style.cursor = 'pointer';
             btnStart.textContent = currentLevel <= totalLevels ? 'Siguiente Nivel' : 'Comenzar';
         }
+
+        // Actualizar botón de hints
+        updateHintButton();
 
         gameState = 'idle';
     }, 3000);
@@ -819,6 +846,183 @@ function updateStatus(message, type = 'normal') {
             // Normal (dorado)
             console.log(`📢 Status: ${message}`);
         }
+    }
+}
+
+// ============================================
+// SISTEMA DE HINTS
+// ============================================
+
+/**
+ * Muestra brevemente una pieza correcta como pista
+ */
+function showHint() {
+    // Validaciones
+    if (hintsLeft <= 0) {
+        updateStatus('❌ No quedan hints disponibles', 'error');
+        console.log('❌ No hints left');
+        return;
+    }
+
+    if (gameState !== 'solving') {
+        updateStatus('❌ Solo puedes usar hints durante la fase de colocación', 'error');
+        console.log('❌ Can only use hints during solving phase');
+        return;
+    }
+
+    // Obtener piezas que faltan colocar
+    const piecesToValidate = window.MemoryMatrixLevels.getPiecesToHide(
+        currentLevel,
+        currentAttempt,
+        currentPosition
+    );
+
+    // Filtrar piezas que aún NO han sido colocadas
+    const missingPieces = piecesToValidate.filter(expectedPiece => {
+        return !placedPieces.some(placed =>
+            placed.square === expectedPiece.square &&
+            placed.piece === expectedPiece.piece
+        );
+    });
+
+    if (missingPieces.length === 0) {
+        updateStatus('✅ Ya colocaste todas las piezas correctamente', 'success');
+        console.log('✅ All pieces placed');
+        return;
+    }
+
+    // Elegir una pieza aleatoria de las que faltan
+    const randomIndex = Math.floor(Math.random() * missingPieces.length);
+    const hintPiece = missingPieces[randomIndex];
+
+    // Crear elemento hint temporal (NO bloquea drag & drop)
+    const squareEl = getSquareElement(hintPiece.square);
+    if (!squareEl) return;
+
+    // OCULTAR TODAS las coordenadas temporalmente
+    const allHints = squareEl.querySelectorAll('.square-hint');
+    allHints.forEach(h => {
+        h.style.visibility = 'hidden';
+        console.log(`👻 Ocultando hint: ${h.textContent}`);
+    });
+
+    // Crear DIV con la imagen de pieza como fondo
+    const hintDiv = document.createElement('div');
+    hintDiv.className = 'hint-piece-overlay';
+    hintDiv.style.cssText = `
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/${currentPieceStyle}/150/${hintPiece.piece}.png') !important;
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+        opacity: 0.6 !important;
+        filter: drop-shadow(0 0 20px gold) !important;
+        pointer-events: none !important;
+        z-index: 999 !important;
+    `;
+
+    squareEl.appendChild(hintDiv);
+    console.log(`✅ Hint overlay appended to square ${hintPiece.square}`);
+    console.log(`📊 Square ${hintPiece.square} children:`, squareEl.children.length);
+
+    // Efecto de desintegración en partículas después de 1.5s
+    setTimeout(() => {
+        createDisintegrationEffect(squareEl, hintDiv, allHints);
+    }, 1500);
+
+    // Consumir hint
+    hintsLeft--;
+    updateHintButton();
+
+    updateStatus(`💡 Pista (${hintsLeft} restantes): ${hintPiece.piece} va en ${hintPiece.square}`);
+    console.log(`💡 Hint shown: ${hintPiece.piece} on ${hintPiece.square} (${hintsLeft} hints left)`);
+}
+
+/**
+ * Crea efecto de desintegración en partículas
+ * @param {HTMLElement} squareEl - Casilla donde está la pieza
+ * @param {HTMLElement} hintElement - Elemento hint (div o img)
+ * @param {NodeList|HTMLElement} hiddenHints - Coordenadas ocultas (para restaurar)
+ */
+function createDisintegrationEffect(squareEl, hintElement, hiddenHints) {
+    const rect = squareEl.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    // Crear 20 partículas doradas
+    for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'hint-particle';
+
+        // Posición inicial (centro de la pieza)
+        particle.style.left = `${centerX}px`;
+        particle.style.top = `${centerY}px`;
+
+        // Dirección aleatoria
+        const angle = (Math.PI * 2 * i) / 20 + (Math.random() - 0.5) * 0.5;
+        const distance = 50 + Math.random() * 50;
+        const tx = Math.cos(angle) * distance;
+        const ty = Math.sin(angle) * distance;
+
+        particle.style.setProperty('--tx', `${tx}px`);
+        particle.style.setProperty('--ty', `${ty}px`);
+
+        document.body.appendChild(particle);
+
+        // Trigger animation
+        setTimeout(() => {
+            particle.style.animation = 'hintDisintegrate 1s ease-out forwards';
+        }, 10);
+
+        // Remover después de la animación
+        setTimeout(() => {
+            if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        }, 1100);
+    }
+
+    // Fade out del elemento hint
+    hintElement.style.transition = 'opacity 1s ease-out';
+    hintElement.style.opacity = '0';
+
+    // Remover hint después de 1s
+    setTimeout(() => {
+        if (hintElement.parentNode) {
+            hintElement.parentNode.removeChild(hintElement);
+        }
+
+        // Restaurar coordenadas si existían
+        if (hiddenHints) {
+            if (hiddenHints.forEach) {
+                // Es un NodeList
+                hiddenHints.forEach(h => {
+                    h.style.visibility = 'visible';
+                });
+            } else {
+                // Es un elemento simple
+                hiddenHints.style.visibility = 'visible';
+            }
+        }
+
+        updateStatus('Coloca las piezas restantes...');
+    }, 1000);
+}
+
+/**
+ * Actualiza el botón de hint (contador y estado disabled)
+ */
+function updateHintButton() {
+    const btnHint = document.getElementById('btnHint');
+    const hintLabel = document.getElementById('hintLabel');
+
+    if (btnHint && hintLabel) {
+        hintLabel.textContent = `HINT (${hintsLeft})`;
+        btnHint.disabled = (hintsLeft <= 0 || gameState !== 'solving');
     }
 }
 

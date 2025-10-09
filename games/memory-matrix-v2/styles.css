@@ -307,6 +307,22 @@ body::before {
     box-shadow: 0 0 20px var(--neon-orange);
 }
 
+/* Botón HINT: amarillo/gold */
+.btn-hint {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.btn-hint:hover:not(:disabled) {
+    box-shadow: 0 0 20px var(--gold);
+}
+
+.btn-hint:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
 /* ============================================
    SELECTOR DE ESTILO DE PIEZAS
    Destacado con borde brillante y tamaño más grande
@@ -1584,6 +1600,37 @@ body::before {
     100% {
         opacity: 0;
         transform: translateY(100vh) rotate(720deg);
+    }
+}
+
+/* ============================================
+   PARTÍCULAS DE HINT
+   Efecto de desintegración dorado
+   ============================================ */
+
+.hint-particle {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    box-shadow:
+        0 0 10px var(--gold),
+        0 0 20px var(--gold),
+        0 0 30px rgba(255, 215, 0, 0.5);
+}
+
+/* Animación de desintegración */
+@keyframes hintDisintegrate {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(0);
     }
 }
 
