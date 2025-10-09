@@ -209,7 +209,7 @@ body::before {
 
     /* Tipografía */
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(24px, 5vw, 42px); /* Más grande en desktop */
+    font-size: clamp(16px, 3vw, 24px); /* Tamaño moderado, cabe en casilla */
     font-weight: 900;
 
     /* Color neón cyan brillante */
@@ -221,8 +221,8 @@ body::before {
 
     /* Fondo oscuro semitransparente para contraste */
     background: rgba(0, 0, 0, 0.75);
-    padding: 8px 16px;
-    border-radius: 8px;
+    padding: 4px 10px;
+    border-radius: 6px;
 
     /* Borde neón sutil */
     border: 2px solid var(--neon-cyan);
