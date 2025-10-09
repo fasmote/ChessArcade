@@ -173,6 +173,21 @@
     <div class="confetti-container" id="confettiContainer"></div>
 
     <!-- ==================================================
+         LEVEL TRANSITION - Transición entre niveles
+         ================================================== -->
+    <div class="level-transition-overlay hidden" id="levelTransition">
+        <div class="level-transition-content">
+            <div class="level-icon">🎉</div>
+            <h2 class="level-title" id="levelTitle">¡Nivel Completado!</h2>
+            <div class="level-number" id="levelNumber">NIVEL 2</div>
+            <p class="level-name" id="levelName">Explorador</p>
+            <div class="level-progress-bar">
+                <div class="level-progress-fill" id="levelProgressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================================================
          JAVASCRIPT
          ================================================== -->
 
@@ -180,6 +195,7 @@
     <script src="ChessGameLibrary/Utils.js"></script>
     <script src="ChessGameLibrary/PieceAnimations.js"></script>
     <script src="ChessGameLibrary/DragDrop.js"></script>
+    <script src="ChessGameLibrary/LevelTransition.js"></script>
 
     <!-- Sistema de audio (Web Audio API) -->
     <script src="audio.js"></script>

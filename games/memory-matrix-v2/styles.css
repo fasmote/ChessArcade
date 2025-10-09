@@ -1271,7 +1271,7 @@ body::before {
    ============================================ */
 
 .timer-container {
-    /* Posición absoluta sobre el banco de piezas */
+    /* Mobile: Centrado sobre el banco */
     position: absolute;
     top: 50%;
     left: 50%;
@@ -1284,6 +1284,21 @@ body::before {
     transition: opacity 0.3s ease, visibility 0.3s ease;
 
     pointer-events: none; /* No bloquea clics */
+}
+
+/* Desktop: Debajo del banco de piezas */
+@media (min-width: 900px) {
+    .timer-container {
+        position: static;
+        transform: none;
+        margin-top: 20px;
+    }
+
+    .piece-bank-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 }
 
 .timer-container.hidden {
@@ -1632,6 +1647,148 @@ body::before {
         opacity: 0;
         transform: translate(var(--tx), var(--ty)) scale(0);
     }
+}
+
+/* ============================================
+   LEVEL TRANSITION - Transición entre niveles
+   ============================================ */
+
+.level-transition-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.level-transition-overlay.hidden {
+    display: none;
+}
+
+.level-transition-content {
+    text-align: center;
+    animation: levelZoomIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.level-icon {
+    font-size: clamp(60px, 15vw, 120px);
+    margin-bottom: 20px;
+    animation: iconPulse 1.5s ease-in-out infinite;
+}
+
+.level-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(24px, 6vw, 48px);
+    font-weight: 900;
+    color: var(--neon-cyan);
+    text-shadow:
+        0 0 20px var(--neon-cyan),
+        0 0 40px var(--neon-cyan),
+        0 0 60px rgba(0, 255, 255, 0.5);
+    margin-bottom: 30px;
+    animation: neonFlicker 2s ease-in-out infinite;
+}
+
+.level-number {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(48px, 12vw, 96px);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink), var(--neon-orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 20px 0;
+    animation: gradientShift 3s ease-in-out infinite;
+}
+
+.level-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(18px, 4vw, 32px);
+    font-weight: 700;
+    color: var(--gold);
+    text-shadow:
+        0 0 15px var(--gold),
+        0 0 30px rgba(255, 215, 0, 0.5);
+    margin-bottom: 40px;
+}
+
+.level-progress-bar {
+    width: clamp(200px, 60vw, 400px);
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+}
+
+.level-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+    width: 0%;
+    animation: progressFill 2s ease-out forwards;
+    box-shadow: 0 0 20px var(--neon-cyan);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes levelZoomIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) rotate(-10deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes iconPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+@keyframes neonFlicker {
+    0%, 100% {
+        text-shadow:
+            0 0 20px var(--neon-cyan),
+            0 0 40px var(--neon-cyan),
+            0 0 60px rgba(0, 255, 255, 0.5);
+    }
+    50% {
+        text-shadow:
+            0 0 30px var(--neon-cyan),
+            0 0 60px var(--neon-cyan),
+            0 0 90px rgba(0, 255, 255, 0.8);
+    }
+}
+
+@keyframes gradientShift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes progressFill {
+    from { width: 0%; }
+    to { width: 100%; }
 }
 
 /* ============================================
