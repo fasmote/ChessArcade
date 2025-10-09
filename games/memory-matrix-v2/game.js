@@ -895,43 +895,33 @@ function showHint() {
     const randomIndex = Math.floor(Math.random() * missingPieces.length);
     const hintPiece = missingPieces[randomIndex];
 
-    // Crear elemento hint temporal (NO bloquea drag & drop)
+    // Obtener casilla
     const squareEl = getSquareElement(hintPiece.square);
     if (!squareEl) return;
 
-    // OCULTAR TODAS las coordenadas temporalmente
+    // OCULTAR coordenadas temporalmente
     const allHints = squareEl.querySelectorAll('.square-hint');
     allHints.forEach(h => {
         h.style.visibility = 'hidden';
-        console.log(`👻 Ocultando hint: ${h.textContent}`);
+        console.log(`👻 Ocultando coordenada: ${h.textContent}`);
     });
 
-    // Crear DIV con la imagen de pieza como fondo
-    const hintDiv = document.createElement('div');
-    hintDiv.className = 'hint-piece-overlay';
-    hintDiv.style.cssText = `
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/${currentPieceStyle}/150/${hintPiece.piece}.png') !important;
-        background-size: contain !important;
-        background-repeat: no-repeat !important;
-        background-position: center !important;
-        opacity: 0.6 !important;
-        filter: drop-shadow(0 0 20px gold) !important;
-        pointer-events: none !important;
-        z-index: 999 !important;
-    `;
+    // Usar showPiece() para mostrar la pieza (método que ya funciona)
+    showPiece(hintPiece.square, hintPiece.piece);
 
-    squareEl.appendChild(hintDiv);
-    console.log(`✅ Hint overlay appended to square ${hintPiece.square}`);
-    console.log(`📊 Square ${hintPiece.square} children:`, squareEl.children.length);
+    // Obtener la pieza recién creada y modificar sus estilos para hint
+    const pieceImg = squareEl.querySelector('.piece');
+    if (pieceImg) {
+        pieceImg.classList.add('hint-piece');
+        pieceImg.style.opacity = '0.6';
+        pieceImg.style.filter = 'drop-shadow(0 0 20px gold)';
+        pieceImg.style.pointerEvents = 'none'; // ← NO BLOQUEA DRAG & DROP
+        console.log(`✅ Hint piece styled: ${hintPiece.piece} on ${hintPiece.square}`);
+    }
 
     // Efecto de desintegración en partículas después de 1.5s
     setTimeout(() => {
-        createDisintegrationEffect(squareEl, hintDiv, allHints);
+        createDisintegrationEffect(squareEl, pieceImg, allHints);
     }, 1500);
 
     // Consumir hint
@@ -987,16 +977,20 @@ function createDisintegrationEffect(squareEl, hintElement, hiddenHints) {
     }
 
     // Fade out del elemento hint
-    hintElement.style.transition = 'opacity 1s ease-out';
-    hintElement.style.opacity = '0';
+    if (hintElement) {
+        hintElement.style.transition = 'opacity 1s ease-out';
+        hintElement.style.opacity = '0';
 
-    // Remover hint después de 1s
+        // Remover hint después de 1s
+        setTimeout(() => {
+            if (hintElement.parentNode) {
+                hintElement.remove();
+            }
+        }, 1000);
+    }
+
+    // Restaurar coordenadas después de 1s
     setTimeout(() => {
-        if (hintElement.parentNode) {
-            hintElement.parentNode.removeChild(hintElement);
-        }
-
-        // Restaurar coordenadas si existían
         if (hiddenHints) {
             if (hiddenHints.forEach) {
                 // Es un NodeList
@@ -1008,7 +1002,6 @@ function createDisintegrationEffect(squareEl, hintElement, hiddenHints) {
                 hiddenHints.style.visibility = 'visible';
             }
         }
-
         updateStatus('Coloca las piezas restantes...');
     }, 1000);
 }
