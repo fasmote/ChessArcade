@@ -18,7 +18,7 @@ const LEVELS = [
         description: 'Perfecto para comenzar',
         ageRange: '4-5 años',
         pieceCount: 2,  // 2 reyes (siempre están ambos)
-        memorizationTime: 5000,  // 5 segundos (mitad del original)
+        memorizationTime: 3000,  // 3 segundos
         difficulty: 'easy',
         pieceTypes: ['K', 'Q'],
         allowedColors: ['w', 'b'],
@@ -40,7 +40,7 @@ const LEVELS = [
         description: '¡Vas mejorando!',
         ageRange: '6-7 años',
         pieceCount: 3,
-        memorizationTime: 5000, // 5 segundos
+        memorizationTime: 3000, // 3 segundos
         difficulty: 'easy',
         pieceTypes: ['K', 'Q', 'R'], // Agregar torres
         allowedColors: ['w', 'b'],
@@ -62,7 +62,7 @@ const LEVELS = [
         description: 'Buen trabajo',
         ageRange: '8-10 años',
         pieceCount: 4,
-        memorizationTime: 6000, // 6 segundos
+        memorizationTime: 4000, // 4 segundos
         difficulty: 'medium',
         pieceTypes: ['K', 'Q', 'R', 'B'], // Agregar alfiles
         allowedColors: ['w', 'b'],
@@ -84,7 +84,7 @@ const LEVELS = [
         description: '¡Impresionante!',
         ageRange: '11-14 años',
         pieceCount: 5,
-        memorizationTime: 7000, // 7 segundos
+        memorizationTime: 5000, // 5 segundos
         difficulty: 'medium',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N'], // Agregar caballos
         allowedColors: ['w', 'b'],
@@ -106,7 +106,7 @@ const LEVELS = [
         description: 'Nivel avanzado',
         ageRange: '15+ años',
         pieceCount: 6,
-        memorizationTime: 7500, // 7.5 segundos
+        memorizationTime: 5000, // 5 segundos
         difficulty: 'hard',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'], // Todas las piezas
         allowedColors: ['w', 'b'],
@@ -128,7 +128,7 @@ const LEVELS = [
         description: '¡Extraordinario!',
         ageRange: 'Experto',
         pieceCount: 7,
-        memorizationTime: 8000,
+        memorizationTime: 6000, // 6 segundos
         difficulty: 'hard',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'],
         allowedColors: ['w', 'b'],
@@ -150,7 +150,7 @@ const LEVELS = [
         description: 'Nivel élite',
         ageRange: 'Élite',
         pieceCount: 8,
-        memorizationTime: 9000,
+        memorizationTime: 6000, // 6 segundos
         difficulty: 'expert',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'],
         allowedColors: ['w', 'b'],
@@ -172,7 +172,7 @@ const LEVELS = [
         description: '¡Increíble memoria!',
         ageRange: 'Leyenda',
         pieceCount: 10,
-        memorizationTime: 10000,
+        memorizationTime: 7000, // 7 segundos
         difficulty: 'expert',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'],
         allowedColors: ['w', 'b'],

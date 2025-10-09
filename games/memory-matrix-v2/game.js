@@ -1160,11 +1160,11 @@ function showPiece(square, piece) {
     // ==========================================
     // 2. LIMPIAR PIEZAS EXISTENTES EN ESA CASILLA
     // ==========================================
-    // Si ya había una pieza, eliminarla primero
-    const existingPiece = squareElement.querySelector('.piece');
-    if (existingPiece) {
-        existingPiece.remove();
-    }
+    // Si ya había una pieza, eliminarla primero (incluyendo hints)
+    const existingPieces = squareElement.querySelectorAll('.piece');
+    existingPieces.forEach(piece => {
+        piece.remove();
+    });
 
     // ==========================================
     // 3. CREAR IMAGEN DE LA PIEZA
@@ -1481,11 +1481,21 @@ function initDragAndDrop() {
                 return false;
             }
 
-            // Verificar que no haya pieza en la casilla
+            // Verificar que no haya pieza en la casilla (ignorar hints)
             const squareElement = document.querySelector(`[data-square="${square}"]`);
-            const hasPiece = squareElement?.querySelector('.piece');
+            const pieces = squareElement?.querySelectorAll('.piece');
 
-            if (hasPiece) {
+            // Filtrar solo piezas reales (no hints)
+            let hasRealPiece = false;
+            if (pieces) {
+                pieces.forEach(p => {
+                    if (!p.classList.contains('hint-piece')) {
+                        hasRealPiece = true;
+                    }
+                });
+            }
+
+            if (hasRealPiece) {
                 console.log(`❌ Ya hay una pieza en ${square}`);
                 updateStatus('⚠️ Ya hay una pieza en esa casilla');
                 return false;
