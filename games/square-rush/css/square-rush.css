@@ -44,20 +44,16 @@ body::before {
     align-items: center;
     padding: 1rem;
     min-height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-/* Header */
-.header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-}
-
-/* Botones icono (HOME, SONIDO) */
+/* Botones icono (HOME, SONIDO) - Position absolute dentro del container */
 .btn-icon {
+    position: absolute;
+    top: 1rem;
+    z-index: 100;
+
     /* Flexbox para centrar icono + texto */
     display: flex;
     align-items: center;
@@ -110,8 +106,9 @@ body::before {
     stroke: currentColor;
 }
 
-/* Botón HOME: cyan */
+/* Botón HOME: cyan, esquina izquierda */
 .btn-home {
+    left: 1rem;
     border-color: #00ffff;
     color: #00ffff;
 }
@@ -120,8 +117,9 @@ body::before {
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
 }
 
-/* Botón SOUND: naranja */
+/* Botón SOUND: naranja, esquina derecha */
 .btn-sound {
+    right: 1rem;
     border-color: #ff8000;
     color: #ff8000;
 }
