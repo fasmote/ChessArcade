@@ -1121,6 +1121,7 @@ body::before {
 
     .timer-hint-container {
         order: 0;
+        justify-content: center; /* Centrar timer en desktop */
     }
 
     .global-timer {
