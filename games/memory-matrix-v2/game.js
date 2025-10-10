@@ -621,10 +621,13 @@ function onAttemptSuccess() {
             currentAttempt++;
             updateStatus(`Preparando siguiente intento...`);
 
+            // Limpiar posición actual para que se genere una nueva
+            currentPosition = [];
+
             // Esperar 1 segundo y auto-iniciar
             setTimeout(() => {
                 gameState = 'idle';
-                startGame(); // ← Auto-start
+                startGame(); // ← Auto-start con nueva posición
             }, 1000);
         }
     }, 1500);
