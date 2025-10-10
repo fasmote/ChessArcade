@@ -372,6 +372,8 @@ body::before {
 
     .timer-hint-container {
         justify-content: center; /* Timer centrado en desktop */
+        display: flex;
+        align-items: center;
     }
 
     .header {
