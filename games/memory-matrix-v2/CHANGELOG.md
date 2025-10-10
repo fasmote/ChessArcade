@@ -4,6 +4,37 @@ Registro cronológico de cambios día a día.
 
 ---
 
+## [2025-10-10] - UX Mobile: Timer Global + Layout Responsive
+
+### Cambiado
+- **Layout Mobile Optimizado** (solo mobile, desktop sin cambios)
+  - Timer global visible desde inicio mostrando "00:00"
+  - Reordenamiento con flexbox order:
+    - Mobile: Timer global arriba → Banco piezas medio → Titulo "Piezas Disponibles" abajo
+    - Desktop (768px+): Orden normal (titulo arriba, banco medio, timer abajo)
+  - Mejor uso del espacio vertical en pantallas pequeñas
+  - Timer más visible al iniciar juego
+
+- **Sidebar height ajustado**
+  - Removido min-height/max-height que causaba barra lateral muy larga
+  - Altura se ajusta automáticamente al contenido
+  - Layout más compacto y natural
+
+### Archivos modificados
+- `index.html` - Removida clase `.hidden` del timer global (línea 145)
+- `styles.css` - Reordenamiento con flexbox order (+18 líneas)
+  - `.global-timer`: order: 1, margin-top: 0, margin-bottom: 10px
+  - `.piece-bank`: order: 2
+  - `.bank-title`: order: 3
+  - Media query 768px: Reset orders a 0, margins normales
+
+### Estadísticas
+- 2 commits realizados
+- UX mobile significativamente mejorado
+- Timer global siempre visible para feedback constante
+
+---
+
 ## [2025-10-10] - Sistema Deshacer/Limpiar (codigo) + Documentacion
 
 ### Agregado

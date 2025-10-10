@@ -509,12 +509,16 @@ body::before {
     justify-content: center;
     gap: 6px;
     padding: 8px 14px;
-    margin-top: 15px;
+    margin-top: 0; /* Cambiado: va arriba en mobile */
+    margin-bottom: 10px; /* Espaciado hacia abajo */
     background: rgba(0, 0, 0, 0.6);
     border: 2px solid var(--gold);
     border-radius: var(--border-radius);
     font-family: 'Orbitron', sans-serif;
     box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+
+    /* Order: En mobile va arriba */
+    order: 1;
 }
 
 .global-timer .timer-icon {
@@ -911,6 +915,9 @@ body::before {
     /* Uppercase */
     text-transform: uppercase;
     letter-spacing: 1px;
+
+    /* Order: En mobile va abajo (después del banco) */
+    order: 3;
 }
 
 /* Grid del banco */
@@ -919,6 +926,9 @@ body::before {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: var(--spacing-sm);
+
+    /* Order: En mobile va en el medio */
+    order: 2;
 
     /* Ancho completo */
     width: 100%;
@@ -1014,6 +1024,21 @@ body::before {
     .piece-bank {
         /* 3 columnas × 4 filas en desktop */
         grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* En desktop: Orden normal (título arriba, banco medio, timer abajo) */
+    .bank-title {
+        order: 0;
+    }
+
+    .piece-bank {
+        order: 0;
+    }
+
+    .global-timer {
+        order: 0;
+        margin-top: 15px;
+        margin-bottom: 0;
     }
 }
 
