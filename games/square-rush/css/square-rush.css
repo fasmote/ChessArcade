@@ -48,8 +48,8 @@ body::before {
 /* Sound Toggle Button */
 .btn-sound {
     position: fixed;
-    top: 80px;
-    right: 80px;
+    top: 20px;
+    right: 20px;
 
     /* Flexbox para centrar icono + texto */
     display: flex;
@@ -545,8 +545,8 @@ body::before {
 /* Home Button */
 .btn-home {
     position: fixed;
-    top: 80px;
-    left: 80px;
+    top: 20px;
+    left: 20px;
     z-index: 1000;
 
     /* Flexbox para centrar icono + texto */
