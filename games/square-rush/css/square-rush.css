@@ -503,3 +503,59 @@ body::before {
         font-size: 14px;
     }
 }
+
+/* Home Button */
+.btn-home {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #00d9ff;
+    border-radius: 10px;
+    
+    color: #00d9ff;
+    cursor: pointer;
+    
+    box-shadow: 
+        0 0 15px rgba(0, 217, 255, 0.5),
+        inset 0 0 10px rgba(0, 217, 255, 0.1);
+    
+    transition: all 0.3s ease;
+}
+
+.btn-home:hover {
+    background: rgba(0, 217, 255, 0.1);
+    box-shadow: 
+        0 0 25px rgba(0, 217, 255, 0.8),
+        inset 0 0 15px rgba(0, 217, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.btn-home svg {
+    width: 24px;
+    height: 24px;
+}
+
+@media (max-width: 600px) {
+    .btn-home {
+        top: 15px;
+        left: 15px;
+        width: 45px;
+        height: 45px;
+    }
+    
+    .btn-home svg {
+        width: 20px;
+        height: 20px;
+    }
+}

@@ -385,6 +385,9 @@ document.getElementById('helpBtn').addEventListener('click', toggleCoordinates);
 document.getElementById('nextLevelBtn').addEventListener('click', nextLevel);
 document.getElementById('playAgainBtn').addEventListener('click', playAgain);
 document.getElementById('soundToggle').addEventListener('click', toggleSound);
+document.getElementById('btnHome').addEventListener('click', () => {
+    window.location.href = '../../index.html';
+});
 
 // Initialize when page loads
 window.addEventListener('load', initGame);
