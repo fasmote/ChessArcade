@@ -869,6 +869,10 @@ body::before {
     align-items: center;
     gap: var(--spacing-md);
 
+    /* Altura minima igual al tablero */
+    min-height: 90vw;
+    max-height: 400px;
+
     /* Fondo semi-transparente */
     background: rgba(0, 0, 0, 0.4);
 
@@ -1009,6 +1013,8 @@ body::before {
         /* Ancho fijo en desktop */
         width: 300px;
         max-width: none;
+        /* Altura ajustada al tablero desktop */
+        max-height: 500px;
     }
 
     .piece-bank {
