@@ -3217,6 +3217,104 @@ El archivo `audio.js` incluye comentarios extensos sobre:
 
 ---
 
-**Última actualización**: 8 Octubre 2025 - Sistema de audio + mejora de visibilidad de hints
-**Estado**: Sistema de audio completo + coordenadas mejoradas
-**Próximo**: Pantalla de nivel completo / Sistema de pausa mejorado / Botones deshacer-limpiar
+---
+
+## 🐛 CORRECCIONES POST-DESARROLLO (10 Octubre 2025)
+
+### Fix #1: Limpieza de tablero en transición de niveles
+
+**Problema:**
+Al completar el nivel 1 y pasar al nivel 2, las piezas del nivel anterior permanecían en el tablero mientras se mostraban las nuevas piezas, causando acumulación visual.
+
+**Causa:**
+En `onLevelComplete()` (línea 865), se llamaba a `showInitialPosition()` para mostrar la vista previa del nuevo nivel, pero no había un `clearBoard()` previo. Como `showInitialPosition()` solo agrega piezas sin limpiar, las piezas del nivel anterior quedaban en el tablero.
+
+**Solución aplicada:**
+```javascript
+// game.js línea 864-868
+// Limpiar tablero antes de mostrar nuevo nivel
+clearBoard();
+
+// Mostrar posición inicial del nuevo nivel (preview)
+showInitialPosition();
+```
+
+**Resultado:**
+✅ Transición limpia entre niveles - solo aparecen las piezas del nuevo nivel
+
+---
+
+### Fix #2: Sistema de hints devuelve pieza incorrecta al banco
+
+**Problema:**
+Al colocar una pieza incorrecta (ej: Torre negra donde va Rey negro) y presionar HINT, la pieza incorrecta desaparecía sin regresar al banco, quedando "perdida" y sin poder usarla nuevamente.
+
+**Causa:**
+En `showHint()` (línea 1005), se llamaba directamente a `showPiece()` para mostrar el hint. La función `showPiece()` elimina cualquier pieza existente en la casilla (líneas 1434-1437) sin devolverla al banco, causando la pérdida de la pieza incorrecta.
+
+**Solución aplicada:**
+```javascript
+// game.js líneas 998-1051
+// VERIFICAR si hay una pieza INCORRECTA en esa casilla
+const existingPiece = squareEl.querySelector('.piece');
+if (existingPiece && !existingPiece.classList.contains('hint-piece')) {
+    const existingPieceCode = existingPiece.dataset.piece;
+
+    // Si la pieza existente es diferente a la esperada, devolverla al banco
+    if (existingPieceCode !== hintPiece.piece) {
+        console.log(`⚠️ Pieza incorrecta ${existingPieceCode} en ${hintPiece.square}, devolviéndola al banco`);
+
+        // Devolver pieza al banco con animación
+        animatePieceBackToBank(hintPiece.square, existingPieceCode, () => {
+            // Remover de placedPieces
+            const index = placedPieces.findIndex(p =>
+                p.square === hintPiece.square
+            );
+            if (index !== -1) {
+                placedPieces.splice(index, 1);
+                console.log(`🗑️ Pieza ${existingPieceCode} removida de placedPieces`);
+            }
+        });
+    }
+}
+
+// Esperar 450ms para que termine animación antes de mostrar hint
+setTimeout(() => {
+    showPiece(hintPiece.square, hintPiece.piece);
+    // ... resto del código de hint
+}, 450);
+```
+
+**Flujo mejorado:**
+1. Usuario coloca pieza incorrecta (Torre en casilla de Rey)
+2. Usuario presiona HINT
+3. Sistema detecta pieza incorrecta
+4. Anima pieza incorrecta de vuelta al banco (400ms)
+5. Actualiza `placedPieces` para removerla
+6. Espera 450ms
+7. Muestra hint con brillo dorado
+8. Hint se desintegra normalmente después de 1.5s
+9. Usuario puede volver a usar la Torre desde el banco
+
+**Resultado:**
+✅ Piezas incorrectas regresan al banco al usar HINT
+✅ No se pierden piezas durante el juego
+✅ Animación fluida y feedback visual claro
+
+---
+
+### Archivos modificados en esta sesión:
+
+**game.js:**
+- Línea 865: Agregado `clearBoard()` antes de `showInitialPosition()`
+- Líneas 998-1051: Sistema de devolución de pieza incorrecta en hints
+
+**Total de cambios:**
+- +25 líneas en `showHint()` (validación + devolución al banco)
+- +1 línea en `onLevelComplete()` (clearBoard)
+
+---
+
+**Última actualización**: 10 Octubre 2025 - Corrección de transición de niveles + hints
+**Estado**: Bugs críticos corregidos - juego estable
+**Próximo**: Testing completo de flujo de juego

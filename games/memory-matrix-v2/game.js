@@ -861,6 +861,9 @@ function onLevelComplete() {
         // Actualizar botón de hints
         updateHintButton();
 
+        // Limpiar tablero antes de mostrar nuevo nivel
+        clearBoard();
+
         // Mostrar posición inicial del nuevo nivel (preview)
         showInitialPosition();
 
@@ -992,32 +995,60 @@ function showHint() {
         const squareEl = getSquareElement(hintPiece.square);
         if (!squareEl) return;
 
+        // VERIFICAR si hay una pieza INCORRECTA en esa casilla
+        const existingPiece = squareEl.querySelector('.piece');
+        if (existingPiece && !existingPiece.classList.contains('hint-piece')) {
+            const existingPieceCode = existingPiece.dataset.piece;
+
+            // Si la pieza existente es diferente a la esperada, devolverla al banco
+            if (existingPieceCode !== hintPiece.piece) {
+                console.log(`⚠️ Pieza incorrecta ${existingPieceCode} en ${hintPiece.square}, devolviéndola al banco`);
+
+                // Devolver pieza al banco con animación
+                animatePieceBackToBank(hintPiece.square, existingPieceCode, () => {
+                    // Remover de placedPieces
+                    const index = placedPieces.findIndex(p =>
+                        p.square === hintPiece.square
+                    );
+                    if (index !== -1) {
+                        placedPieces.splice(index, 1);
+                        console.log(`🗑️ Pieza ${existingPieceCode} removida de placedPieces`);
+                    }
+                });
+
+                // Esperar un momento para que la pieza salga antes de mostrar hint
+                // (la función continuará y mostrará el hint después)
+            }
+        }
+
         // OCULTAR coordenadas temporalmente
         const squareHints = squareEl.querySelectorAll('.square-hint');
         squareHints.forEach(h => {
             h.style.visibility = 'hidden';
         });
 
-        // Usar showPiece() para mostrar la pieza
-        showPiece(hintPiece.square, hintPiece.piece);
+        // Usar showPiece() para mostrar la pieza hint (después de pequeño delay si hubo animación)
+        setTimeout(() => {
+            showPiece(hintPiece.square, hintPiece.piece);
 
-        // Obtener la pieza recién creada y modificar sus estilos para hint
-        const pieceImg = squareEl.querySelector('.piece');
-        if (pieceImg) {
-            pieceImg.classList.add('hint-piece');
-            pieceImg.style.opacity = '0.6';
-            pieceImg.style.filter = 'drop-shadow(0 0 20px gold)';
-            pieceImg.style.pointerEvents = 'none'; // ← NO BLOQUEA DRAG & DROP
+            // Obtener la pieza recién creada y modificar sus estilos para hint
+            const pieceImg = squareEl.querySelector('.piece');
+            if (pieceImg) {
+                pieceImg.classList.add('hint-piece');
+                pieceImg.style.opacity = '0.6';
+                pieceImg.style.filter = 'drop-shadow(0 0 20px gold)';
+                pieceImg.style.pointerEvents = 'none'; // ← NO BLOQUEA DRAG & DROP
 
-            // Guardar para desintegración
-            hintElements.push({
-                squareEl: squareEl,
-                pieceImg: pieceImg,
-                hints: squareHints
-            });
+                // Guardar para desintegración
+                hintElements.push({
+                    squareEl: squareEl,
+                    pieceImg: pieceImg,
+                    hints: squareHints
+                });
 
-            console.log(`✅ Hint piece styled: ${hintPiece.piece} on ${hintPiece.square}`);
-        }
+                console.log(`✅ Hint piece styled: ${hintPiece.piece} on ${hintPiece.square}`);
+            }
+        }, 450); // Delay para permitir que termine animación de vuelta al banco (400ms)
     });
 
     // Efecto de desintegración COORDINADO para TODAS las piezas después de 1.5s
