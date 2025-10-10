@@ -4,7 +4,17 @@ Registro cronológico de cambios día a día.
 
 ---
 
-## [2025-10-10] - Posicionamiento de Timers
+## [2025-10-10] - Posicionamiento de Timers + API Reference
+
+### Agregado
+- **ChessGameLibrary/API_REFERENCE.md** (nuevo archivo +520 líneas)
+  - Documentación completa de todas las funciones de la librería
+  - 4 módulos documentados: Utils, PieceAnimations, DragDrop, LevelTransition
+  - 20+ funciones con ejemplos de uso
+  - Tabla de códigos de piezas con Unicode
+  - Requisitos técnicos HTML/CSS
+  - 3 ejemplos de uso completo
+  - Sección de debugging
 
 ### Cambiado
 - **Timer circular (3s)**: Revertido a posición original centrado sobre banco de piezas (tanto mobile como desktop)
@@ -15,6 +25,9 @@ Registro cronológico de cambios día a día.
 ### Archivos modificados
 - `index.html` - Timer global reubicado dentro de piece-bank-container
 - `styles.css` - Eliminado position absolute/fixed, ahora usa margin-top
+
+### Archivos nuevos
+- `ChessGameLibrary/API_REFERENCE.md` - Diccionario completo de funciones
 
 ---
 
