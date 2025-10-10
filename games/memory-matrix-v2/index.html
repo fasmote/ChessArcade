@@ -140,10 +140,13 @@
 
                 <!-- ================================================
                      TIMER GLOBAL + HINT (mobile)
-                     En mobile: timer y hint juntos
+                     En mobile: timer centrado, hint a la derecha, espaciador a la izquierda
                      En desktop: solo timer (hint está en header)
                      ================================================ -->
                 <div class="timer-hint-container">
+                    <!-- Espaciador invisible (mismo ancho que hint) para centrar timer -->
+                    <div class="hint-spacer"></div>
+
                     <div class="global-timer" id="globalTimer">
                         <span class="timer-icon">⏱️</span>
                         <span class="timer-display" id="globalTimerDisplay">00:00</span>
