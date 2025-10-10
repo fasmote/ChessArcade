@@ -46,12 +46,18 @@ body::before {
     min-height: 100vh;
 }
 
-/* Sound Toggle Button */
-.btn-sound {
-    position: fixed;
-    top: 20px;
-    right: 20px;
+/* Header */
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
 
+/* Botones icono (HOME, SONIDO) */
+.btn-icon {
     /* Flexbox para centrar icono + texto */
     display: flex;
     align-items: center;
@@ -65,14 +71,13 @@ body::before {
     background: rgba(0, 0, 0, 0.6);
 
     /* Borde neón */
-    border: 2px solid #ff8000;
+    border: 2px solid;
     border-radius: 8px;
 
     /* Tipografía */
     font-family: 'Orbitron', monospace;
     font-size: 14px;
     font-weight: 700;
-    color: #ff8000;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 
@@ -86,24 +91,43 @@ body::before {
     transition: all 0.3s ease;
 
     /* Glow sutil */
-    box-shadow: 0 0 10px rgba(255, 128, 0, 0.3);
-    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
-.btn-sound:hover {
-    background: rgba(255, 128, 0, 0.1);
-    box-shadow: 0 0 20px rgba(255, 128, 0, 0.6);
+.btn-icon:hover {
+    background: rgba(0, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
     transform: translateY(-2px);
 }
 
-.btn-sound:active {
+.btn-icon:active {
     transform: translateY(0);
 }
 
-.btn-sound svg {
+.btn-icon svg {
     width: 20px;
     height: 20px;
     stroke: currentColor;
+}
+
+/* Botón HOME: cyan */
+.btn-home {
+    border-color: #00ffff;
+    color: #00ffff;
+}
+
+.btn-home:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+}
+
+/* Botón SOUND: naranja */
+.btn-sound {
+    border-color: #ff8000;
+    color: #ff8000;
+}
+
+.btn-sound:hover {
+    box-shadow: 0 0 20px rgba(255, 128, 0, 0.6);
 }
 
 .btn-sound.muted {
@@ -448,18 +472,6 @@ body::before {
         flex-direction: column;
         gap: 1rem;
     }
-    
-    .btn-sound {
-        top: 20px;
-        right: 20px;
-        padding: 8px;
-        min-width: auto;
-    }
-
-    .btn-home {
-        top: 20px;
-        left: 20px;
-    }
 }
 
 @media (max-width: 480px) {
@@ -470,13 +482,6 @@ body::before {
     
     .target-coordinate {
         font-size: 2.5rem;
-    }
-    
-    .btn-sound {
-        top: 15px;
-        right: 15px;
-        padding: 8px;
-        min-width: auto;
     }
 }
 /* ============================================
@@ -543,66 +548,6 @@ body::before {
     }
 }
 
-/* Home Button */
-.btn-home {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1000;
-
-    /* Flexbox para centrar icono + texto */
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    /* Tamaño y espaciado */
-    padding: 10px 16px;
-    min-height: 44px;
-
-    /* Fondo semi-transparente */
-    background: rgba(0, 0, 0, 0.6);
-
-    /* Borde neón */
-    border: 2px solid #00ffff;
-    border-radius: 8px;
-
-    /* Tipografía */
-    font-family: 'Orbitron', monospace;
-    font-size: 14px;
-    font-weight: 700;
-    color: #00ffff;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-
-    /* Sin borde de botón por defecto */
-    outline: none;
-
-    /* Cursor pointer */
-    cursor: pointer;
-
-    /* Transición suave */
-    transition: all 0.3s ease;
-
-    /* Glow sutil */
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-}
-
-.btn-home:hover {
-    background: rgba(0, 255, 255, 0.1);
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
-    transform: translateY(-2px);
-}
-
-.btn-home:active {
-    transform: translateY(0);
-}
-
-.btn-home svg {
-    width: 20px;
-    height: 20px;
-    stroke: currentColor;
-}
-
 /* Label de texto en botones */
 .btn-label {
     font-size: 12px;
@@ -610,23 +555,14 @@ body::before {
     letter-spacing: 0.5px;
 }
 
-/* Tablet: Labels más pequeños, botones más cerca de bordes */
+/* Mobile: Ocultar labels de texto */
 @media (max-width: 768px) {
     .btn-label {
-        display: none; /* Ocultar texto en tablet/mobile */
+        display: none;
     }
-}
 
-@media (max-width: 600px) {
-    .btn-home {
-        top: 15px;
-        left: 15px;
+    .btn-icon {
         padding: 8px;
         min-width: auto;
-    }
-
-    .btn-home svg {
-        width: 20px;
-        height: 20px;
     }
 }
