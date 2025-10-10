@@ -49,19 +49,23 @@ function playSound(soundName) {
 function toggleSound() {
     gameState.soundEnabled = !gameState.soundEnabled;
     const soundBtn = document.getElementById('soundToggle');
-    
+    const iconOn = soundBtn.querySelector('.icon-sound-on');
+    const iconOff = soundBtn.querySelector('.icon-sound-off');
+
     if (gameState.soundEnabled) {
-        soundBtn.textContent = '🔊';
+        iconOn.style.display = 'block';
+        iconOff.style.display = 'none';
         soundBtn.classList.remove('muted');
         soundBtn.title = 'Mute Sound';
-        
+
         // Save preference
         localStorage.setItem('squareRushSound', 'enabled');
     } else {
-        soundBtn.textContent = '🔇';
+        iconOn.style.display = 'none';
+        iconOff.style.display = 'block';
         soundBtn.classList.add('muted');
         soundBtn.title = 'Enable Sound';
-        
+
         // Save preference
         localStorage.setItem('squareRushSound', 'disabled');
     }
@@ -73,7 +77,10 @@ function loadSoundPreference() {
     if (soundPref === 'disabled') {
         gameState.soundEnabled = false;
         const soundBtn = document.getElementById('soundToggle');
-        soundBtn.textContent = '🔇';
+        const iconOn = soundBtn.querySelector('.icon-sound-on');
+        const iconOff = soundBtn.querySelector('.icon-sound-off');
+        iconOn.style.display = 'none';
+        iconOff.style.display = 'block';
         soundBtn.classList.add('muted');
         soundBtn.title = 'Enable Sound';
     }

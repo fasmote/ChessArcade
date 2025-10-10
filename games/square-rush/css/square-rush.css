@@ -46,41 +46,74 @@ body::before {
 }
 
 /* Sound Toggle Button */
-.sound-toggle {
+.btn-sound {
     position: fixed;
     top: 80px;
     right: 80px;
-    width: 60px;
-    height: 60px;
-    background: rgba(0, 0, 0, 0.8);
-    border: 2px solid #00ffff;
-    border-radius: 50%;
-    cursor: pointer;
+
+    /* Flexbox para centrar icono + texto */
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: #00ffff;
+    gap: 8px;
+
+    /* Tamaño y espaciado */
+    padding: 10px 16px;
+    min-height: 44px;
+
+    /* Fondo semi-transparente */
+    background: rgba(0, 0, 0, 0.6);
+
+    /* Borde neón */
+    border: 2px solid #ff8000;
+    border-radius: 8px;
+
+    /* Tipografía */
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ff8000;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    /* Sin borde de botón por defecto */
+    outline: none;
+
+    /* Cursor pointer */
+    cursor: pointer;
+
+    /* Transición suave */
     transition: all 0.3s ease;
+
+    /* Glow sutil */
+    box-shadow: 0 0 10px rgba(255, 128, 0, 0.3);
     z-index: 1000;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
 }
 
-.sound-toggle:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
-    border-color: #00ff80;
-    color: #00ff80;
+.btn-sound:hover {
+    background: rgba(255, 128, 0, 0.1);
+    box-shadow: 0 0 20px rgba(255, 128, 0, 0.6);
+    transform: translateY(-2px);
 }
 
-.sound-toggle.muted {
+.btn-sound:active {
+    transform: translateY(0);
+}
+
+.btn-sound svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+}
+
+.btn-sound.muted {
     border-color: #ff0040;
     color: #ff0040;
-    box-shadow: 0 0 20px rgba(255, 0, 64, 0.3);
+    box-shadow: 0 0 10px rgba(255, 0, 64, 0.3);
 }
 
-.sound-toggle.muted:hover {
-    box-shadow: 0 0 30px rgba(255, 0, 64, 0.6);
+.btn-sound.muted:hover {
+    background: rgba(255, 0, 64, 0.1);
+    box-shadow: 0 0 20px rgba(255, 0, 64, 0.6);
 }
 
 /* Header */
@@ -415,12 +448,11 @@ body::before {
         gap: 1rem;
     }
     
-    .sound-toggle {
+    .btn-sound {
         top: 20px;
         right: 20px;
-        width: 50px;
-        height: 50px;
-        font-size: 1.2rem;
+        padding: 8px;
+        min-width: auto;
     }
 
     .btn-home {
@@ -439,12 +471,11 @@ body::before {
         font-size: 2.5rem;
     }
     
-    .sound-toggle {
+    .btn-sound {
         top: 15px;
         right: 15px;
-        width: 45px;
-        height: 45px;
-        font-size: 1rem;
+        padding: 8px;
+        min-width: auto;
     }
 }
 /* ============================================
@@ -517,50 +548,82 @@ body::before {
     top: 80px;
     left: 80px;
     z-index: 1000;
-    
+
+    /* Flexbox para centrar icono + texto */
     display: flex;
     align-items: center;
-    justify-content: center;
-    
-    width: 50px;
-    height: 50px;
-    padding: 0;
-    
-    background: rgba(0, 0, 0, 0.7);
-    border: 2px solid #00d9ff;
-    border-radius: 10px;
-    
-    color: #00d9ff;
+    gap: 8px;
+
+    /* Tamaño y espaciado */
+    padding: 10px 16px;
+    min-height: 44px;
+
+    /* Fondo semi-transparente */
+    background: rgba(0, 0, 0, 0.6);
+
+    /* Borde neón */
+    border: 2px solid #00ffff;
+    border-radius: 8px;
+
+    /* Tipografía */
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: #00ffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    /* Sin borde de botón por defecto */
+    outline: none;
+
+    /* Cursor pointer */
     cursor: pointer;
-    
-    box-shadow: 
-        0 0 15px rgba(0, 217, 255, 0.5),
-        inset 0 0 10px rgba(0, 217, 255, 0.1);
-    
+
+    /* Transición suave */
     transition: all 0.3s ease;
+
+    /* Glow sutil */
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
 .btn-home:hover {
-    background: rgba(0, 217, 255, 0.1);
-    box-shadow: 
-        0 0 25px rgba(0, 217, 255, 0.8),
-        inset 0 0 15px rgba(0, 217, 255, 0.2);
-    transform: scale(1.05);
+    background: rgba(0, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+.btn-home:active {
+    transform: translateY(0);
 }
 
 .btn-home svg {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+}
+
+/* Label de texto en botones */
+.btn-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Tablet: Labels más pequeños, botones más cerca de bordes */
+@media (max-width: 768px) {
+    .btn-label {
+        display: none; /* Ocultar texto en tablet/mobile */
+    }
 }
 
 @media (max-width: 600px) {
     .btn-home {
         top: 15px;
         left: 15px;
-        width: 45px;
-        height: 45px;
+        padding: 8px;
+        min-width: auto;
     }
-    
+
     .btn-home svg {
         width: 20px;
         height: 20px;
