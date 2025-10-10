@@ -355,6 +355,11 @@ body::before {
     }
 }
 
+/* Separador de fila en header (solo visible en desktop) */
+.header-break {
+    display: none; /* Oculto en mobile */
+}
+
 /* Desktop: Ocultar hint/undo mobile, mostrar versiones desktop en header */
 @media (min-width: 768px) {
     .btn-hint-mobile {
@@ -370,7 +375,15 @@ body::before {
     }
 
     .header {
-        justify-content: space-between; /* Distribución espaciada en desktop */
+        justify-content: center; /* Centrado en desktop */
+        gap: var(--spacing-md);
+    }
+
+    /* Separador para forzar nueva fila */
+    .header-break {
+        display: block;
+        width: 100%; /* Ancho completo para forzar salto */
+        height: 0;
     }
 }
 
