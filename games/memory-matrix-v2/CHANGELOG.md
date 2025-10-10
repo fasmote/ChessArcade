@@ -4,10 +4,10 @@ Registro cronológico de cambios día a día.
 
 ---
 
-## [2025-10-10] - Botones Deshacer/Limpiar + Documentacion
+## [2025-10-10] - Sistema Deshacer/Limpiar (codigo) + Documentacion
 
 ### Agregado
-- **Sistema de Deshacer/Limpiar** (mejora #1 de SUGERENCIAS_MEJORAS.md)
+- **Sistema de Deshacer/Limpiar** (codigo implementado pero NO usado en Memory Matrix)
   - Historial de movimientos (moveHistory stack)
   - Boton DESHACER: Quita ultima pieza colocada
   - Boton LIMPIAR: Remueve todas las piezas del tablero
@@ -15,6 +15,10 @@ Registro cronológico de cambios día a día.
   - Botones desactivados cuando no hay piezas
   - Mensajes de feedback al deshacer/limpiar
   - Solo disponibles durante fase de colocacion
+  - **IMPORTANTE:** Botones comentados en HTML (no visibles)
+    - Razon: Rompen la mecanica core de Memory Matrix (memorizar)
+    - El codigo permanece para reutilizacion en otros juegos (puzzles, tacticas)
+    - En Memory Matrix: Si te equivocas, debes reintentar (esa es la dificultad)
 
 - **ChessGameLibrary/API_REFERENCE.md** (nuevo archivo +520 lineas)
   - Documentacion completa de todas las funciones de la libreria

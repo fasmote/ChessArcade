@@ -62,7 +62,12 @@
                 <span class="btn-label" id="hintLabel">HINT (10)</span>
             </button>
 
-            <!-- Botón DESHACER: Quita ultima pieza -->
+            <!-- NOTA: Botones DESHACER/LIMPIAR implementados pero NO se usan en Memory Matrix
+                 Razon: El objetivo del juego es MEMORIZAR, no experimentar.
+                 Estos botones rompen la mecanica core del juego.
+                 El codigo esta disponible para otros juegos (ej: puzzles, tacticas)
+                 pero aqui permanecen ocultos.
+
             <button class="btn-icon btn-undo" id="btnUndo" aria-label="Deshacer" disabled>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 7v6h6"></path>
@@ -71,7 +76,6 @@
                 <span class="btn-label">DESHACER</span>
             </button>
 
-            <!-- Botón LIMPIAR: Remueve todas las piezas -->
             <button class="btn-icon btn-clear" id="btnClear" aria-label="Limpiar tablero" disabled>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -79,6 +83,7 @@
                 </svg>
                 <span class="btn-label">LIMPIAR</span>
             </button>
+            -->
 
         </header>
 

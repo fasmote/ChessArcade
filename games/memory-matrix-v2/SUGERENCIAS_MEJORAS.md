@@ -60,7 +60,13 @@ Las sugerencias estan organizadas en tres categorias:
 
 ### 2. Botones Deshacer/Limpiar
 
-**Objetivo**: Permitir al jugador corregir errores sin reintentar todo el nivel.
+**ESTADO**: Implementado pero NO usado en Memory Matrix (10 Oct 2025)
+
+**Razon para NO usar**: Esta funcionalidad rompe la mecanica core del juego. Memory Matrix es sobre MEMORIZAR, no sobre experimentar. Si permites deshacer, el jugador puede simplemente probar todas las casillas hasta acertar, eliminando el desafio de memoria.
+
+**Codigo disponible**: Las funciones undo(), clearBoard() y moveHistory stack estan implementadas en game.js para reutilizacion en otros juegos (puzzles de ajedrez, problemas tacticos, etc.) donde si tiene sentido corregir errores.
+
+**Objetivo ORIGINAL**: Permitir al jugador corregir errores sin reintentar todo el nivel.
 
 **Funcionalidades**:
 - Boton "Deshacer" (quita ultima pieza colocada)
