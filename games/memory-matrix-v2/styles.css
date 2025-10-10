@@ -131,9 +131,10 @@ body::before {
    ============================================ */
 .header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* Centrado en mobile (sin hint) */
     align-items: center;
     gap: var(--spacing-sm);
+    flex-wrap: wrap; /* Permitir wrap si es necesario */
 }
 
 /* ============================================
@@ -323,6 +324,44 @@ body::before {
     transform: none !important;
 }
 
+/* Hint mobile: Compacto, solo icono + número */
+.btn-hint-mobile {
+    /* Ocultar label, mostrar solo icono + número */
+    padding: 8px 12px;
+    min-width: auto;
+    gap: 4px;
+}
+
+.btn-hint-mobile .btn-label {
+    display: none; /* Ocultar texto "HINT" */
+}
+
+.btn-hint-mobile .hint-count {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow: 0 0 8px var(--gold);
+}
+
+/* Mobile: Ocultar hint del header, mostrar hint junto al timer */
+@media (max-width: 767px) {
+    .btn-hint:not(.btn-hint-mobile) {
+        display: none;
+    }
+}
+
+/* Desktop: Ocultar hint mobile, mostrar hint en header */
+@media (min-width: 768px) {
+    .btn-hint-mobile {
+        display: none;
+    }
+
+    .header {
+        justify-content: space-between; /* Distribución espaciada en desktop */
+    }
+}
+
 /* Boton DESHACER - Color naranja */
 .btn-undo {
     border-color: #ff8000;
@@ -502,6 +541,18 @@ body::before {
     }
 }
 
+/* Contenedor timer + hint (mobile) */
+.timer-hint-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+
+    /* Order: En mobile va arriba */
+    order: 1;
+}
+
 /* Timer Global (tiempo de sesión) */
 .global-timer {
     display: flex;
@@ -509,16 +560,11 @@ body::before {
     justify-content: center;
     gap: 6px;
     padding: 8px 14px;
-    margin-top: 0; /* Cambiado: va arriba en mobile */
-    margin-bottom: 10px; /* Espaciado hacia abajo */
     background: rgba(0, 0, 0, 0.6);
     border: 2px solid var(--gold);
     border-radius: var(--border-radius);
     font-family: 'Orbitron', sans-serif;
     box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-
-    /* Order: En mobile va arriba */
-    order: 1;
 }
 
 .global-timer .timer-icon {
@@ -1029,14 +1075,18 @@ body::before {
     /* En desktop: Orden normal (título arriba, banco medio, timer abajo) */
     .bank-title {
         order: 0;
+        text-align: center; /* Centrado en desktop */
     }
 
     .piece-bank {
         order: 0;
     }
 
-    .global-timer {
+    .timer-hint-container {
         order: 0;
+    }
+
+    .global-timer {
         margin-top: 15px;
         margin-bottom: 0;
     }

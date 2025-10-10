@@ -4,7 +4,7 @@ Registro cronológico de cambios día a día.
 
 ---
 
-## [2025-10-10] - UX Mobile: Timer Global + Layout Responsive
+## [2025-10-10] - UX Mobile: Timer Global + Layout Responsive + Botón Hint Reubicado
 
 ### Cambiado
 - **Layout Mobile Optimizado** (solo mobile, desktop sin cambios)
@@ -15,23 +15,42 @@ Registro cronológico de cambios día a día.
   - Mejor uso del espacio vertical en pantallas pequeñas
   - Timer más visible al iniciar juego
 
+- **Botón Hint reubicado en mobile** 🎯
+  - Mobile: Hint movido junto al timer global (arriba a la derecha)
+  - Desktop: Hint permanece en header (sin cambios)
+  - Versión mobile compacta: solo icono ? + número
+  - Header mobile centrado (HOME, PAUSA, SONIDO) - más simétrico
+  - Sincronización automática entre ambos botones hint
+
+- **Título "Piezas Disponibles"**
+  - Desktop: Centrado (text-align: center)
+  - Mobile: Alineado izquierda (sin cambios)
+
 - **Sidebar height ajustado**
   - Removido min-height/max-height que causaba barra lateral muy larga
   - Altura se ajusta automáticamente al contenido
   - Layout más compacto y natural
 
 ### Archivos modificados
-- `index.html` - Removida clase `.hidden` del timer global (línea 145)
-- `styles.css` - Reordenamiento con flexbox order (+18 líneas)
-  - `.global-timer`: order: 1, margin-top: 0, margin-bottom: 10px
-  - `.piece-bank`: order: 2
-  - `.bank-title`: order: 3
-  - Media query 768px: Reset orders a 0, margins normales
+- `index.html` (+11 líneas)
+  - Removida clase `.hidden` del timer global
+  - Contenedor `.timer-hint-container` con timer + hint mobile
+  - Nuevo botón `#btnHintMobile` con contador
+- `styles.css` (+52 líneas)
+  - `.timer-hint-container`: Flexbox para agrupar timer + hint
+  - `.btn-hint-mobile`: Estilos compactos (icono + número)
+  - `.header`: justify-content center en mobile, space-between en desktop
+  - Media queries para ocultar/mostrar hints según viewport
+  - `.bank-title`: text-align center solo en desktop
+- `game.js` (+13 líneas)
+  - Event listener para `btnHintMobile`
+  - `updateHintButton()`: Sincroniza ambos botones hint
 
 ### Estadísticas
-- 2 commits realizados
+- 4 commits realizados
 - UX mobile significativamente mejorado
-- Timer global siempre visible para feedback constante
+- Timer y hint siempre visibles sin scroll
+- Header mobile más limpio y simétrico
 
 ---
 

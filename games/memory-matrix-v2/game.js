@@ -104,10 +104,16 @@ function initButtons() {
         btnStart.addEventListener('click', togglePause);
     }
 
-    // Botón HINT
+    // Botón HINT (header)
     const btnHint = document.getElementById('btnHint');
     if (btnHint) {
         btnHint.addEventListener('click', showHint);
+    }
+
+    // Botón HINT (mobile)
+    const btnHintMobile = document.getElementById('btnHintMobile');
+    if (btnHintMobile) {
+        btnHintMobile.addEventListener('click', showHint);
     }
 
     // Botón DESHACER
@@ -1084,15 +1090,26 @@ function createDisintegrationEffect(squareEl, hintElement, hiddenHints) {
 }
 
 /**
- * Actualiza el botón de hint (contador y estado disabled)
+ * Actualiza los botones de hint (contador y estado disabled)
+ * Sincroniza tanto el del header como el mobile
  */
 function updateHintButton() {
+    // Botón hint header (desktop)
     const btnHint = document.getElementById('btnHint');
     const hintLabel = document.getElementById('hintLabel');
 
     if (btnHint && hintLabel) {
         hintLabel.textContent = `HINT (${hintsLeft})`;
         btnHint.disabled = (hintsLeft <= 0 || gameState !== 'solving');
+    }
+
+    // Botón hint mobile
+    const btnHintMobile = document.getElementById('btnHintMobile');
+    const hintCountMobile = document.getElementById('hintCountMobile');
+
+    if (btnHintMobile && hintCountMobile) {
+        hintCountMobile.textContent = hintsLeft;
+        btnHintMobile.disabled = (hintsLeft <= 0 || gameState !== 'solving');
     }
 }
 
