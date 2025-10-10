@@ -30,6 +30,10 @@ let startTime = null; // Tiempo de inicio del intento
 let hintsLeft = 3; // Hints disponibles por nivel
 const HINTS_PER_LEVEL = 3; // Hints que se otorgan al comenzar un nivel
 
+// SISTEMA DE DESHACER/LIMPIAR
+// Stack de movimientos para poder deshacer
+let moveHistory = []; // Array de {square, piece, bankSlot}
+
 // LÍMITE DE ERRORES
 const MAX_FAILED_ATTEMPTS = 10; // Game Over a los 10 errores
 
@@ -104,6 +108,20 @@ function initButtons() {
     const btnHint = document.getElementById('btnHint');
     if (btnHint) {
         btnHint.addEventListener('click', showHint);
+    }
+
+    // Botón DESHACER
+    const btnUndo = document.getElementById('btnUndo');
+    if (btnUndo) {
+        btnUndo.addEventListener('click', undo);
+        console.log('✅ Botón DESHACER inicializado');
+    }
+
+    // Botón LIMPIAR
+    const btnClear = document.getElementById('btnClear');
+    if (btnClear) {
+        btnClear.addEventListener('click', clearBoard);
+        console.log('✅ Botón LIMPIAR inicializado');
     }
 }
 
@@ -319,6 +337,7 @@ function startGame() {
 
     // Deshabilitar botón de hints durante memorización
     updateHintButton();
+    updateUndoClearButtons();
 
     // ==========================================
     // LIMPIAR tablero y banco para nuevo intento
@@ -328,6 +347,7 @@ function startGame() {
     clearBankPieces();     // Limpiar banco
     clearAllSquareHints(); // Limpiar coordenadas anteriores
     placedPieces = [];     // Resetear array de piezas colocadas
+    moveHistory = [];      // Resetear historial de movimientos
 
     // Generar posición aleatoria para el nivel actual
     if (!window.MemoryMatrixLevels) {
@@ -364,6 +384,7 @@ function showMemorizationPhase(levelConfig) {
 
     // Deshabilitar botón de hints durante memorización
     updateHintButton();
+    updateUndoClearButtons();
 
     // ==========================================
     // Iniciar contador visual de tiempo
@@ -481,6 +502,7 @@ function startSolvingPhase(piecesToPlace) {
 
     // Habilitar botón de hints durante fase de resolución
     updateHintButton();
+    updateUndoClearButtons();
 
     console.log('✅ Listo para drag & drop');
 }
@@ -668,6 +690,7 @@ function onAttemptFailed(incorrectPieces) {
         // Limpiar banco
         clearBankPieces();
         placedPieces = [];
+        moveHistory = [];
 
         // NO incrementar currentAttempt (es el mismo intento, solo reintentar)
         updateStatus(`Reintentando... Nivel ${currentLevel} (${successfulAttempts}/${levelConfig.attemptsRequired})`);
@@ -727,6 +750,7 @@ function onGameOver() {
     clearBoard();
     clearBankPieces();
     placedPieces = [];
+    moveHistory = [];
 
     // Resetear contadores
     currentLevel = 1;
@@ -751,6 +775,7 @@ function onGameOver() {
 
     // Actualizar botón de hints
     updateHintButton();
+    updateUndoClearButtons();
 
     gameState = 'idle';
     isPaused = false;
@@ -1068,6 +1093,146 @@ function updateHintButton() {
     if (btnHint && hintLabel) {
         hintLabel.textContent = `HINT (${hintsLeft})`;
         btnHint.disabled = (hintsLeft <= 0 || gameState !== 'solving');
+    }
+}
+
+// ============================================
+// SISTEMA DE DESHACER/LIMPIAR
+// ============================================
+
+/**
+ * Deshace el último movimiento (quita la última pieza colocada)
+ */
+function undo() {
+    if (moveHistory.length === 0) {
+        console.log('⚠️ No hay movimientos para deshacer');
+        return;
+    }
+
+    if (gameState !== 'solving') {
+        console.log('⚠️ Solo puedes deshacer durante la fase de colocación');
+        return;
+    }
+
+    // Obtener último movimiento
+    const lastMove = moveHistory.pop();
+    console.log(`↩️ Deshaciendo: ${lastMove.piece} en ${lastMove.square}`);
+
+    // Quitar pieza del tablero
+    const squareElement = document.querySelector(`[data-square="${lastMove.square}"]`);
+    const pieceElement = squareElement?.querySelector('.piece');
+
+    if (pieceElement) {
+        // Animar pieza de vuelta al banco
+        animatePieceBackToBank(lastMove.square, lastMove.piece, () => {
+            // Después de la animación, quitar del array placedPieces
+            const index = placedPieces.findIndex(p =>
+                p.square === lastMove.square && p.piece === lastMove.piece
+            );
+            if (index !== -1) {
+                placedPieces.splice(index, 1);
+            }
+
+            // Actualizar status
+            const piecesToPlace = window.MemoryMatrixLevels.getPiecesToHide(
+                currentLevel,
+                currentAttempt,
+                currentPosition
+            );
+            const remaining = piecesToPlace.length - placedPieces.length;
+            updateStatus(`↩️ Deshecho - Faltan ${remaining} pieza${remaining > 1 ? 's' : ''}`);
+        });
+    }
+
+    // Actualizar botones
+    updateUndoClearButtons();
+}
+
+/**
+ * Limpia todas las piezas del tablero (deshacer todo)
+ */
+function clearBoard() {
+    if (moveHistory.length === 0) {
+        console.log('⚠️ No hay piezas para limpiar');
+        return;
+    }
+
+    if (gameState !== 'solving') {
+        console.log('⚠️ Solo puedes limpiar durante la fase de colocación');
+        return;
+    }
+
+    console.log(`🧹 Limpiando ${moveHistory.length} piezas del tablero...`);
+
+    // Guardar cantidad para mensaje
+    const totalPieces = moveHistory.length;
+
+    // Deshacer todos los movimientos
+    while (moveHistory.length > 0) {
+        undo();
+    }
+
+    updateStatus(`🧹 Tablero limpio - ${totalPieces} pieza${totalPieces > 1 ? 's' : ''} removida${totalPieces > 1 ? 's' : ''}`);
+}
+
+/**
+ * Actualiza el estado de los botones Deshacer y Limpiar
+ */
+function updateUndoClearButtons() {
+    const btnUndo = document.getElementById('btnUndo');
+    const btnClear = document.getElementById('btnClear');
+
+    if (btnUndo) {
+        btnUndo.disabled = (moveHistory.length === 0 || gameState !== 'solving');
+    }
+
+    if (btnClear) {
+        btnClear.disabled = (moveHistory.length === 0 || gameState !== 'solving');
+    }
+}
+
+/**
+ * Anima una pieza desde el tablero de vuelta al banco
+ */
+function animatePieceBackToBank(fromSquare, piece, onComplete) {
+    // Buscar un slot vacío en el banco
+    const bankSlots = document.querySelectorAll('.bank-piece-slot');
+    let emptySlot = null;
+
+    for (const slot of bankSlots) {
+        if (!slot.querySelector('.piece')) {
+            emptySlot = slot;
+            break;
+        }
+    }
+
+    if (!emptySlot) {
+        console.error('❌ No hay slots vacíos en el banco');
+        // Forzar creación de la pieza en el banco sin animación
+        if (onComplete) onComplete();
+        return;
+    }
+
+    // Usar la función de animación de la librería
+    if (window.ChessGameLibrary && window.ChessGameLibrary.PieceAnimations) {
+        window.ChessGameLibrary.PieceAnimations.animatePieceToBank(
+            fromSquare,
+            piece,
+            emptySlot,
+            {
+                duration: 400,
+                easing: 'ease-in',
+                onComplete: onComplete
+            }
+        );
+    } else {
+        // Fallback sin animación
+        const squareElement = document.querySelector(`[data-square="${fromSquare}"]`);
+        const pieceElement = squareElement?.querySelector('.piece');
+        if (pieceElement) {
+            pieceElement.remove();
+        }
+        if (onComplete) onComplete();
     }
 }
 
@@ -1502,6 +1667,10 @@ function initDragAndDrop() {
 
             // Registrar pieza colocada
             placedPieces.push({ square, piece });
+
+            // Agregar al historial de movimientos para poder deshacer
+            moveHistory.push({ square, piece });
+            updateUndoClearButtons();
 
             // Calcular cuántas piezas faltan (solo las que fueron ocultadas)
             const piecesToPlace = window.MemoryMatrixLevels.getPiecesToHide(

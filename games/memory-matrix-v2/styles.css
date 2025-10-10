@@ -323,6 +323,38 @@ body::before {
     transform: none !important;
 }
 
+/* Boton DESHACER - Color naranja */
+.btn-undo {
+    border-color: #ff8000;
+    color: #ff8000;
+}
+
+.btn-undo:hover:not(:disabled) {
+    box-shadow: 0 0 20px #ff8000;
+}
+
+.btn-undo:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Boton LIMPIAR - Color rojo */
+.btn-clear {
+    border-color: #ff0055;
+    color: #ff0055;
+}
+
+.btn-clear:hover:not(:disabled) {
+    box-shadow: 0 0 20px #ff0055;
+}
+
+.btn-clear:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
 /* ============================================
    SELECTOR DE ESTILO DE PIEZAS
    Destacado con borde brillante y tamaño más grande

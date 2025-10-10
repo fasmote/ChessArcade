@@ -4,17 +4,32 @@ Registro cronológico de cambios día a día.
 
 ---
 
-## [2025-10-10] - Posicionamiento de Timers + API Reference
+## [2025-10-10] - Botones Deshacer/Limpiar + Documentacion
 
 ### Agregado
-- **ChessGameLibrary/API_REFERENCE.md** (nuevo archivo +520 líneas)
-  - Documentación completa de todas las funciones de la librería
-  - 4 módulos documentados: Utils, PieceAnimations, DragDrop, LevelTransition
+- **Sistema de Deshacer/Limpiar** (mejora #1 de SUGERENCIAS_MEJORAS.md)
+  - Historial de movimientos (moveHistory stack)
+  - Boton DESHACER: Quita ultima pieza colocada
+  - Boton LIMPIAR: Remueve todas las piezas del tablero
+  - Animacion de vuelta al banco (400ms ease-in)
+  - Botones desactivados cuando no hay piezas
+  - Mensajes de feedback al deshacer/limpiar
+  - Solo disponibles durante fase de colocacion
+
+- **ChessGameLibrary/API_REFERENCE.md** (nuevo archivo +520 lineas)
+  - Documentacion completa de todas las funciones de la libreria
+  - 4 modulos documentados: Utils, PieceAnimations, DragDrop, LevelTransition
   - 20+ funciones con ejemplos de uso
-  - Tabla de códigos de piezas con Unicode
-  - Requisitos técnicos HTML/CSS
+  - Tabla de codigos de piezas con Unicode
+  - Requisitos tecnicos HTML/CSS
   - 3 ejemplos de uso completo
-  - Sección de debugging
+  - Seccion de debugging
+
+- **SUGERENCIAS_MEJORAS.md** (nuevo archivo +650 lineas)
+  - 15 sugerencias organizadas por prioridad
+  - Estimaciones de tiempo para cada mejora
+  - Plan de implementacion por fases
+  - Codigo de ejemplo para cada sugerencia
 
 ### Cambiado
 - **Timer circular (3s)**: Revertido a posición original centrado sobre banco de piezas (tanto mobile como desktop)
@@ -23,12 +38,27 @@ Registro cronológico de cambios día a día.
   - Desktop: margin-top 20px, padding y font más grandes
 
 ### Archivos modificados
-- `index.html` - Timer global reubicado dentro de piece-bank-container
-- `styles.css` - Eliminado position absolute/fixed, ahora usa margin-top
+- `game.js` - Sistema deshacer/limpiar (+140 lineas netas)
+  - moveHistory stack
+  - Funciones: undo(), clearBoard(), updateUndoClearButtons(), animatePieceBackToBank()
+  - Integracion con drag & drop
+  - Limpieza de historial en resets
+- `index.html` - 2 botones nuevos en header (+16 lineas)
+  - Boton DESHACER (icono flecha circular)
+  - Boton LIMPIAR (icono basura)
+- `styles.css` - Estilos para nuevos botones (+30 lineas)
+  - .btn-undo (naranja #ff8000)
+  - .btn-clear (rojo #ff0055)
+  - Estados hover y disabled
 
 ### Archivos nuevos
 - `ChessGameLibrary/API_REFERENCE.md` - Diccionario completo de funciones (+520 lineas)
 - `SUGERENCIAS_MEJORAS.md` - 15 sugerencias organizadas por prioridad (+650 lineas)
+
+### Estadisticas
+- Total: +1356 lineas agregadas
+- Tiempo estimado implementacion: 2-3h
+- Mejora #1 completada de SUGERENCIAS_MEJORAS.md
 
 ---
 
