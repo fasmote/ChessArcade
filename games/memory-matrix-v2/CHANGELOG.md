@@ -4,6 +4,45 @@ Registro cronológico de cambios día a día.
 
 ---
 
+## [2025-10-10] - Hints 6, Posición Preview + How to Play
+
+### Agregado
+- **Sección "How to Play"** 🎯
+  - Instrucciones en inglés (estilo Knight Quest)
+  - Ubicada debajo del selector de piezas
+  - Explica objetivo, gameplay, hints, undo y progresión
+  - Estilos neón cyan coherentes con el juego
+  - Responsive mobile/desktop
+
+### Cambiado
+- **Hints aumentados de 3 a 6 por nivel**
+  - Más generoso para jugadores nuevos
+  - Facilita aprendizaje sin frustración
+  - Actualizado en game.js (HINTS_PER_LEVEL = 6)
+  - Actualizado en HTML (contador inicial)
+
+- **Posición preview al cargar y pasar de nivel**
+  - Ya no se muestra tablero vacío
+  - Al cargar: Muestra posición random del nivel 1
+  - Al pasar de nivel: Muestra posición del nuevo nivel
+  - Función: showInitialPosition()
+  - Mejor experiencia visual desde el inicio
+
+### Archivos modificados
+- `game.js` (+30 líneas)
+  - HINTS_PER_LEVEL: 3 → 6
+  - showInitialPosition(): Nueva función
+  - Llamada en DOMContentLoaded y onLevelComplete
+- `index.html` (+20 líneas)
+  - Sección .how-to-play-section agregada
+  - Contadores de hints actualizados (3 → 6)
+- `styles.css` (+64 líneas)
+  - Estilos completos para .how-to-play-section
+  - .instructions con borde cyan neón
+  - Responsive mobile
+
+---
+
 ## [2025-10-10] - UX Mobile: Timer + Hint + Undo - Layout Completo
 
 ### Agregado

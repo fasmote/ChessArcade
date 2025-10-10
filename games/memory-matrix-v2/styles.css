@@ -2092,3 +2092,67 @@ body::before {
     pointer-events: none;
     cursor: not-allowed !important;
 }
+
+/* ============================================
+   HOW TO PLAY - INSTRUCTIONS
+   ============================================ */
+.how-to-play-section {
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-xl) var(--spacing-md);
+    text-align: center;
+}
+
+.instructions {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--neon-cyan);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-lg);
+    box-shadow:
+        0 0 20px var(--neon-cyan),
+        0 0 40px rgba(0, 255, 255, 0.3),
+        inset 0 0 20px rgba(0, 255, 255, 0.05);
+}
+
+.instructions h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(24px, 5vw, 32px);
+    font-weight: 900;
+    color: var(--neon-cyan);
+    text-shadow:
+        0 0 10px var(--neon-cyan),
+        0 0 20px var(--neon-cyan);
+    margin: 0 0 var(--spacing-lg) 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.instructions p {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(14px, 3.5vw, 16px);
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.9);
+    margin: var(--spacing-md) 0;
+    text-align: left;
+}
+
+.instructions p strong {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px var(--neon-cyan);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .how-to-play-section {
+        padding: var(--spacing-lg) var(--spacing-sm);
+    }
+
+    .instructions {
+        padding: var(--spacing-md);
+    }
+
+    .instructions p {
+        font-size: 14px;
+    }
+}

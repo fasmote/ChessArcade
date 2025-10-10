@@ -27,8 +27,8 @@ let startTime = null; // Tiempo de inicio del intento
 // SISTEMA DE HINTS
 // Cada hint muestra TODAS las piezas del banco (no solo una)
 // Cantidad limitada de hints por nivel
-let hintsLeft = 3; // Hints disponibles por nivel
-const HINTS_PER_LEVEL = 3; // Hints que se otorgan al comenzar un nivel
+let hintsLeft = 6; // Hints disponibles por nivel
+const HINTS_PER_LEVEL = 6; // Hints que se otorgan al comenzar un nivel
 
 // SISTEMA DE DESHACER/LIMPIAR
 // Stack de movimientos para poder deshacer
@@ -72,6 +72,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // PASO 6: Inicializar drag & drop
     initDragAndDrop();
+
+    // Mostrar posición inicial del nivel 1 (sin tablero vacío)
+    showInitialPosition();
 
     console.log('✅ Inicialización completa');
 });
@@ -847,6 +850,9 @@ function onLevelComplete() {
 
         // Actualizar botón de hints
         updateHintButton();
+
+        // Mostrar posición inicial del nuevo nivel (preview)
+        showInitialPosition();
 
         gameState = 'idle';
     }, 3000);
@@ -2180,6 +2186,27 @@ function applyGlitchEffect(squares, intensity = 'warning') {
     if (window.MemoryMatrixAudio) {
         window.MemoryMatrixAudio.playGlitchSound(intensity);
     }
+}
+
+/**
+ * Muestra posición inicial del nivel actual (al cargar o pasar de nivel)
+ * Evita que el tablero se vea vacío
+ */
+function showInitialPosition() {
+    if (!window.MemoryMatrixLevels) {
+        console.warn('⚠️ Sistema de niveles no cargado aún');
+        return;
+    }
+
+    // Generar una posición de preview para el nivel actual
+    const previewPosition = window.MemoryMatrixLevels.generateRandomPosition(currentLevel);
+
+    // Mostrar piezas en el tablero
+    previewPosition.forEach(({ square, piece }) => {
+        showPiece(square, piece);
+    });
+
+    console.log(`👁️ Posición inicial del nivel ${currentLevel} mostrada (preview)`);
 }
 
 /**
