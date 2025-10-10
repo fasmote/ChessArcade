@@ -116,11 +116,18 @@ function initButtons() {
         btnHintMobile.addEventListener('click', showHint);
     }
 
-    // Botón DESHACER
+    // Botón DESHACER (desktop)
     const btnUndo = document.getElementById('btnUndo');
     if (btnUndo) {
         btnUndo.addEventListener('click', undo);
-        console.log('✅ Botón DESHACER inicializado');
+        console.log('✅ Botón DESHACER (desktop) inicializado');
+    }
+
+    // Botón DESHACER (mobile)
+    const btnUndoMobile = document.getElementById('btnUndoMobile');
+    if (btnUndoMobile) {
+        btnUndoMobile.addEventListener('click', undo);
+        console.log('✅ Botón DESHACER (mobile) inicializado');
     }
 
     // Botón LIMPIAR
@@ -1194,17 +1201,27 @@ function clearBoard() {
 
 /**
  * Actualiza el estado de los botones Deshacer y Limpiar
+ * Sincroniza tanto las versiones desktop como mobile
  */
 function updateUndoClearButtons() {
-    const btnUndo = document.getElementById('btnUndo');
-    const btnClear = document.getElementById('btnClear');
+    const disabled = (moveHistory.length === 0 || gameState !== 'solving');
 
+    // Botón Undo (desktop)
+    const btnUndo = document.getElementById('btnUndo');
     if (btnUndo) {
-        btnUndo.disabled = (moveHistory.length === 0 || gameState !== 'solving');
+        btnUndo.disabled = disabled;
     }
 
+    // Botón Undo (mobile)
+    const btnUndoMobile = document.getElementById('btnUndoMobile');
+    if (btnUndoMobile) {
+        btnUndoMobile.disabled = disabled;
+    }
+
+    // Botón Clear (si existe)
+    const btnClear = document.getElementById('btnClear');
     if (btnClear) {
-        btnClear.disabled = (moveHistory.length === 0 || gameState !== 'solving');
+        btnClear.disabled = disabled;
     }
 }
 

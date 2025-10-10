@@ -344,20 +344,24 @@ body::before {
     text-shadow: 0 0 8px var(--gold);
 }
 
-/* Mobile: Ocultar hint del header, mostrar hint junto al timer */
+/* Mobile: Ocultar hint y undo del header, mostrar versiones mobile junto al timer */
 @media (max-width: 767px) {
     .btn-hint:not(.btn-hint-mobile) {
         display: none;
     }
+
+    .btn-undo-desktop {
+        display: none;
+    }
 }
 
-/* Desktop: Ocultar hint mobile y espaciador, mostrar hint en header */
+/* Desktop: Ocultar hint/undo mobile, mostrar versiones desktop en header */
 @media (min-width: 768px) {
     .btn-hint-mobile {
         display: none;
     }
 
-    .hint-spacer {
+    .btn-undo-mobile {
         display: none;
     }
 
@@ -561,10 +565,14 @@ body::before {
     order: 1;
 }
 
-/* Espaciador invisible (mismo ancho que hint para centrar timer) */
-.hint-spacer {
-    width: 68px; /* Ancho aproximado del botón hint mobile */
-    flex-shrink: 0;
+/* Botón undo mobile: Compacto, solo icono */
+.btn-undo-mobile {
+    padding: 8px;
+    min-width: auto;
+}
+
+.btn-undo-mobile svg {
+    margin: 0;
 }
 
 /* Timer Global (tiempo de sesión) */

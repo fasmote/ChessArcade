@@ -62,7 +62,16 @@
                 <span class="btn-label" id="hintLabel">HINT (10)</span>
             </button>
 
-            <!-- NOTA: Botones DESHACER/LIMPIAR implementados pero NO se usan en Memory Matrix
+            <!-- Botón DESHACER: Quita última pieza colocada (solo desktop) -->
+            <button class="btn-icon btn-undo btn-undo-desktop" id="btnUndo" aria-label="Deshacer" disabled>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 7v6h6"></path>
+                    <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"></path>
+                </svg>
+                <span class="btn-label">ATRAS</span>
+            </button>
+
+            <!-- NOTA: Botón LIMPIAR implementado pero NO se usa en Memory Matrix
                  Razon: El objetivo del juego es MEMORIZAR, no experimentar.
                  Estos botones rompen la mecanica core del juego.
                  El codigo esta disponible para otros juegos (ej: puzzles, tacticas)
@@ -139,22 +148,27 @@
                 </div>
 
                 <!-- ================================================
-                     TIMER GLOBAL + HINT (mobile)
-                     En mobile: timer centrado, hint a la derecha, espaciador a la izquierda
-                     En desktop: solo timer (hint está en header)
+                     TIMER GLOBAL + CONTROLES (mobile)
+                     En mobile: undo | timer | hint
+                     En desktop: solo timer (undo y hint en header)
                      ================================================ -->
                 <div class="timer-hint-container">
-                    <!-- Espaciador invisible (mismo ancho que hint) para centrar timer -->
-                    <div class="hint-spacer"></div>
+                    <!-- Botón UNDO mobile (izquierda del timer) -->
+                    <button class="btn-icon btn-undo btn-undo-mobile" id="btnUndoMobile" aria-label="Deshacer" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 7v6h6"></path>
+                            <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"></path>
+                        </svg>
+                    </button>
 
                     <div class="global-timer" id="globalTimer">
                         <span class="timer-icon">⏱️</span>
                         <span class="timer-display" id="globalTimerDisplay">00:00</span>
                     </div>
 
-                    <!-- Botón HINT mobile (oculto en desktop) -->
+                    <!-- Botón HINT mobile (derecha del timer) -->
                     <button class="btn-icon btn-hint btn-hint-mobile" id="btnHintMobile" aria-label="Pedir pista" disabled>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
                             <line x1="12" y1="17" x2="12.01" y2="17"></line>

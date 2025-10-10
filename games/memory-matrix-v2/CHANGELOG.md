@@ -4,7 +4,17 @@ Registro cronológico de cambios día a día.
 
 ---
 
-## [2025-10-10] - UX Mobile: Timer Global + Layout Responsive + Botón Hint Reubicado
+## [2025-10-10] - UX Mobile: Timer + Hint + Undo - Layout Completo
+
+### Agregado
+- **Botón ATRÁS (Undo) activado** ↩️
+  - Permite deshacer colocaciones de piezas una por una
+  - Útil cuando hay que colocar múltiples piezas y te equivocas
+  - Mobile: Icono compacto a la izquierda del timer
+  - Desktop: En header con texto "ATRAS"
+  - Solo activo durante fase de colocación con piezas colocadas
+  - Funcionalidad: Devuelve piezas al banco con animación
+  - Sincronización automática desktop/mobile
 
 ### Cambiado
 - **Layout Mobile Optimizado** (solo mobile, desktop sin cambios)
@@ -15,12 +25,12 @@ Registro cronológico de cambios día a día.
   - Mejor uso del espacio vertical en pantallas pequeñas
   - Timer más visible al iniciar juego
 
-- **Botón Hint reubicado en mobile** 🎯
-  - Mobile: Hint movido junto al timer global (arriba a la derecha)
-  - Desktop: Hint permanece en header (sin cambios)
-  - Versión mobile compacta: solo icono ? + número
-  - Header mobile centrado (HOME, PAUSA, SONIDO) - más simétrico
-  - Sincronización automática entre ambos botones hint
+- **Layout de controles mobile** 🎯
+  - Mobile: `[↩️ Undo] [⏱️ Timer] [? Hint]` - tres controles centrados
+  - Desktop: Timer solo (Undo y Hint en header)
+  - Undo y Hint compactos: solo iconos
+  - Header mobile centrado (HOME, PAUSA, SONIDO) - simétrico
+  - Timer perfectamente centrado entre controles
 
 - **Título "Piezas Disponibles"**
   - Desktop: Centrado (text-align: center)
@@ -32,25 +42,31 @@ Registro cronológico de cambios día a día.
   - Layout más compacto y natural
 
 ### Archivos modificados
-- `index.html` (+11 líneas)
+- `index.html` (+18 líneas)
   - Removida clase `.hidden` del timer global
-  - Contenedor `.timer-hint-container` con timer + hint mobile
-  - Nuevo botón `#btnHintMobile` con contador
-- `styles.css` (+52 líneas)
-  - `.timer-hint-container`: Flexbox para agrupar timer + hint
+  - Contenedor `.timer-hint-container` con undo + timer + hint
+  - Botón `#btnUndoMobile` (izquierda del timer)
+  - Botón `#btnHintMobile` (derecha del timer)
+  - Botón `#btnUndo` descomentado en header (desktop)
+- `styles.css` (+25 líneas)
+  - `.timer-hint-container`: justify-content space-between
+  - `.btn-undo-mobile`: Estilos compactos (solo icono)
   - `.btn-hint-mobile`: Estilos compactos (icono + número)
   - `.header`: justify-content center en mobile, space-between en desktop
-  - Media queries para ocultar/mostrar hints según viewport
+  - Media queries para ocultar/mostrar versiones según viewport
   - `.bank-title`: text-align center solo en desktop
-- `game.js` (+13 líneas)
-  - Event listener para `btnHintMobile`
+- `game.js` (+20 líneas)
+  - Event listeners para `btnUndoMobile` y `btnHintMobile`
+  - `updateUndoClearButtons()`: Sincroniza ambos botones undo
   - `updateHintButton()`: Sincroniza ambos botones hint
 
 ### Estadísticas
-- 4 commits realizados
+- 5 commits realizados
 - UX mobile significativamente mejorado
-- Timer y hint siempre visibles sin scroll
-- Header mobile más limpio y simétrico
+- Botón Undo activado y funcional (desktop + mobile)
+- Timer + controles siempre visibles sin scroll
+- Header mobile centrado y simétrico
+- Deshacer pieza por pieza hasta posición original
 
 ---
 
