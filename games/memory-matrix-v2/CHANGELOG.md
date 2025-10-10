@@ -27,7 +27,8 @@ Registro cronológico de cambios día a día.
 - `styles.css` - Eliminado position absolute/fixed, ahora usa margin-top
 
 ### Archivos nuevos
-- `ChessGameLibrary/API_REFERENCE.md` - Diccionario completo de funciones
+- `ChessGameLibrary/API_REFERENCE.md` - Diccionario completo de funciones (+520 lineas)
+- `SUGERENCIAS_MEJORAS.md` - 15 sugerencias organizadas por prioridad (+650 lineas)
 
 ---
 
