@@ -371,7 +371,14 @@ function startGame() {
         return;
     }
 
-    currentPosition = window.MemoryMatrixLevels.generateRandomPosition(currentLevel);
+    // Solo generar nueva posición si no existe (ej: después de reintento)
+    // Normalmente ya existe de showInitialPosition() o del intento anterior
+    if (!currentPosition || currentPosition.length === 0) {
+        currentPosition = window.MemoryMatrixLevels.generateRandomPosition(currentLevel);
+        console.log('⚠️ Generando nueva posición (no había preview)');
+    } else {
+        console.log('✅ Usando posición ya mostrada en preview');
+    }
 
     console.log(`👁️ Memoriza ${levelConfig.pieceCount} piezas en ${levelConfig.memorizationTime/1000}s`);
 
@@ -2199,14 +2206,15 @@ function showInitialPosition() {
     }
 
     // Generar una posición de preview para el nivel actual
-    const previewPosition = window.MemoryMatrixLevels.generateRandomPosition(currentLevel);
+    // Esta será la posición que se usará cuando se presione "Comenzar"
+    currentPosition = window.MemoryMatrixLevels.generateRandomPosition(currentLevel);
 
     // Mostrar piezas en el tablero
-    previewPosition.forEach(({ square, piece }) => {
+    currentPosition.forEach(({ square, piece }) => {
         showPiece(square, piece);
     });
 
-    console.log(`👁️ Posición inicial del nivel ${currentLevel} mostrada (preview)`);
+    console.log(`👁️ Posición inicial del nivel ${currentLevel} mostrada (será usada al comenzar)`);
 }
 
 /**
