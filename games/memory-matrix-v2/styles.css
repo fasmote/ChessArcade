@@ -474,8 +474,10 @@ body::before {
 .global-timer {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     padding: 8px 14px;
+    margin-top: 15px;
     background: rgba(0, 0, 0, 0.6);
     border: 2px solid var(--gold);
     border-radius: var(--border-radius);
@@ -494,6 +496,23 @@ body::before {
     text-shadow: 0 0 10px var(--gold);
     min-width: 50px;
     text-align: center;
+}
+
+/* Desktop: Timer global más grande */
+@media (min-width: 900px) {
+    .global-timer {
+        margin-top: 20px;
+        padding: 12px 18px;
+    }
+
+    .global-timer .timer-icon {
+        font-size: 22px;
+    }
+
+    .global-timer .timer-display {
+        font-size: 20px;
+        min-width: 60px;
+    }
 }
 
 /* ============================================
@@ -1271,7 +1290,7 @@ body::before {
    ============================================ */
 
 .timer-container {
-    /* Mobile: Centrado sobre el banco */
+    /* Centrado sobre el banco (tanto mobile como desktop) */
     position: absolute;
     top: 50%;
     left: 50%;
@@ -1284,21 +1303,6 @@ body::before {
     transition: opacity 0.3s ease, visibility 0.3s ease;
 
     pointer-events: none; /* No bloquea clics */
-}
-
-/* Desktop: Debajo del banco de piezas */
-@media (min-width: 900px) {
-    .timer-container {
-        position: static;
-        transform: none;
-        margin-top: 20px;
-    }
-
-    .piece-bank-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
 }
 
 .timer-container.hidden {
