@@ -1,4 +1,4 @@
-/* Square Rush CSS - Version 7 - Tablero ocupa todo el container (fix padding) */
+/* Square Rush CSS - Version 8 - Tablero 88vw en mobile (sin límite 400px) */
 * {
     margin: 0;
     padding: 0;
@@ -302,9 +302,9 @@ body::before {
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
 
-    /* Tamaño del tablero - OCUPA CASI TODO EL CONTAINER */
-    width: 88vw;  /* Más grande: 88% en vez de 90% global */
-    max-width: 400px;
+    /* Tamaño del tablero - OCUPA CASI TODA LA PANTALLA */
+    width: 88vw;
+    max-width: 88vw; /* En mobile: ancho = 88% de pantalla */
     aspect-ratio: 1; /* Mantener cuadrado */
 
     /* Borde del tablero */
@@ -317,13 +317,14 @@ body::before {
     position: relative;
 }
 
-/* Tablet y desktop: tablero más grande */
+/* Tablet: limitar tamaño máximo */
 @media (min-width: 600px) {
     .chess-board {
         max-width: 450px;
     }
 }
 
+/* Desktop: limitar tamaño máximo */
 @media (min-width: 900px) {
     .chess-board {
         max-width: 500px;
