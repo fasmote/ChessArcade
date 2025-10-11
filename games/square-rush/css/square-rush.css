@@ -1,4 +1,4 @@
-/* Square Rush CSS - Version 8 - Tablero 88vw en mobile (sin límite 400px) */
+/* Square Rush CSS - Version 9 - Container = calc(88vw + padding) */
 * {
     margin: 0;
     padding: 0;
@@ -273,10 +273,10 @@ body::before {
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 2rem;
+    margin: 0 auto 2rem auto; /* Centrado horizontal */
 
-    /* Padding mínimo para que tablero ocupe casi todo */
-    padding: 0.5rem;
+    /* Padding muy pequeño */
+    padding: 0.3rem;
 
     /* Fondo semi-transparente */
     background: rgba(0, 0, 0, 0.4);
@@ -291,9 +291,9 @@ body::before {
         0 0 40px rgba(0, 255, 255, 0.3),
         inset 0 0 20px rgba(0, 255, 255, 0.05);
 
-    /* Ancho del container igual al tablero + padding */
-    width: fit-content;
-    max-width: 95vw; /* No más del 95% de la pantalla */
+    /* Container = tamaño del tablero + padding mínimo */
+    width: calc(88vw + 0.6rem); /* tablero (88vw) + padding (2 × 0.3rem) */
+    max-width: 95vw;
 }
 
 .chess-board {
