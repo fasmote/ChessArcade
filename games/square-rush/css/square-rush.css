@@ -1,4 +1,4 @@
-/* Square Rush CSS - Version 9 - Container = calc(88vw + padding) */
+/* Square Rush CSS - Version 10 - Copia exacta de Memory Matrix (sin width en container) */
 * {
     margin: 0;
     padding: 0;
@@ -273,10 +273,10 @@ body::before {
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    margin: 0 auto 2rem auto; /* Centrado horizontal */
+    margin-bottom: 2rem;
 
-    /* Padding muy pequeño */
-    padding: 0.3rem;
+    /* Padding */
+    padding: 1rem;
 
     /* Fondo semi-transparente */
     background: rgba(0, 0, 0, 0.4);
@@ -291,9 +291,7 @@ body::before {
         0 0 40px rgba(0, 255, 255, 0.3),
         inset 0 0 20px rgba(0, 255, 255, 0.05);
 
-    /* Container = tamaño del tablero + padding mínimo */
-    width: calc(88vw + 0.6rem); /* tablero (88vw) + padding (2 × 0.3rem) */
-    max-width: 95vw;
+    /* SIN WIDTH - el container se ajusta al contenido automáticamente */
 }
 
 .chess-board {
@@ -302,9 +300,9 @@ body::before {
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
 
-    /* Tamaño del tablero - OCUPA CASI TODA LA PANTALLA */
-    width: 88vw;
-    max-width: 88vw; /* En mobile: ancho = 88% de pantalla */
+    /* Tamaño del tablero (mobile first) - IGUAL QUE MEMORY MATRIX */
+    width: 90vw;
+    max-width: 400px;
     aspect-ratio: 1; /* Mantener cuadrado */
 
     /* Borde del tablero */
@@ -317,14 +315,13 @@ body::before {
     position: relative;
 }
 
-/* Tablet: limitar tamaño máximo */
+/* Tablet y desktop: tablero más grande - IGUAL QUE MEMORY MATRIX */
 @media (min-width: 600px) {
     .chess-board {
         max-width: 450px;
     }
 }
 
-/* Desktop: limitar tamaño máximo */
 @media (min-width: 900px) {
     .chess-board {
         max-width: 500px;
@@ -337,7 +334,7 @@ body::before {
     align-items: center;
     justify-content: center;
 
-    /* Tamaño definido por grid */
+    /* Tamaño definido por grid - IGUAL QUE MEMORY MATRIX */
     width: 100%;
     height: 100%;
 
@@ -355,20 +352,17 @@ body::before {
     font-size: clamp(10px, 2.5vw, 14px);
 }
 
+/* Colores de casillas - IGUAL QUE MEMORY MATRIX */
 .square.light {
     background-color: #f0d9b5;
-    color: #8b4513;
 }
 
 .square.dark {
     background-color: #b58863;
-    color: #f0d9b5;
 }
 
 .square:hover {
-    filter: brightness(1.15);
-    transform: scale(1.05);
-    z-index: 10;
+    filter: brightness(1.1);
 }
 
 .square.correct {
