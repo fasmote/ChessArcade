@@ -3315,6 +3315,153 @@ setTimeout(() => {
 
 ---
 
-**Última actualización**: 10 Octubre 2025 - Corrección de transición de niveles + hints
-**Estado**: Bugs críticos corregidos - juego estable
-**Próximo**: Testing completo de flujo de juego
+---
+
+## 🎯 MEJORA UX MOBILE - Drag & Drop (11 Octubre 2025)
+
+### Problema reportado por usuario:
+1. **Scroll no deseado:** Al arrastrar piezas en mobile, la pantalla hacía scroll
+2. **Difícil arrastrar:** Área táctil pequeña en banco de piezas, dedos tapaban las piezas
+
+### Soluciones implementadas:
+
+#### 1️⃣ Prevenir scroll durante drag
+
+**CSS (styles.css líneas 1053-1057):**
+```css
+.bank-piece-slot {
+    /* PREVENIR SCROLL en touch devices durante drag */
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+```
+
+**Efecto:**
+- `touch-action: none` → Bloquea scroll/zoom durante touch en slots
+- `-webkit-touch-callout` → Previene menú contextual iOS
+- `user-select: none` → Evita selección accidental de texto
+
+---
+
+#### 2️⃣ Aumentar área táctil en mobile
+
+**CSS (styles.css líneas 357-376):**
+```css
+@media (max-width: 767px) {
+    .bank-piece-slot {
+        padding: 4px;      /* Área táctil más grande */
+        margin: 2px;       /* Espacio entre slots */
+    }
+
+    .bank-piece-slot .piece {
+        width: 95%;        /* Pieza más grande (antes 90%) */
+        height: 95%;
+    }
+
+    .piece-bank {
+        gap: 8px;          /* antes: 4px */
+        padding: 12px;     /* antes: 4px */
+    }
+}
+```
+
+**Resultado:**
+- Slots más separados → Menos errores al seleccionar
+- Piezas más grandes → Más fácil de agarrar con dedo
+- Mejor experiencia táctil en pantallas pequeñas
+
+---
+
+#### 3️⃣ Sistema alternativo TAP-TAP para mobile
+
+**Nuevo sistema opcional (funciona en paralelo con drag):**
+1. **Tap 1:** Tocar pieza del banco → Se selecciona con brillo dorado
+2. **Tap 2:** Tocar casilla del tablero → Se coloca la pieza
+
+**Implementación (DragDrop.js líneas 460-577):**
+```javascript
+function initTapTap(options) {
+    // Click en banco → Seleccionar pieza
+    bankElement.addEventListener('click', (e) => {
+        // Feedback visual: brillo dorado
+        pieceElement.style.filter = 'drop-shadow(0 0 20px gold)';
+        bankSlot.style.background = 'rgba(255, 215, 0, 0.3)';
+        bankSlot.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.8)';
+    });
+
+    // Click en tablero → Colocar pieza seleccionada
+    boardElement.addEventListener('click', (e) => {
+        // Crear pieza en tablero
+        // Remover del banco
+        // Callback onPiecePlaced()
+    });
+}
+```
+
+**CSS (styles.css líneas 1117-1120):**
+```css
+.bank-piece-slot .piece.selected {
+    filter: drop-shadow(0 0 20px gold);
+    transform: scale(1.1);
+}
+```
+
+**Ventajas:**
+- ✅ No requiere arrastrar (más fácil con una mano)
+- ✅ Feedback visual claro (brillo dorado)
+- ✅ Funciona en paralelo con drag (usuario elige)
+- ✅ Más preciso en pantallas pequeñas
+
+---
+
+### Archivos modificados:
+
+**styles.css:**
+- Líneas 1053-1057: `touch-action: none` en `.bank-piece-slot`
+- Líneas 357-376: Aumento de área táctil mobile
+- Líneas 1108-1120: Transiciones y estilo para pieza seleccionada
+
+**ChessGameLibrary/DragDrop.js:**
+- Líneas 460-577: Nueva función `initTapTap()` (+118 líneas)
+- Líneas 584-598: Exportar `initTapTap` junto a `initDragDrop`
+
+**game.js:**
+- Líneas 1738-1817: Integración de ambos sistemas (drag + tap-tap)
+- Callbacks compartidos entre ambos métodos
+
+---
+
+### Estadísticas:
+
+**Código agregado:**
+- +118 líneas en DragDrop.js (función initTapTap)
+- +33 líneas en styles.css (touch-action + área táctil mobile)
+- +10 líneas en game.js (integración tap-tap)
+- **Total: ~161 líneas nuevas**
+
+**Documentación:**
+- +130 líneas en PROGRESO_SESION.md
+
+---
+
+### Testing recomendado:
+
+**En dispositivos móviles:**
+- [ ] Probar drag sin scroll accidental
+- [ ] Probar tap-tap: seleccionar + colocar
+- [ ] Verificar área táctil cómoda
+- [ ] Probar con una mano
+- [ ] Probar en pantallas pequeñas (350px)
+
+**Feedback esperado:**
+- Menos errores al arrastrar
+- No más scroll accidental
+- Opción tap-tap más intuitiva para usuarios que prefieren
+
+---
+
+**Última actualización**: 11 Octubre 2025 - Mejora UX mobile (drag + tap-tap)
+**Estado**: 3 soluciones implementadas - listo para testing en mobile
+**Próximo**: Feedback de usuarios mobile + ajustes finales

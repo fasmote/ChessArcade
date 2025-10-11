@@ -458,13 +458,133 @@ style.textContent = `
 document.head.appendChild(style);
 
 // ============================================
+// SISTEMA TAP-TAP PARA MOBILE (Alternativa al drag)
+// ============================================
+
+let tapState = {
+    selectedPiece: null,
+    selectedPieceElement: null,
+    selectedSlot: null
+};
+
+/**
+ * Inicializa sistema tap-tap para mobile
+ * Permite seleccionar pieza (tap 1) y luego casilla (tap 2)
+ */
+function initTapTap(options = {}) {
+    const {
+        bankSelector = '.piece-bank',
+        boardSelector = '#chessboard',
+        onPiecePlaced = () => {},
+        canPlacePiece = () => true
+    } = options;
+
+    console.log('📱 Inicializando sistema Tap-Tap para mobile...');
+
+    const bankElement = document.querySelector(bankSelector);
+    const boardElement = document.querySelector(boardSelector);
+
+    if (!bankElement || !boardElement) {
+        console.error('❌ No se encontró banco o tablero para tap-tap');
+        return;
+    }
+
+    // Listener para seleccionar pieza del banco (tap 1)
+    bankElement.addEventListener('click', (e) => {
+        const pieceElement = e.target.closest('img.piece');
+        if (!pieceElement) return;
+
+        const bankSlot = pieceElement.closest('.bank-piece-slot');
+        if (!bankSlot) return;
+
+        const piece = pieceElement.dataset.piece || bankSlot.dataset.piece;
+        if (!piece) return;
+
+        // Deseleccionar anterior si existe
+        if (tapState.selectedPieceElement) {
+            tapState.selectedPieceElement.style.filter = '';
+            tapState.selectedSlot.style.background = '';
+            tapState.selectedSlot.style.boxShadow = '';
+        }
+
+        // Seleccionar nueva pieza
+        tapState.selectedPiece = piece;
+        tapState.selectedPieceElement = pieceElement;
+        tapState.selectedSlot = bankSlot;
+
+        // Feedback visual: brillo dorado
+        pieceElement.style.filter = 'drop-shadow(0 0 20px gold)';
+        bankSlot.style.background = 'rgba(255, 215, 0, 0.3)';
+        bankSlot.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.8)';
+
+        console.log(`📱 Pieza seleccionada: ${piece} - Ahora toca una casilla del tablero`);
+    });
+
+    // Listener para colocar en casilla (tap 2)
+    boardElement.addEventListener('click', (e) => {
+        if (!tapState.selectedPiece) {
+            console.log('⚠️ No hay pieza seleccionada');
+            return;
+        }
+
+        const square = e.target.closest('[data-square]');
+        if (!square) return;
+
+        const squareCoord = square.dataset.square;
+
+        // Validar si se puede colocar
+        if (!canPlacePiece(tapState.selectedPiece, squareCoord)) {
+            console.log(`❌ No se puede colocar ${tapState.selectedPiece} en ${squareCoord}`);
+            return;
+        }
+
+        console.log(`📱 Colocando ${tapState.selectedPiece} en ${squareCoord}`);
+
+        // Crear imagen de la pieza en el tablero
+        const pieceImg = document.createElement('img');
+        pieceImg.className = 'piece';
+        pieceImg.src = tapState.selectedPieceElement.src;
+        pieceImg.dataset.piece = tapState.selectedPiece;
+        pieceImg.alt = tapState.selectedPiece;
+
+        // Limpiar piezas existentes en esa casilla
+        const existingPieces = square.querySelectorAll('.piece');
+        existingPieces.forEach(p => p.remove());
+
+        // Agregar pieza al tablero
+        square.appendChild(pieceImg);
+
+        // Remover pieza del banco
+        tapState.selectedPieceElement.remove();
+
+        // Callback
+        onPiecePlaced(tapState.selectedPiece, squareCoord);
+
+        // Limpiar selección
+        if (tapState.selectedSlot) {
+            tapState.selectedSlot.style.background = '';
+            tapState.selectedSlot.style.boxShadow = '';
+        }
+
+        tapState.selectedPiece = null;
+        tapState.selectedPieceElement = null;
+        tapState.selectedSlot = null;
+
+        console.log(`✅ Pieza colocada con tap-tap`);
+    });
+
+    console.log('✅ Sistema Tap-Tap inicializado');
+}
+
+// ============================================
 // EXPORTAR FUNCIONES
 // ============================================
 
 // Para uso como módulo ES6
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        initDragDrop
+        initDragDrop,
+        initTapTap
     };
 }
 
@@ -472,7 +592,8 @@ if (typeof module !== 'undefined' && module.exports) {
 if (typeof window !== 'undefined') {
     window.ChessGameLibrary = window.ChessGameLibrary || {};
     window.ChessGameLibrary.DragDrop = {
-        initDragDrop
+        initDragDrop,
+        initTapTap
     };
 }
 

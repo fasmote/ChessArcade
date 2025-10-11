@@ -353,6 +353,26 @@ body::before {
     .btn-undo-desktop {
         display: none;
     }
+
+    /* AUMENTAR ÁREA TÁCTIL del banco de piezas en mobile */
+    .bank-piece-slot {
+        /* Aumentar padding interno para área táctil más grande */
+        padding: 4px;
+        /* Aumentar gap entre slots */
+        margin: 2px;
+    }
+
+    .bank-piece-slot .piece {
+        /* Pieza más grande = más fácil arrastrar */
+        width: 95%;
+        height: 95%;
+    }
+
+    /* Aumentar gap del grid del banco */
+    .piece-bank {
+        gap: 8px; /* antes: var(--spacing-sm) que es 4px */
+        padding: 12px; /* antes: var(--spacing-sm) que es 4px */
+    }
 }
 
 /* Separador de fila en header (solo visible en desktop) */
@@ -1049,6 +1069,12 @@ body::before {
 
     /* Posición relativa para pieza */
     position: relative;
+
+    /* PREVENIR SCROLL en touch devices durante drag */
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 /* Slot con pieza: borde sólido */
@@ -1078,10 +1104,19 @@ body::before {
     /* IMPORTANTE: Permitir eventos para drag & drop */
     pointer-events: auto;
     cursor: grab;
+
+    /* Transición suave para efectos de selección */
+    transition: filter 0.3s ease, transform 0.2s ease;
 }
 
 .bank-piece-slot .piece:active {
     cursor: grabbing;
+}
+
+/* Pieza seleccionada con tap-tap (mobile) */
+.bank-piece-slot .piece.selected {
+    filter: drop-shadow(0 0 20px gold);
+    transform: scale(1.1);
 }
 
 /* Label de tipo de pieza (opcional, para debug) */

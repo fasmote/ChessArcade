@@ -1735,10 +1735,10 @@ function initDragAndDrop() {
         return;
     }
 
-    const { initDragDrop } = window.ChessGameLibrary.DragDrop;
+    const { initDragDrop, initTapTap } = window.ChessGameLibrary.DragDrop;
 
-    // Configurar drag & drop
-    initDragDrop({
+    // Callbacks compartidos entre drag y tap-tap
+    const sharedCallbacks = {
         bankSelector: '.piece-bank',
         boardSelector: '#chessboard',
 
@@ -1806,9 +1806,15 @@ function initDragAndDrop() {
             console.log(`✅ Se puede colocar ${piece} en ${square}`);
             return true;
         }
-    });
+    };
 
-    console.log('✅ Drag & Drop inicializado correctamente');
+    // Inicializar AMBOS sistemas (drag y tap-tap)
+    // En mobile, tap-tap será más fácil de usar
+    // En desktop, drag será el método principal
+    initDragDrop(sharedCallbacks);
+    initTapTap(sharedCallbacks);
+
+    console.log('✅ Drag & Drop + Tap-Tap inicializados correctamente');
 }
 
 /**
