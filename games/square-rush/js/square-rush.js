@@ -273,13 +273,28 @@ function updateUI() {
 function completeLevel() {
     clearInterval(gameState.timerInterval);
     gameState.gameActive = false;
-    
+
     playSound('levelUp');
-    
-    document.getElementById('gameOverTitle').textContent = 'LEVEL COMPLETE!';
-    document.getElementById('finalScore').textContent = `Score: ${gameState.score}`;
-    document.getElementById('gameOverScreen').style.display = 'flex';
-    
+
+    // Usar LevelTransition en vez del overlay agresivo
+    if (window.ChessGameLibrary && window.ChessGameLibrary.LevelTransition) {
+        window.ChessGameLibrary.LevelTransition.show({
+            levelNumber: gameState.level + 1,
+            levelName: gameState.level < Object.keys(levels).length ? `Speed: ${levels[gameState.level + 1].time}s` : 'Final',
+            icon: '🎉',
+            duration: 2500,
+            onComplete: () => {
+                // Avanzar automáticamente al siguiente nivel
+                nextLevel();
+            }
+        });
+    } else {
+        // Fallback: usar overlay viejo si la librería no está
+        document.getElementById('gameOverTitle').textContent = 'LEVEL COMPLETE!';
+        document.getElementById('finalScore').textContent = `Score: ${gameState.score}`;
+        document.getElementById('gameOverScreen').style.display = 'flex';
+    }
+
     // Track completion
     gtag('event', 'level_complete', {
         'level': gameState.level,
