@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(git commit:*)",
-      "Read(//c/Users/clau/Documents/**)"
+      "Read(//c/Users/clau/Documents/**)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

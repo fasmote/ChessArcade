@@ -1,4 +1,4 @@
-/* Square Rush CSS - Version 6 - Tablero estilo Memory Matrix responsivo */
+/* Square Rush CSS - Version 7 - Tablero ocupa todo el container (fix padding) */
 * {
     margin: 0;
     padding: 0;
@@ -275,8 +275,8 @@ body::before {
     gap: 0.5rem;
     margin-bottom: 2rem;
 
-    /* Padding */
-    padding: 1rem;
+    /* Padding mínimo para que tablero ocupe casi todo */
+    padding: 0.5rem;
 
     /* Fondo semi-transparente */
     background: rgba(0, 0, 0, 0.4);
@@ -290,6 +290,10 @@ body::before {
         0 0 20px #00ffff,
         0 0 40px rgba(0, 255, 255, 0.3),
         inset 0 0 20px rgba(0, 255, 255, 0.05);
+
+    /* Ancho del container igual al tablero + padding */
+    width: fit-content;
+    max-width: 95vw; /* No más del 95% de la pantalla */
 }
 
 .chess-board {
@@ -298,8 +302,8 @@ body::before {
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
 
-    /* Tamaño del tablero (mobile first) - OCUPA TODA LA PANTALLA */
-    width: 90vw;
+    /* Tamaño del tablero - OCUPA CASI TODO EL CONTAINER */
+    width: 88vw;  /* Más grande: 88% en vez de 90% global */
     max-width: 400px;
     aspect-ratio: 1; /* Mantener cuadrado */
 
