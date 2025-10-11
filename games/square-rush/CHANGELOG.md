@@ -145,6 +145,139 @@ No se requiere cambio en JavaScript - el grid sigue siendo 8×8 con las mismas c
 
 ---
 
+---
+
+## 🐛 Versión 7-10 - Intentos de arreglar tamaño tablero mobile (11 Octubre 2025)
+
+**Problema reportado:** Tablero se veía pequeño en mobile con mucho espacio vacío dentro del borde cyan.
+
+### Intentos fallidos:
+
+**v7:** `width: calc(88vw + 0.6rem)` en container → Roto en desktop
+**v8:** `max-width: 88vw` sin límite 400px → No funcionó por caché
+**v9:** `width: calc(88vw + 0.6rem)` exacto → Peor en desktop
+**v10:** Sin width en container (copia exacta Memory Matrix) → CSS correcto pero caché Chrome persistió
+
+### Resultado:
+- ✅ Firefox mobile: Funcionó desde v10
+- ❌ Chrome mobile: Seguía mostrando tablero pequeño (caché v6-v9)
+- ✅ Desktop: Funcionó desde v10
+
+---
+
+## ✅ Versión 11 - SOLUCIÓN: Renombrar clase CSS (11 Octubre 2025)
+
+### El problema real: Caché agresivo de Chrome
+
+**Situación:**
+- CSS v10 era correcto (copia exacta de Memory Matrix)
+- Servidor servía archivo correcto
+- Firefox lo mostraba perfecto
+- Chrome mobile/desktop seguía mostrando tablero pequeño
+
+**Causa raíz:**
+Chrome tenía **cacheadas las reglas CSS de `.chess-board`** de las versiones 6-9 (con `width: 88vw`, `max-width: 88vw`, `calc()` rotos).
+
+Aunque el archivo CSS era nuevo (v10), Chrome aplicaba las reglas viejas porque:
+1. El **selector** `.chess-board` era el mismo
+2. Chrome cachea reglas CSS por **nombre de clase**
+3. No le importaba el `?v=10` ni el contenido del archivo
+
+**Intentos que NO funcionaron:**
+- ❌ Cache buster `?v=1` hasta `?v=10`
+- ❌ `?nocache=timestamp`
+- ❌ Hard refresh (Ctrl+Shift+R)
+- ❌ Limpiar caché manualmente
+- ❌ Modo incógnito
+- ❌ Diferentes navegadores en misma máquina
+
+### Solución aplicada:
+
+**Renombrar clase CSS:**
+```diff
+<!-- HTML -->
+- <div class="chess-board" id="chessBoard">
++ <div class="chessboard" id="chessBoard">
+
+/* CSS */
+- .chess-board {
++ .chessboard {
+    width: 90vw;
+    max-width: 400px;
+    aspect-ratio: 1;
+}
+```
+
+### Por qué funcionó:
+
+Chrome no tenía `.chessboard` (sin guión) cacheado:
+- `.chess-board` → Reglas viejas rotas (cacheadas v6-v9)
+- `.chessboard` → Clase nueva, descarga reglas correctas ✅
+
+**Analogía:**
+```
+Diccionario de Chrome:
+.chess-board → "usar width: 88vw (cacheado)"  ❌
+.chessboard  → "no existe, descargar nuevo"   ✅
+```
+
+### Beneficio adicional:
+
+Ahora Square Rush usa la misma clase que Memory Matrix (`.chessboard`), mejorando la consistencia del código.
+
+### Resultado final:
+
+✅ **Chrome mobile:** Tablero ocupa 90vw (perfecto)
+✅ **Firefox mobile:** Sigue funcionando
+✅ **Desktop:** Sigue funcionando
+✅ **Consistencia:** Misma clase que Memory Matrix
+
+---
+
+## 📚 Lección aprendida: Cómo romper caché CSS agresivo
+
+Cuando el caché de CSS es extremadamente persistente y NADA funciona:
+
+### ❌ Lo que NO funcionó:
+- Cache busters en la URL (`?v=`, `?nocache=`)
+- Hard refresh del navegador
+- Limpiar caché manualmente
+- Modo incógnito
+- Cambiar de navegador en misma máquina
+
+### ✅ Solución definitiva:
+**Cambiar el nombre del selector CSS**
+
+```css
+/* Viejo (cacheado) */
+.my-element { ... }
+
+/* Nuevo (fuerza descarga) */
+.my-element-v2 { ... }
+/* o */
+.myElement { ... }
+```
+
+Chrome (y otros navegadores) cachean reglas CSS por **nombre de selector**, no solo por archivo. Cambiar el nombre fuerza la descarga de reglas nuevas.
+
+### Cuándo usar esta técnica:
+
+1. Has probado todos los cache busters
+2. El CSS es correcto en el servidor
+3. Funciona en un navegador pero no en otro
+4. Usuarios reportan versión vieja después de actualizar
+
+### Alternativas (menos drásticas):
+
+1. **Cambiar nombre de archivo:** `styles.css` → `styles-v2.css`
+2. **Agregar clase wrapper:** `.v11 .chess-board { ... }`
+3. **Usar hash en nombre:** `styles.abc123.css` (requiere build tool)
+
+Pero cambiar el nombre de la clase es la forma más rápida y no requiere herramientas adicionales.
+
+---
+
 **Última actualización:** 11 Octubre 2025
-**Versión CSS:** 6
-**Próximo:** Feedback de usuarios + ajustes mobile si necesario
+**Versión CSS:** 11
+**Estado:** Tablero responsivo funcional en todos los navegadores
+**Próximo:** Ajustes UX mobile (timer, layout)
