@@ -1,4 +1,4 @@
-/* Square Rush CSS - Version 2 - Botones a 20px */
+/* Square Rush CSS - Version 6 - Tablero estilo Memory Matrix responsivo */
 * {
     margin: 0;
     padding: 0;
@@ -268,46 +268,101 @@ body::before {
 
 /* Chess board */
 .board-container {
-    position: relative;
+    /* Centrar tablero */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
     margin-bottom: 2rem;
+
+    /* Padding */
+    padding: 1rem;
+
+    /* Fondo semi-transparente */
+    background: rgba(0, 0, 0, 0.4);
+
+    /* Borde neón cyan */
+    border: 3px solid #00ffff;
+    border-radius: 12px;
+
+    /* Glow neón */
+    box-shadow:
+        0 0 20px #00ffff,
+        0 0 40px rgba(0, 255, 255, 0.3),
+        inset 0 0 20px rgba(0, 255, 255, 0.05);
 }
 
 .chess-board {
+    /* Grid 8x8 */
     display: grid;
-    grid-template-columns: repeat(8, 60px);
-    grid-template-rows: repeat(8, 60px);
-    gap: 2px;
-    border: 4px solid #00ffff;
-    border-radius: 10px;
-    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-    background: #000;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+
+    /* Tamaño del tablero (mobile first) - OCUPA TODA LA PANTALLA */
+    width: 90vw;
+    max-width: 400px;
+    aspect-ratio: 1; /* Mantener cuadrado */
+
+    /* Borde del tablero */
+    border: 2px solid #333;
+
+    /* Sombra interna sutil */
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+
+    /* Posición relativa para coordenadas */
+    position: relative;
+}
+
+/* Tablet y desktop: tablero más grande */
+@media (min-width: 600px) {
+    .chess-board {
+        max-width: 450px;
+    }
+}
+
+@media (min-width: 900px) {
+    .chess-board {
+        max-width: 500px;
+    }
 }
 
 .square {
+    /* Centrar contenido */
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
+
+    /* Tamaño definido por grid */
+    width: 100%;
+    height: 100%;
+
+    /* Posición relativa */
     position: relative;
+
+    /* Cursor pointer */
+    cursor: pointer;
+
+    /* Transición suave */
+    transition: all 0.2s ease;
+
+    /* Fuente para coordenadas */
     font-weight: 900;
-    font-size: 12px;
-    border-radius: 5px;
+    font-size: clamp(10px, 2.5vw, 14px);
 }
 
 .square.light {
-    background: linear-gradient(135deg, #f0d9b5 0%, #e8c99f 100%);
+    background-color: #f0d9b5;
     color: #8b4513;
 }
 
 .square.dark {
-    background: linear-gradient(135deg, #b58863 0%, #a67c52 100%);
+    background-color: #b58863;
     color: #f0d9b5;
 }
 
 .square:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    filter: brightness(1.15);
+    transform: scale(1.05);
     z-index: 10;
 }
 
