@@ -1,4 +1,4 @@
-/* Square Rush CSS - Version 10 - Copia exacta de Memory Matrix (sin width en container) */
+/* Square Rush CSS - Version 11 - Clase renombrada .chessboard para romper caché Chrome */
 * {
     margin: 0;
     padding: 0;
@@ -294,7 +294,7 @@ body::before {
     /* SIN WIDTH - el container se ajusta al contenido automáticamente */
 }
 
-.chess-board {
+.chessboard {
     /* Grid 8x8 */
     display: grid;
     grid-template-columns: repeat(8, 1fr);
@@ -317,13 +317,13 @@ body::before {
 
 /* Tablet y desktop: tablero más grande - IGUAL QUE MEMORY MATRIX */
 @media (min-width: 600px) {
-    .chess-board {
+    .chessboard {
         max-width: 450px;
     }
 }
 
 @media (min-width: 900px) {
-    .chess-board {
+    .chessboard {
         max-width: 500px;
     }
 }
