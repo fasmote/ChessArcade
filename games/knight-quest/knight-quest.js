@@ -923,11 +923,56 @@ function toggleSound() {
 }
 
 // ========================================
+// FUNCIÓN: Go Home (volver a ChessArcade)
+// ========================================
+function goHome() {
+    console.log('🏠 Volviendo a ChessArcade...');
+    window.location.href = '../../index.html';
+}
+
+// ========================================
 // INICIALIZACIÓN AUTOMÁTICA
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded, inicializando Knight Quest...');
-    initGame();
+
+    // Configurar event listeners para botones HOME y SOUND PRIMERO
+    // Usar try-catch para asegurar que se registren incluso si hay errores
+    try {
+        const btnHome = document.getElementById('btnHome');
+        const btnSound = document.getElementById('btnSound');
+
+        if (btnHome) {
+            console.log('✅ HOME button encontrado, agregando listener');
+            btnHome.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('🏠 HOME clicked!');
+                goHome();
+            });
+        } else {
+            console.error('❌ HOME button NO encontrado');
+        }
+
+        if (btnSound) {
+            console.log('✅ SOUND button encontrado, agregando listener');
+            btnSound.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('🔊 SOUND clicked!');
+                toggleSound();
+            });
+        } else {
+            console.error('❌ SOUND button NO encontrado');
+        }
+    } catch (error) {
+        console.error('❌ Error configurando botones:', error);
+    }
+
+    // Iniciar juego después de configurar listeners
+    try {
+        initGame();
+    } catch (error) {
+        console.error('❌ Error iniciando juego:', error);
+    }
 });
 
 // Hacer funciones disponibles globalmente para los botones HTML
