@@ -972,28 +972,39 @@
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
+            .neon-container {
+                padding: 0.5rem;
+            }
+
             .game-title {
                 font-size: 2.5rem;
             }
 
+            /* Centrar todos los tamaños de tablero en móvil */
+            .chessboard {
+                margin: 1rem auto;
+                padding: 8px;
+                width: fit-content;
+            }
+
             .chessboard.size-4 {
-                grid-template-columns: repeat(4, 60px);
-                grid-template-rows: repeat(4, 60px);
+                grid-template-columns: repeat(4, 80px);
+                grid-template-rows: repeat(4, 80px);
             }
 
             .chessboard.size-6 {
-                grid-template-columns: repeat(6, 50px);
-                grid-template-rows: repeat(6, 50px);
+                grid-template-columns: repeat(6, 55px);
+                grid-template-rows: repeat(6, 55px);
             }
 
             .chessboard.size-8 {
-                grid-template-columns: repeat(8, 45px);
-                grid-template-rows: repeat(8, 45px);
+                grid-template-columns: repeat(8, 43px);
+                grid-template-rows: repeat(8, 43px);
             }
 
             .chessboard.size-10 {
-                grid-template-columns: repeat(10, 35px);
-                grid-template-rows: repeat(10, 35px);
+                grid-template-columns: repeat(10, 34px);
+                grid-template-rows: repeat(10, 34px);
             }
 
             .square {

@@ -1,5 +1,52 @@
 # Changelog
 
+## [1.1.2] - 2025-10-14
+
+### Fixed 🐛
+- **✅ TABLERO 8x8 AHORA CENTRADO EN MÓVIL**
+  - Problema: Tablero 8x8 aparecía desalineado a la izquierda en viewport móvil
+  - Usuario tenía que hacer zoom out manualmente para centrarlo
+  - Causa: Padding excesivo del contenedor + tamaño fijo del tablero
+
+### Improved 🎨
+- **Optimización de espacio en móvil (`@media max-width: 768px`)**
+  - `.neon-container`: Padding reducido de 2rem a 0.5rem
+  - `.chessboard`: Agregado `width: fit-content` + `margin: 1rem auto`
+  - Padding del tablero reducido de 15px a 8px
+
+- **Tamaños de casillas ajustados para máximo aprovechamiento**
+  - 4x4: 80px (antes 60px) - tablero ~344px
+  - 6x6: 55px (antes 50px) - tablero ~346px
+  - 8x8: 43px (antes 45px → 42px) - tablero ~360px
+  - 10x10: 34px (antes 35px → 33px) - tablero ~356px
+  - Todos los tableros ahora ocupan ~340-360px (óptimo para móviles 375px+)
+
+### Technical Details ⚙️
+```css
+/* index.html líneas 973-1008 */
+@media (max-width: 768px) {
+    .neon-container {
+        padding: 0.5rem;  /* Antes: var(--space-lg) = 2rem */
+    }
+
+    .chessboard {
+        margin: 1rem auto;
+        padding: 8px;  /* Antes: 15px */
+        width: fit-content;  /* Nuevo: fuerza centrado */
+    }
+
+    .chessboard.size-8 {
+        grid-template-columns: repeat(8, 43px);  /* Optimizado */
+        grid-template-rows: repeat(8, 43px);
+    }
+}
+```
+
+### Files Modified 📝
+- `games/knight-quest/index.html` (líneas 973-1008)
+
+---
+
 ## [1.1.1] - 2025-10-11 (HOTFIX)
 
 ### Fixed 🐛
