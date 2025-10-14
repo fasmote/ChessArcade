@@ -692,6 +692,17 @@ body::before {
     max-width: 90vw;
 }
 
+/* Subtítulo descriptivo del juego */
+.game-subtitle {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    color: var(--neon-cyan);
+    text-align: center;
+    margin: -0.5rem 0 1.5rem 0;
+    opacity: 0.9;
+    letter-spacing: 0.05em;
+}
+
 /* Animación de glow pulsante */
 @keyframes neonGlow {
     from {
@@ -1339,6 +1350,11 @@ body::before {
 
     .game-title {
         font-size: 1.6rem;
+    }
+
+    .game-subtitle {
+        font-size: 0.85rem;
+        margin: -0.25rem 0 1rem 0;
     }
 
     .btn-primary {

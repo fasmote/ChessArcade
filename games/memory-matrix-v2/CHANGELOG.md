@@ -4,6 +4,57 @@ Registro cronológico de cambios día a día.
 
 ---
 
+## [2025-10-14] - Subtítulo Descriptivo (Estándar ChessArcade)
+
+### Agregado ✨
+- **Subtítulo descriptivo del juego**
+  - Línea: "Memorize chess positions and recreate them perfectly!"
+  - Ubicación: Justo debajo del título "Memory Matrix"
+  - Estilo consistente con Knight Quest y Square Rush
+  - Estandarización de diseño en todos los juegos de ChessArcade
+
+### Technical Details ⚙️
+```html
+<!-- index.html línea 111 -->
+<p class="game-subtitle">Memorize chess positions and recreate them perfectly!</p>
+```
+
+```css
+/* styles.css líneas 695-704 */
+.game-subtitle {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    color: var(--neon-cyan);
+    text-align: center;
+    margin: -0.5rem 0 1.5rem 0;
+    opacity: 0.9;
+    letter-spacing: 0.05em;
+}
+
+/* styles.css líneas 1355-1358 - Responsive mobile */
+.game-subtitle {
+    font-size: 0.85rem;
+    margin: -0.25rem 0 1rem 0;
+}
+```
+
+### Files Modified 📝
+- `games/memory-matrix-v2/index.html` (línea 111)
+- `games/memory-matrix-v2/styles.css` (líneas 695-704, 1355-1358)
+
+### Design Pattern 🎨
+Este cambio establece un patrón de diseño estándar para todos los juegos:
+1. Título del juego (grande, neón, con emoji/icono)
+2. **Subtítulo descriptivo** (nuevo estándar)
+3. Controles y área de juego
+
+Juegos con subtítulo descriptivo:
+- ✅ Knight Quest: "Master the knight's L-shaped moves and visit every square!"
+- ✅ Square Rush: "Race through chess patterns at lightning speed!"
+- ✅ Memory Matrix: "Memorize chess positions and recreate them perfectly!"
+
+---
+
 ## [2025-10-10] - Hints 6, Posición Preview + How to Play
 
 ### Agregado
