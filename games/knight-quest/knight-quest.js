@@ -1,8 +1,43 @@
 // ========================================
 // KNIGHT QUEST - JUEGO COMPLETO INDEPENDIENTE
 // Recorre todas las casillas del tablero con el caballo
-// Versión: 1.0.0 - Totalmente autocontenido
+// Versión: 1.1.0 - Totalmente autocontenido
 // ========================================
+
+// ========================================
+// SOUND SYSTEM
+// ========================================
+let soundEnabled = true;
+
+// Load sound preference from localStorage
+function loadSoundPreference() {
+    const saved = localStorage.getItem('knight_quest_sound');
+    if (saved === 'disabled') {
+        soundEnabled = false;
+    }
+    updateSoundIcon();
+}
+
+// Save sound preference
+function saveSoundPreference() {
+    localStorage.setItem('knight_quest_sound', soundEnabled ? 'enabled' : 'disabled');
+}
+
+// Update sound button icon
+function updateSoundIcon() {
+    const iconOn = document.querySelector('.icon-sound-on');
+    const iconOff = document.querySelector('.icon-sound-off');
+
+    if (iconOn && iconOff) {
+        if (soundEnabled) {
+            iconOn.style.display = 'block';
+            iconOff.style.display = 'none';
+        } else {
+            iconOn.style.display = 'none';
+            iconOff.style.display = 'block';
+        }
+    }
+}
 
 // ========================================
 // CONFIGURACIÓN DEL JUEGO
@@ -854,8 +889,7 @@ function loadSettings() {
 
 function setupUI() {
     // Configurar botón de sonido inicial
-    const soundBtn = document.getElementById('soundBtn');
-    soundBtn.textContent = ChessArcade.soundEnabled ? '🔊' : '🔇';
+    updateSoundIcon();
 }
 
 // ========================================
@@ -918,8 +952,20 @@ function handleKeyPress(event) {
 // FUNCIONES GLOBALES PARA HTML
 // ========================================
 function toggleSound() {
-    ChessArcade.toggleGameSound();
-    setupUI();
+    console.log('🔊 toggleSound() LLAMADA INICIADA');
+    console.log('   - soundEnabled antes:', soundEnabled);
+    soundEnabled = !soundEnabled;
+    console.log('   - soundEnabled después:', soundEnabled);
+    saveSoundPreference();
+    updateSoundIcon();
+    console.log(soundEnabled ? '🔊 Sonido activado' : '🔇 Sonido desactivado');
+}
+
+// Función de prueba para debuggear
+function testSound() {
+    console.log('🧪 testSound() EJECUTADA');
+    console.log('   - soundEnabled actual:', soundEnabled);
+    toggleSound();
 }
 
 // ========================================
@@ -934,37 +980,62 @@ function goHome() {
 // INICIALIZACIÓN AUTOMÁTICA
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('========================================');
+    console.log('🎮 KNIGHT QUEST - INICIALIZACIÓN');
+    console.log('========================================');
     console.log('DOM loaded, inicializando Knight Quest...');
+
+    // Cargar preferencia de sonido primero
+    console.log('📂 Cargando preferencia de sonido...');
+    loadSoundPreference();
+    console.log('   - soundEnabled:', soundEnabled);
 
     // Configurar event listeners para botones HOME y SOUND PRIMERO
     // Usar try-catch para asegurar que se registren incluso si hay errores
+    console.log('\n🔘 Buscando botones HOME y SOUND...');
     try {
         const btnHome = document.getElementById('btnHome');
         const btnSound = document.getElementById('btnSound');
 
+        console.log('   - btnHome element:', btnHome);
+        console.log('   - btnSound element:', btnSound);
+
         if (btnHome) {
-            console.log('✅ HOME button encontrado, agregando listener');
+            console.log('✅ HOME button encontrado!');
+            console.log('   - ID:', btnHome.id);
+            console.log('   - Class:', btnHome.className);
+            console.log('   - Text:', btnHome.textContent.trim().substring(0, 20));
+
             btnHome.addEventListener('click', function(e) {
+                console.log('\n🏠🏠🏠 HOME BUTTON CLICKED! 🏠🏠🏠');
+                console.log('   - Event:', e);
                 e.preventDefault();
-                console.log('🏠 HOME clicked!');
                 goHome();
             });
+            console.log('   ✅ Listener agregado a HOME');
         } else {
-            console.error('❌ HOME button NO encontrado');
+            console.error('❌ HOME button NO encontrado (null o undefined)');
         }
 
         if (btnSound) {
-            console.log('✅ SOUND button encontrado, agregando listener');
+            console.log('✅ SOUND button encontrado!');
+            console.log('   - ID:', btnSound.id);
+            console.log('   - Class:', btnSound.className);
+            console.log('   - Text:', btnSound.textContent.trim().substring(0, 20));
+
             btnSound.addEventListener('click', function(e) {
+                console.log('\n🔊🔊🔊 SOUND BUTTON CLICKED! 🔊🔊🔊');
+                console.log('   - Event:', e);
                 e.preventDefault();
-                console.log('🔊 SOUND clicked!');
                 toggleSound();
             });
+            console.log('   ✅ Listener agregado a SOUND');
         } else {
-            console.error('❌ SOUND button NO encontrado');
+            console.error('❌ SOUND button NO encontrado (null o undefined)');
         }
     } catch (error) {
         console.error('❌ Error configurando botones:', error);
+        console.error('   Stack:', error.stack);
     }
 
     // Iniciar juego después de configurar listeners

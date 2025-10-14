@@ -1109,6 +1109,21 @@
         <!-- Chessboard -->
         <div id="chessboard" class="chessboard size-4"></div>
         
+        <!-- DEBUG: Botones de prueba (COMENTADOS - descomentar si necesitas debuggear)
+        <div class="game-controls" style="background: rgba(255,0,0,0.2); padding: 1rem; margin: 1rem 0;">
+            <h3 style="color: yellow; margin-bottom: 0.5rem;">🔍 DEBUG BUTTONS (con inline onclick)</h3>
+            <button class="btn btn-primary" onclick="console.log('🏠 HOME2 onclick disparado!'); window.location.href='../../index.html';">
+                🏠 HOME2 (inline onclick)
+            </button>
+            <button class="btn btn-primary" onclick="console.log('🔊 SOUND2 onclick disparado!'); testSound();">
+                🔊 SOUND2 (inline onclick)
+            </button>
+            <button class="btn btn-primary" id="btnTest" onclick="console.log('✅ btnTest onclick funciona!');">
+                ✅ TEST (inline onclick)
+            </button>
+        </div>
+        -->
+
         <!-- Game Controls -->
         <div class="game-controls">
             <button class="btn btn-primary" onclick="newGame()">🎮 NEW GAME</button>
@@ -1186,9 +1201,39 @@
         
         // Initialize game when page loads
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('========================================');
             console.log('🐴 Knight Quest Enhanced Loading...');
+            console.log('========================================');
+
+            // AGREGAR EVENT LISTENERS A HOME Y SOUND
+            console.log('🔘 Configurando botones HOME y SOUND...');
+            const btnHome = document.getElementById('btnHome');
+            const btnSound = document.getElementById('btnSound');
+
+            if (btnHome) {
+                console.log('✅ btnHome encontrado:', btnHome);
+                btnHome.addEventListener('click', function(e) {
+                    console.log('🏠🏠🏠 HOME CLICKED! 🏠🏠🏠');
+                    e.preventDefault();
+                    goHome();
+                });
+            } else {
+                console.error('❌ btnHome NO encontrado');
+            }
+
+            if (btnSound) {
+                console.log('✅ btnSound encontrado:', btnSound);
+                btnSound.addEventListener('click', function(e) {
+                    console.log('🔊🔊🔊 SOUND CLICKED! 🔊🔊🔊');
+                    e.preventDefault();
+                    toggleSound();
+                });
+            } else {
+                console.error('❌ btnSound NO encontrado');
+            }
+
             initGame();
-            
+
             // Resume audio context on first user interaction
             document.addEventListener('click', function resumeAudio() {
                 if (audioContext && audioContext.state === 'suspended') {
@@ -1728,8 +1773,15 @@
             }
         }
         
+        // Go Home function
+        function goHome() {
+            console.log('🏠 Navigating to home...');
+            window.location.href = '../../index.html';
+        }
+
         // Toggle sound
         function toggleSound() {
+            console.log('🔊 toggleSound() LLAMADA');
             gameState.soundEnabled = !gameState.soundEnabled;
 
             // Actualizar iconos SVG
@@ -1739,12 +1791,21 @@
             if (gameState.soundEnabled) {
                 iconOn.style.display = 'block';
                 iconOff.style.display = 'none';
+                console.log('✅ Sound ENABLED');
             } else {
                 iconOn.style.display = 'none';
                 iconOff.style.display = 'block';
+                console.log('❌ Sound DISABLED');
             }
 
             console.log(`🔊 Sound ${gameState.soundEnabled ? 'enabled' : 'disabled'}`);
+        }
+
+        // Test sound function for debugging
+        function testSound() {
+            console.log('🧪 testSound() EJECUTADA');
+            console.log('   - soundEnabled actual:', gameState.soundEnabled);
+            toggleSound();
         }
         
         // Add coins (Visual feedback)

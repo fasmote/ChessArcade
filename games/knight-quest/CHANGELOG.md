@@ -1,5 +1,58 @@
 # Changelog
 
+## [1.1.1] - 2025-10-11 (HOTFIX)
+
+### Fixed 🐛
+- **✅ BOTONES HOME Y SOUND AHORA FUNCIONAN**
+  - **Problema root cause:** Código inline en HTML vs archivo externo `knight-quest.js`
+  - Knight Quest usa código JavaScript **inline** en `index.html`
+  - Archivo `knight-quest.js` existe pero NO se carga en el HTML
+  - Funciones `goHome()` y `toggleSound()` estaban en archivo externo = no existían
+  - Event listeners no se configuraban para botones HOME y SOUND
+
+- **Solución implementada:**
+  - Agregada función `goHome()` al código inline (línea 1745)
+  - Agregada función `testSound()` para debugging (línea 1773)
+  - Mejorada `toggleSound()` con logs detallados (línea 1751)
+  - Event listeners configurados en DOMContentLoaded (líneas 1207-1232)
+  - Todas las funciones ahora en el MISMO scope
+
+### Added 🔧
+- **Sistema de logs detallados** para debugging
+  - Logs en inicialización: muestra botones encontrados
+  - Logs en clicks: confirma que listeners funcionan
+  - Logs en toggle: muestra estado de sonido
+
+- **Botones DEBUG temporales** (líneas 1112-1124)
+  - HOME2, SOUND2, TEST con onclick inline
+  - Ayudaron a identificar el problema de scope
+  - [Pendiente limpiar en próxima versión]
+
+### Technical Details ⚙️
+```javascript
+// ANTES (no funcionaba)
+// knight-quest.js (archivo NO cargado)
+function goHome() { ... }  // ❌ No existe en runtime
+
+// DESPUÉS (funciona)
+// index.html <script> inline
+function goHome() { ... }  // ✅ Existe en scope global
+
+document.addEventListener('DOMContentLoaded', function() {
+    const btnHome = document.getElementById('btnHome');
+    btnHome.addEventListener('click', goHome);  // ✅ Funciona
+});
+```
+
+### Documentation 📚
+- Creado `TROUBLESHOOTING_BOTONES.md` (120+ líneas)
+  - Análisis completo del problema
+  - Proceso de debugging paso a paso
+  - Lecciones aprendidas
+  - Checklist para futuros juegos
+
+---
+
 ## [1.1.0] - 2025-10-11
 
 ### Fixed 🐛
