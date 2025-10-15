@@ -870,52 +870,69 @@ body::before {
 
 /* ============================================
    COORDENADAS DEL TABLERO (a-h, 1-8)
-   Posicionadas absolutamente en los bordes
+   Posicionadas en el BORDE NEGRO del tablero
    ============================================ */
 
-/* Coordenadas horizontales (a-h) */
+/* Coordenadas horizontales (a-h) - En el borde inferior */
 .coord-file {
     position: absolute;
-    bottom: 2px;
-    font-size: 10px;
+    bottom: -18px; /* Fuera de la casilla, en el padding del tablero */
+    left: 50%;
+    transform: translateX(-50%);
+
+    /* Texto blanco fuerte, sin neón */
+    color: #ffffff;
+    font-size: 12px;
     font-weight: 700;
+    font-family: 'Orbitron', sans-serif;
+
     pointer-events: none;
     user-select: none;
+    z-index: 20;
 }
 
-/* Coordenadas verticales (1-8) */
+/* Coordenadas verticales (1-8) - En el borde izquierdo */
 .coord-rank {
     position: absolute;
-    left: 2px;
-    top: 2px;
-    font-size: 10px;
+    left: -18px; /* Fuera de la casilla, en el padding del tablero */
+    top: 50%;
+    transform: translateY(-50%);
+
+    /* Texto blanco fuerte, sin neón */
+    color: #ffffff;
+    font-size: 12px;
     font-weight: 700;
+    font-family: 'Orbitron', sans-serif;
+
     pointer-events: none;
     user-select: none;
+    z-index: 20;
 }
 
-/* Color de coordenadas según casilla */
-.square.light .coord-file,
-.square.light .coord-rank {
-    color: #b58863; /* Oscuro en casilla clara */
-}
-
-.square.dark .coord-file,
-.square.dark .coord-rank {
-    color: #f0d9b5; /* Claro en casilla oscura */
-}
+/* ELIMINAR colores según casilla - ahora siempre blanco */
+/* (las reglas anteriores quedan comentadas/eliminadas) */
 
 /* Tamaño de coordenadas responsive */
 @media (min-width: 600px) {
-    .coord-file,
+    .coord-file {
+        bottom: -20px;
+        font-size: 13px;
+    }
+
     .coord-rank {
-        font-size: 12px;
+        left: -20px;
+        font-size: 13px;
     }
 }
 
 @media (min-width: 900px) {
-    .coord-file,
+    .coord-file {
+        bottom: -22px;
+        font-size: 14px;
+    }
+
     .coord-rank {
+        left: -22px;
         font-size: 14px;
     }
 }
@@ -1367,6 +1384,25 @@ body::before {
     .status-message {
         font-size: 12px;
         padding: var(--spacing-xs);
+    }
+}
+
+/* Mobile general (≤767px) - Reducir espacios verticales */
+@media (max-width: 767px) {
+    /* Reducir espacio entre header y título */
+    .title-section {
+        margin: 0.25rem 0; /* Antes: var(--spacing-sm) = 1rem */
+    }
+
+    /* Reducir espacio del título al tablero */
+    .game-area {
+        gap: 0.5rem; /* Antes: var(--spacing-lg) = 2rem */
+        margin-top: 0.5rem;
+    }
+
+    /* Reducir margen del subtítulo */
+    .game-subtitle {
+        margin: -0.25rem 0 0.5rem 0; /* Reducir margen inferior */
     }
 }
 

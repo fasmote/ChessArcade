@@ -1,11 +1,23 @@
 /**
  * ============================================
- * CHESS GAME LIBRARY - DRAG & DROP
+ * CHESS GAME LIBRARY - DRAG & DROP + TAP-TAP
  * ============================================
- * Módulo de drag & drop para piezas de ajedrez
- * Permite arrastrar piezas del banco al tablero
+ * Módulo unificado de drag & drop y tap-tap para piezas de ajedrez
+ * Permite arrastrar piezas del banco al tablero Y tocar pieza → tocar casilla
  *
- * @version 1.0.0
+ * CARACTERÍSTICAS:
+ * - Drag & Drop clásico (mouse y touch con arrastre)
+ * - Tap-Tap alternativo (tocar pieza, luego tocar casilla)
+ * - Detección inteligente: tap vs drag en touch devices
+ * - Feedback visual (ghost, highlight, selección)
+ * - Compatible con mobile y desktop
+ *
+ * DETECCIÓN TAP VS DRAG:
+ * - Tap: Toque rápido sin movimiento (<10px) → Activa sistema tap-tap
+ * - Drag: Toque con movimiento (>10px) → Activa drag con ghost
+ * - El sistema decide automáticamente según el comportamiento del usuario
+ *
+ * @version 2.0.0 - Sistema tap vs drag inteligente
  * @author ChessArcade Team
  * @license MIT
  */
@@ -14,12 +26,29 @@
 // ESTADO DEL DRAG & DROP
 // ============================================
 
+/**
+ * Estado global del sistema de drag & drop
+ *
+ * @property {boolean} isDragging - Indica si hay un drag activo
+ * @property {string} draggedPiece - Tipo de pieza siendo arrastrada (ej: "wK", "bP")
+ * @property {HTMLElement} draggedElement - Elemento <img> de la pieza
+ * @property {HTMLElement} sourceSlot - Slot del banco de origen
+ * @property {HTMLElement} ghostElement - Elemento fantasma que sigue al cursor
+ * @property {number} touchStartTime - Timestamp del inicio del touch
+ * @property {number} touchStartX - Posición X inicial del touch
+ * @property {number} touchStartY - Posición Y inicial del touch
+ * @property {boolean} isTap - Flag que indica si es un tap (sin movimiento)
+ */
 let dragState = {
     isDragging: false,
     draggedPiece: null,
     draggedElement: null,
     sourceSlot: null,
-    ghostElement: null
+    ghostElement: null,
+    touchStartTime: 0,
+    touchStartX: 0,
+    touchStartY: 0,
+    isTap: false
 };
 
 // ============================================
@@ -106,6 +135,14 @@ function initDragDrop(options = {}) {
 
 /**
  * Inicia el arrastre de una pieza
+ *
+ * LÓGICA TAP VS DRAG:
+ * - Para MOUSE: Inicia drag inmediatamente
+ * - Para TOUCH: Guarda posición inicial y espera
+ *   - Si hay movimiento >10px → inicia drag (ver handleDragMove)
+ *   - Si NO hay movimiento → es un tap, deja que tap-tap lo maneje
+ *
+ * @param {MouseEvent|TouchEvent} e - Evento de mousedown o touchstart
  */
 function handleDragStart(e) {
     console.log('🔥 handleDragStart disparado!', e.target, e.target.tagName, e.target.className);
@@ -122,10 +159,6 @@ function handleDragStart(e) {
     const bankSlot = pieceElement.closest('.bank-piece-slot');
     if (!bankSlot) return;
 
-    // Prevenir comportamiento por defecto
-    e.preventDefault();
-    e.stopPropagation();
-
     // Obtener datos de la pieza (primero del img, si no del slot parent)
     const piece = pieceElement.dataset.piece || bankSlot.dataset.piece;
 
@@ -133,6 +166,29 @@ function handleDragStart(e) {
         console.warn('⚠️ Pieza sin dataset.piece');
         return;
     }
+
+    // Para touch: guardar tiempo y posición inicial para detectar tap vs drag
+    if (e.type === 'touchstart') {
+        const touch = e.touches[0];
+        dragState.touchStartTime = Date.now();
+        dragState.touchStartX = touch.clientX;
+        dragState.touchStartY = touch.clientY;
+        dragState.isTap = true;
+
+        // NO prevenir default aún - esperar a ver si es drag o tap
+        console.log('📱 Touch detectado - esperando para determinar tap vs drag');
+
+        // Guardar temporalmente para posible drag
+        dragState.draggedPiece = piece;
+        dragState.draggedElement = pieceElement;
+        dragState.sourceSlot = bankSlot;
+
+        return; // No iniciar drag todavía
+    }
+
+    // Para mouse: comportamiento normal de drag
+    e.preventDefault();
+    e.stopPropagation();
 
     console.log(`🎯 Iniciando drag de pieza: ${piece}`);
 
@@ -177,14 +233,40 @@ function handleDragStart(e) {
 
 /**
  * Mueve el elemento fantasma con el cursor/touch
+ *
+ * DETECCIÓN DE DRAG EN TOUCH:
+ * Cuando el usuario mueve el dedo >10px, se considera drag y se inicia el ghost.
+ * Si el movimiento es <10px, se mantiene como posible tap.
+ *
+ * Umbral: 10 píxeles de movimiento
+ *
+ * @param {MouseEvent|TouchEvent} e - Evento de mousemove o touchmove
  */
 function handleDragMove(e) {
+    const clientX = e.clientX || e.touches?.[0]?.clientX;
+    const clientY = e.clientY || e.touches?.[0]?.clientY;
+
+    // Para touch: detectar si el usuario está haciendo drag (movimiento significativo)
+    if (e.type === 'touchmove' && dragState.isTap && !dragState.isDragging) {
+        const deltaX = Math.abs(clientX - dragState.touchStartX);
+        const deltaY = Math.abs(clientY - dragState.touchStartY);
+        const moveThreshold = 10; // píxeles
+
+        // Si se movió más de 10px, es un drag, no un tap
+        if (deltaX > moveThreshold || deltaY > moveThreshold) {
+            console.log('🎯 Movimiento detectado - iniciando drag real');
+            dragState.isTap = false;
+            e.preventDefault();
+
+            // Iniciar drag ahora
+            startDragFromTouch(clientX, clientY);
+        }
+        return;
+    }
+
     if (!dragState.isDragging || !dragState.ghostElement) return;
 
     e.preventDefault();
-
-    const clientX = e.clientX || e.touches[0].clientX;
-    const clientY = e.clientY || e.touches[0].clientY;
 
     dragState.ghostElement.style.left = `${clientX}px`;
     dragState.ghostElement.style.top = `${clientY}px`;
@@ -194,9 +276,75 @@ function handleDragMove(e) {
 }
 
 /**
+ * Inicia el drag después de detectar movimiento en touch
+ */
+function startDragFromTouch(clientX, clientY) {
+    if (dragState.isDragging) return;
+
+    const pieceElement = dragState.draggedElement;
+    const piece = dragState.draggedPiece;
+
+    console.log(`🎯 Iniciando drag de pieza: ${piece}`);
+
+    dragState.isDragging = true;
+
+    // Crear elemento fantasma (ghost)
+    const ghost = pieceElement.cloneNode(true);
+    ghost.classList.add('dragging-ghost');
+    ghost.style.position = 'fixed';
+    ghost.style.pointerEvents = 'none';
+    ghost.style.zIndex = '9999';
+    ghost.style.opacity = '0.8';
+    ghost.style.transform = 'translate(-50%, -50%) scale(1.2)';
+    ghost.style.transition = 'none';
+
+    // Copiar estilos de la pieza original
+    const rect = pieceElement.getBoundingClientRect();
+    ghost.style.width = `${rect.width}px`;
+    ghost.style.height = `${rect.height}px`;
+
+    // Posicionar ghost en el cursor/touch
+    ghost.style.left = `${clientX}px`;
+    ghost.style.top = `${clientY}px`;
+
+    console.log(`👻 Ghost creado en (${clientX}, ${clientY})`);
+
+    document.body.appendChild(ghost);
+    dragState.ghostElement = ghost;
+
+    // Reducir opacidad de pieza original
+    pieceElement.style.opacity = '0.3';
+
+    // Cambiar cursor
+    document.body.style.cursor = 'grabbing';
+}
+
+/**
  * Finaliza el arrastre y coloca la pieza
+ *
+ * LÓGICA TAP VS DRAG:
+ * Si fue un tap rápido (touch sin movimiento), NO consume el evento.
+ * Esto permite que el evento 'click' se dispare y el sistema tap-tap lo maneje.
+ *
+ * Si fue un drag real, coloca la pieza en la casilla de destino.
+ *
+ * @param {MouseEvent|TouchEvent} e - Evento de mouseup, touchend o touchcancel
+ * @param {Function} onPiecePlaced - Callback al colocar pieza exitosamente
+ * @param {Function} canPlacePiece - Función de validación
  */
 function handleDragEnd(e, onPiecePlaced, canPlacePiece) {
+    // Si fue un tap rápido (touch sin movimiento), dejar que tap-tap lo maneje
+    if (e.type.startsWith('touch') && dragState.isTap && !dragState.isDragging) {
+        console.log('📱 Tap detectado - dejando que tap-tap lo maneje');
+        // Limpiar estado temporal
+        dragState.draggedPiece = null;
+        dragState.draggedElement = null;
+        dragState.sourceSlot = null;
+        dragState.isTap = false;
+        // NO prevenir default - dejar que el evento click se dispare
+        return;
+    }
+
     if (!dragState.isDragging) return;
 
     e.preventDefault();

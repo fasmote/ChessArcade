@@ -4,6 +4,118 @@ Registro cronológico de cambios día a día.
 
 ---
 
+## [2025-10-15] - Sistema Tap-Tap Mejorado + UX Mobile Optimizada
+
+### Fixed 🐛
+- **✅ SISTEMA TAP-TAP AHORA FUNCIONA EN MOBILE**
+  - Problema: Solo funcionaba drag (arrastrar), no tap (tocar pieza → tocar casilla)
+  - Causa: Evento `touchstart` con `preventDefault()` bloqueaba evento `click`
+  - Sistema tap-tap existía pero era inaccesible por conflicto de eventos
+
+### Improved 🎨
+- **Detección Inteligente Tap vs Drag**
+  - Umbral de movimiento: 10 píxeles
+  - **Tap**: Toque rápido sin movimiento (<10px) → Activa sistema tap-tap
+  - **Drag**: Toque con movimiento (>10px) → Activa drag con ghost
+  - El sistema decide automáticamente según comportamiento del usuario
+  - Mejor UX: usuarios pueden elegir su método preferido
+
+- **Coordenadas del tablero reubicadas** (todas las plataformas)
+  - Antes: Coordenadas dentro de casillas (difícil de ver)
+  - Ahora: Coordenadas en el borde negro del tablero
+  - Color: Blanco fuerte (#ffffff) sin neón para máxima visibilidad
+  - Posición: Centradas perfectamente en cada casilla
+  - Responsive: 12px (mobile), 13px (tablet), 14px (desktop)
+
+- **Espacios verticales reducidos en móvil**
+  - `.title-section`: margin 0.25rem (antes 1rem) → -75% espacio
+  - `.game-area`: gap 0.5rem (antes 2rem) → -75% espacio
+  - `.game-subtitle`: margin inferior 0.5rem (antes 1.5rem) → -66% espacio
+  - **Resultado**: Banco de piezas más visible sin scroll excesivo
+
+### Technical Details ⚙️
+
+**ChessGameLibrary/DragDrop.js v2.0.0:**
+
+```javascript
+// Estado extendido para tap vs drag
+let dragState = {
+    touchStartTime: 0,    // Timestamp inicio touch
+    touchStartX: 0,       // Posición X inicial
+    touchStartY: 0,       // Posición Y inicial
+    isTap: false          // Flag: es un tap?
+};
+
+// handleDragStart: Para touch, NO previene default inmediatamente
+if (e.type === 'touchstart') {
+    dragState.isTap = true;  // Asumir tap hasta que se demuestre lo contrario
+    return;  // Esperar a handleDragMove
+}
+
+// handleDragMove: Detecta si hay movimiento significativo
+const deltaX = Math.abs(clientX - dragState.touchStartX);
+const deltaY = Math.abs(clientY - dragState.touchStartY);
+if (deltaX > 10 || deltaY > 10) {
+    dragState.isTap = false;  // Es drag, no tap
+    e.preventDefault();
+    startDragFromTouch(clientX, clientY);
+}
+
+// handleDragEnd: Si fue tap, deja que evento click se dispare
+if (dragState.isTap && !dragState.isDragging) {
+    // NO prevenir default → evento click se dispara → tap-tap lo maneja
+    return;
+}
+```
+
+**Coordenadas en borde (styles.css líneas 877-938):**
+```css
+.coord-file {
+    position: absolute;
+    bottom: -18px;  /* Fuera de casilla, en padding */
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffffff;  /* Blanco fuerte */
+    font-size: 12px;
+}
+
+.coord-rank {
+    position: absolute;
+    left: -18px;  /* Fuera de casilla, en padding */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ffffff;
+}
+```
+
+**Espacios mobile (styles.css líneas 1373-1390):**
+```css
+@media (max-width: 767px) {
+    .title-section { margin: 0.25rem 0; }
+    .game-area { gap: 0.5rem; margin-top: 0.5rem; }
+    .game-subtitle { margin: -0.25rem 0 0.5rem 0; }
+}
+```
+
+### Files Modified 📝
+- `ChessGameLibrary/DragDrop.js` (+80 líneas, v2.0.0)
+  - Detección tap vs drag inteligente
+  - Documentación completa del sistema
+- `styles.css` (líneas 877-938, 1373-1390)
+  - Coordenadas reubicadas en borde
+  - Espacios verticales optimizados mobile
+- `CHANGELOG.md` (este archivo)
+
+### User Benefits 🎯
+✅ Tap-tap funciona en mobile (tocar pieza → tocar casilla)
+✅ Drag sigue funcionando para quien prefiera arrastrar
+✅ Sistema elige automáticamente según comportamiento
+✅ Coordenadas mucho más visibles (borde blanco)
+✅ Más espacio para banco de piezas en mobile
+✅ UX significativamente mejorada en pantallas pequeñas
+
+---
+
 ## [2025-10-14] - Subtítulo Descriptivo (Estándar ChessArcade)
 
 ### Agregado ✨
