@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordinate Sequence - ChessArcade</title>
+    <meta name="description" content="Memorize sequences of chess coordinates and repeat them perfectly!">
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N3EKXHPD5Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-N3EKXHPD5Y');
+    </script>
+
+    <!-- Google Fonts: Orbitron para títulos estilo futurista -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <!-- Estilos del juego -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- ==================================================
+         CONTAINER PRINCIPAL
+         ================================================== -->
+    <div class="game-container">
+
+        <!-- ==================================================
+             HEADER: Botones de navegación y control
+             ================================================== -->
+        <header class="header">
+
+            <!-- Botón HOME: Volver a página principal de ChessArcade -->
+            <button class="btn-icon btn-home" id="btnHome" aria-label="Volver al inicio">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span class="btn-label">HOME</span>
+            </button>
+
+            <!-- BOTÓN COMENZAR -->
+            <button class="btn-primary btn-start-header" id="btnStart">
+                ▶ Comenzar
+            </button>
+
+            <!-- Botón SONIDO: Mute/Unmute audio -->
+            <button class="btn-icon btn-sound" id="btnSound" aria-label="Activar/desactivar sonido">
+                <svg class="icon-sound-on" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+                <svg class="icon-sound-off" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                </svg>
+                <span class="btn-label">SONIDO</span>
+            </button>
+
+        </header>
+
+        <!-- ==================================================
+             TÍTULO PRINCIPAL
+             ================================================== -->
+        <div class="title-section">
+            <h1 class="game-title">
+                <span class="brain-icon">🧠</span>
+                <span class="title-text">Coordinate Sequence</span>
+            </h1>
+            <p class="game-subtitle">Memorize sequences and repeat them perfectly!</p>
+        </div>
+
+        <!-- ==================================================
+             ESTADÍSTICAS DEL JUEGO
+             ================================================== -->
+        <div class="game-stats">
+            <div class="stat">
+                <span class="stat-label">NIVEL</span>
+                <span class="stat-value" id="levelDisplay">1</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">VIDAS</span>
+                <span class="stat-value lives" id="livesDisplay">❤️❤️❤️</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">LONGITUD</span>
+                <span class="stat-value" id="sequenceDisplay">3</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">SCORE</span>
+                <span class="stat-value" id="scoreDisplay">0</span>
+            </div>
+        </div>
+
+        <!-- ==================================================
+             ÁREA DEL TABLERO
+             ================================================== -->
+        <div class="board-container">
+
+            <!-- Tablero de ajedrez 8x8 -->
+            <div class="chessboard" id="chessboard">
+                <!-- Las 64 casillas se generarán con JavaScript -->
+            </div>
+
+        </div>
+
+        <!-- ==================================================
+             MENSAJE DE ESTADO
+             ================================================== -->
+        <div class="status-section">
+            <p class="status-message" id="statusMessage">
+                Presiona COMENZAR para iniciar
+            </p>
+        </div>
+
+        <!-- ==================================================
+             HOW TO PLAY - Instructions
+             ================================================== -->
+        <section class="how-to-play-section">
+            <div class="instructions">
+                <h2>🎯 How to Play</h2>
+                <p><strong>Coordinate Sequence</strong> is a memory game that combines chess coordinates with Simon Says mechanics.</p>
+                <p>📝 <strong>Objective:</strong> Watch the sequence of highlighted squares, then repeat it in the exact same order.</p>
+                <p>🧠 <strong>Gameplay:</strong></p>
+                <ul>
+                    <li><strong>Phase 1 - Memorization:</strong> Watch carefully as squares light up in sequence</li>
+                    <li><strong>Phase 2 - Reproduction:</strong> Click the squares in the same order</li>
+                    <li>Each level adds more squares and increases speed</li>
+                </ul>
+                <p>❤️ <strong>Lives:</strong> You have 3 lives. Lose all lives and it's game over!</p>
+                <p>⭐ <strong>Scoring:</strong> Earn points for each level completed. Faster completion = more points!</p>
+                <p>🎮 <strong>Progression:</strong> 10+ levels with increasing difficulty. Can you beat them all?</p>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ==================================================
+         OVERLAY DE NIVEL COMPLETADO
+         ================================================== -->
+    <div class="overlay hidden" id="successOverlay">
+        <div class="overlay-content success">
+            <div class="overlay-icon">🎉</div>
+            <h2 class="overlay-title">¡Nivel Completado!</h2>
+            <p class="overlay-message" id="successMessage">Excelente memoria</p>
+            <div class="overlay-stats">
+                <div class="overlay-stat">
+                    <span class="overlay-stat-label">Nivel</span>
+                    <span class="overlay-stat-value" id="successLevel">1</span>
+                </div>
+                <div class="overlay-stat">
+                    <span class="overlay-stat-label">Puntos</span>
+                    <span class="overlay-stat-value" id="successPoints">+50</span>
+                </div>
+            </div>
+            <button class="btn-primary btn-overlay" id="btnNextLevel">
+                ▶ Siguiente Nivel
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================================================
+         OVERLAY DE ERROR
+         ================================================== -->
+    <div class="overlay hidden" id="failOverlay">
+        <div class="overlay-content fail">
+            <div class="overlay-icon">❌</div>
+            <h2 class="overlay-title">¡Secuencia Incorrecta!</h2>
+            <p class="overlay-message" id="failMessage">Te quedan 2 intentos</p>
+            <div class="sequence-display">
+                <p class="sequence-label">Secuencia correcta:</p>
+                <p class="sequence-value" id="correctSequence">e4 → d5 → f3</p>
+            </div>
+            <button class="btn-primary btn-overlay" id="btnRetry">
+                🔄 Reintentar
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================================================
+         OVERLAY DE GAME OVER
+         ================================================== -->
+    <div class="overlay hidden" id="gameOverOverlay">
+        <div class="overlay-content game-over">
+            <div class="overlay-icon">💀</div>
+            <h2 class="overlay-title">Game Over</h2>
+            <p class="overlay-message">¡Buen intento!</p>
+            <div class="final-stats">
+                <div class="final-stat">
+                    <span class="final-stat-label">Nivel Alcanzado</span>
+                    <span class="final-stat-value" id="finalLevel">5</span>
+                </div>
+                <div class="final-stat">
+                    <span class="final-stat-label">Score Total</span>
+                    <span class="final-stat-value" id="finalScore">350</span>
+                </div>
+            </div>
+            <div class="overlay-buttons">
+                <button class="btn-primary btn-overlay" id="btnRestart">
+                    🔄 Jugar de Nuevo
+                </button>
+                <button class="btn-secondary btn-overlay" id="btnHome2">
+                    🏠 Volver al Inicio
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================================================
+         JAVASCRIPT
+         ================================================== -->
+
+    <!-- Sistema de audio (Web Audio API) -->
+    <script src="audio.js"></script>
+
+    <!-- Sistema de niveles -->
+    <script src="levels.js"></script>
+
+    <!-- Lógica del juego -->
+    <script src="game.js"></script>
+
+</body>
+</html>
