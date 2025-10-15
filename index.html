@@ -128,6 +128,18 @@
                     </button>
                 </article>
 
+                <!-- Coordinate Sequence Game -->
+                <article class="neon-card coordinate-sequence-card" tabindex="0" role="button">
+                    <div class="neon-card-icon" aria-hidden="true">🧠</div>
+                    <h2 class="neon-heading">Coordinate Sequence</h2>
+                    <p class="neon-text neon-mb-md">
+                        Simon Says meets chess coordinates! Watch the neon-blazing sequence, then repeat it perfectly in this memory challenge.
+                    </p>
+                    <button class="neon-play-btn" type="button" data-game="coordinate-sequence">
+                        Play Now
+                    </button>
+                </article>
+
                 <!-- ============================================
                      PRÓXIMAMENTE
                      ============================================ -->
@@ -297,7 +309,7 @@
             console.log(`🔍 Checking if game is available...`);
 
             // Check if game is available
-            if (gameId === 'knight-quest' || gameId === 'square-rush' || gameId === 'memory-matrix') {
+            if (gameId === 'knight-quest' || gameId === 'square-rush' || gameId === 'memory-matrix' || gameId === 'coordinate-sequence') {
                 console.log(`✅ Game ${gameId} is available, proceeding...`);
                 // Add screen flash effect
                 document.body.style.background = 'white';

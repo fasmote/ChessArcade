@@ -3,7 +3,18 @@
     "allow": [
       "Bash(git commit:*)",
       "Read(//c/Users/clau/Documents/**)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Read(//c/Users/clau/**)",
+      "Bash(for file in index.html games/knight-quest/index.html games/memory-matrix-v2/index.html)",
+      "Bash(do if ! grep -q \"G-N3EKXHPD5Y\" \"$file\")",
+      "Bash(then echo \"❌ $file\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(for file in index.html games/knight-quest/index.html games/memory-matrix-v2/index.html games/square-rush/index.html games/vision-blitz/index.html)",
+      "Bash(do if grep -q \"G-N3EKXHPD5Y\" \"$file\")",
+      "Bash(then echo \"✅ $file\")",
+      "Bash(else echo \"❌ $file\")",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

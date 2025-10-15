@@ -240,6 +240,27 @@
 }
 
 /* ========================================
+   ESTILOS ESPECÍFICOS DE CARDS
+   ======================================== */
+
+.coordinate-sequence-card {
+    background: linear-gradient(135deg,
+        rgba(0, 255, 255, 0.05) 0%,
+        rgba(138, 43, 226, 0.05) 100%);
+    border-color: rgba(0, 255, 255, 0.3);
+}
+
+.coordinate-sequence-card:hover {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.4);
+}
+
+.coordinate-sequence-card .neon-card-icon {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 20px var(--neon-cyan);
+}
+
+/* ========================================
    SECCIÓN DE CARACTERÍSTICAS
    ======================================== */
 .features-section {

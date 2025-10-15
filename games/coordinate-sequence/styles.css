@@ -290,8 +290,8 @@ body::before {
 
 .chessboard {
     display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    grid-template-rows: repeat(8, 1fr);
+    grid-template-columns: repeat(8, 60px);
+    grid-template-rows: repeat(8, 60px);
     gap: 2px;
     background: #222;
     padding: 20px;
@@ -301,16 +301,14 @@ body::before {
         0 0 30px rgba(0, 255, 255, 0.5),
         inset 0 0 30px rgba(0, 255, 255, 0.1);
     position: relative;
-    width: 100%;
-    max-width: 500px;
-    aspect-ratio: 1 / 1;
 }
 
 .square {
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
-    aspect-ratio: 1 / 1;
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
