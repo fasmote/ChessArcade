@@ -823,3 +823,45 @@ body::before {
         font-size: 1rem;
     }
 }
+
+/* ============================================
+   CONFETTI SYSTEM
+   ============================================ */
+
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: var(--neon-green);
+    opacity: 0;
+    animation: confettiFall 2s ease-out forwards;
+}
+
+/* Color variants */
+.confetti.cyan { background: var(--neon-cyan); }
+.confetti.pink { background: var(--neon-pink); }
+.confetti.orange { background: var(--neon-orange); }
+.confetti.gold { background: #ffd700; }
+
+/* Confetti fall animation */
+@keyframes confettiFall {
+    0% {
+        opacity: 1;
+        transform: translateY(-20px) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(720deg);
+    }
+}

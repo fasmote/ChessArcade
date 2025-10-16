@@ -19,8 +19,9 @@ let gameState = {
     lives: 3,
     maxLives: 3,
 
-    // Secuencia actual
-    sequence: [],           // ['e4', 'd5', 'f3']
+    // Secuencia MASTER acumulativa (Simon Says style)
+    masterSequence: [],     // Secuencia acumulativa que crece cada nivel
+    sequence: [],           // ['e4', 'd5', 'f3'] - copia de masterSequence para el nivel actual
     playerSequence: [],     // Lo que el jugador clickeó
     currentStep: 0,         // Índice actual en reproducción
 
@@ -159,6 +160,7 @@ function startGame() {
     gameState.bestLevel = 1;
     gameState.totalAttempts = 0;
     gameState.perfectLevels = 0;
+    gameState.masterSequence = []; // Resetear secuencia acumulativa
 
     hideAllOverlays();
     startLevel(1);
@@ -176,12 +178,29 @@ function startLevel(levelNumber) {
 
     const config = window.CoordinateSequence.Levels.getLevelConfig(levelNumber);
 
-    // Generar secuencia aleatoria según zona restringida
-    gameState.sequence = window.CoordinateSequence.Levels.generateRandomSequence(config);
+    // ============================================
+    // SECUENCIA ACUMULATIVA (SIMON SAYS STYLE)
+    // ============================================
+    // Nivel 1: Genera secuencia inicial
+    // Niveles 2+: MANTIENE secuencia anterior y AGREGA UNA nueva casilla
+
+    if (levelNumber === 1) {
+        // Primer nivel: generar secuencia inicial
+        gameState.masterSequence = window.CoordinateSequence.Levels.generateRandomSequence(config);
+        console.log('   🎬 Primera secuencia generada');
+    } else {
+        // Niveles siguientes: AGREGAR solo UNA casilla nueva a la master sequence
+        const newSquareArray = window.CoordinateSequence.Levels.generateRandomSequence(config);
+        gameState.masterSequence.push(newSquareArray[0]); // Tomar SOLO la primera
+        console.log('   ➕ Casilla agregada a secuencia acumulativa');
+    }
+
+    // La secuencia actual es una copia de la master sequence
+    gameState.sequence = [...gameState.masterSequence];
     gameState.playerSequence = [];
     gameState.currentStep = 0;
 
-    console.log(`   Sequence length: ${config.sequenceLength}`);
+    console.log(`   Sequence length: ${gameState.sequence.length} (config says ${config.sequenceLength})`);
     console.log(`   Restricted area: ${config.restrictedArea} (${config.areaConfig || 'full'})`);
     console.log(`   Sequence:`, gameState.sequence);
     console.log(`   Use colors: ${config.useColors}`);
@@ -359,8 +378,13 @@ function onLevelComplete() {
         playLevelComplete();
     }
 
-    // Mostrar overlay de éxito
-    showSuccessOverlay(points);
+    // Lanzar confeti en vez de overlay disruptivo
+    launchConfetti(30);
+
+    // Avanzar al siguiente nivel después de un breve delay
+    setTimeout(() => {
+        nextLevel();
+    }, 1500);
 }
 
 /**
@@ -630,6 +654,41 @@ function getSquareFromIndex(index) {
     const rank = ranks[Math.floor(index / 8)];
 
     return `${file}${rank}`;
+}
+
+/**
+ * Lanza confeti para celebración sutil (no disruptiva)
+ * @param {number} count - Cantidad de confetis a lanzar
+ */
+function launchConfetti(count = 30) {
+    const container = document.getElementById('confettiContainer');
+    if (!container) return;
+
+    const colors = ['cyan', 'pink', 'orange', 'gold', ''];
+    const windowWidth = window.innerWidth;
+
+    for (let i = 0; i < count; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+
+        // Color aleatorio
+        const colorClass = colors[Math.floor(Math.random() * colors.length)];
+        if (colorClass) {
+            confetti.classList.add(colorClass);
+        }
+
+        // Posición y timing aleatorio
+        confetti.style.left = `${Math.random() * windowWidth}px`;
+        confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+        confetti.style.animationDuration = `${1.5 + Math.random()}s`;
+
+        container.appendChild(confetti);
+
+        // Auto-limpieza después de 3 segundos
+        setTimeout(() => {
+            confetti.remove();
+        }, 3000);
+    }
 }
 
 console.log('🎮 Coordinate Sequence - Game logic loaded');
