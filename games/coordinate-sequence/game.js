@@ -474,9 +474,9 @@ function retryLevel() {
     gameState.currentStep = 0;
     gameState.phase = 'idle';
 
-    // Regenerar secuencia
-    const config = window.CoordinateSequence.Levels.getLevelConfig(gameState.currentLevel);
-    gameState.sequence = window.CoordinateSequence.Levels.generateRandomSequence(config.sequenceLength);
+    // NO regenerar secuencia, usar la misma masterSequence acumulativa
+    // La secuencia ya está en gameState.sequence (copia de masterSequence)
+    console.log(`🔄 Retrying level ${gameState.currentLevel} with same sequence:`, gameState.sequence);
 
     updateUI();
 
