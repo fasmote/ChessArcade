@@ -21,6 +21,7 @@ let gameState = {
 
     // Secuencia MASTER acumulativa (Simon Says style)
     masterSequence: [],     // Secuencia acumulativa que crece cada nivel
+    sequenceColors: [],     // Colores de cada casilla (mismo índice que masterSequence)
     sequence: [],           // ['e4', 'd5', 'f3'] - copia de masterSequence para el nivel actual
     playerSequence: [],     // Lo que el jugador clickeó
     currentStep: 0,         // Índice actual en reproducción
@@ -161,6 +162,7 @@ function startGame() {
     gameState.totalAttempts = 0;
     gameState.perfectLevels = 0;
     gameState.masterSequence = []; // Resetear secuencia acumulativa
+    gameState.sequenceColors = []; // Resetear colores
 
     hideAllOverlays();
     startLevel(1);
@@ -187,6 +189,16 @@ function startLevel(levelNumber) {
     if (levelNumber === 1) {
         // Primer nivel: generar secuencia inicial
         gameState.masterSequence = window.CoordinateSequence.Levels.generateRandomSequence(config);
+
+        // Generar colores para cada casilla de la secuencia inicial
+        gameState.sequenceColors = [];
+        for (let i = 0; i < gameState.masterSequence.length; i++) {
+            const color = config.useColors ?
+                window.CoordinateSequence.Levels.getSequenceColor(i) :
+                { name: 'cyan', hex: '#00ffff', shadowColor: 'rgba(0, 255, 255, 0.8)' };
+            gameState.sequenceColors.push(color);
+        }
+
         console.log('   🎬 Primera secuencia generada');
     } else {
         // Niveles siguientes: AGREGAR solo UNA casilla nueva a la master sequence
@@ -202,7 +214,15 @@ function startLevel(levelNumber) {
         } while (newSquare === lastSquare && attempts < 10);
 
         gameState.masterSequence.push(newSquare);
-        console.log(`   ➕ Casilla agregada: ${newSquare} (anterior: ${lastSquare})`);
+
+        // Agregar color para la nueva casilla (siguiente en la secuencia de colores)
+        const newColorIndex = gameState.sequenceColors.length;
+        const newColor = config.useColors ?
+            window.CoordinateSequence.Levels.getSequenceColor(newColorIndex) :
+            { name: 'cyan', hex: '#00ffff', shadowColor: 'rgba(0, 255, 255, 0.8)' };
+        gameState.sequenceColors.push(newColor);
+
+        console.log(`   ➕ Casilla agregada: ${newSquare} (anterior: ${lastSquare}) - Color: ${newColor.name}`);
     }
 
     // La secuencia actual es una copia de la master sequence
@@ -243,10 +263,8 @@ async function showSequence() {
     for (let i = 0; i < gameState.sequence.length; i++) {
         const square = gameState.sequence[i];
 
-        // Obtener color para esta posición (si useColors está activado)
-        const color = config.useColors ?
-            window.CoordinateSequence.Levels.getSequenceColor(i) :
-            { name: 'cyan', hex: '#00ffff', shadowColor: 'rgba(0, 255, 255, 0.8)' };
+        // Usar el color guardado para esta casilla
+        const color = gameState.sequenceColors[i];
 
         // Highlight la casilla con el color correspondiente
         await highlightSquare(square, highlightDuration, color);
@@ -329,8 +347,9 @@ function handleSquareClick(e) {
         // ✅ Correcto
         console.log(`✅ Correct! (${gameState.currentStep + 1}/${gameState.sequence.length})`);
 
-        square.classList.add('correct');
-        setTimeout(() => square.classList.remove('correct'), 500);
+        // Mostrar con el MISMO COLOR que se usó en la secuencia original
+        const color = gameState.sequenceColors[gameState.currentStep];
+        highlightSquare(squareId, 500, color);
 
         if (gameState.soundEnabled && typeof playCorrect === 'function') {
             playCorrect();
