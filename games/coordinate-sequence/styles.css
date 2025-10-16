@@ -296,8 +296,8 @@ body::before {
     gap: 2px;
 
     /* Tamaño del tablero (mobile first) */
-    width: 90vw;
-    max-width: 400px;
+    width: 95vw;
+    max-width: 500px;
     aspect-ratio: 1; /* Mantener cuadrado */
 
     /* Padding para coordenadas */
@@ -318,7 +318,8 @@ body::before {
 /* Responsive: Tablero más grande en tablets */
 @media (min-width: 600px) {
     .chessboard {
-        max-width: 450px;
+        width: 85vw;
+        max-width: 550px;
         padding: 24px; /* Más espacio para coordenadas */
     }
 }
@@ -326,7 +327,8 @@ body::before {
 /* Responsive: Tablero más grande en desktop */
 @media (min-width: 900px) {
     .chessboard {
-        max-width: 500px;
+        width: 70vw;
+        max-width: 600px;
         padding: 28px; /* Aún más espacio en desktop */
     }
 }
