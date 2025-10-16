@@ -436,13 +436,21 @@ body::before {
     --highlight-color: var(--highlight-color, var(--neon-cyan));
     --highlight-shadow: var(--highlight-shadow, rgba(0, 255, 255, 0.8));
 
-    background: linear-gradient(45deg, var(--highlight-color), var(--neon-green)) !important;
+    /* COLOR PURO sin degradado */
+    background: var(--highlight-color) !important;
+
+    /* BORDE GRUESO del mismo color */
+    border: 6px solid var(--highlight-color) !important;
+
+    /* GLOW intenso externo e interno */
     box-shadow:
-        0 0 30px var(--highlight-shadow),
-        0 0 50px var(--highlight-shadow),
-        inset 0 0 20px rgba(255, 255, 255, 0.5);
+        0 0 40px var(--highlight-shadow),
+        0 0 60px var(--highlight-shadow),
+        0 0 80px var(--highlight-shadow),
+        inset 0 0 30px rgba(255, 255, 255, 0.6);
+
     animation: highlightPulse 0.8s ease-in-out;
-    transform: scale(1.1);
+    transform: scale(1.05);
     z-index: 10;
 }
 

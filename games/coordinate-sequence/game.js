@@ -190,9 +190,19 @@ function startLevel(levelNumber) {
         console.log('   🎬 Primera secuencia generada');
     } else {
         // Niveles siguientes: AGREGAR solo UNA casilla nueva a la master sequence
-        const newSquareArray = window.CoordinateSequence.Levels.generateRandomSequence(config);
-        gameState.masterSequence.push(newSquareArray[0]); // Tomar SOLO la primera
-        console.log('   ➕ Casilla agregada a secuencia acumulativa');
+        // IMPORTANTE: Evitar que la nueva casilla sea la misma que la última
+        const lastSquare = gameState.masterSequence[gameState.masterSequence.length - 1];
+        let newSquare;
+        let attempts = 0;
+
+        do {
+            const newSquareArray = window.CoordinateSequence.Levels.generateRandomSequence(config);
+            newSquare = newSquareArray[0];
+            attempts++;
+        } while (newSquare === lastSquare && attempts < 10);
+
+        gameState.masterSequence.push(newSquare);
+        console.log(`   ➕ Casilla agregada: ${newSquare} (anterior: ${lastSquare})`);
     }
 
     // La secuencia actual es una copia de la master sequence
