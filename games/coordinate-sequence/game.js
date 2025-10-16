@@ -84,6 +84,23 @@ function createBoard() {
             const isLight = (rankIndex + fileIndex) % 2 === 0;
             square.classList.add(isLight ? 'light' : 'dark');
 
+            // Agregar coordenadas en el borde (igual que Memory Matrix)
+            // Fila inferior (rank 1): mostrar letras (a-h)
+            if (rank === '1') {
+                const coordFile = document.createElement('span');
+                coordFile.className = 'coord-file';
+                coordFile.textContent = file;
+                square.appendChild(coordFile);
+            }
+
+            // Columna izquierda (file a): mostrar números (8-1)
+            if (file === 'a') {
+                const coordRank = document.createElement('span');
+                coordRank.className = 'coord-rank';
+                coordRank.textContent = rank;
+                square.appendChild(coordRank);
+            }
+
             chessboard.appendChild(square);
         }
     }

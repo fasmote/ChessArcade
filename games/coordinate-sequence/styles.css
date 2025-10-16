@@ -318,13 +318,70 @@ body::before {
     user-select: none;
 }
 
-/* Coordenadas en las casillas */
-.square::after {
-    content: attr(data-square);
+/* ============================================
+   COORDENADAS DEL TABLERO (a-h, 1-8)
+   Posicionadas en el BORDE NEGRO del tablero
+   ============================================ */
+
+/* Coordenadas horizontales (a-h) - En el borde inferior */
+.coord-file {
     position: absolute;
-    font-size: 0.6rem;
-    opacity: 0.3;
+    bottom: -18px; /* Fuera de la casilla, en el padding del tablero */
+    left: 50%;
+    transform: translateX(-50%);
+
+    /* Texto blanco fuerte */
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Orbitron', sans-serif;
+
     pointer-events: none;
+    user-select: none;
+    z-index: 20;
+}
+
+/* Coordenadas verticales (1-8) - En el borde izquierdo */
+.coord-rank {
+    position: absolute;
+    left: -18px; /* Fuera de la casilla, en el padding del tablero */
+    top: 50%;
+    transform: translateY(-50%);
+
+    /* Texto blanco fuerte */
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Orbitron', sans-serif;
+
+    pointer-events: none;
+    user-select: none;
+    z-index: 20;
+}
+
+/* Tamaño de coordenadas responsive */
+@media (min-width: 600px) {
+    .coord-file {
+        bottom: -20px;
+        font-size: 13px;
+    }
+
+    .coord-rank {
+        left: -20px;
+        font-size: 13px;
+    }
+}
+
+@media (min-width: 900px) {
+    .coord-file {
+        bottom: -22px;
+        font-size: 14px;
+    }
+
+    .coord-rank {
+        left: -22px;
+        font-size: 14px;
+    }
 }
 
 .square.light {
