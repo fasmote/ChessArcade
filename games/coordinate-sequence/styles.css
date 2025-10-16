@@ -432,9 +432,14 @@ body::before {
 /* Estados de las casillas */
 
 .square.highlighting {
-    background: linear-gradient(45deg, var(--neon-cyan), var(--neon-green)) !important;
+    /* Usa CSS variables si están definidas, sino cyan por defecto */
+    --highlight-color: var(--highlight-color, var(--neon-cyan));
+    --highlight-shadow: var(--highlight-shadow, rgba(0, 255, 255, 0.8));
+
+    background: linear-gradient(45deg, var(--highlight-color), var(--neon-green)) !important;
     box-shadow:
-        0 0 30px var(--neon-cyan),
+        0 0 30px var(--highlight-shadow),
+        0 0 50px var(--highlight-shadow),
         inset 0 0 20px rgba(255, 255, 255, 0.5);
     animation: highlightPulse 0.8s ease-in-out;
     transform: scale(1.1);

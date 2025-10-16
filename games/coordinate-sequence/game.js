@@ -176,13 +176,15 @@ function startLevel(levelNumber) {
 
     const config = window.CoordinateSequence.Levels.getLevelConfig(levelNumber);
 
-    // Generar secuencia aleatoria
-    gameState.sequence = window.CoordinateSequence.Levels.generateRandomSequence(config.sequenceLength);
+    // Generar secuencia aleatoria según zona restringida
+    gameState.sequence = window.CoordinateSequence.Levels.generateRandomSequence(config);
     gameState.playerSequence = [];
     gameState.currentStep = 0;
 
     console.log(`   Sequence length: ${config.sequenceLength}`);
+    console.log(`   Restricted area: ${config.restrictedArea} (${config.areaConfig || 'full'})`);
     console.log(`   Sequence:`, gameState.sequence);
+    console.log(`   Use colors: ${config.useColors}`);
 
     updateUI();
     updateStatus(`Nivel ${levelNumber} - ${config.name}`, 'info');
@@ -212,12 +214,17 @@ async function showSequence() {
     for (let i = 0; i < gameState.sequence.length; i++) {
         const square = gameState.sequence[i];
 
-        // Highlight la casilla
-        await highlightSquare(square, highlightDuration);
+        // Obtener color para esta posición (si useColors está activado)
+        const color = config.useColors ?
+            window.CoordinateSequence.Levels.getSequenceColor(i) :
+            { name: 'cyan', hex: '#00ffff', shadowColor: 'rgba(0, 255, 255, 0.8)' };
 
-        // Reproducir sonido
+        // Highlight la casilla con el color correspondiente
+        await highlightSquare(square, highlightDuration, color);
+
+        // Reproducir sonido (frecuencia aumenta ligeramente)
         if (gameState.soundEnabled && typeof playBeep === 'function') {
-            playBeep(440 + i * 50); // Frecuencia aumenta ligeramente
+            playBeep(440 + i * 50);
         }
 
         // Pausa entre casillas (excepto la última)
@@ -234,9 +241,12 @@ async function showSequence() {
 }
 
 /**
- * Ilumina una casilla por un tiempo determinado
+ * Ilumina una casilla por un tiempo determinado con un color específico
+ * @param {string} squareId - ID de la casilla (ej: "e4")
+ * @param {number} duration - Duración del highlight en ms
+ * @param {Object} color - Objeto con hex y shadowColor
  */
-function highlightSquare(squareId, duration) {
+function highlightSquare(squareId, duration, color = null) {
     return new Promise(resolve => {
         const squareElement = document.querySelector(`[data-square="${squareId}"]`);
         if (!squareElement) {
@@ -245,10 +255,21 @@ function highlightSquare(squareId, duration) {
             return;
         }
 
+        // Aplicar color personalizado si se proporciona
+        if (color) {
+            squareElement.style.setProperty('--highlight-color', color.hex);
+            squareElement.style.setProperty('--highlight-shadow', color.shadowColor);
+        }
+
         squareElement.classList.add('highlighting');
 
         setTimeout(() => {
             squareElement.classList.remove('highlighting');
+            // Limpiar estilos inline
+            if (color) {
+                squareElement.style.removeProperty('--highlight-color');
+                squareElement.style.removeProperty('--highlight-shadow');
+            }
             resolve();
         }, duration);
     });

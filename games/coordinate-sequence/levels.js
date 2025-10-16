@@ -1,128 +1,190 @@
 /**
  * ============================================
- * COORDINATE SEQUENCE - LEVELS
+ * COORDINATE SEQUENCE - LEVELS (V2)
  * ============================================
- * Configuración de niveles de dificultad
+ * Progresión combinada:
+ * - Anillos concéntricos
+ * - Cuadrantes
+ * - Filas progresivas
+ * - Colores variados
  *
- * @version 1.0.0
+ * @version 2.0.0
  * @author ChessArcade Team
  */
 
 /**
- * Configuración de niveles
+ * Colores para las secuencias (ciclo)
+ */
+const SEQUENCE_COLORS = [
+    { name: 'cyan', hex: '#00ffff', shadowColor: 'rgba(0, 255, 255, 0.8)' },
+    { name: 'magenta', hex: '#ff00ff', shadowColor: 'rgba(255, 0, 255, 0.8)' },
+    { name: 'green', hex: '#00ff00', shadowColor: 'rgba(0, 255, 0, 0.8)' },
+    { name: 'orange', hex: '#ff6600', shadowColor: 'rgba(255, 102, 0, 0.8)' },
+    { name: 'purple', hex: '#8a2be2', shadowColor: 'rgba(138, 43, 226, 0.8)' },
+    { name: 'yellow', hex: '#ffdd00', shadowColor: 'rgba(255, 221, 0, 0.8)' },
+    { name: 'pink', hex: '#ff1493', shadowColor: 'rgba(255, 20, 147, 0.8)' },
+    { name: 'lime', hex: '#00ff80', shadowColor: 'rgba(0, 255, 128, 0.8)' }
+];
+
+/**
+ * Configuración de niveles con progresión variada
  *
  * Cada nivel define:
  * - sequenceLength: Cantidad de casillas en la secuencia
- * - highlightDuration: Tiempo que cada casilla permanece iluminada (ms)
+ * - highlightDuration: Tiempo de iluminación (ms)
  * - pauseDuration: Pausa entre casillas (ms)
- * - baseScore: Puntos base por completar el nivel
+ * - baseScore: Puntos base
+ * - restrictedArea: Zona del tablero (ring, quadrant, rows, full)
+ * - areaConfig: Configuración específica de la zona
+ * - useColors: Si usa colores variados (true/false)
  */
 const LEVELS = [
+    // FASE 1: CENTRO 2x2 (4 casillas) - Introducción
     {
         level: 1,
-        sequenceLength: 3,
-        highlightDuration: 800,
-        pauseDuration: 200,
+        sequenceLength: 2,
+        highlightDuration: 1000,
+        pauseDuration: 300,
         baseScore: 10,
-        difficulty: '⭐ Fácil',
-        name: 'Principiante'
+        difficulty: '⭐ Muy Fácil',
+        name: 'Centro - Inicio',
+        restrictedArea: 'ring',
+        areaConfig: '2x2',
+        useColors: true
     },
     {
         level: 2,
-        sequenceLength: 4,
-        highlightDuration: 750,
-        pauseDuration: 200,
+        sequenceLength: 3,
+        highlightDuration: 900,
+        pauseDuration: 250,
         baseScore: 20,
-        difficulty: '⭐ Fácil',
-        name: 'Aprendiz'
+        difficulty: '⭐ Muy Fácil',
+        name: 'Centro - Básico',
+        restrictedArea: 'ring',
+        areaConfig: '2x2',
+        useColors: true
     },
+
+    // FASE 2: ANILLO 4x4 (16 casillas) - Expandir
     {
         level: 3,
-        sequenceLength: 5,
-        highlightDuration: 700,
-        pauseDuration: 150,
+        sequenceLength: 3,
+        highlightDuration: 850,
+        pauseDuration: 250,
         baseScore: 30,
-        difficulty: '⭐⭐ Medio',
-        name: 'Estudiante'
+        difficulty: '⭐ Fácil',
+        name: 'Anillo Pequeño',
+        restrictedArea: 'ring',
+        areaConfig: '4x4',
+        useColors: true
     },
     {
         level: 4,
-        sequenceLength: 6,
-        highlightDuration: 650,
-        pauseDuration: 150,
+        sequenceLength: 4,
+        highlightDuration: 800,
+        pauseDuration: 200,
         baseScore: 40,
-        difficulty: '⭐⭐ Medio',
-        name: 'Aficionado'
+        difficulty: '⭐ Fácil',
+        name: 'Anillo Ampliado',
+        restrictedArea: 'ring',
+        areaConfig: '4x4',
+        useColors: true
     },
+
+    // FASE 3: CUADRANTE (16 casillas) - Variación
     {
         level: 5,
-        sequenceLength: 7,
-        highlightDuration: 600,
-        pauseDuration: 150,
+        sequenceLength: 4,
+        highlightDuration: 750,
+        pauseDuration: 200,
         baseScore: 50,
-        difficulty: '⭐⭐⭐ Difícil',
-        name: 'Competente'
+        difficulty: '⭐⭐ Medio',
+        name: 'Cuadrante Derecho',
+        restrictedArea: 'quadrant',
+        areaConfig: 'bottom-right',
+        useColors: true
     },
     {
         level: 6,
-        sequenceLength: 8,
-        highlightDuration: 550,
-        pauseDuration: 100,
+        sequenceLength: 5,
+        highlightDuration: 700,
+        pauseDuration: 150,
         baseScore: 60,
-        difficulty: '⭐⭐⭐ Difícil',
-        name: 'Experto'
+        difficulty: '⭐⭐ Medio',
+        name: 'Mitad Inferior',
+        restrictedArea: 'rows',
+        areaConfig: { start: 1, end: 4 }, // Filas 1-4 (32 casillas)
+        useColors: true
     },
+
+    // FASE 4: ANILLO 6x6 (36 casillas) - Avanzado
     {
         level: 7,
-        sequenceLength: 9,
-        highlightDuration: 500,
-        pauseDuration: 100,
+        sequenceLength: 5,
+        highlightDuration: 650,
+        pauseDuration: 150,
         baseScore: 70,
-        difficulty: '⭐⭐⭐⭐ Avanzado',
-        name: 'Maestro'
+        difficulty: '⭐⭐⭐ Difícil',
+        name: 'Anillo Grande',
+        restrictedArea: 'ring',
+        areaConfig: '6x6',
+        useColors: true
     },
     {
         level: 8,
-        sequenceLength: 10,
-        highlightDuration: 450,
+        sequenceLength: 6,
+        highlightDuration: 600,
         pauseDuration: 100,
         baseScore: 80,
-        difficulty: '⭐⭐⭐⭐ Avanzado',
-        name: 'Gran Maestro'
+        difficulty: '⭐⭐⭐ Difícil',
+        name: 'Anillo Extendido',
+        restrictedArea: 'ring',
+        areaConfig: '6x6',
+        useColors: true
     },
+
+    // FASE 5: TABLERO COMPLETO (64 casillas) - Maestría
     {
         level: 9,
-        sequenceLength: 11,
-        highlightDuration: 400,
-        pauseDuration: 50,
+        sequenceLength: 6,
+        highlightDuration: 550,
+        pauseDuration: 100,
         baseScore: 90,
-        difficulty: '⭐⭐⭐⭐⭐ Experto',
-        name: 'Elite'
+        difficulty: '⭐⭐⭐⭐ Avanzado',
+        name: 'Tablero Completo',
+        restrictedArea: 'full',
+        areaConfig: null,
+        useColors: true
     },
     {
         level: 10,
-        sequenceLength: 12,
-        highlightDuration: 350,
-        pauseDuration: 50,
+        sequenceLength: 7,
+        highlightDuration: 500,
+        pauseDuration: 100,
         baseScore: 100,
         difficulty: '⭐⭐⭐⭐⭐ Experto',
-        name: 'Leyenda'
+        name: 'Maestría Total',
+        restrictedArea: 'full',
+        areaConfig: null,
+        useColors: true
     }
 ];
 
 /**
  * Niveles infinitos (nivel 11+)
- * A partir del nivel 11, se usa esta configuración dinámica
  */
 function getInfiniteLevel(levelNumber) {
     return {
         level: levelNumber,
-        sequenceLength: 12 + (levelNumber - 10),  // 13, 14, 15, etc.
-        highlightDuration: Math.max(200, 350 - (levelNumber - 10) * 10),  // Min 200ms
+        sequenceLength: 7 + (levelNumber - 10),
+        highlightDuration: Math.max(200, 500 - (levelNumber - 10) * 20),
         pauseDuration: 50,
         baseScore: 100 + (levelNumber - 10) * 10,
         difficulty: '⭐⭐⭐⭐⭐ Supremo',
-        name: `Nivel ${levelNumber}`
+        name: `Infinito ${levelNumber}`,
+        restrictedArea: 'full',
+        areaConfig: null,
+        useColors: true
     };
 }
 
@@ -132,17 +194,14 @@ function getInfiniteLevel(levelNumber) {
  * @returns {Object} Configuración del nivel
  */
 function getLevelConfig(levelNumber) {
-    // Niveles 1-10: predefinidos
     if (levelNumber <= 10) {
         return LEVELS[levelNumber - 1];
     }
-
-    // Nivel 11+: generación dinámica
     return getInfiniteLevel(levelNumber);
 }
 
 /**
- * Genera array de todas las coordenadas posibles (a1-h8)
+ * Obtiene array de todas las coordenadas posibles (a1-h8)
  * @returns {Array<string>} Array de coordenadas
  */
 function getAllSquares() {
@@ -160,23 +219,51 @@ function getAllSquares() {
 }
 
 /**
- * Genera una secuencia aleatoria de coordenadas
- * @param {number} length - Cantidad de casillas en la secuencia
+ * Genera una secuencia aleatoria de coordenadas según configuración del nivel
+ * @param {Object} levelConfig - Configuración del nivel
  * @returns {Array<string>} Array de coordenadas aleatorias sin repetir
  */
-function generateRandomSequence(length) {
-    const allSquares = getAllSquares();
-    const sequence = [];
+function generateRandomSequence(levelConfig) {
+    let availableSquares = [];
 
-    // Mezclar array (Fisher-Yates shuffle)
-    const shuffled = [...allSquares];
+    // Determinar qué casillas están disponibles según restrictedArea
+    switch (levelConfig.restrictedArea) {
+        case 'ring':
+            availableSquares = window.ChessGameLibrary.BoardUtils.getRingSquares(levelConfig.areaConfig);
+            break;
+        case 'quadrant':
+            availableSquares = window.ChessGameLibrary.BoardUtils.getQuadrantSquares(levelConfig.areaConfig);
+            break;
+        case 'rows':
+            availableSquares = window.ChessGameLibrary.BoardUtils.getRowRangeSquares(
+                levelConfig.areaConfig.start,
+                levelConfig.areaConfig.end
+            );
+            break;
+        case 'full':
+        default:
+            availableSquares = getAllSquares();
+            break;
+    }
+
+    // Fisher-Yates shuffle
+    const shuffled = [...availableSquares];
     for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
 
-    // Tomar las primeras 'length' casillas
-    return shuffled.slice(0, length);
+    // Tomar las primeras 'sequenceLength' casillas
+    return shuffled.slice(0, levelConfig.sequenceLength);
+}
+
+/**
+ * Obtiene el color para una posición en la secuencia
+ * @param {number} index - Índice en la secuencia (0-based)
+ * @returns {Object} Objeto con name, hex, shadowColor
+ */
+function getSequenceColor(index) {
+    return SEQUENCE_COLORS[index % SEQUENCE_COLORS.length];
 }
 
 /**
@@ -215,15 +302,18 @@ if (typeof window !== 'undefined') {
     window.CoordinateSequence = window.CoordinateSequence || {};
     window.CoordinateSequence.Levels = {
         LEVELS,
+        SEQUENCE_COLORS,
         getLevelConfig,
         getAllSquares,
         generateRandomSequence,
+        getSequenceColor,
         calculateLevelScore,
         calculateSequenceDuration,
         getInfiniteLevel
     };
 }
 
-console.log('📊 Coordinate Sequence - Levels loaded');
+console.log('📊 Coordinate Sequence - Levels V2 loaded');
 console.log(`   Total predefined levels: ${LEVELS.length}`);
 console.log(`   Infinite mode: Level ${LEVELS.length + 1}+`);
+console.log(`   Colors available: ${SEQUENCE_COLORS.length}`);
