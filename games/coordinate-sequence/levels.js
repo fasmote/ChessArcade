@@ -39,13 +39,25 @@ const SEQUENCE_COLORS = [
  * - useColors: Si usa colores variados (true/false)
  */
 const LEVELS = [
-    // FASE 1: CENTRO 2x2 (4 casillas) - Introducción
+    // FASE 1: CENTRO 2x2 (4 casillas) - Introducción ULTRA FÁCIL
     {
         level: 1,
-        sequenceLength: 2,
+        sequenceLength: 1, // Una sola casilla para empezar
+        highlightDuration: 1200,
+        pauseDuration: 400,
+        baseScore: 10,
+        difficulty: '⭐ Muy Fácil',
+        name: 'Primera Casilla',
+        restrictedArea: 'ring',
+        areaConfig: '2x2',
+        useColors: true
+    },
+    {
+        level: 2,
+        sequenceLength: 2, // Dos casillas
         highlightDuration: 1000,
         pauseDuration: 300,
-        baseScore: 10,
+        baseScore: 20,
         difficulty: '⭐ Muy Fácil',
         name: 'Centro - Inicio',
         restrictedArea: 'ring',
@@ -53,11 +65,11 @@ const LEVELS = [
         useColors: true
     },
     {
-        level: 2,
-        sequenceLength: 3,
+        level: 3,
+        sequenceLength: 3, // Tres casillas
         highlightDuration: 900,
         pauseDuration: 250,
-        baseScore: 20,
+        baseScore: 30,
         difficulty: '⭐ Muy Fácil',
         name: 'Centro - Básico',
         restrictedArea: 'ring',
@@ -67,11 +79,11 @@ const LEVELS = [
 
     // FASE 2: ANILLO 4x4 (16 casillas) - Expandir
     {
-        level: 3,
+        level: 4,
         sequenceLength: 3,
         highlightDuration: 850,
         pauseDuration: 250,
-        baseScore: 30,
+        baseScore: 40,
         difficulty: '⭐ Fácil',
         name: 'Anillo Pequeño',
         restrictedArea: 'ring',
@@ -79,11 +91,11 @@ const LEVELS = [
         useColors: true
     },
     {
-        level: 4,
+        level: 5,
         sequenceLength: 4,
         highlightDuration: 800,
         pauseDuration: 200,
-        baseScore: 40,
+        baseScore: 50,
         difficulty: '⭐ Fácil',
         name: 'Anillo Ampliado',
         restrictedArea: 'ring',
@@ -93,11 +105,11 @@ const LEVELS = [
 
     // FASE 3: CUADRANTE (16 casillas) - Variación
     {
-        level: 5,
+        level: 6,
         sequenceLength: 4,
         highlightDuration: 750,
         pauseDuration: 200,
-        baseScore: 50,
+        baseScore: 60,
         difficulty: '⭐⭐ Medio',
         name: 'Cuadrante Derecho',
         restrictedArea: 'quadrant',
@@ -105,11 +117,11 @@ const LEVELS = [
         useColors: true
     },
     {
-        level: 6,
+        level: 7,
         sequenceLength: 5,
         highlightDuration: 700,
         pauseDuration: 150,
-        baseScore: 60,
+        baseScore: 70,
         difficulty: '⭐⭐ Medio',
         name: 'Mitad Inferior',
         restrictedArea: 'rows',
@@ -119,11 +131,11 @@ const LEVELS = [
 
     // FASE 4: ANILLO 6x6 (36 casillas) - Avanzado
     {
-        level: 7,
+        level: 8,
         sequenceLength: 5,
         highlightDuration: 650,
         pauseDuration: 150,
-        baseScore: 70,
+        baseScore: 80,
         difficulty: '⭐⭐⭐ Difícil',
         name: 'Anillo Grande',
         restrictedArea: 'ring',
@@ -131,11 +143,11 @@ const LEVELS = [
         useColors: true
     },
     {
-        level: 8,
+        level: 9,
         sequenceLength: 6,
         highlightDuration: 600,
         pauseDuration: 100,
-        baseScore: 80,
+        baseScore: 90,
         difficulty: '⭐⭐⭐ Difícil',
         name: 'Anillo Extendido',
         restrictedArea: 'ring',
@@ -145,25 +157,13 @@ const LEVELS = [
 
     // FASE 5: TABLERO COMPLETO (64 casillas) - Maestría
     {
-        level: 9,
+        level: 10,
         sequenceLength: 6,
         highlightDuration: 550,
         pauseDuration: 100,
-        baseScore: 90,
+        baseScore: 100,
         difficulty: '⭐⭐⭐⭐ Avanzado',
         name: 'Tablero Completo',
-        restrictedArea: 'full',
-        areaConfig: null,
-        useColors: true
-    },
-    {
-        level: 10,
-        sequenceLength: 7,
-        highlightDuration: 500,
-        pauseDuration: 100,
-        baseScore: 100,
-        difficulty: '⭐⭐⭐⭐⭐ Experto',
-        name: 'Maestría Total',
         restrictedArea: 'full',
         areaConfig: null,
         useColors: true
