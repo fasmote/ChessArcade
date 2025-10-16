@@ -202,16 +202,44 @@ function startLevel(levelNumber) {
         console.log('   🎬 Primera secuencia generada');
     } else {
         // Niveles siguientes: AGREGAR solo UNA casilla nueva a la master sequence
-        // IMPORTANTE: Evitar que la nueva casilla sea la misma que la última
+        // PATRÓN DE MOVIMIENTOS: Rey o Caballo desde la última casilla
         const lastSquare = gameState.masterSequence[gameState.masterSequence.length - 1];
-        let newSquare;
-        let attempts = 0;
 
-        do {
-            const newSquareArray = window.CoordinateSequence.Levels.generateRandomSequence(config);
-            newSquare = newSquareArray[0];
-            attempts++;
-        } while (newSquare === lastSquare && attempts < 10);
+        // Obtener casillas alcanzables desde la última (movimientos de rey + caballo)
+        const possibleMoves = window.ChessGameLibrary.BoardUtils.getKingOrKnightMoves(lastSquare);
+
+        // Filtrar solo las que están en el área permitida del nivel
+        let availableSquares = [];
+        switch (config.restrictedArea) {
+            case 'ring':
+                const ringSquares = window.ChessGameLibrary.BoardUtils.getRingSquares(config.areaConfig);
+                availableSquares = possibleMoves.filter(sq => ringSquares.includes(sq));
+                break;
+            case 'quadrant':
+                const quadrantSquares = window.ChessGameLibrary.BoardUtils.getQuadrantSquares(config.areaConfig);
+                availableSquares = possibleMoves.filter(sq => quadrantSquares.includes(sq));
+                break;
+            case 'rows':
+                const rowSquares = window.ChessGameLibrary.BoardUtils.getRowRangeSquares(
+                    config.areaConfig.start,
+                    config.areaConfig.end
+                );
+                availableSquares = possibleMoves.filter(sq => rowSquares.includes(sq));
+                break;
+            case 'full':
+            default:
+                availableSquares = possibleMoves;
+                break;
+        }
+
+        // Si no hay movimientos válidos en el área, usar cualquier casilla del área (fallback)
+        if (availableSquares.length === 0) {
+            console.warn(`   ⚠️ No hay movimientos válidos desde ${lastSquare}, usando fallback`);
+            availableSquares = window.CoordinateSequence.Levels.generateRandomSequence(config);
+        }
+
+        // Elegir casilla aleatoria de las disponibles
+        const newSquare = availableSquares[Math.floor(Math.random() * availableSquares.length)];
 
         gameState.masterSequence.push(newSquare);
 
@@ -222,7 +250,7 @@ function startLevel(levelNumber) {
             { name: 'cyan', hex: '#00ffff', shadowColor: 'rgba(0, 255, 255, 0.8)' };
         gameState.sequenceColors.push(newColor);
 
-        console.log(`   ➕ Casilla agregada: ${newSquare} (anterior: ${lastSquare}) - Color: ${newColor.name}`);
+        console.log(`   ➕ Casilla agregada: ${newSquare} (desde ${lastSquare} con movimiento rey/caballo) - Color: ${newColor.name}`);
     }
 
     // La secuencia actual es una copia de la master sequence

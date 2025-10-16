@@ -221,6 +221,51 @@ function getRowRangeSquares(startRank, endRank) {
     return squares;
 }
 
+/**
+ * Obtiene casillas alcanzables por movimiento de caballo
+ * @param {string} square - Coordenada origen (ej: "e4")
+ * @returns {Array<string>} Array de casillas alcanzables por el caballo
+ */
+function getKnightMoves(square) {
+    const file = square[0].charCodeAt(0) - 'a'.charCodeAt(0);
+    const rank = parseInt(square[1]);
+    const moves = [];
+
+    // 8 posibles movimientos del caballo (L-shape)
+    const deltas = [
+        [-2, -1], [-2, 1],  // 2 izq, 1 arriba/abajo
+        [-1, -2], [-1, 2],  // 1 izq, 2 arriba/abajo
+        [1, -2],  [1, 2],   // 1 der, 2 arriba/abajo
+        [2, -1],  [2, 1]    // 2 der, 1 arriba/abajo
+    ];
+
+    for (const [df, dr] of deltas) {
+        const newFile = String.fromCharCode('a'.charCodeAt(0) + file + df);
+        const newRank = rank + dr;
+        const newSquare = `${newFile}${newRank}`;
+
+        if (isValidSquare(newSquare)) {
+            moves.push(newSquare);
+        }
+    }
+
+    return moves;
+}
+
+/**
+ * Obtiene casillas alcanzables por movimiento de rey O caballo
+ * @param {string} square - Coordenada origen
+ * @returns {Array<string>} Array de casillas alcanzables (rey + caballo sin duplicados)
+ */
+function getKingOrKnightMoves(square) {
+    const kingMoves = getAdjacentSquares(square);
+    const knightMoves = getKnightMoves(square);
+
+    // Combinar y eliminar duplicados
+    const allMoves = [...new Set([...kingMoves, ...knightMoves])];
+    return allMoves;
+}
+
 // Exportar para uso global
 if (typeof window !== 'undefined') {
     window.ChessGameLibrary = window.ChessGameLibrary || {};
@@ -233,6 +278,8 @@ if (typeof window !== 'undefined') {
         chebyshevDistance,
         getSquareColor,
         getAdjacentSquares,
+        getKnightMoves,
+        getKingOrKnightMoves,
         getRingSquares,
         getQuadrantSquares,
         getRowRangeSquares
