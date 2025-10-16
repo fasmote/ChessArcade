@@ -289,30 +289,63 @@ body::before {
 }
 
 .chessboard {
+    /* Grid 8x8 con fracciones fluidas (responsive) */
     display: grid;
-    grid-template-columns: repeat(8, 60px);
-    grid-template-rows: repeat(8, 60px);
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
     gap: 2px;
-    background: #222;
+
+    /* Tamaño del tablero (mobile first) */
+    width: 90vw;
+    max-width: 400px;
+    aspect-ratio: 1; /* Mantener cuadrado */
+
+    /* Padding para coordenadas */
     padding: 20px;
+
+    /* Borde y fondo */
+    background: #222;
     border-radius: var(--border-radius);
     border: 4px solid var(--neon-cyan);
     box-shadow:
         0 0 30px rgba(0, 255, 255, 0.5),
         inset 0 0 30px rgba(0, 255, 255, 0.1);
+
+    /* Posición relativa para coordenadas absolutas */
     position: relative;
 }
 
+/* Responsive: Tablero más grande en tablets */
+@media (min-width: 600px) {
+    .chessboard {
+        max-width: 450px;
+        padding: 24px; /* Más espacio para coordenadas */
+    }
+}
+
+/* Responsive: Tablero más grande en desktop */
+@media (min-width: 900px) {
+    .chessboard {
+        max-width: 500px;
+        padding: 28px; /* Aún más espacio en desktop */
+    }
+}
+
 .square {
-    width: 60px;
-    height: 60px;
+    /* Tamaño se define por el grid (1fr) */
     display: flex;
     align-items: center;
     justify-content: center;
+
+    /* Cursor y transiciones */
     cursor: pointer;
     transition: all 0.2s ease;
+
+    /* Posición relativa para coordenadas */
     position: relative;
     border-radius: 4px;
+
+    /* Tipografía */
     font-size: 0.7rem;
     font-weight: 700;
     user-select: none;
@@ -326,13 +359,13 @@ body::before {
 /* Coordenadas horizontales (a-h) - En el borde inferior */
 .coord-file {
     position: absolute;
-    bottom: -18px; /* Fuera de la casilla, en el padding del tablero */
+    bottom: -16px; /* Fuera de la casilla, en el padding del tablero */
     left: 50%;
     transform: translateX(-50%);
 
     /* Texto blanco fuerte */
     color: #ffffff;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     font-family: 'Orbitron', sans-serif;
 
@@ -344,13 +377,13 @@ body::before {
 /* Coordenadas verticales (1-8) - En el borde izquierdo */
 .coord-rank {
     position: absolute;
-    left: -18px; /* Fuera de la casilla, en el padding del tablero */
+    left: -14px; /* Fuera de la casilla, en el padding del tablero */
     top: 50%;
     transform: translateY(-50%);
 
     /* Texto blanco fuerte */
     color: #ffffff;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     font-family: 'Orbitron', sans-serif;
 
@@ -362,25 +395,25 @@ body::before {
 /* Tamaño de coordenadas responsive */
 @media (min-width: 600px) {
     .coord-file {
-        bottom: -20px;
-        font-size: 13px;
+        bottom: -18px;
+        font-size: 12px;
     }
 
     .coord-rank {
-        left: -20px;
-        font-size: 13px;
+        left: -16px;
+        font-size: 12px;
     }
 }
 
 @media (min-width: 900px) {
     .coord-file {
-        bottom: -22px;
-        font-size: 14px;
+        bottom: -20px;
+        font-size: 13px;
     }
 
     .coord-rank {
-        left: -22px;
-        font-size: 14px;
+        left: -18px;
+        font-size: 13px;
     }
 }
 
