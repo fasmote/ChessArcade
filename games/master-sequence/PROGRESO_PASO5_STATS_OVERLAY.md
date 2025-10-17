@@ -549,4 +549,595 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ---
 
-**Fin del documento**
+## 🔧 Sesión Continuación: UX Final Fixes
+
+**Fecha**: 2025-10-17 (continuación)
+**Commits**: 1e3c09c, 7a143d2
+
+Esta sesión agregó **mejoras finales de UX** basadas en testing del usuario en desktop y mobile.
+
+---
+
+### 3. Botón X para Cerrar Game Over
+
+**Problema**: Solo había botón "Volver al Inicio" para salir del overlay de Game Over.
+
+**Solución**: Agregar botón X en esquina superior derecha (igual que otros overlays).
+
+#### Código Agregado:
+
+**index.html** (líneas 302-307):
+```html
+<div class="overlay hidden" id="gameOverOverlay">
+    <div class="overlay-content game-over">
+        <!-- Botón X para cerrar (esquina superior derecha) -->
+        <button class="btn-close-overlay" id="btnCloseGameOver" aria-label="Cerrar">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+```
+
+**styles.css** (líneas 1189-1223):
+```css
+.btn-close-overlay {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid var(--neon-cyan);
+    border-radius: 50%;
+    color: var(--neon-cyan);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    padding: 0;
+}
+
+.btn-close-overlay:hover {
+    background: rgba(0, 255, 255, 0.2);
+    border-color: var(--neon-magenta);
+    color: var(--neon-magenta);
+    box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+    transform: rotate(90deg) scale(1.1);
+}
+```
+
+**Fix importante**: Se agregó `position: relative` a `.overlay-content` para que el botón X se posicione correctamente dentro del overlay.
+
+**styles.css** (línea 948):
+```css
+.overlay-content {
+    position: relative; /* Para que el botón X se posicione correctamente */
+    background: linear-gradient(135deg, var(--dark-secondary), var(--dark-accent));
+    /* ... */
+}
+```
+
+**game.js**: Event listener agregado (línea 193):
+```javascript
+// Botón X de Game Over
+document.getElementById('btnCloseGameOver')?.addEventListener('click', backToMainScreen);
+```
+
+**Resultado**:
+- ✅ Botón X circular en esquina superior derecha
+- ✅ Hover: rotación 90° + scale 1.1 + cambio de color
+- ✅ Misma función que "Volver al Inicio"
+
+---
+
+### 4. Botón STATS para Consultar Estadísticas
+
+**Problema**: Overlay de estadísticas se cierra al hacer clic en "Continuar" y no se puede volver a ver.
+
+**Solución**: Agregar botón STATS en sidebar (patrón de Knight Quest) para consultar estadísticas actuales.
+
+#### Código Agregado:
+
+**index.html** (líneas 144-152):
+```html
+<button class="btn-secondary btn-stats" id="btnStats">
+    <svg class="icon-stats" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 3v18h18"></path>
+        <path d="M18 17V9"></path>
+        <path d="M13 17V5"></path>
+        <path d="M8 17v-3"></path>
+    </svg>
+    <span class="btn-text">STATS</span>
+</button>
+```
+
+**styles.css**: Botón igual ancho que otros (líneas 313-322):
+```css
+/* Botones de control en sidebar - TODOS mismo ancho */
+.btn-coordinates,
+.btn-stats,
+.btn-end-game {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%; /* Ancho completo en sidebar */
+}
+```
+
+**game.js** (líneas 747-803):
+```javascript
+/**
+ * Muestra estadísticas de la sesión actual (cuando usuario hace clic en STATS)
+ * Reutiliza advancedStatsOverlay con datos actuales
+ */
+function showCurrentStats() {
+    console.log('📊 Mostrando estadísticas actuales...');
+
+    // Calcular estadísticas de la sesión actual
+    const sequenceLength = gameState.sequence.length || 0;
+    const streakMultiplier = gameState.perfectStreak >= 3 ? calculateStreakMultiplier(gameState.perfectStreak) : 1.0;
+
+    // Preparar objeto de estadísticas con datos COMPLETOS de la sesión
+    const stats = {
+        timeElapsed: '-',
+        basePoints: '-',
+        speedBonus: '-',
+        streakMultiplier: streakMultiplier,
+        finalPoints: gameState.score, // Score acumulado de la sesión
+        newRecords: [] // Records guardados (no nuevos en esta consulta)
+    };
+
+    // Cambiar el título y mensaje del overlay
+    const overlayTitle = document.querySelector('#advancedStatsOverlay .overlay-title');
+    const overlayMessage = document.querySelector('#advancedStatsOverlay .overlay-message');
+    const overlayIcon = document.querySelector('#advancedStatsOverlay .overlay-icon');
+
+    overlayTitle.textContent = '📊 Estadísticas de Sesión Actual';
+    overlayMessage.textContent = `Nivel ${gameState.currentLevel} - Longitud: ${sequenceLength}`;
+    overlayIcon.textContent = '📊';
+
+    // Actualizar valores en el overlay
+    document.getElementById('successLevel').textContent = gameState.currentLevel;
+    document.getElementById('successTime').textContent = `Longitud: ${sequenceLength}`;
+    document.getElementById('successBasePoints').textContent = `Vidas: ${gameState.lives}/${gameState.maxLives}`;
+    document.getElementById('successSpeedBonus').textContent = `Racha: ${gameState.perfectStreak}`;
+    document.getElementById('successFinalPoints').textContent = gameState.score;
+
+    // Mostrar high scores guardados en la sección de records
+    const recordsList = document.getElementById('recordsList');
+    const recordsSection = document.getElementById('recordsSection');
+    recordsSection.style.display = 'block';
+    document.querySelector('#recordsSection .records-title').textContent = '🏆 RECORDS PERSONALES';
+
+    recordsList.innerHTML = '';
+    const records = [
+        `🏆 Mejor Puntuación: ${gameState.highScores.topScore}`,
+        `📊 Mejor Nivel: ${gameState.highScores.bestLevel}`,
+        `🔥 Racha Más Larga: ${gameState.highScores.longestStreak}`,
+        `⚡ Nivel Más Rápido: ${gameState.highScores.fastestLevel.level} en ${(gameState.highScores.fastestLevel.time / 1000).toFixed(2)}s`
+    ];
+
+    records.forEach(record => {
+        const item = document.createElement('div');
+        item.className = 'record-item';
+        item.textContent = record;
+        recordsList.appendChild(item);
+    });
+
+    // Mostrar el overlay avanzado
+    showAdvancedStatsOverlay(stats);
+}
+```
+
+**Restauración al cerrar** (game.js, líneas 176-186):
+```javascript
+document.getElementById('btnCloseAdvancedStats')?.addEventListener('click', () => {
+    hideAllOverlays();
+    // Si estaba mostrando stats actuales, limpiar cambios de título
+    const overlayTitle = document.querySelector('#advancedStatsOverlay .overlay-title');
+    if (overlayTitle && overlayTitle.textContent === '📊 Estadísticas de Sesión Actual') {
+        overlayTitle.textContent = '¡Nivel Completado!';
+        document.querySelector('#advancedStatsOverlay .overlay-message').textContent = 'Excelente memoria';
+        document.querySelector('#advancedStatsOverlay .overlay-icon').textContent = '🎉';
+    }
+});
+```
+
+**Resultado**:
+- ✅ Botón STATS en sidebar
+- ✅ Muestra overlay con datos de sesión actual
+- ✅ Reutiliza campos del grid con nuevos labels:
+  - Nivel → Nivel actual
+  - Tiempo → Longitud de secuencia
+  - Base → Vidas restantes
+  - Bonus → Racha perfecta
+- ✅ Puntos finales → Score total acumulado
+- ✅ Records section → High scores guardados
+- ✅ Al cerrar, restaura valores default del overlay
+
+---
+
+### 5. Reducción de Espaciado Vertical
+
+**Problema**: Tablero no entraba completo en pantalla inicial, requería scroll.
+
+**Solución**: Reducir gaps y margins en toda la jerarquía de contenedores.
+
+#### Cambios en styles.css:
+
+**Container principal** (líneas 66-72):
+```css
+.game-container {
+    padding: 1rem 1rem 0.5rem 1rem; /* Reducido padding vertical */
+    gap: 0.5rem; /* Reducido gap entre elementos */
+    max-width: 1600px;
+    margin: 0 auto;
+    /* ... */
+}
+```
+
+**Header** (líneas 114-117):
+```css
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem; /* Reducido de 1rem */
+    margin-bottom: 0.5rem; /* Reducido de 1rem */
+    /* ... */
+}
+```
+
+**Title section** (línea 154):
+```css
+.title-section {
+    text-align: center;
+    margin: 0.25rem 0; /* Reducido de 0.5rem 0 */
+}
+```
+
+**Subtitle** (líneas 173-176):
+```css
+.game-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: -0.5rem 0 0.5rem 0; /* Reducido espacio inferior */
+    font-weight: 400;
+}
+```
+
+**Game stats** (líneas 182-188):
+```css
+.game-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem; /* Reducido de 1.5rem */
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem; /* Reducido de 1rem */
+}
+```
+
+**Board wrapper** (líneas 225-232):
+```css
+.board-and-controls-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem; /* Reducido para que tablero no quede pegado abajo */
+    width: 100%;
+    margin-top: 0; /* Sin margin superior */
+}
+```
+
+**Resultado**:
+- ✅ Tablero completo visible sin scroll en desktop
+- ✅ Espaciado proporcional y equilibrado
+- ✅ No se siente apretado ni vacío
+
+**User feedback**: "En desktop, perfecto, me encanta"
+
+---
+
+### 6. Botón TERMINAR con Overlay de Confirmación
+
+**Problema**: Usuario quería poder terminar partida voluntariamente.
+
+**Solución inicial**: `window.confirm()` → User pidió overlay estilo ChessArcade.
+
+#### Código Agregado:
+
+**index.html** (líneas 154-161):
+```html
+<button class="btn-secondary btn-end-game" id="btnEndGame">
+    <svg class="icon-end-game" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+        <line x1="9" y1="9" x2="15" y2="15"></line>
+        <line x1="15" y1="9" x2="9" y2="15"></line>
+    </svg>
+    <span class="btn-text">TERMINAR</span>
+</button>
+```
+
+**Overlay de confirmación** (index.html, líneas 336-350):
+```html
+<div class="overlay hidden" id="confirmEndOverlay">
+    <div class="overlay-content confirm">
+        <div class="overlay-icon">⚠️</div>
+        <h2 class="overlay-title">¿Terminar Partida?</h2>
+        <p class="overlay-message">Se perderá el progreso actual y se mostrará Game Over</p>
+        <div class="overlay-buttons">
+            <button class="btn-secondary btn-overlay" id="btnCancelEnd">
+                ✗ Cancelar
+            </button>
+            <button class="btn-primary btn-overlay" id="btnConfirmEnd">
+                ✓ Terminar
+            </button>
+        </div>
+    </div>
+</div>
+```
+
+**styles.css** (líneas 1096-1103):
+```css
+.overlay-content.confirm {
+    border-color: var(--neon-orange);
+}
+
+.overlay-content.confirm .overlay-title {
+    color: var(--neon-orange);
+    text-shadow: 0 0 20px var(--neon-orange);
+}
+```
+
+**game.js** (líneas 703-735):
+```javascript
+/**
+ * Terminar partida (usuario decide terminar antes de perder todas las vidas)
+ * Muestra overlay de confirmación estilo ChessArcade
+ */
+function endGame() {
+    console.log('🛑 Usuario quiere terminar la partida manualmente');
+
+    // Solo si está jugando
+    if (gameState.phase === 'idle' || gameState.currentLevel === 1) {
+        console.log('⚠️ No hay partida activa para terminar');
+        updateStatus('No hay partida activa para terminar');
+        return;
+    }
+
+    // Mostrar overlay de confirmación
+    document.getElementById('confirmEndOverlay').classList.remove('hidden');
+}
+
+/**
+ * Confirma terminar partida (fuerza Game Over)
+ */
+function confirmEndGame() {
+    hideAllOverlays();
+    console.log('✓ Usuario confirmó terminar partida');
+
+    // Forzar Game Over
+    gameState.lives = 0;
+    gameOver();
+}
+
+/**
+ * Cancela terminar partida
+ */
+function cancelEndGame() {
+    hideAllOverlays();
+    console.log('✗ Usuario canceló terminar partida');
+}
+```
+
+**Event listeners** (game.js, líneas 197-202):
+```javascript
+// Botón TERMINAR
+document.getElementById('btnEndGame')?.addEventListener('click', endGame);
+
+// Botones de confirmación de terminar
+document.getElementById('btnConfirmEnd')?.addEventListener('click', confirmEndGame);
+document.getElementById('btnCancelEnd')?.addEventListener('click', cancelEndGame);
+```
+
+**Resultado**:
+- ✅ Botón TERMINAR en sidebar
+- ✅ Overlay de confirmación con borde naranja (warning)
+- ✅ Dos botones: Cancelar (vuelve al juego) / Terminar (fuerza Game Over)
+- ✅ Sin `window.confirm()`, estilo ChessArcade nativo
+- ✅ Validación: solo funciona si hay partida activa
+
+---
+
+### 7. Fix Layout Mobile (Controles Abajo)
+
+**Problema**: En mobile, controles arriba hacían que tablero quedara muy abajo (screenshot ms_15.png).
+
+**Solución**: Invertir orden visual en mobile (tablero arriba, controles abajo).
+
+#### Cambios en styles.css:
+
+**Antes** (líneas 234-241):
+```css
+/* Móvil: Invertir orden visual (controles primero) */
+.board-container {
+    order: 2; /* Tablero segundo visualmente en móvil */
+}
+
+.game-controls {
+    order: 1; /* Controles primero visualmente en móvil */
+}
+```
+
+**Después** (líneas 234-241):
+```css
+/* Móvil: Orden natural (tablero primero, controles abajo) */
+.board-container {
+    order: 1; /* Tablero primero visualmente en móvil */
+}
+
+.game-controls {
+    order: 2; /* Controles abajo visualmente en móvil */
+}
+```
+
+**Resultado**:
+- ✅ Tablero arriba (mejor uso del espacio vertical)
+- ✅ Controles abajo (accesibles sin obstruir vista)
+- ✅ Desktop sin cambios (sidebar sigue a la derecha)
+
+---
+
+### 8. Texto en Botón SHOW COORDINATES (Mobile)
+
+**Problema**: Botón coordenadas sin nombre en mobile, otros botones sí tenían.
+
+**Solución**: Mostrar texto también en mobile.
+
+#### Cambio en styles.css:
+
+**Antes** (línea 329):
+```css
+.btn-coordinates .btn-text {
+    display: none; /* Oculto en móvil (solo icono) */
+}
+```
+
+**Después** (línea 329):
+```css
+.btn-coordinates .btn-text {
+    display: inline; /* Visible también en móvil */
+}
+```
+
+**Resultado**:
+- ✅ Consistencia: todos los botones con icono + texto
+- ✅ Accesibilidad: más claro qué hace cada botón
+- ✅ UX uniforme en mobile
+
+---
+
+## 📊 Estadísticas Totales de la Sesión Continuación
+
+### Commits:
+
+**1e3c09c**: Espaciado final + Modal TERMINAR + Stats completas
+- +97 inserciones, -24 eliminaciones
+- 3 archivos modificados
+
+**7a143d2**: Layout mobile - Controles abajo + Texto coordenadas
+- +4 inserciones, -4 eliminaciones
+- 1 archivo modificado
+
+### Código Agregado Total:
+
+**HTML**:
+- +30 líneas (botón X, botón STATS, botón TERMINAR, overlay confirmación)
+
+**CSS**:
+- +43 líneas (estilos nuevos)
+- ~20 líneas modificadas (spacing optimizations)
+
+**JavaScript**:
+- +90 líneas (showCurrentStats, endGame, confirmEndGame, cancelEndGame, event listeners)
+
+**Total**: ~163 líneas nuevas/modificadas
+
+---
+
+## 🎯 Mejoras UX de esta Sesión
+
+### Visual:
+✅ Botón X en Game Over (circular, con rotación al hover)
+✅ Overlay de confirmación TERMINAR (estilo ChessArcade, borde naranja)
+✅ Espaciado optimizado (tablero completo visible sin scroll)
+✅ Layout mobile reordenado (tablero arriba, controles abajo)
+✅ Botones sidebar igual ancho (consistencia visual)
+
+### Funcionalidad:
+✅ Consultar estadísticas en cualquier momento (botón STATS)
+✅ Terminar partida voluntariamente (botón TERMINAR)
+✅ Confirmación no bloqueante (overlay vs window.confirm)
+✅ Stats overlay muestra datos COMPLETOS de sesión actual
+✅ Restauración automática de overlay defaults al cerrar
+
+### Información:
+✅ Stats overlay actualizado con datos reales:
+  - Nivel actual
+  - Longitud de secuencia
+  - Vidas restantes
+  - Racha perfecta
+  - Score total acumulado
+  - High scores personales
+
+### Mobile:
+✅ Tablero arriba (mejor uso del espacio)
+✅ Controles abajo (accesibles sin obstruir)
+✅ Todos los botones con texto (consistencia)
+
+---
+
+## 🧪 Testing Realizado
+
+**Desktop (Chrome)**:
+- ✅ Espaciado correcto, tablero completo visible
+- ✅ Botón X funcional en Game Over
+- ✅ Botón STATS muestra datos correctos
+- ✅ Botón TERMINAR con confirmación funcional
+- ✅ Sidebar botones igual ancho
+
+**Mobile (Android)**:
+- ✅ Tablero arriba, controles abajo
+- ✅ Botón coordenadas con texto visible
+- ✅ Layout responsive correcto
+
+**User feedback final**: "perfecto, puedo hacer commit"
+
+---
+
+## 📝 Preparación para Base de Datos (Futuro)
+
+Se agregaron **TODO comments** para facilitar integración con backend:
+
+**backToMainScreen()** (game.js, líneas 689-773):
+```javascript
+// TODO: Cuando tengamos BD, guardar sesión aquí
+// await saveGameSession({
+//     score: gameState.score,
+//     level: gameState.currentLevel,
+//     perfectLevels: gameState.perfectLevels,
+//     highScores: gameState.highScores,
+//     timestamp: Date.now()
+// });
+```
+
+**saveHighScores()** (game.js, líneas 1203-1219):
+```javascript
+// TODO: Cuando tengamos BD
+// await syncHighScoresToBackend(gameState.highScores);
+```
+
+---
+
+## 🚀 Estado del Proyecto
+
+### Completado:
+- ✅ PASO 5: Stats Overlay detallado
+- ✅ Rename: coordinate-sequence → master-sequence
+- ✅ UX Final Fixes (spacing, mobile, overlays, botones)
+
+### Pendiente:
+- ⏳ PASO 6: Polish - Animaciones y Sonidos
+  - Animaciones de trail
+  - Partículas de éxito
+  - Sonidos melódicos
+  - Confeti dorado para records
+
+---
+
+**Fin de la Sesión Continuación**
