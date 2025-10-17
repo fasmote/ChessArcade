@@ -498,6 +498,109 @@ body::before {
 }
 
 /* ============================================
+   BOTÓN PLAY CENTRAL TRANSPARENTE
+   ============================================ */
+
+.btn-play-overlay {
+    /* Posicionamiento centrado absoluto sobre el tablero */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+
+    /* Tamaño grande y responsivo */
+    width: clamp(120px, 30vw, 180px);
+    height: clamp(120px, 30vw, 180px);
+
+    /* Fondo semi-transparente con blur */
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border: 3px solid var(--neon-cyan);
+    border-radius: 50%;
+
+    /* Sin padding ni margin */
+    padding: 0;
+    margin: 0;
+
+    /* Cursor pointer */
+    cursor: pointer;
+
+    /* Color del ícono */
+    color: var(--neon-cyan);
+
+    /* Glow neón */
+    box-shadow:
+        0 0 30px rgba(0, 255, 255, 0.6),
+        0 0 50px rgba(0, 255, 255, 0.4),
+        inset 0 0 20px rgba(0, 255, 255, 0.2);
+
+    /* Transiciones suaves */
+    transition: all 0.3s ease;
+
+    /* Animación pulsante */
+    animation: playPulse 2s ease-in-out infinite;
+}
+
+.btn-play-overlay:hover {
+    /* Aumentar glow al hover */
+    box-shadow:
+        0 0 40px rgba(0, 255, 255, 0.8),
+        0 0 70px rgba(0, 255, 255, 0.6),
+        inset 0 0 30px rgba(0, 255, 255, 0.4);
+
+    /* Escala ligeramente */
+    transform: translate(-50%, -50%) scale(1.1);
+
+    /* Color más brillante */
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+}
+
+.btn-play-overlay:active {
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+/* Ícono SVG del play */
+.play-icon {
+    width: 100%;
+    height: 100%;
+    display: block;
+    filter: drop-shadow(0 0 10px currentColor);
+}
+
+/* Animación de pulso */
+@keyframes playPulse {
+    0%, 100% {
+        box-shadow:
+            0 0 30px rgba(0, 255, 255, 0.6),
+            0 0 50px rgba(0, 255, 255, 0.4),
+            inset 0 0 20px rgba(0, 255, 255, 0.2);
+    }
+    50% {
+        box-shadow:
+            0 0 40px rgba(0, 255, 255, 0.8),
+            0 0 70px rgba(0, 255, 255, 0.6),
+            inset 0 0 30px rgba(0, 255, 255, 0.3);
+    }
+}
+
+/* Estado oculto */
+.btn-play-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.5);
+}
+
+/* Responsive para mobile */
+@media (max-width: 600px) {
+    .btn-play-overlay {
+        width: clamp(100px, 35vw, 150px);
+        height: clamp(100px, 35vw, 150px);
+    }
+}
+
+/* ============================================
    MENSAJE DE ESTADO
    ============================================ */
 

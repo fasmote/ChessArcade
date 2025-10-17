@@ -126,6 +126,12 @@ function setupEventListeners() {
         btnStart.addEventListener('click', startGame);
     }
 
+    // Botón PLAY OVERLAY (central en tablero)
+    const btnPlayOverlay = document.getElementById('btnPlayOverlay');
+    if (btnPlayOverlay) {
+        btnPlayOverlay.addEventListener('click', startGame);
+    }
+
     // Botón SOUND
     const btnSound = document.getElementById('btnSound');
     if (btnSound) {
@@ -165,6 +171,7 @@ function startGame() {
     gameState.sequenceColors = []; // Resetear colores
 
     hideAllOverlays();
+    hidePlayButton(); // Ocultar botón play central
     startLevel(1);
 }
 
@@ -787,6 +794,26 @@ function launchConfetti(count = 30) {
         setTimeout(() => {
             confetti.remove();
         }, 3000);
+    }
+}
+
+/**
+ * Muestra el botón play central
+ */
+function showPlayButton() {
+    const btnPlayOverlay = document.getElementById('btnPlayOverlay');
+    if (btnPlayOverlay) {
+        btnPlayOverlay.classList.remove('hidden');
+    }
+}
+
+/**
+ * Oculta el botón play central
+ */
+function hidePlayButton() {
+    const btnPlayOverlay = document.getElementById('btnPlayOverlay');
+    if (btnPlayOverlay) {
+        btnPlayOverlay.classList.add('hidden');
     }
 }
 
