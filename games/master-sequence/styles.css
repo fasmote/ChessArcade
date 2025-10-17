@@ -97,8 +97,8 @@ body::before {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: var(--spacing-lg);
-    gap: var(--spacing-md);
+    padding: 1rem 1rem 0.5rem 1rem; /* Reducido padding vertical */
+    gap: 0.5rem; /* Reducido gap entre elementos */
     min-height: 100vh;
     max-width: 1400px; /* Contenedor máximo para centrar todo */
     margin: 0 auto; /* Centrar el contenedor completo */
@@ -226,8 +226,9 @@ body::before {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: 0.5rem; /* Reducido para que tablero no quede pegado abajo */
     width: 100%;
+    margin-top: 0; /* Sin margin superior */
 }
 
 /* Móvil: Invertir orden visual (controles primero) */
@@ -1090,6 +1091,15 @@ body::before {
 .overlay-content.game-over .overlay-title {
     color: var(--neon-purple);
     text-shadow: 0 0 20px var(--neon-purple);
+}
+
+.overlay-content.confirm {
+    border-color: var(--neon-orange);
+}
+
+.overlay-content.confirm .overlay-title {
+    color: var(--neon-orange);
+    text-shadow: 0 0 20px var(--neon-orange);
 }
 
 /* ============================================

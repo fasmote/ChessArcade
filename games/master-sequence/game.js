@@ -197,6 +197,10 @@ function setupEventListeners() {
     // Botón TERMINAR (terminar partida = perder todas las vidas)
     document.getElementById('btnEndGame')?.addEventListener('click', endGame);
 
+    // Botones de confirmación de terminar
+    document.getElementById('btnConfirmEnd')?.addEventListener('click', confirmEndGame);
+    document.getElementById('btnCancelEnd')?.addEventListener('click', cancelEndGame);
+
     // Clicks en el tablero
     const chessboard = document.getElementById('chessboard');
     chessboard.addEventListener('click', handleSquareClick);
@@ -698,25 +702,40 @@ function restartGame() {
 
 /**
  * Terminar partida (usuario decide terminar antes de perder todas las vidas)
- * Muestra Game Over con las estadísticas finales
+ * Muestra overlay de confirmación estilo ChessArcade
  */
 function endGame() {
-    console.log('🛑 Usuario terminó la partida manualmente');
+    console.log('🛑 Usuario quiere terminar la partida manualmente');
 
-    // Confirmar antes de terminar (solo si está jugando)
+    // Solo si está jugando
     if (gameState.phase === 'idle' || gameState.currentLevel === 1) {
         console.log('⚠️ No hay partida activa para terminar');
+        updateStatus('No hay partida activa para terminar');
         return;
     }
 
-    const confirm = window.confirm('¿Seguro que quieres terminar esta partida?');
-    if (!confirm) {
-        return;
-    }
+    // Mostrar overlay de confirmación
+    document.getElementById('confirmEndOverlay').classList.remove('hidden');
+}
+
+/**
+ * Confirma terminar partida (fuerza Game Over)
+ */
+function confirmEndGame() {
+    hideAllOverlays();
+    console.log('✓ Usuario confirmó terminar partida');
 
     // Forzar Game Over
     gameState.lives = 0;
     gameOver();
+}
+
+/**
+ * Cancela terminar partida
+ */
+function cancelEndGame() {
+    hideAllOverlays();
+    console.log('✗ Usuario canceló terminar partida');
 }
 
 /**
@@ -728,31 +747,56 @@ function endGame() {
 function showCurrentStats() {
     console.log('📊 Mostrando estadísticas actuales...');
 
-    // Preparar objeto de estadísticas con datos ACTUALES de la sesión
+    // Calcular estadísticas de la sesión actual
+    const sequenceLength = gameState.sequence.length || 0;
+    const streakMultiplier = gameState.perfectStreak >= 3 ? calculateStreakMultiplier(gameState.perfectStreak) : 1.0;
+
+    // Preparar objeto de estadísticas con datos COMPLETOS de la sesión
     const stats = {
-        timeElapsed: '0.00',
-        basePoints: 0,
-        speedBonus: 0,
-        streakMultiplier: gameState.perfectStreak >= 3 ? calculateStreakMultiplier(gameState.perfectStreak) : 1.0,
-        finalPoints: gameState.score, // Score actual de la sesión
-        newRecords: []
+        timeElapsed: '-',
+        basePoints: '-',
+        speedBonus: '-',
+        streakMultiplier: streakMultiplier,
+        finalPoints: gameState.score, // Score acumulado de la sesión
+        newRecords: [] // Records guardados (no nuevos en esta consulta)
     };
 
-    // Cambiar el título y mensaje del overlay para stats manuales
+    // Cambiar el título y mensaje del overlay
     const overlayTitle = document.querySelector('#advancedStatsOverlay .overlay-title');
     const overlayMessage = document.querySelector('#advancedStatsOverlay .overlay-message');
     const overlayIcon = document.querySelector('#advancedStatsOverlay .overlay-icon');
 
-    overlayTitle.textContent = '📊 Estadísticas de Sesión';
-    overlayMessage.textContent = `Sesión actual`;
+    overlayTitle.textContent = '📊 Estadísticas de Sesión Actual';
+    overlayMessage.textContent = `Nivel ${gameState.currentLevel} - Longitud: ${sequenceLength}`;
     overlayIcon.textContent = '📊';
 
-    // Actualizar valores en el overlay antes de mostrarlo
+    // Actualizar valores en el overlay
     document.getElementById('successLevel').textContent = gameState.currentLevel;
-    document.getElementById('successTime').textContent = '-';
-    document.getElementById('successBasePoints').textContent = '-';
-    document.getElementById('successSpeedBonus').textContent = '-';
+    document.getElementById('successTime').textContent = `Longitud: ${sequenceLength}`;
+    document.getElementById('successBasePoints').textContent = `Vidas: ${gameState.lives}/${gameState.maxLives}`;
+    document.getElementById('successSpeedBonus').textContent = `Racha: ${gameState.perfectStreak}`;
     document.getElementById('successFinalPoints').textContent = gameState.score;
+
+    // Mostrar high scores guardados en la sección de records
+    const recordsList = document.getElementById('recordsList');
+    const recordsSection = document.getElementById('recordsSection');
+    recordsSection.style.display = 'block';
+    document.querySelector('#recordsSection .records-title').textContent = '🏆 RECORDS PERSONALES';
+
+    recordsList.innerHTML = '';
+    const records = [
+        `🏆 Mejor Puntuación: ${gameState.highScores.topScore}`,
+        `📊 Mejor Nivel: ${gameState.highScores.bestLevel}`,
+        `🔥 Racha Más Larga: ${gameState.highScores.longestStreak}`,
+        `⚡ Nivel Más Rápido: ${gameState.highScores.fastestLevel.level} en ${(gameState.highScores.fastestLevel.time / 1000).toFixed(2)}s`
+    ];
+
+    records.forEach(record => {
+        const item = document.createElement('div');
+        item.className = 'record-item';
+        item.textContent = record;
+        recordsList.appendChild(item);
+    });
 
     // Mostrar el overlay avanzado
     showAdvancedStatsOverlay(stats);
