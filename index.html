@@ -129,13 +129,13 @@
                 </article>
 
                 <!-- Master Sequence Game -->
-                <article class="neon-card coordinate-sequence-card" tabindex="0" role="button">
+                <article class="neon-card master-sequence-card" tabindex="0" role="button">
                     <div class="neon-card-icon" aria-hidden="true">🟦</div>
                     <h2 class="neon-heading">Master Sequence</h2>
                     <p class="neon-text neon-mb-md">
                         Simon Says meets chess! Watch the neon sequence grow, memorize the pattern, then repeat it perfectly. How far can you go?
                     </p>
-                    <button class="neon-play-btn" type="button" data-game="coordinate-sequence">
+                    <button class="neon-play-btn" type="button" data-game="master-sequence">
                         Play Now
                     </button>
                 </article>
@@ -313,7 +313,7 @@
             console.log(`🔍 Checking if game is available...`);
 
             // Check if game is available
-            if (gameId === 'knight-quest' || gameId === 'square-rush' || gameId === 'memory-matrix' || gameId === 'coordinate-sequence') {
+            if (gameId === 'knight-quest' || gameId === 'square-rush' || gameId === 'memory-matrix' || gameId === 'master-sequence') {
                 console.log(`✅ Game ${gameId} is available, proceeding...`);
                 // Add screen flash effect
                 document.body.style.background = 'white';
