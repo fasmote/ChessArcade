@@ -694,8 +694,10 @@ function updateUI() {
     // Stats
     document.getElementById('scoreDisplay').textContent = gameState.score;
 
-    const config = window.CoordinateSequence.Levels.getLevelConfig(gameState.currentLevel);
-    document.getElementById('sequenceDisplay').textContent = config.sequenceLength;
+    // Mostrar longitud REAL de la secuencia acumulativa (no el config)
+    // Esto refleja cuántas casillas realmente tiene que recordar el jugador
+    const actualLength = gameState.sequence.length || 0;
+    document.getElementById('sequenceDisplay').textContent = actualLength;
 
     // Vidas (corazones)
     const hearts = '❤️'.repeat(gameState.lives) + '🖤'.repeat(gameState.maxLives - gameState.lives);
