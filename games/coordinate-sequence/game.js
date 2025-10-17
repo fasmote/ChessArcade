@@ -176,7 +176,7 @@ function setupEventListeners() {
     document.getElementById('btnNextLevel')?.addEventListener('click', nextLevel);
     document.getElementById('btnRetry')?.addEventListener('click', retryLevel);
     document.getElementById('btnRestart')?.addEventListener('click', restartGame);
-    document.getElementById('btnHome2')?.addEventListener('click', goHome);
+    document.getElementById('btnRestartGame')?.addEventListener('click', restartGame); // Mismo efecto que btnRestart
 
     // Clicks en el tablero
     const chessboard = document.getElementById('chessboard');
