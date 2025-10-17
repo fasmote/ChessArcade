@@ -231,13 +231,13 @@ body::before {
     margin-top: 0; /* Sin margin superior */
 }
 
-/* Móvil: Invertir orden visual (controles primero) */
+/* Móvil: Orden natural (tablero primero, controles abajo) */
 .board-container {
-    order: 2; /* Tablero segundo visualmente en móvil */
+    order: 1; /* Tablero primero visualmente en móvil */
 }
 
 .game-controls {
-    order: 1; /* Controles primero visualmente en móvil */
+    order: 2; /* Controles abajo visualmente en móvil */
 }
 
 /* Desktop: Wrapper con tablero CENTRADO + sidebar derecha ABSOLUTA */
@@ -326,7 +326,7 @@ body::before {
 }
 
 .btn-coordinates .btn-text {
-    display: none; /* Oculto en móvil (solo icono) */
+    display: inline; /* Visible también en móvil */
 }
 
 /* Móvil: Botón alargado, color diferente */
