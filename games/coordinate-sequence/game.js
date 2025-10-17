@@ -176,7 +176,7 @@ function setupEventListeners() {
     document.getElementById('btnNextLevel')?.addEventListener('click', nextLevel);
     document.getElementById('btnRetry')?.addEventListener('click', retryLevel);
     document.getElementById('btnRestart')?.addEventListener('click', restartGame);
-    document.getElementById('btnRestartGame')?.addEventListener('click', restartGame); // Mismo efecto que btnRestart
+    document.getElementById('btnRestartGame')?.addEventListener('click', backToMainScreen); // Volver a pantalla principal SIN empezar juego
 
     // Clicks en el tablero
     const chessboard = document.getElementById('chessboard');
@@ -674,6 +674,40 @@ function retryLevel() {
 function restartGame() {
     hideAllOverlays();
     startGame();
+}
+
+/**
+ * Volver a pantalla principal de Master Sequence (SIN empezar juego)
+ * Cierra overlay y muestra botón PLAY para que usuario decida qué hacer
+ */
+function backToMainScreen() {
+    // Cerrar overlay de Game Over
+    hideAllOverlays();
+
+    // Resetear estado del juego
+    gameState.currentLevel = 1;
+    gameState.score = 0;
+    gameState.lives = 5;
+    gameState.masterSequence = [];
+    gameState.sequenceColors = [];
+    gameState.squareUsageCount = {};
+    gameState.sequence = [];
+    gameState.playerSequence = [];
+    gameState.currentStep = 0;
+    gameState.phase = 'idle';
+    gameState.currentLevelAttempts = 0;
+    gameState.perfectStreak = 0;
+
+    // Actualizar UI con valores reseteados
+    updateUI();
+
+    // Mostrar botón PLAY central para que usuario decida cuándo empezar
+    showPlayButton();
+
+    // Mensaje de bienvenida
+    updateStatus('Presiona COMENZAR para iniciar');
+
+    console.log('🏠 Vuelto a pantalla principal de Master Sequence');
 }
 
 /**
