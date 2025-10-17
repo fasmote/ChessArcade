@@ -16,8 +16,8 @@ let gameState = {
     // Progresión
     currentLevel: 1,
     score: 0,
-    lives: 3,
-    maxLives: 3,
+    lives: 5,
+    maxLives: 5,
 
     // Secuencia MASTER acumulativa (Simon Says style)
     masterSequence: [],     // Secuencia acumulativa que crece cada nivel
