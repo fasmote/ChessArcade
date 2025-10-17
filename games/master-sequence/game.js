@@ -175,6 +175,14 @@ function setupEventListeners() {
     // Botones de overlays
     document.getElementById('btnCloseAdvancedStats')?.addEventListener('click', () => {
         hideAllOverlays();
+        // Si estaba mostrando stats actuales, limpiar cambios de título
+        const overlayTitle = document.querySelector('#advancedStatsOverlay .overlay-title');
+        if (overlayTitle && overlayTitle.textContent === '📊 Estadísticas Actuales') {
+            // Restaurar valores por defecto para próxima vez que se use en nivel completado
+            overlayTitle.textContent = '¡Nivel Completado!';
+            document.querySelector('#advancedStatsOverlay .overlay-message').textContent = 'Excelente memoria';
+            document.querySelector('#advancedStatsOverlay .overlay-icon').textContent = '🎉';
+        }
     });
     document.getElementById('btnRetry')?.addEventListener('click', retryLevel);
     document.getElementById('btnRestart')?.addEventListener('click', restartGame);
@@ -182,6 +190,9 @@ function setupEventListeners() {
 
     // Botón X de Game Over (misma función que "Volver al Inicio")
     document.getElementById('btnCloseGameOver')?.addEventListener('click', backToMainScreen);
+
+    // Botón STATS (consultar estadísticas actuales)
+    document.getElementById('btnStats')?.addEventListener('click', showCurrentStats);
 
     // Clicks en el tablero
     const chessboard = document.getElementById('chessboard');
@@ -680,6 +691,38 @@ function retryLevel() {
 function restartGame() {
     hideAllOverlays();
     startGame();
+}
+
+/**
+ * Muestra overlay de estadísticas actuales (botón STATS)
+ *
+ * Permite consultar las stats en cualquier momento sin interrumpir el juego.
+ * Usa el overlay avanzado de estadísticas con los datos actuales de la sesión.
+ */
+function showCurrentStats() {
+    console.log('📊 Mostrando estadísticas actuales...');
+
+    // Preparar objeto de estadísticas con datos actuales
+    const stats = {
+        timeElapsed: '0.00', // No aplica cuando se consulta manualmente
+        basePoints: 0,       // No aplica
+        speedBonus: 0,       // No aplica
+        streakMultiplier: gameState.perfectStreak >= 3 ? calculateStreakMultiplier(gameState.perfectStreak) : 1.0,
+        finalPoints: 0,      // No aplica
+        newRecords: []       // No hay records nuevos al consultar
+    };
+
+    // Cambiar el título y mensaje del overlay para stats manuales
+    const overlayTitle = document.querySelector('#advancedStatsOverlay .overlay-title');
+    const overlayMessage = document.querySelector('#advancedStatsOverlay .overlay-message');
+    const overlayIcon = document.querySelector('#advancedStatsOverlay .overlay-icon');
+
+    overlayTitle.textContent = '📊 Estadísticas Actuales';
+    overlayMessage.textContent = `Nivel ${gameState.currentLevel} - Score: ${gameState.score}`;
+    overlayIcon.textContent = '📊';
+
+    // Mostrar el overlay avanzado
+    showAdvancedStatsOverlay(stats);
 }
 
 /**
