@@ -18,7 +18,9 @@
       "Bash(node:*)",
       "Bash(for:*)",
       "Bash(do if [ -f \"$file\" ])",
-      "Bash(then if grep -q \"G-N3EKXHPD5Y\" \"$file\")"
+      "Bash(then if grep -q \"G-N3EKXHPD5Y\" \"$file\")",
+      "Bash(git merge:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []

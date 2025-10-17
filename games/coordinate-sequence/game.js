@@ -38,7 +38,27 @@ let gameState = {
     bestLevel: 1,
     totalAttempts: 0,
     perfectLevels: 0,
-    currentLevelAttempts: 0
+    currentLevelAttempts: 0,
+
+    // ============================================
+    // SISTEMA DE PUNTUACIÓN MEJORADO
+    // ============================================
+
+    // Timing del nivel (para speed bonus)
+    levelStartTime: 0,      // Timestamp cuando empieza la fase de input
+    levelEndTime: 0,        // Timestamp cuando completa el nivel
+
+    // Perfect Streak (rachas sin errores)
+    perfectStreak: 0,       // Contador de niveles perfectos consecutivos
+
+    // High Scores (persistente en localStorage)
+    highScores: {
+        topScore: 0,
+        bestLevel: 1,
+        longestStreak: 0,
+        fastestLevel: { level: 1, time: 999999 },
+        lastUpdated: null
+    }
 };
 
 // ============================================
@@ -61,6 +81,11 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function initGame() {
     createBoard();
+
+    // Cargar high scores desde localStorage
+    gameState.highScores = loadHighScores();
+    console.log('💾 High scores loaded:', gameState.highScores);
+
     updateUI();
     console.log('🎮 Game initialized');
 }
@@ -389,6 +414,10 @@ async function showSequence() {
     // Secuencia mostrada, ahora el jugador debe repetirla
     console.log('✅ Sequence shown');
     gameState.phase = 'playing';
+
+    // Capturar timestamp de inicio para speed bonus
+    gameState.levelStartTime = Date.now();
+
     enableBoard();
     updateStatus('¡Ahora repite la secuencia!', 'playing');
 }
@@ -499,19 +528,55 @@ function onLevelComplete() {
     gameState.phase = 'success';
     disableBoard();
 
-    const isPerfect = gameState.currentLevelAttempts === 0;
-    const points = window.CoordinateSequence.Levels.calculateLevelScore(gameState.currentLevel, isPerfect);
-    gameState.score += points;
+    // Capturar timestamp de finalización
+    gameState.levelEndTime = Date.now();
+    const timeElapsed = gameState.levelEndTime - gameState.levelStartTime;
+    console.log(`⏱️ Level completed in ${(timeElapsed / 1000).toFixed(2)}s`);
 
-    if (isPerfect) {
-        gameState.perfectLevels++;
+    const isPerfect = gameState.currentLevelAttempts === 0;
+
+    // Calcular puntos base
+    let points = window.CoordinateSequence.Levels.calculateLevelScore(gameState.currentLevel, isPerfect);
+
+    // Calcular speed bonus
+    const speedBonus = calculateSpeedBonus(timeElapsed, gameState.currentLevel);
+    if (speedBonus > 0) {
+        console.log(`⚡ Speed Bonus: +${speedBonus} pts`);
     }
 
+    // Actualizar perfect streak
+    if (isPerfect) {
+        gameState.perfectStreak++;
+        gameState.perfectLevels++;
+    } else {
+        gameState.perfectStreak = 0; // Resetear racha
+    }
+
+    // Calcular multiplicador de racha
+    const streakMultiplier = calculateStreakMultiplier(gameState.perfectStreak);
+    if (streakMultiplier > 1.0) {
+        console.log(`🔥 Perfect Streak x${gameState.perfectStreak} = Multiplier x${streakMultiplier}`);
+    }
+
+    // Calcular puntos finales
+    const basePoints = points + speedBonus;
+    const finalPoints = Math.round(basePoints * streakMultiplier);
+
+    console.log(`💰 Base: ${points} + Speed: ${speedBonus} = ${basePoints} × ${streakMultiplier} = ${finalPoints} pts`);
+
+    gameState.score += finalPoints;
     gameState.totalAttempts++;
 
     // Actualizar best level
     if (gameState.currentLevel > gameState.bestLevel) {
         gameState.bestLevel = gameState.currentLevel;
+    }
+
+    // Actualizar high scores y verificar si rompió algún record
+    const isNewRecord = updateHighScores(timeElapsed);
+    if (isNewRecord) {
+        console.log('🎊 ¡NUEVO RECORD!');
+        // TODO: Aquí se podría mostrar un confeti especial dorado
     }
 
     updateUI();
@@ -539,6 +604,7 @@ function onLevelFailed() {
     gameState.phase = 'fail';
     gameState.lives--;
     gameState.currentLevelAttempts++;
+    gameState.perfectStreak = 0; // Resetear racha perfecta
     disableBoard();
 
     updateUI();
@@ -634,6 +700,19 @@ function updateUI() {
     // Vidas (corazones)
     const hearts = '❤️'.repeat(gameState.lives) + '🖤'.repeat(gameState.maxLives - gameState.lives);
     document.getElementById('livesDisplay').textContent = hearts;
+
+    // Perfect Streak (solo mostrar si hay racha >= 3)
+    const streakStat = document.getElementById('streakStat');
+    const streakDisplay = document.getElementById('streakDisplay');
+    if (gameState.perfectStreak >= 3) {
+        streakStat.style.display = 'flex';
+        streakDisplay.textContent = `${gameState.perfectStreak}🔥`;
+    } else {
+        streakStat.style.display = 'none';
+    }
+
+    // Best Score
+    document.getElementById('bestDisplay').textContent = gameState.highScores.topScore;
 }
 
 /**
@@ -924,6 +1003,142 @@ function hidePlayButton() {
     if (btnPlayOverlay) {
         btnPlayOverlay.classList.add('hidden');
     }
+}
+
+// ============================================
+// SISTEMA DE PUNTUACIÓN MEJORADO
+// ============================================
+
+/**
+ * Calcula el speed bonus basado en el tiempo transcurrido
+ * @param {number} timeElapsed - Tiempo en milisegundos
+ * @param {number} level - Número de nivel
+ * @returns {number} Puntos de bonus
+ */
+function calculateSpeedBonus(timeElapsed, level) {
+    const targetTime = window.CoordinateSequence.Levels.getRecommendedTime(level);
+
+    if (timeElapsed < targetTime * 0.5) {
+        return 100; // ⚡ Super rápido!
+    } else if (timeElapsed < targetTime * 0.75) {
+        return 50;  // 🏃 Rápido
+    } else if (timeElapsed < targetTime) {
+        return 25;  // ✅ Dentro del tiempo
+    }
+
+    return 0; // Sin bonus
+}
+
+/**
+ * Calcula el multiplicador de racha perfecta
+ * @param {number} streak - Cantidad de niveles perfectos consecutivos
+ * @returns {number} Multiplicador (1.0, 1.5, 2.0, etc.)
+ */
+function calculateStreakMultiplier(streak) {
+    if (streak >= 10) {
+        return 3.0; // 🔥🔥🔥 ¡ÉPICO!
+    } else if (streak >= 5) {
+        return 2.0; // 🔥🔥 ¡Increíble!
+    } else if (streak >= 3) {
+        return 1.5; // 🔥 ¡Genial!
+    }
+
+    return 1.0; // Sin multiplicador
+}
+
+/**
+ * Carga high scores desde localStorage
+ * @returns {Object} High scores o valores por defecto
+ */
+function loadHighScores() {
+    const saved = localStorage.getItem('masterSequence_highScores');
+    if (saved) {
+        try {
+            return JSON.parse(saved);
+        } catch (e) {
+            console.warn('❌ Error loading high scores:', e);
+            return getDefaultHighScores();
+        }
+    }
+    return getDefaultHighScores();
+}
+
+/**
+ * Retorna high scores por defecto
+ * @returns {Object} Estructura de high scores
+ */
+function getDefaultHighScores() {
+    return {
+        topScore: 0,
+        bestLevel: 1,
+        longestStreak: 0,
+        fastestLevel: { level: 1, time: 999999 },
+        lastUpdated: null
+    };
+}
+
+/**
+ * Guarda high scores en localStorage
+ */
+function saveHighScores() {
+    gameState.highScores.lastUpdated = Date.now();
+    localStorage.setItem('masterSequence_highScores', JSON.stringify(gameState.highScores));
+    console.log('💾 High scores saved');
+}
+
+/**
+ * Actualiza high scores si se rompió algún record
+ * @param {number} timeElapsed - Tiempo en ms del nivel actual
+ * @returns {boolean} True si se rompió algún record
+ */
+function updateHighScores(timeElapsed) {
+    let newRecord = false;
+
+    // Top Score
+    if (gameState.score > gameState.highScores.topScore) {
+        gameState.highScores.topScore = gameState.score;
+        console.log(`🏆 NEW TOP SCORE: ${gameState.score}!`);
+        newRecord = true;
+    }
+
+    // Best Level
+    if (gameState.currentLevel > gameState.highScores.bestLevel) {
+        gameState.highScores.bestLevel = gameState.currentLevel;
+        console.log(`🏆 NEW BEST LEVEL: ${gameState.currentLevel}!`);
+        newRecord = true;
+    }
+
+    // Longest Streak
+    if (gameState.perfectStreak > gameState.highScores.longestStreak) {
+        gameState.highScores.longestStreak = gameState.perfectStreak;
+        console.log(`🏆 NEW LONGEST STREAK: ${gameState.perfectStreak}!`);
+        newRecord = true;
+    }
+
+    // Fastest Level
+    if (timeElapsed < gameState.highScores.fastestLevel.time) {
+        gameState.highScores.fastestLevel = {
+            level: gameState.currentLevel,
+            time: timeElapsed
+        };
+        console.log(`🏆 NEW FASTEST LEVEL: ${gameState.currentLevel} in ${(timeElapsed / 1000).toFixed(2)}s!`);
+        newRecord = true;
+    }
+
+    if (newRecord) {
+        saveHighScores();
+    }
+
+    return newRecord;
+}
+
+/**
+ * Resetea high scores (para botón de reset en stats)
+ */
+function resetHighScores() {
+    gameState.highScores = getDefaultHighScores();
+    saveHighScores();
+    console.log('🗑️ High scores reset');
 }
 
 console.log('🎮 Coordinate Sequence - Game logic loaded');
