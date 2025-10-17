@@ -173,7 +173,9 @@ function setupEventListeners() {
     }
 
     // Botones de overlays
-    document.getElementById('btnNextLevel')?.addEventListener('click', nextLevel);
+    document.getElementById('btnCloseAdvancedStats')?.addEventListener('click', () => {
+        hideAllOverlays();
+    });
     document.getElementById('btnRetry')?.addEventListener('click', retryLevel);
     document.getElementById('btnRestart')?.addEventListener('click', restartGame);
     document.getElementById('btnRestartGame')?.addEventListener('click', backToMainScreen); // Volver a pantalla principal SIN empezar juego
@@ -587,21 +589,13 @@ function onLevelComplete() {
         playLevelComplete();
     }
 
-    // Lanzar confeti
+    // Lanzar confeti (no-disruptivo, mantiene concentración)
     launchConfetti(30);
 
-    // Preparar objeto con todas las estadísticas para el overlay
-    const stats = {
-        timeElapsed: timeElapsedSeconds,
-        basePoints: points,
-        speedBonus: speedBonus,
-        streakMultiplier: streakMultiplier,
-        finalPoints: finalPoints,
-        newRecords: newRecords
-    };
-
-    // Mostrar overlay con estadísticas detalladas
-    showSuccessOverlay(stats);
+    // Avanzar al siguiente nivel después de un breve delay (flujo continuo)
+    setTimeout(() => {
+        nextLevel();
+    }, 1500);
 }
 
 /**
@@ -808,14 +802,15 @@ function enableBoard() {
 // ============================================
 
 /**
- * Muestra overlay de nivel completado
- */
-/**
- * Muestra overlay de estadísticas detalladas al completar nivel
+ * Muestra overlay AVANZADO de estadísticas (SOLO para Game Over o fin de sesión)
+ *
+ * ⚠️ NO usar entre niveles - es muy disruptivo y rompe concentración
+ * Para niveles: usar confeti + auto-avance (no-bloqueante)
+ *
  * @param {Object} stats - Objeto con todas las estadísticas del nivel
  */
-function showSuccessOverlay(stats) {
-    const overlay = document.getElementById('successOverlay');
+function showAdvancedStatsOverlay(stats) {
+    const overlay = document.getElementById('advancedStatsOverlay');
     const config = window.CoordinateSequence.Levels.getLevelConfig(gameState.currentLevel);
 
     // Título y mensaje
