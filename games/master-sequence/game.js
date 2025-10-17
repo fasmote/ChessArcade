@@ -180,6 +180,9 @@ function setupEventListeners() {
     document.getElementById('btnRestart')?.addEventListener('click', restartGame);
     document.getElementById('btnRestartGame')?.addEventListener('click', backToMainScreen); // Volver a pantalla principal SIN empezar juego
 
+    // Botón X de Game Over (misma función que "Volver al Inicio")
+    document.getElementById('btnCloseGameOver')?.addEventListener('click', backToMainScreen);
+
     // Clicks en el tablero
     const chessboard = document.getElementById('chessboard');
     chessboard.addEventListener('click', handleSquareClick);
@@ -683,9 +686,28 @@ function restartGame() {
  * Volver a pantalla principal de Master Sequence (SIN empezar juego)
  * Cierra overlay y muestra botón PLAY para que usuario decida qué hacer
  */
+/**
+ * Vuelve a la pantalla principal de Master Sequence SIN empezar juego automáticamente
+ *
+ * 🔮 FUTURO (cuando tengamos BD):
+ * - Guardar estadísticas de la sesión en DB
+ * - Enviar score final al backend
+ * - Actualizar leaderboard global
+ * - Guardar progreso del usuario
+ * - Registrar analytics de la partida
+ */
 function backToMainScreen() {
     // Cerrar overlay de Game Over
     hideAllOverlays();
+
+    // TODO: Cuando tengamos BD, guardar sesión aquí
+    // await saveGameSession({
+    //     score: gameState.score,
+    //     level: gameState.currentLevel,
+    //     perfectLevels: gameState.perfectLevels,
+    //     highScores: gameState.highScores,
+    //     timestamp: Date.now()
+    // });
 
     // Resetear estado del juego
     gameState.currentLevel = 1;
@@ -1180,11 +1202,20 @@ function getDefaultHighScores() {
 
 /**
  * Guarda high scores en localStorage
+ *
+ * 🔮 FUTURO (cuando tengamos BD):
+ * - También guardar en backend
+ * - Sincronizar con servidor
+ * - Comparar con leaderboard global
+ * - Validar records en servidor
  */
 function saveHighScores() {
     gameState.highScores.lastUpdated = Date.now();
     localStorage.setItem('masterSequence_highScores', JSON.stringify(gameState.highScores));
     console.log('💾 High scores saved');
+
+    // TODO: Cuando tengamos BD
+    // await syncHighScoresToBackend(gameState.highScores);
 }
 
 /**

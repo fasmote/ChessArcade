@@ -1183,6 +1183,46 @@ body::before {
 }
 
 /* ============================================
+   BOTÓN CERRAR OVERLAY (X)
+   ============================================ */
+
+.btn-close-overlay {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid var(--neon-cyan);
+    border-radius: 50%;
+    color: var(--neon-cyan);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    padding: 0;
+}
+
+.btn-close-overlay:hover {
+    background: rgba(0, 255, 255, 0.2);
+    border-color: var(--neon-magenta);
+    color: var(--neon-magenta);
+    box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+    transform: rotate(90deg) scale(1.1);
+}
+
+.btn-close-overlay:active {
+    transform: rotate(90deg) scale(0.95);
+}
+
+.btn-close-overlay svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* ============================================
    STATS OVERLAY - Estadísticas Detalladas
    ============================================ */
 
