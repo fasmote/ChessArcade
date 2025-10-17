@@ -22,6 +22,7 @@ let gameState = {
     // Secuencia MASTER acumulativa (Simon Says style)
     masterSequence: [],     // Secuencia acumulativa que crece cada nivel
     sequenceColors: [],     // Colores de cada casilla (mismo índice que masterSequence)
+    squareUsageCount: {},   // Contador de apariciones: { 'e4': 2, 'd5': 1, ... }
     sequence: [],           // ['e4', 'd5', 'f3'] - copia de masterSequence para el nivel actual
     playerSequence: [],     // Lo que el jugador clickeó
     currentStep: 0,         // Índice actual en reproducción
@@ -31,6 +32,7 @@ let gameState = {
 
     // Config
     soundEnabled: true,
+    coordinatesEnabled: false,  // Mostrar coordenadas dentro de casillas (modo ayuda)
 
     // Stats
     bestLevel: 1,
@@ -49,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initGame();
     setupEventListeners();
     loadSoundPreference();
+    loadCoordinatesPreference();
 
     console.log('✅ Coordinate Sequence - Ready!');
 });
@@ -132,6 +135,12 @@ function setupEventListeners() {
         btnPlayOverlay.addEventListener('click', startGame);
     }
 
+    // Botón COORDINATES
+    const btnCoordinates = document.getElementById('btnCoordinates');
+    if (btnCoordinates) {
+        btnCoordinates.addEventListener('click', toggleCoordinates);
+    }
+
     // Botón SOUND
     const btnSound = document.getElementById('btnSound');
     if (btnSound) {
@@ -169,6 +178,7 @@ function startGame() {
     gameState.perfectLevels = 0;
     gameState.masterSequence = []; // Resetear secuencia acumulativa
     gameState.sequenceColors = []; // Resetear colores
+    gameState.squareUsageCount = {}; // Resetear contador de uso
 
     hideAllOverlays();
     hidePlayButton(); // Ocultar botón play central
@@ -196,6 +206,11 @@ function startLevel(levelNumber) {
     if (levelNumber === 1) {
         // Primer nivel: generar secuencia inicial
         gameState.masterSequence = window.CoordinateSequence.Levels.generateRandomSequence(config);
+
+        // Inicializar contador de uso para cada casilla de la secuencia inicial
+        for (const square of gameState.masterSequence) {
+            gameState.squareUsageCount[square] = (gameState.squareUsageCount[square] || 0) + 1;
+        }
 
         // Generar colores para cada casilla de la secuencia inicial
         gameState.sequenceColors = [];
@@ -239,6 +254,14 @@ function startLevel(levelNumber) {
                 break;
         }
 
+        // FILTRAR casillas que ya se usaron 2 o más veces
+        availableSquares = availableSquares.filter(sq => {
+            const usageCount = gameState.squareUsageCount[sq] || 0;
+            return usageCount < 2;
+        });
+
+        console.log(`   📊 Casillas disponibles después de filtrar saturadas: ${availableSquares.length}`);
+
         // Si no hay movimientos válidos en el área, EXPANDIR búsqueda a toda el área
         if (availableSquares.length === 0) {
             console.warn(`   ⚠️ No hay movimientos válidos desde ${lastSquare} en área restringida`);
@@ -268,7 +291,13 @@ function startLevel(levelNumber) {
             for (let i = gameState.masterSequence.length - 1; i >= 0; i--) {
                 const previousSquare = gameState.masterSequence[i];
                 const movesFromPrevious = window.ChessGameLibrary.BoardUtils.getKingOrKnightMoves(previousSquare);
-                const validFromPrevious = allAreaSquares.filter(sq => movesFromPrevious.includes(sq));
+                let validFromPrevious = allAreaSquares.filter(sq => movesFromPrevious.includes(sq));
+
+                // FILTRAR casillas saturadas también en backtracking
+                validFromPrevious = validFromPrevious.filter(sq => {
+                    const usageCount = gameState.squareUsageCount[sq] || 0;
+                    return usageCount < 2;
+                });
 
                 if (validFromPrevious.length > 0) {
                     availableSquares = validFromPrevious;
@@ -288,6 +317,9 @@ function startLevel(levelNumber) {
         const newSquare = availableSquares[Math.floor(Math.random() * availableSquares.length)];
 
         gameState.masterSequence.push(newSquare);
+
+        // Incrementar contador de uso de la nueva casilla
+        gameState.squareUsageCount[newSquare] = (gameState.squareUsageCount[newSquare] || 0) + 1;
 
         // Agregar color para la nueva casilla (siguiente en la secuencia de colores)
         const newColorIndex = gameState.sequenceColors.length;
@@ -383,6 +415,14 @@ function highlightSquare(squareId, duration, color = null) {
         }
 
         squareElement.classList.add('highlighting');
+
+        // Si las coordenadas están habilitadas, asegurarse de que el label esté visible
+        if (gameState.coordinatesEnabled && !squareElement.querySelector('.coordinate-label')) {
+            const label = document.createElement('span');
+            label.className = 'coordinate-label';
+            label.textContent = squareId.toUpperCase();
+            squareElement.appendChild(label);
+        }
 
         setTimeout(() => {
             squareElement.classList.remove('highlighting');
@@ -586,7 +626,6 @@ function goHome() {
  */
 function updateUI() {
     // Stats
-    document.getElementById('levelDisplay').textContent = gameState.currentLevel;
     document.getElementById('scoreDisplay').textContent = gameState.score;
 
     const config = window.CoordinateSequence.Levels.getLevelConfig(gameState.currentLevel);
@@ -735,6 +774,76 @@ function loadSoundPreference() {
         gameState.soundEnabled = false;
         document.querySelector('.icon-sound-on').style.display = 'none';
         document.querySelector('.icon-sound-off').style.display = 'block';
+    }
+}
+
+/**
+ * Toggle de coordenadas (modo ayuda)
+ */
+function toggleCoordinates() {
+    gameState.coordinatesEnabled = !gameState.coordinatesEnabled;
+
+    const btnCoordinates = document.getElementById('btnCoordinates');
+    const btnText = btnCoordinates.querySelector('.btn-text');
+
+    if (gameState.coordinatesEnabled) {
+        btnCoordinates.classList.add('active');
+        btnText.textContent = 'HIDE COORDINATES';
+        showAllCoordinates();
+        console.log('📍 Coordinates enabled');
+    } else {
+        btnCoordinates.classList.remove('active');
+        btnText.textContent = 'SHOW COORDINATES';
+        hideAllCoordinates();
+        console.log('📍 Coordinates disabled');
+    }
+
+    saveCoordinatesPreference();
+}
+
+/**
+ * Muestra coordenadas en todas las casillas
+ */
+function showAllCoordinates() {
+    const squares = document.querySelectorAll('.square');
+    squares.forEach(square => {
+        const squareId = square.dataset.square;
+        if (!square.querySelector('.coordinate-label')) {
+            const label = document.createElement('span');
+            label.className = 'coordinate-label';
+            label.textContent = squareId.toUpperCase();
+            square.appendChild(label);
+        }
+    });
+}
+
+/**
+ * Oculta todas las coordenadas
+ */
+function hideAllCoordinates() {
+    const labels = document.querySelectorAll('.coordinate-label');
+    labels.forEach(label => label.remove());
+}
+
+/**
+ * Guarda preferencia de coordenadas
+ */
+function saveCoordinatesPreference() {
+    localStorage.setItem('coordinate_sequence_coordinates', gameState.coordinatesEnabled ? 'enabled' : 'disabled');
+}
+
+/**
+ * Carga preferencia de coordenadas
+ */
+function loadCoordinatesPreference() {
+    const saved = localStorage.getItem('coordinate_sequence_coordinates');
+    if (saved === 'enabled') {
+        gameState.coordinatesEnabled = true;
+        const btnCoordinates = document.getElementById('btnCoordinates');
+        const btnText = btnCoordinates.querySelector('.btn-text');
+        btnCoordinates.classList.add('active');
+        btnText.textContent = 'HIDE COORDINATES';
+        showAllCoordinates();
     }
 }
 

@@ -14,7 +14,11 @@
       "Bash(do if grep -q \"G-N3EKXHPD5Y\" \"$file\")",
       "Bash(then echo \"✅ $file\")",
       "Bash(else echo \"❌ $file\")",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(node:*)",
+      "Bash(for:*)",
+      "Bash(do if [ -f \"$file\" ])",
+      "Bash(then if grep -q \"G-N3EKXHPD5Y\" \"$file\")"
     ],
     "deny": [],
     "ask": []

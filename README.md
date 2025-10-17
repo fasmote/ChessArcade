@@ -2,7 +2,7 @@
 
 ![ChessArcade Banner](./assets/images/chessarcade-banner.png)
 
-## 🚀 [Play Square Rush](./games/square-rush/index.html) | [Play Knight Quest](./games/knight-quest/index.html) | [Play Memory Matrix](./games/memory-matrix-v2/index.html) | [🎮 Try All Games!](https://fasmote.github.io/ChessArcade/)
+## 🚀 [Play Now!](https://fasmote.github.io/ChessArcade/) | [🎯 Square Rush](./games/square-rush/index.html) | [🐴 Knight Quest](./games/knight-quest/index.html) | [🧠 Memory Matrix](./games/memory-matrix-v2/index.html) | [🟦 Master Sequence](./games/coordinate-sequence/index.html)
 
 ---
 
@@ -16,9 +16,7 @@
 - **🎯 Square Rush** - Navigate coordinates A1-H8 in record time *(Available Now!)*
 - **🐴 Knight Quest** - Master the knight's tour across pixel-perfect boards *(Available Now!)*
 - **🧠 Memory Matrix** - Train positional memory with progressive levels *(Available Now!)*
-- **⚡ Vision Blitz** - Lightning-fast tactical recognition *(Coming Soon)*
-- **💥 Tactic Burst** - Chain tactical patterns *(Coming Soon)*
-- **🏆 Checkmate Countdown** - Find mate in X moves *(Coming Soon)*
+- **🟦 Master Sequence** - Simon Says meets chess! Memorize growing patterns *(Available Now!)*
 
 #### 🎯 **Features:**
 - **Responsive Design**: Optimized for desktop and mobile
@@ -38,9 +36,7 @@
 - **🎯 Square Rush** - Navega coordenadas A1-H8 en tiempo récord *(¡Disponible Ahora!)*
 - **🐴 Knight Quest** - Domina el recorrido del caballo en tableros perfectos *(¡Disponible Ahora!)*
 - **🧠 Memory Matrix** - Entrena la memoria posicional con niveles progresivos *(¡Disponible Ahora!)*
-- **⚡ Vision Blitz** - Reconocimiento táctico ultrarrápido *(Próximamente)*
-- **💥 Tactic Burst** - Encadena patrones tácticos *(Próximamente)*
-- **🏆 Checkmate Countdown** - Encuentra mate en X jugadas *(Próximamente)*
+- **🟦 Master Sequence** - ¡Simon Says encuentra el ajedrez! Memoriza patrones crecientes *(¡Disponible Ahora!)*
 
 #### 🎯 **Características:**
 - **Diseño Responsivo**: Optimizado para escritorio y móvil
@@ -54,7 +50,7 @@
 
 ## 🎯 Square Rush - Perfect for Learning Chess Coordinates
 
-[![Square Rush Screenshot](./assets/images/square-rush-preview.png)](./games/square-rush/index.html)
+![Square Rush Screenshot](./screenshots/square-rush-preview.png)
 
 ### 🎮 **What is Square Rush?**
 **Square Rush** is the perfect game to master chess board coordinates! Navigate from A1 to H8 in this fast-paced coordinate recognition challenge that makes learning chess notation fun and addictive.
@@ -67,25 +63,11 @@
 - **🔊 Sound Toggle**: Immersive audio feedback with easy on/off control
 - **📚 Educational**: Learn chess notation while having fun!
 
-### 🎪 **Perfect For:**
-- **Kids 6+**: Visual coordinate learning with big, clear labels
-- **Chess Beginners**: Master the board layout naturally
-- **Advanced Players**: Speed training for tournament preparation
-- **Mobile Gaming**: Play anywhere, anytime on any device
-
-### 🎵 **Gameplay Experience:**
-```
-🎯 Target: E4
-⏱️ Timer: 8.5s
-🏆 Score: 1,200 pts
-🔥 Combo: x2 multiplier
-```
-
 ---
 
 ## 🐴 Knight Quest - Master the Knight's Tour!
 
-[![Knight Quest Screenshot](./assets/images/knight-quest-preview.png)](./games/knight-quest/index.html)
+![Knight Quest Screenshot](./screenshots/knight-quest-preview.png)
 
 ### 🎮 **What is Knight Quest?**
 **Knight Quest** challenges you to visit every square on the chessboard using only knight moves in this classic puzzle that has fascinated chess players for centuries.
@@ -98,19 +80,11 @@
 - **📊 Progress Tracking**: See your improvement over time
 - **🎨 Neon Aesthetics**: Beautiful cyberpunk-inspired visuals
 
-### 🎯 **Challenge Yourself:**
-```
-🏰 Board: 8x8 (64 squares)
-⚡ Moves: 45/64 completed
-💡 Hints: 2 remaining
-🏃‍♂️ Time: 03:47
-```
-
 ---
 
-## 🧠 Memory Matrix - NEW! Train Your Visual Chess Memory
+## 🧠 Memory Matrix - Train Your Visual Chess Memory
 
-[![Memory Matrix Screenshot](./assets/images/memory-matrix-preview.png)](./games/memory-matrix-v2/index.html)
+![Memory Matrix Screenshot](./screenshots/memory-matrix-preview.png)
 
 ### 🎮 **What is Memory Matrix?**
 **Memory Matrix** challenges your ability to memorize and recreate chess positions. Watch carefully during the memorization phase, then place all pieces back exactly where they were!
@@ -123,19 +97,36 @@
 - **📱 Mobile Optimized**: Drag & drop on desktop, tap placement on mobile
 - **🔊 Audio Feedback**: Synthetic sounds for glitch effects, errors, and victories
 
+---
+
+## 🟦 Master Sequence - NEW! Simon Says Meets Chess
+
+![Master Sequence Screenshot](./screenshots/master-sequence-preview.png)
+
+### 🎮 **What is Master Sequence?**
+**Master Sequence** combines the classic Simon Says game with chess coordinates! Watch the neon sequence grow, memorize the pattern, then repeat it perfectly. Each level adds ONE more square - how far can you go?
+
+### ✨ **Game Features:**
+- **📈 10+ Progressive Levels**: Sequence grows from 1 to 10+ squares with infinite mode
+- **🎨 Colorful Patterns**: 8 neon colors help you memorize the sequence
+- **🧠 Pattern Recognition**: Train your sequential memory and visualization
+- **❤️ 3 Lives System**: Make mistakes and learn from them
+- **🎯 Smart Movement**: Only king/knight moves - follows chess logic
+- **🟦 Coordinate Display**: Optional coordinate labels for learning
+
 ### 🎪 **Perfect For:**
-- **Blindfold Training**: Improve your visualization skills
-- **Pattern Recognition**: Learn common piece configurations
-- **Tournament Prep**: Strengthen your board memory for serious play
-- **Memory Enhancement**: General cognitive training through chess
+- **Memory Training**: Improve sequential memory and pattern recognition
+- **Chess Visualization**: Strengthen your ability to see the board in your mind
+- **All Skill Levels**: Progressive difficulty from 1 square to unlimited
+- **Quick Sessions**: Perfect for 5-10 minute brain training
 
 ### 🎵 **Gameplay Experience:**
 ```
-🧠 Level 5: Intermediate
-⏰ Memorization: 15.0s
-🎯 Pieces: 5/5 placed
-💡 Hints: 6 remaining
-↩️ Undo: Available
+🟦 Level 7: Advanced
+🎯 Sequence: 7 squares
+❤️ Lives: 2/3 remaining
+🏆 Score: 850 pts
+📊 Longest: 12 squares
 ```
 
 ---
@@ -144,20 +135,9 @@
 - **🎯 [Play Square Rush](./games/square-rush/index.html)** - Master coordinates A1-H8!
 - **🐴 [Play Knight Quest](./games/knight-quest/index.html)** - Conquer the knight's tour!
 - **🧠 [Play Memory Matrix](./games/memory-matrix-v2/index.html)** - Train your visual memory!
+- **🟦 [Play Master Sequence](./games/coordinate-sequence/index.html)** - Master growing patterns!
 - **📁 [View Source Code](https://github.com/fasmote/ChessArcade)**
-- **📜 [Full Documentation](./docs/)**
 - **🐛 [Report Issues](https://github.com/fasmote/ChessArcade/issues)**
-
-### 🏆 **What Players Say:**
-> *"Square Rush is perfect for learning chess coordinates - my 8-year-old loves the big letters!"*
-
-> *"Knight Quest's Warnsdorff hints teach real strategy while you play."*
-
-> *"Memory Matrix has dramatically improved my blindfold visualization!"*
-
-> *"Finally chess trainers that work beautifully on mobile - the neon design is amazing!"*
-
-> *"All three games are addictive! My chess skills improved dramatically."*
 
 ---
 
@@ -165,7 +145,7 @@
 
 - **Frontend**: Vanilla HTML5, CSS3, JavaScript ES6+
 - **Styling**: CSS Grid, Flexbox, Custom Properties
-- **Audio**: Howler.js + Web Audio API for cross-browser sound support
+- **Audio**: Web Audio API for synthetic sounds
 - **Storage**: localStorage for persistence
 - **Responsive**: Mobile-first design approach
 - **Performance**: Optimized for 60fps animations
@@ -174,7 +154,7 @@
 
 ChessArcade uses a custom **NeonChess Design System** featuring:
 
-- **🌈 Neon Color Palette**: Cyan, Magenta, Green, Orange gradients
+- **🌈 Neon Color Palette**: Cyan, Magenta, Green, Orange, Purple, Yellow gradients
 - **⚡ Interactive Effects**: Hover animations, particle systems, glitch effects
 - **🎵 Audio Feedback**: Synthetic soundscapes and UI sounds
 - **📱 Mobile Optimization**: Touch-friendly controls and responsive layouts
@@ -217,11 +197,26 @@ ChessArcade uses a custom **NeonChess Design System** featuring:
 │   ├── 📁 knight-quest/             # ✅ Knight's Tour game
 │   ├── 📁 square-rush/              # ✅ Coordinate training
 │   ├── 📁 memory-matrix-v2/         # ✅ Visual memory training
-│   ├── 📁 vision-blitz/             # ⏳ Coming soon
-│   ├── 📁 tactic-burst/             # ⏳ Coming soon
-│   └── 📁 checkmate-countdown/      # ⏳ Coming soon
+│   └── 📁 coordinate-sequence/      # ✅ Master Sequence (Simon Says)
+├── 📁 screenshots/                  # Game screenshots
 └── 📁 docs/                         # Documentation
 ```
+
+## 📸 **Screenshots**
+
+### Square Rush
+![Square Rush Gameplay](./screenshots/square-rush-preview.png)
+
+### Knight Quest
+![Knight Quest Gameplay](./screenshots/knight-quest-preview.png)
+
+### Memory Matrix
+![Memory Matrix Gameplay](./screenshots/memory-matrix-preview.png)
+
+### Master Sequence
+![Master Sequence Gameplay](./screenshots/master-sequence-preview.png)
+
+---
 
 ## 🤝 **Contributing**
 
@@ -243,18 +238,9 @@ We welcome contributions! Here's how you can help:
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
-## 🔗 **Links & Resources**
-
-- **🎯 [Play Square Rush](./games/square-rush/index.html)**
-- **🐴 [Play Knight Quest](./games/knight-quest/index.html)**
-- **🧠 [Play Memory Matrix](./games/memory-matrix-v2/index.html)**
-- **📁 [Main Repository](https://github.com/fasmote/ChessArcade)**
-- **🐦 [Follow Updates on GitHub](https://github.com/fasmote)**
-- **📧 [Contact](https://github.com/fasmote)**
-
 ## 🏅 **Achievements & Stats**
 
-- **🎯 Games Released**: 3/6 (Square Rush + Knight Quest + Memory Matrix)
+- **🎯 Games Released**: 4 (Square Rush, Knight Quest, Memory Matrix, Master Sequence)
 - **⭐ GitHub Stars**: Growing!
 - **🔧 Last Updated**: October 2025
 - **📱 Mobile Support**: 100%
@@ -269,6 +255,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 [![Play Square Rush](https://img.shields.io/badge/🎯_Play_Square_Rush-FF8000?style=for-the-badge)](./games/square-rush/index.html)
 [![Play Knight Quest](https://img.shields.io/badge/🐴_Play_Knight_Quest-FF0080?style=for-the-badge)](./games/knight-quest/index.html)
 [![Play Memory Matrix](https://img.shields.io/badge/🧠_Play_Memory_Matrix-00FF80?style=for-the-badge)](./games/memory-matrix-v2/index.html)
+[![Play Master Sequence](https://img.shields.io/badge/🟦_Play_Master_Sequence-8000FF?style=for-the-badge)](./games/coordinate-sequence/index.html)
 [![GitHub](https://img.shields.io/badge/⭐_Star_on_GitHub-00FFFF?style=for-the-badge&logo=github)](https://github.com/fasmote/ChessArcade)
 
 **Made with ⚡ by ChessArcade | Powered by NeonChess Design System**

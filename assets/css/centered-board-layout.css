@@ -1,0 +1,320 @@
+/**
+ * ==============================================================================
+ * CENTERED BOARD LAYOUT LIBRARY - ChessArcade Design System
+ * ==============================================================================
+ *
+ * Sistema de layout reutilizable para centrar tableros de ajedrez con sidebar
+ * flotante en desktop y layout vertical responsivo en mobile.
+ *
+ * USO:
+ * 1. Importar este archivo en tu HTML:
+ *    <link rel="stylesheet" href="../../assets/css/centered-board-layout.css">
+ *
+ * 2. Usar la siguiente estructura HTML:
+ *    <div class="centered-board-wrapper">
+ *        <div class="centered-board-main">
+ *            <!-- Tu tablero de ajedrez aquí -->
+ *        </div>
+ *        <div class="centered-board-sidebar">
+ *            <!-- Controles, botones, estadísticas -->
+ *        </div>
+ *    </div>
+ *
+ * CARACTERÍSTICAS:
+ * - Mobile: Layout vertical con controles arriba, tablero abajo
+ * - Desktop: Tablero perfectamente centrado con sidebar flotante a la derecha
+ * - Sidebar púrpura neón con glow effect
+ * - Espacio libre a los lados para publicidad/menus futuros
+ * - Responsive breakpoint: 900px
+ *
+ * PERSONALIZACIÓN:
+ * - Puedes sobrescribir los colores usando tus propias CSS variables
+ * - Puedes cambiar el ancho del sidebar modificando .centered-board-sidebar width
+ * - Puedes cambiar la posición (right/left) del sidebar según preferencia
+ *
+ * VERSIÓN: 1.0
+ * CREADO: Octubre 2025
+ * AUTOR: ChessArcade Team
+ * ==============================================================================
+ */
+
+/* ==============================================================================
+   CSS VARIABLES - Colores del sistema neón
+   ============================================================================== */
+
+:root {
+    --neon-purple: #8000ff;
+    --neon-cyan: #00ffff;
+    --neon-magenta: #ff0080;
+    --neon-orange: #ff8000;
+    --neon-green: #00ff80;
+    --neon-yellow: #ffff00;
+
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+
+    --border-radius: 12px;
+}
+
+/* ==============================================================================
+   WRAPPER PRINCIPAL - Container del tablero + sidebar
+   ============================================================================== */
+
+.centered-board-wrapper {
+    display: flex;
+    flex-direction: column; /* Móvil: vertical */
+    gap: var(--spacing-lg);
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+/* ==============================================================================
+   ÁREA DEL TABLERO - Contenedor del tablero de ajedrez
+   ============================================================================== */
+
+.centered-board-main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    order: 2; /* Móvil: tablero debajo de controles */
+}
+
+/* ==============================================================================
+   SIDEBAR DE CONTROLES - Botones, estadísticas, etc.
+   ============================================================================== */
+
+.centered-board-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    order: 1; /* Móvil: controles arriba del tablero */
+}
+
+/* ==============================================================================
+   RESPONSIVE: DESKTOP (900px+)
+   Layout horizontal con tablero centrado + sidebar absoluta a la derecha
+   ============================================================================== */
+
+@media (min-width: 900px) {
+
+    .centered-board-wrapper {
+        position: relative; /* Para posicionar sidebar absoluta */
+        flex-direction: column; /* Mantener columna para centrado */
+        justify-content: center;
+        align-items: center; /* Centrar como los botones del header */
+        gap: 0;
+        width: 100%;
+        padding: 0 var(--spacing-xl);
+        min-height: 500px; /* Espacio mínimo para sidebar */
+    }
+
+    .centered-board-main {
+        order: 1;
+        flex-shrink: 0;
+        /* El tablero queda centrado naturalmente por align-items: center */
+    }
+
+    .centered-board-sidebar {
+        /* SIDEBAR FLOTANTE A LA DERECHA */
+        position: absolute;
+        right: var(--spacing-xl); /* Pegado a la derecha */
+        top: 0;
+        order: 2;
+        flex-shrink: 0;
+
+        /* Estilos neón púrpura */
+        background: rgba(0, 0, 0, 0.4);
+        border: 3px solid var(--neon-purple);
+        border-radius: var(--border-radius);
+        padding: var(--spacing-md);
+
+        /* Efectos de glow neón */
+        box-shadow:
+            0 0 20px var(--neon-purple),
+            0 0 40px rgba(128, 0, 255, 0.3),
+            inset 0 0 20px rgba(128, 0, 255, 0.05);
+
+        /* Dimensiones fijas en desktop */
+        width: 280px;
+        max-width: none;
+    }
+}
+
+/* ==============================================================================
+   RESPONSIVE: PANTALLAS GRANDES (1400px+)
+   Más espacio lateral para publicidad
+   ============================================================================== */
+
+@media (min-width: 1400px) {
+    .centered-board-wrapper {
+        padding: 0 4rem; /* Más espacio a los lados */
+    }
+
+    .centered-board-sidebar {
+        right: 3rem; /* Más separado del borde */
+        width: 320px; /* Sidebar más ancho */
+    }
+}
+
+/* ==============================================================================
+   VARIANTES DE POSICIÓN - Sidebar a la izquierda
+   ============================================================================== */
+
+/**
+ * Para usuarios zurdos o preferencia de sidebar a la izquierda:
+ * Agregar clase "sidebar-left" al wrapper:
+ * <div class="centered-board-wrapper sidebar-left">
+ */
+
+@media (min-width: 900px) {
+    .centered-board-wrapper.sidebar-left .centered-board-sidebar {
+        right: auto;
+        left: var(--spacing-xl);
+    }
+}
+
+@media (min-width: 1400px) {
+    .centered-board-wrapper.sidebar-left .centered-board-sidebar {
+        left: 3rem;
+    }
+}
+
+/* ==============================================================================
+   VARIANTES DE COLOR - Sidebar con otros colores neón
+   ============================================================================== */
+
+/**
+ * Sidebar cyan: Agregar clase "sidebar-cyan" al wrapper
+ * <div class="centered-board-wrapper sidebar-cyan">
+ */
+
+@media (min-width: 900px) {
+    .centered-board-wrapper.sidebar-cyan .centered-board-sidebar {
+        border-color: var(--neon-cyan);
+        box-shadow:
+            0 0 20px var(--neon-cyan),
+            0 0 40px rgba(0, 255, 255, 0.3),
+            inset 0 0 20px rgba(0, 255, 255, 0.05);
+    }
+
+    .centered-board-wrapper.sidebar-orange .centered-board-sidebar {
+        border-color: var(--neon-orange);
+        box-shadow:
+            0 0 20px var(--neon-orange),
+            0 0 40px rgba(255, 128, 0, 0.3),
+            inset 0 0 20px rgba(255, 128, 0, 0.05);
+    }
+
+    .centered-board-wrapper.sidebar-green .centered-board-sidebar {
+        border-color: var(--neon-green);
+        box-shadow:
+            0 0 20px var(--neon-green),
+            0 0 40px rgba(0, 255, 128, 0.3),
+            inset 0 0 20px rgba(0, 255, 128, 0.05);
+    }
+
+    .centered-board-wrapper.sidebar-magenta .centered-board-sidebar {
+        border-color: var(--neon-magenta);
+        box-shadow:
+            0 0 20px var(--neon-magenta),
+            0 0 40px rgba(255, 0, 128, 0.3),
+            inset 0 0 20px rgba(255, 0, 128, 0.05);
+    }
+}
+
+/* ==============================================================================
+   UTILIDADES - Clases helper para casos especiales
+   ============================================================================== */
+
+/**
+ * Sin sidebar: Para juegos que no necesitan controles laterales
+ * <div class="centered-board-wrapper no-sidebar">
+ */
+
+.centered-board-wrapper.no-sidebar .centered-board-sidebar {
+    display: none;
+}
+
+/**
+ * Sidebar siempre visible: No esconder en mobile
+ * <div class="centered-board-wrapper sidebar-always">
+ */
+
+.centered-board-wrapper.sidebar-always .centered-board-main {
+    order: 1;
+}
+
+.centered-board-wrapper.sidebar-always .centered-board-sidebar {
+    order: 2;
+}
+
+/* ==============================================================================
+   NOTAS DE IMPLEMENTACIÓN
+   ============================================================================== */
+
+/**
+ * EJEMPLO COMPLETO DE USO:
+ *
+ * HTML:
+ * -----
+ * <div class="centered-board-wrapper">
+ *     <div class="centered-board-main">
+ *         <div class="chessboard" id="chessboard">
+ *             <!-- 64 casillas generadas por JS -->
+ *         </div>
+ *     </div>
+ *     <div class="centered-board-sidebar">
+ *         <button id="btnCoordinates">SHOW COORDINATES</button>
+ *         <button id="btnReset">RESET GAME</button>
+ *         <div class="sidebar-stats">
+ *             <p>Score: <span id="score">0</span></p>
+ *         </div>
+ *     </div>
+ * </div>
+ *
+ * CSS (opcional - personalización):
+ * ----------------------------------
+ * .chessboard {
+ *     width: 90vmin;
+ *     max-width: 600px;
+ *     aspect-ratio: 1;
+ * }
+ *
+ * VARIANTES:
+ * ----------
+ * Sidebar a la izquierda:
+ *     <div class="centered-board-wrapper sidebar-left">
+ *
+ * Sidebar color cyan:
+ *     <div class="centered-board-wrapper sidebar-cyan">
+ *
+ * Sin sidebar:
+ *     <div class="centered-board-wrapper no-sidebar">
+ *
+ * COMPATIBILIDAD:
+ * ---------------
+ * - Chrome 90+
+ * - Firefox 88+
+ * - Safari 14+
+ * - Edge 90+
+ *
+ * DEPENDENCIAS:
+ * -------------
+ * - Ninguna (CSS puro, no requiere JavaScript)
+ * - Compatible con cualquier framework de tablero de ajedrez
+ *
+ * PERFORMANCE:
+ * ------------
+ * - Usa position: absolute solo en desktop (no afecta mobile)
+ * - Flexbox optimizado para centrado
+ * - Sin JavaScript, sin cálculos dinámicos
+ * - Glow effects con box-shadow (GPU accelerated)
+ */

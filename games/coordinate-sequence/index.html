@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coordinate Sequence - ChessArcade</title>
-    <meta name="description" content="Memorize sequences of chess coordinates and repeat them perfectly!">
+    <title>Master Sequence - ChessArcade</title>
+    <meta name="description" content="Master the art of memory! Watch the sequence, repeat it perfectly. Like Simon Says but on a chessboard!">
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-N3EKXHPD5Y"></script>
@@ -19,7 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 
     <!-- Estilos del juego -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
 
@@ -68,20 +68,20 @@
              ================================================== -->
         <div class="title-section">
             <h1 class="game-title">
-                <span class="brain-icon">🧠</span>
-                <span class="title-text">Coordinate Sequence</span>
+                <span class="tetris-logo">
+                    <span class="tetris-block block-pink">🟪</span>
+                    <span class="tetris-block block-yellow">🟨</span>
+                    <span class="tetris-block block-cyan">🟦</span>
+                </span>
+                <span class="title-text">Master Sequence</span>
             </h1>
-            <p class="game-subtitle">Memorize sequences and repeat them perfectly!</p>
+            <p class="game-subtitle">Watch, remember, repeat. Master the pattern!</p>
         </div>
 
         <!-- ==================================================
              ESTADÍSTICAS DEL JUEGO
              ================================================== -->
         <div class="game-stats">
-            <div class="stat">
-                <span class="stat-label">NIVEL</span>
-                <span class="stat-value" id="levelDisplay">1</span>
-            </div>
             <div class="stat">
                 <span class="stat-label">VIDAS</span>
                 <span class="stat-value lives" id="livesDisplay">❤️❤️❤️</span>
@@ -97,22 +97,42 @@
         </div>
 
         <!-- ==================================================
-             ÁREA DEL TABLERO
+             WRAPPER: TABLERO + CONTROLES
+             Móvil: Controles arriba (order:-1), tablero abajo
+             Desktop: Tablero izquierda, controles derecha
              ================================================== -->
-        <div class="board-container">
+        <div class="board-and-controls-wrapper">
 
-            <!-- Tablero de ajedrez 8x8 -->
-            <div class="chessboard" id="chessboard">
-                <!-- Las 64 casillas se generarán con JavaScript -->
+            <!-- Área del tablero (primero en HTML) -->
+            <div class="board-container">
+
+                <!-- Tablero de ajedrez 8x8 -->
+                <div class="chessboard" id="chessboard">
+                    <!-- Las 64 casillas se generarán con JavaScript -->
+                </div>
+
+                <!-- Botón PLAY central transparente -->
+                <button class="btn-play-overlay" id="btnPlayOverlay" aria-label="Comenzar juego">
+                    <svg class="play-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="3"/>
+                        <polygon points="40,30 40,70 70,50" fill="currentColor"/>
+                    </svg>
+                </button>
+
             </div>
 
-            <!-- Botón PLAY central transparente -->
-            <button class="btn-play-overlay" id="btnPlayOverlay" aria-label="Comenzar juego">
-                <svg class="play-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="3"/>
-                    <polygon points="40,30 40,70 70,50" fill="currentColor"/>
-                </svg>
-            </button>
+            <!-- Controles (segundo en HTML, primero visual en móvil) -->
+            <div class="game-controls">
+                <button class="btn-secondary btn-coordinates" id="btnCoordinates">
+                    <svg class="icon-coordinates" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                        <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                        <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                        <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                    </svg>
+                    <span class="btn-text">SHOW COORDINATES</span>
+                </button>
+            </div>
 
         </div>
 
@@ -131,17 +151,17 @@
         <section class="how-to-play-section">
             <div class="instructions">
                 <h2>🎯 How to Play</h2>
-                <p><strong>Coordinate Sequence</strong> is a memory game that combines chess coordinates with Simon Says mechanics.</p>
+                <p><strong>Master Sequence</strong> is a memory game that combines chess coordinates with Simon Says mechanics.</p>
                 <p>📝 <strong>Objective:</strong> Watch the sequence of highlighted squares, then repeat it in the exact same order.</p>
                 <p>🧠 <strong>Gameplay:</strong></p>
                 <ul>
-                    <li><strong>Phase 1 - Memorization:</strong> Watch carefully as squares light up in sequence</li>
+                    <li><strong>Phase 1 - Memorization:</strong> Watch carefully as squares light up in sequence with colors</li>
                     <li><strong>Phase 2 - Reproduction:</strong> Click the squares in the same order</li>
-                    <li>Each level adds more squares and increases speed</li>
+                    <li>The sequence grows by ONE square each level - can you keep up?</li>
                 </ul>
-                <p>❤️ <strong>Lives:</strong> You have 3 lives. Lose all lives and it's game over!</p>
-                <p>⭐ <strong>Scoring:</strong> Earn points for each level completed. Faster completion = more points!</p>
-                <p>🎮 <strong>Progression:</strong> 10+ levels with increasing difficulty. Can you beat them all?</p>
+                <p>❤️ <strong>Lives:</strong> You have 3 lives. Make a mistake and lose a life!</p>
+                <p>⭐ <strong>Scoring:</strong> Complete levels to earn points. The longer the sequence, the more points!</p>
+                <p>🎮 <strong>Progression:</strong> 10+ predefined levels, then infinite mode. How far can you go?</p>
             </div>
         </section>
 
