@@ -297,6 +297,19 @@ function calculateSequenceDuration(level) {
     return (highlightDuration + pauseDuration) * sequenceLength - pauseDuration;
 }
 
+/**
+ * Calcula el tiempo recomendado para completar un nivel (para speed bonus)
+ * @param {number} level - Número de nivel
+ * @returns {number} Tiempo recomendado en milisegundos
+ */
+function getRecommendedTime(level) {
+    const config = getLevelConfig(level);
+    const baseTime = 2000;  // 2 segundos base
+    const perSquare = 1500; // 1.5 segundos por casilla adicional
+
+    return baseTime + (config.sequenceLength * perSquare);
+}
+
 // Exportar para uso global
 if (typeof window !== 'undefined') {
     window.CoordinateSequence = window.CoordinateSequence || {};
@@ -309,7 +322,8 @@ if (typeof window !== 'undefined') {
         getSequenceColor,
         calculateLevelScore,
         calculateSequenceDuration,
-        getInfiniteLevel
+        getInfiniteLevel,
+        getRecommendedTime
     };
 }
 
