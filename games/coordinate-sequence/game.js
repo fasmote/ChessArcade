@@ -232,10 +232,49 @@ function startLevel(levelNumber) {
                 break;
         }
 
-        // Si no hay movimientos válidos en el área, usar cualquier casilla del área (fallback)
+        // Si no hay movimientos válidos en el área, EXPANDIR búsqueda a toda el área
         if (availableSquares.length === 0) {
-            console.warn(`   ⚠️ No hay movimientos válidos desde ${lastSquare}, usando fallback`);
-            availableSquares = window.CoordinateSequence.Levels.generateRandomSequence(config);
+            console.warn(`   ⚠️ No hay movimientos válidos desde ${lastSquare} en área restringida`);
+
+            // En vez de fallback aleatorio, buscar movimientos en TODA el área
+            let allAreaSquares = [];
+            switch (config.restrictedArea) {
+                case 'ring':
+                    allAreaSquares = window.ChessGameLibrary.BoardUtils.getRingSquares(config.areaConfig);
+                    break;
+                case 'quadrant':
+                    allAreaSquares = window.ChessGameLibrary.BoardUtils.getQuadrantSquares(config.areaConfig);
+                    break;
+                case 'rows':
+                    allAreaSquares = window.ChessGameLibrary.BoardUtils.getRowRangeSquares(
+                        config.areaConfig.start,
+                        config.areaConfig.end
+                    );
+                    break;
+                case 'full':
+                default:
+                    allAreaSquares = window.ChessGameLibrary.BoardUtils.getAllSquares();
+                    break;
+            }
+
+            // Buscar casillas del área que SÍ sean alcanzables por rey/caballo desde ALGUNA casilla anterior
+            for (let i = gameState.masterSequence.length - 1; i >= 0; i--) {
+                const previousSquare = gameState.masterSequence[i];
+                const movesFromPrevious = window.ChessGameLibrary.BoardUtils.getKingOrKnightMoves(previousSquare);
+                const validFromPrevious = allAreaSquares.filter(sq => movesFromPrevious.includes(sq));
+
+                if (validFromPrevious.length > 0) {
+                    availableSquares = validFromPrevious;
+                    console.log(`   ✅ Usando movimiento desde ${previousSquare} (${i+1} casillas atrás)`);
+                    break;
+                }
+            }
+
+            // Último recurso: si NINGUNA casilla anterior tiene movimientos válidos, usar aleatorio
+            if (availableSquares.length === 0) {
+                console.warn(`   ⚠️ FALLBACK EXTREMO: usando casilla aleatoria del área`);
+                availableSquares = allAreaSquares;
+            }
         }
 
         // Elegir casilla aleatoria de las disponibles
