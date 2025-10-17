@@ -536,6 +536,9 @@ function nextLevel() {
 function retryLevel() {
     hideAllOverlays();
 
+    // IMPORTANTE: Deshabilitar tablero inmediatamente para evitar clicks prematuros
+    disableBoard();
+
     // Resetear estado del nivel (mantener lives)
     gameState.playerSequence = [];
     gameState.currentStep = 0;
