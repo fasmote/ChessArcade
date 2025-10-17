@@ -945,6 +945,7 @@ body::before {
 }
 
 .overlay-content {
+    position: relative; /* Para que el botón X se posicione correctamente */
     background: linear-gradient(135deg, var(--dark-secondary), var(--dark-accent));
     border: 3px solid var(--neon-cyan);
     border-radius: var(--border-radius);
