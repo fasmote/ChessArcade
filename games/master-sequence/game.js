@@ -194,6 +194,9 @@ function setupEventListeners() {
     // Botón STATS (consultar estadísticas actuales)
     document.getElementById('btnStats')?.addEventListener('click', showCurrentStats);
 
+    // Botón TERMINAR (terminar partida = perder todas las vidas)
+    document.getElementById('btnEndGame')?.addEventListener('click', endGame);
+
     // Clicks en el tablero
     const chessboard = document.getElementById('chessboard');
     chessboard.addEventListener('click', handleSquareClick);
@@ -694,6 +697,29 @@ function restartGame() {
 }
 
 /**
+ * Terminar partida (usuario decide terminar antes de perder todas las vidas)
+ * Muestra Game Over con las estadísticas finales
+ */
+function endGame() {
+    console.log('🛑 Usuario terminó la partida manualmente');
+
+    // Confirmar antes de terminar (solo si está jugando)
+    if (gameState.phase === 'idle' || gameState.currentLevel === 1) {
+        console.log('⚠️ No hay partida activa para terminar');
+        return;
+    }
+
+    const confirm = window.confirm('¿Seguro que quieres terminar esta partida?');
+    if (!confirm) {
+        return;
+    }
+
+    // Forzar Game Over
+    gameState.lives = 0;
+    gameOver();
+}
+
+/**
  * Muestra overlay de estadísticas actuales (botón STATS)
  *
  * Permite consultar las stats en cualquier momento sin interrumpir el juego.
@@ -702,14 +728,14 @@ function restartGame() {
 function showCurrentStats() {
     console.log('📊 Mostrando estadísticas actuales...');
 
-    // Preparar objeto de estadísticas con datos actuales
+    // Preparar objeto de estadísticas con datos ACTUALES de la sesión
     const stats = {
-        timeElapsed: '0.00', // No aplica cuando se consulta manualmente
-        basePoints: 0,       // No aplica
-        speedBonus: 0,       // No aplica
+        timeElapsed: '0.00',
+        basePoints: 0,
+        speedBonus: 0,
         streakMultiplier: gameState.perfectStreak >= 3 ? calculateStreakMultiplier(gameState.perfectStreak) : 1.0,
-        finalPoints: 0,      // No aplica
-        newRecords: []       // No hay records nuevos al consultar
+        finalPoints: gameState.score, // Score actual de la sesión
+        newRecords: []
     };
 
     // Cambiar el título y mensaje del overlay para stats manuales
@@ -717,9 +743,16 @@ function showCurrentStats() {
     const overlayMessage = document.querySelector('#advancedStatsOverlay .overlay-message');
     const overlayIcon = document.querySelector('#advancedStatsOverlay .overlay-icon');
 
-    overlayTitle.textContent = '📊 Estadísticas Actuales';
-    overlayMessage.textContent = `Nivel ${gameState.currentLevel} - Score: ${gameState.score}`;
+    overlayTitle.textContent = '📊 Estadísticas de Sesión';
+    overlayMessage.textContent = `Sesión actual`;
     overlayIcon.textContent = '📊';
+
+    // Actualizar valores en el overlay antes de mostrarlo
+    document.getElementById('successLevel').textContent = gameState.currentLevel;
+    document.getElementById('successTime').textContent = '-';
+    document.getElementById('successBasePoints').textContent = '-';
+    document.getElementById('successSpeedBonus').textContent = '-';
+    document.getElementById('successFinalPoints').textContent = gameState.score;
 
     // Mostrar el overlay avanzado
     showAdvancedStatsOverlay(stats);

@@ -110,12 +110,13 @@ body::before {
 
 .header {
     display: flex;
-    gap: var(--spacing-sm);
+    gap: 0.75rem; /* Reducido de var(--spacing-sm) */
     align-items: center;
     justify-content: center;
     flex-wrap: nowrap; /* No permitir wrap en móvil */
     width: 100%;
     max-width: 800px;
+    margin-bottom: 0.5rem; /* Reducir espacio con título */
 }
 
 /* Móvil: Reducir padding de botones para que quepan */
@@ -308,8 +309,10 @@ body::before {
     }
 }
 
-/* Botón de coordenadas */
-.btn-coordinates {
+/* Botones de control en sidebar - TODOS mismo ancho */
+.btn-coordinates,
+.btn-stats,
+.btn-end-game {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -380,7 +383,7 @@ body::before {
 
 .title-section {
     text-align: center;
-    margin: var(--spacing-sm) 0;
+    margin: 0.25rem 0; /* Reducido para que tablero entre */
 }
 
 .game-title {
@@ -433,10 +436,10 @@ body::before {
 
 .game-subtitle {
     font-family: 'Orbitron', sans-serif;
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--neon-cyan);
     text-align: center;
-    margin: -0.5rem 0 1.5rem 0;
+    margin: -0.5rem 0 0.5rem 0; /* Reducido espacio inferior */
     opacity: 0.9;
     letter-spacing: 0.05em;
 }
@@ -452,11 +455,12 @@ body::before {
 
 .game-stats {
     display: flex;
-    gap: var(--spacing-md);
+    gap: 0.75rem; /* Reducido de var(--spacing-md) */
     flex-wrap: wrap;
     justify-content: center;
     width: 100%;
     max-width: 800px;
+    margin-bottom: 0.5rem; /* Reducir espacio debajo */
 }
 
 .stat {
@@ -1229,6 +1233,8 @@ body::before {
 
 .stats-overlay {
     max-width: 600px !important;
+    max-height: 90vh !important; /* No debe exceder 90% de altura de pantalla */
+    overflow-y: auto; /* Scroll si es necesario */
 }
 
 /* Grid de estadísticas principal (2x2) */
