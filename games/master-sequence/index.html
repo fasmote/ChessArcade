@@ -181,9 +181,10 @@
     <div class="confetti-container" id="confettiContainer"></div>
 
     <!-- ==================================================
-         OVERLAY DE NIVEL COMPLETADO (Estadísticas Detalladas)
+         OVERLAY AVANZADO DE ESTADÍSTICAS
+         (Para Game Over o fin de sesión - NO usar entre niveles)
          ================================================== -->
-    <div class="overlay hidden" id="successOverlay">
+    <div class="overlay hidden" id="advancedStatsOverlay">
         <div class="overlay-content success stats-overlay">
             <div class="overlay-icon">🎉</div>
             <h2 class="overlay-title">¡Nivel Completado!</h2>
@@ -249,8 +250,8 @@
                 </div>
             </div>
 
-            <button class="btn-primary btn-overlay" id="btnNextLevel">
-                ▶ Siguiente Nivel
+            <button class="btn-primary btn-overlay" id="btnCloseAdvancedStats">
+                ✓ Continuar
             </button>
         </div>
     </div>
