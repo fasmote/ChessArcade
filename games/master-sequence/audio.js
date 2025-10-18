@@ -141,4 +141,47 @@ function playGameOver() {
     oscillator.stop(ctx.currentTime + 0.8);
 }
 
+// ============================================
+// PASO 6: NOTAS MUSICALES POR COLOR
+// ============================================
+
+/**
+ * Mapa de colores a frecuencias musicales (escala de Do mayor)
+ * Cada color tiene su propia nota para ayudar a la memoria auditiva
+ */
+const COLOR_NOTES = {
+    'cyan': 523.25,    // C5 (Do)
+    'magenta': 587.33, // D5 (Re)
+    'green': 659.25,   // E5 (Mi)
+    'orange': 698.46,  // F5 (Fa)
+    'purple': 783.99,  // G5 (Sol)
+    'yellow': 880.00,  // A5 (La)
+    'pink': 987.77,    // B5 (Si)
+    'lime': 1046.50    // C6 (Do alto)
+};
+
+/**
+ * Reproduce nota musical basada en el color de la casilla
+ * @param {string} colorName - Nombre del color ('cyan', 'magenta', etc.)
+ */
+function playColorNote(colorName) {
+    const frequency = COLOR_NOTES[colorName] || 440; // Fallback a A4 si color no reconocido
+
+    const ctx = getAudioContext();
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    oscillator.frequency.value = frequency;
+    oscillator.type = 'sine'; // Onda suave para notas musicales
+
+    gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.3);
+}
+
 console.log('🔊 Coordinate Sequence - Audio system loaded');
