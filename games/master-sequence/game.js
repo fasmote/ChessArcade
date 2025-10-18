@@ -423,9 +423,9 @@ async function showSequence() {
         // Highlight la casilla con el color correspondiente
         await highlightSquare(square, highlightDuration, color);
 
-        // Reproducir sonido con nota musical por color (PASO 6)
-        if (gameState.soundEnabled && typeof playColorNote === 'function') {
-            playColorNote(color.name);
+        // Reproducir sonido (frecuencia aumenta ligeramente)
+        if (gameState.soundEnabled && typeof playBeep === 'function') {
+            playBeep(440 + i * 50);
         }
 
         // Pausa entre casillas (excepto la última)
