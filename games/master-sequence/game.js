@@ -420,12 +420,18 @@ async function showSequence() {
         // Usar el color guardado para esta casilla
         const color = gameState.sequenceColors[i];
 
+        // Dibujar trail desde casilla anterior (PASO 6)
+        if (i > 0) {
+            const previousSquare = gameState.sequence[i - 1];
+            drawTrail(previousSquare, square, color);
+        }
+
         // Highlight la casilla con el color correspondiente
         await highlightSquare(square, highlightDuration, color);
 
-        // Reproducir sonido (frecuencia aumenta ligeramente)
-        if (gameState.soundEnabled && typeof playBeep === 'function') {
-            playBeep(440 + i * 50);
+        // Reproducir sonido con nota musical por color (PASO 6)
+        if (gameState.soundEnabled && typeof playColorNote === 'function') {
+            playColorNote(color.name);
         }
 
         // Pausa entre casillas (excepto la última)
@@ -517,6 +523,9 @@ function handleSquareClick(e) {
         const color = gameState.sequenceColors[gameState.currentStep];
         highlightSquare(squareId, 500, color);
 
+        // Lanzar partículas de éxito (PASO 6)
+        spawnParticles(square, color, 5);
+
         if (gameState.soundEnabled && typeof playCorrect === 'function') {
             playCorrect();
         }
@@ -600,7 +609,8 @@ function onLevelComplete() {
     const newRecords = updateHighScores(timeElapsed);
     if (newRecords.length > 0) {
         console.log('🎊 ¡NUEVO RECORD!');
-        // TODO: Confeti dorado para records
+        // Confeti dorado especial para records (PASO 6)
+        launchGoldenConfetti(100);
     }
 
     updateUI();
@@ -1178,6 +1188,142 @@ function loadCoordinatesPreference() {
  */
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/* ============================================
+   PASO 6: ANIMACIONES Y EFECTOS VISUALES
+   ============================================ */
+
+/**
+ * Dibuja una línea trail/camino entre dos casillas
+ * @param {string} fromSquare - Casilla origen (ej: "e4")
+ * @param {string} toSquare - Casilla destino (ej: "e5")
+ * @param {Object} color - Objeto con hex y shadowColor
+ */
+function drawTrail(fromSquare, toSquare, color) {
+    const fromElement = document.querySelector(`[data-square="${fromSquare}"]`);
+    const toElement = document.querySelector(`[data-square="${toSquare}"]`);
+
+    if (!fromElement || !toElement) return;
+
+    // Obtener posiciones relativas al tablero
+    const board = document.getElementById('chessboard');
+    const boardRect = board.getBoundingClientRect();
+    const fromRect = fromElement.getBoundingClientRect();
+    const toRect = toElement.getBoundingClientRect();
+
+    // Calcular centros de las casillas relativo al tablero
+    const x1 = fromRect.left + fromRect.width / 2 - boardRect.left;
+    const y1 = fromRect.top + fromRect.height / 2 - boardRect.top;
+    const x2 = toRect.left + toRect.width / 2 - boardRect.left;
+    const y2 = toRect.top + toRect.height / 2 - boardRect.top;
+
+    // Crear SVG path
+    const svg = document.getElementById('trailOverlay');
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+
+    line.setAttribute('x1', x1);
+    line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2);
+    line.setAttribute('y2', y2);
+    line.setAttribute('stroke', color.hex);
+    line.classList.add('trail-line');
+
+    // Establecer viewBox del SVG si no está set
+    if (!svg.getAttribute('viewBox')) {
+        svg.setAttribute('viewBox', `0 0 ${boardRect.width} ${boardRect.height}`);
+        svg.style.width = boardRect.width + 'px';
+        svg.style.height = boardRect.height + 'px';
+    }
+
+    svg.appendChild(line);
+
+    // Remover la línea después de la animación
+    setTimeout(() => {
+        if (line.parentNode) {
+            line.parentNode.removeChild(line);
+        }
+    }, 1000);
+}
+
+/**
+ * Crea partículas que explotan desde una casilla
+ * @param {HTMLElement} squareElement - Elemento de la casilla
+ * @param {Object} color - Objeto con hex color
+ * @param {number} count - Número de partículas (default: 5)
+ */
+function spawnParticles(squareElement, color, count = 5) {
+    const rect = squareElement.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    for (let i = 0; i < count; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.backgroundColor = color.hex;
+        particle.style.boxShadow = `0 0 10px ${color.hex}`;
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+
+        // Dirección aleatoria
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+        const distance = 30 + Math.random() * 20;
+        const tx = Math.cos(angle) * distance;
+        const ty = Math.sin(angle) * distance;
+
+        particle.style.setProperty('--tx', `${tx}px`);
+        particle.style.setProperty('--ty', `${ty}px`);
+
+        document.body.appendChild(particle);
+
+        // Remover después de animación
+        setTimeout(() => {
+            if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        }, 800);
+    }
+}
+
+/**
+ * Lanza confeti dorado especial para records batidos
+ * @param {number} count - Número de piezas de confeti (default: 100)
+ */
+function launchGoldenConfetti(count = 100) {
+    const container = document.getElementById('confettiContainer');
+    if (!container) return;
+
+    const colors = ['#FFD700', '#FFA500', '#FFFF00', '#FF8C00']; // Dorados y amarillos
+
+    for (let i = 0; i < count; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti golden';
+        confetti.style.cssText = `
+            position: fixed;
+            width: ${8 + Math.random() * 8}px;
+            height: ${8 + Math.random() * 8}px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            left: ${Math.random() * 100}vw;
+            top: -20px;
+            opacity: 1;
+            animation: confettiFall ${2 + Math.random() * 2}s linear forwards;
+            animation-delay: ${Math.random() * 0.3}s;
+            transform: rotate(${Math.random() * 360}deg);
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
+            pointer-events: none;
+            z-index: 9999;
+        `;
+
+        container.appendChild(confetti);
+
+        // Remover después de animación
+        setTimeout(() => {
+            if (confetti.parentNode) {
+                confetti.parentNode.removeChild(confetti);
+            }
+        }, 5000);
+    }
 }
 
 /**
