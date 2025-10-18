@@ -11,7 +11,7 @@
 Esta sesión implementó el **PASO 6** de las mejoras planificadas:
 1. ~~**Trails Animados**: Líneas SVG que conectan casillas durante la secuencia~~ ❌ **REMOVIDO** por feedback del usuario
 2. **Partículas de Éxito**: Mini confeti al acertar cada casilla ✅
-3. **Notas Musicales por Color**: Cada color tiene su propia nota musical ✅
+3. ~~**Notas Musicales por Color**: Cada color tiene su propia nota musical~~ ❌ **REMOVIDO** - confuso para este juego
 4. **Confeti Dorado para Records**: Celebración especial cuando rompes un record ✅
 
 ---
@@ -117,84 +117,19 @@ spawnParticles(square, color, 5);
 
 ---
 
-### 3. Notas Musicales por Color
+### 3. ~~Notas Musicales por Color~~ ❌ REMOVIDO
 
-**Concepto**: Cada color de casilla tiene su propia nota musical de la escala de Do mayor.
+**Estado**: Feature removida por feedback del usuario - confuso para este juego.
 
-**Beneficio UX**:
-- Memoria auditiva complementa memoria visual
-- Secuencias crean melodías reconocibles
-- Más inmersivo y musical
+**Razón**: Los tonos diferentes por color dificultaban el reconocimiento del patrón auditivo. El sonido simple con frecuencia incremental (440 + i*50 Hz) funciona mejor para memoria de secuencia.
 
-#### Implementación
+**Nota**: Esta idea podría funcionar bien en otro tipo de juego (ej: Simon Says musical puro).
 
-**audio.js** (líneas 144-185):
-```javascript
-// ============================================
-// PASO 6: NOTAS MUSICALES POR COLOR
-// ============================================
-
-/**
- * Mapa de colores a frecuencias musicales (escala de Do mayor)
- * Cada color tiene su propia nota para ayudar a la memoria auditiva
- */
-const COLOR_NOTES = {
-    'cyan': 523.25,    // C5 (Do)
-    'magenta': 587.33, // D5 (Re)
-    'green': 659.25,   // E5 (Mi)
-    'orange': 698.46,  // F5 (Fa)
-    'purple': 783.99,  // G5 (Sol)
-    'yellow': 880.00,  // A5 (La)
-    'pink': 987.77,    // B5 (Si)
-    'lime': 1046.50    // C6 (Do alto)
-};
-
-/**
- * Reproduce nota musical basada en el color de la casilla
- * @param {string} colorName - Nombre del color ('cyan', 'magenta', etc.)
- */
-function playColorNote(colorName) {
-    const frequency = COLOR_NOTES[colorName] || 440; // Fallback a A4 si color no reconocido
-
-    const ctx = getAudioContext();
-    const oscillator = ctx.createOscillator();
-    const gainNode = ctx.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(ctx.destination);
-
-    oscillator.frequency.value = frequency;
-    oscillator.type = 'sine'; // Onda suave para notas musicales
-
-    gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-
-    oscillator.start(ctx.currentTime);
-    oscillator.stop(ctx.currentTime + 0.3);
-}
-```
-
-**Integración en showSequence()** (game.js, líneas 432-435):
-```javascript
-// Reproducir sonido con nota musical por color (PASO 6)
-if (gameState.soundEnabled && typeof playColorNote === 'function') {
-    playColorNote(color.name);
-}
-```
-
-**Escala Musical Asignada**:
-- **Cyan** → C5 (Do) → 523.25 Hz
-- **Magenta** → D5 (Re) → 587.33 Hz
-- **Green** → E5 (Mi) → 659.25 Hz
-- **Orange** → F5 (Fa) → 698.46 Hz
-- **Purple** → G5 (Sol) → 783.99 Hz
-- **Yellow** → A5 (La) → 880.00 Hz
-- **Pink** → B5 (Si) → 987.77 Hz
-- **Lime** → C6 (Do alto) → 1046.50 Hz
+**Audio restaurado**: Volvió a `playBeep(440 + i * 50)` - frecuencia que aumenta ligeramente en cada paso.
 
 ---
 
-### 4. Confeti Dorado para Records
+### 4. Confeti Dorado para Records ✅
 
 **Concepto**: Confeti especial en tonos dorados cuando rompes un record personal.
 
@@ -280,10 +215,10 @@ if (newRecords.length > 0) {
 
 **JavaScript**:
 - +86 líneas (spawnParticles, launchGoldenConfetti)
-- +42 líneas audio.js (playColorNote + COLOR_NOTES)
-- ~5 líneas de integración en funciones existentes
+- 0 líneas audio.js (playColorNote removido)
+- ~2 líneas de integración
 
-**Total**: ~157 líneas nuevas (tras remover trails)
+**Total**: ~112 líneas nuevas (tras remover trails y notas musicales)
 
 ### Archivos Modificados:
 
@@ -307,10 +242,10 @@ if (newRecords.length > 0) {
 ✅ Animaciones suaves (0.8s-5s) que no bloquean juego
 
 ### Auditivo:
-✅ Cada color tiene su nota musical única
-✅ Secuencias crean melodías reconocibles
-✅ Memoria auditiva complementa memoria visual
-✅ Escala de Do mayor (armonioso y agradable)
+❌ ~~Notas musicales por color~~ (removido - confuso)
+✅ Sonido simple incremental (440 + i*50 Hz)
+✅ Frecuencia aumenta ligeramente en cada paso
+✅ Consistente y fácil de seguir
 
 ### Feedback:
 ✅ Respuesta visual instantánea al acertar
@@ -332,12 +267,7 @@ if (newRecords.length > 0) {
    - ✅ Animación 0.8s
    - ✅ Auto-cleanup del DOM
 
-3. **Notas musicales por color**:
-   - ✅ Cada color suena diferente
-   - ✅ Escala de Do mayor reconocible
-   - ✅ Duración 0.3s (no invasivo)
-   - ✅ Volumen balanceado (0.25 gain)
-   - ✅ Respeta toggle de sonido
+3. ~~**Notas musicales por color**~~ ❌ REMOVIDO
 
 4. **Confeti dorado**:
    - ✅ Solo aparece cuando rompes record
@@ -363,9 +293,11 @@ if (newRecords.length > 0) {
 
 2. **Partículas con CSS custom properties**: Variables `--tx` y `--ty` permiten direcciones únicas por partícula con una sola animación
 
-3. **Notas musicales en escala de Do**: Escala mayor suena alegre y armoniosa, perfecto para un juego
+3. ~~**Notas musicales en escala de Do**~~ ❌ Removido - confuso para memoria de secuencia
 
 4. **Confeti dorado con inline styles**: Permite aleatorización completa (tamaño, posición, duración, delay) sin clases CSS complejas
+
+5. **Sonido incremental simple**: Frecuencia que aumenta progresivamente (440 + i*50) es más intuitivo para seguir secuencia
 
 ### Rendimiento:
 
@@ -396,12 +328,13 @@ if (newRecords.length > 0) {
 - Records: log en consola, sin celebración especial
 
 ### Después del PASO 6:
-- ~~**Trails visuales**~~ (removido - no gustó)
-- **Melodías únicas** por secuencia (memoria auditiva)
+- ~~**Trails visuales**~~ (removido - distractor)
+- ~~**Melodías únicas**~~ (removido - confuso)
+- **Sonido incremental** simple y consistente
 - **Partículas** explotan en cada acierto (satisfacción inmediata)
 - **Confeti dorado** para records (celebración épica)
 
-**Resultado**: Juego más inmersivo, satisfactorio y memorable, sin distracciones visuales innecesarias.
+**Resultado**: Juego más satisfactorio y memorable, con feedback visual claro y sonido simple que no confunde.
 
 ---
 
