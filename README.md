@@ -101,7 +101,8 @@
 
 ## 🟦 Master Sequence - NEW! Simon Says Meets Chess
 
-![Master Sequence Screenshot](./screenshots/master-sequence-preview.png)
+<img width="1048" height="919" alt="image" src="https://github.com/user-attachments/assets/b0daac00-8194-42d5-9735-bc3e0ffdbe50" />
+
 
 ### 🎮 **What is Master Sequence?**
 **Master Sequence** combines the classic Simon Says game with chess coordinates! Watch the neon sequence grow, memorize the pattern, then repeat it perfectly. Each level adds ONE more square - how far can you go?
