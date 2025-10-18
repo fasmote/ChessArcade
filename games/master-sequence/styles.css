@@ -556,44 +556,6 @@ body::before {
 }
 
 /* ============================================
-   TRAIL OVERLAY - Líneas animadas entre casillas
-   ============================================ */
-
-.trail-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none; /* No bloquear clicks */
-    z-index: 10; /* Sobre casillas pero bajo overlays */
-}
-
-.trail-line {
-    stroke-width: 4px;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    fill: none;
-    opacity: 0.8;
-    filter: drop-shadow(0 0 10px currentColor);
-    animation: trailFade 1s ease-out forwards;
-}
-
-@keyframes trailFade {
-    0% {
-        opacity: 0.8;
-        stroke-dashoffset: 0;
-    }
-    70% {
-        opacity: 0.8;
-    }
-    100% {
-        opacity: 0;
-        stroke-dashoffset: 0;
-    }
-}
-
-/* ============================================
    PARTÍCULAS - Mini confeti al acertar
    ============================================ */
 
