@@ -9,146 +9,24 @@
 ## 📋 Resumen de Cambios
 
 Esta sesión implementó el **PASO 6** de las mejoras planificadas:
-1. **Trails Animados**: Líneas SVG que conectan casillas durante la secuencia
-2. **Partículas de Éxito**: Mini confeti al acertar cada casilla
-3. **Notas Musicales por Color**: Cada color tiene su propia nota musical
-4. **Confeti Dorado para Records**: Celebración especial cuando rompes un record
+1. ~~**Trails Animados**: Líneas SVG que conectan casillas durante la secuencia~~ ❌ **REMOVIDO** por feedback del usuario
+2. **Partículas de Éxito**: Mini confeti al acertar cada casilla ✅
+3. **Notas Musicales por Color**: Cada color tiene su propia nota musical ✅
+4. **Confeti Dorado para Records**: Celebración especial cuando rompes un record ✅
 
 ---
 
 ## ✨ Features Implementadas
 
-### 1. Trail/Camino Animado entre Casillas
+### 1. ~~Trail/Camino Animado entre Casillas~~ ❌ REMOVIDO
 
-**Concepto**: Línea visual que conecta cada casilla con la siguiente durante la visualización de la secuencia.
+**Estado**: Feature removida por feedback del usuario - no gustó el efecto visual.
 
-**Beneficio UX**:
-- Ayuda a entender el flujo de la secuencia
-- Refuerza memoria visual del patrón
-- Más atractivo visualmente
-
-#### Implementación HTML
-
-**index.html** (líneas 122-125):
-```html
-<!-- SVG overlay para trails/caminos entre casillas -->
-<svg class="trail-overlay" id="trailOverlay" xmlns="http://www.w3.org/2000/svg">
-    <!-- Las líneas de trail se generarán dinámicamente -->
-</svg>
-```
-
-#### Implementación CSS
-
-**styles.css** (líneas 558-594):
-```css
-/* ============================================
-   TRAIL OVERLAY - Líneas animadas entre casillas
-   ============================================ */
-
-.trail-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none; /* No bloquear clicks */
-    z-index: 10; /* Sobre casillas pero bajo overlays */
-}
-
-.trail-line {
-    stroke-width: 4px;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    fill: none;
-    opacity: 0.8;
-    filter: drop-shadow(0 0 10px currentColor);
-    animation: trailFade 1s ease-out forwards;
-}
-
-@keyframes trailFade {
-    0% {
-        opacity: 0.8;
-        stroke-dashoffset: 0;
-    }
-    70% {
-        opacity: 0.8;
-    }
-    100% {
-        opacity: 0;
-        stroke-dashoffset: 0;
-    }
-}
-```
-
-#### Implementación JavaScript
-
-**game.js** (función `drawTrail`, líneas 1187-1237):
-```javascript
-/**
- * Dibuja una línea trail/camino entre dos casillas
- * @param {string} fromSquare - Casilla origen (ej: "e4")
- * @param {string} toSquare - Casilla destino (ej: "e5")
- * @param {Object} color - Objeto con hex y shadowColor
- */
-function drawTrail(fromSquare, toSquare, color) {
-    const fromElement = document.querySelector(`[data-square="${fromSquare}"]`);
-    const toElement = document.querySelector(`[data-square="${toSquare}"]`);
-
-    if (!fromElement || !toElement) return;
-
-    // Obtener posiciones relativas al tablero
-    const board = document.getElementById('chessboard');
-    const boardRect = board.getBoundingClientRect();
-    const fromRect = fromElement.getBoundingClientRect();
-    const toRect = toElement.getBoundingClientRect();
-
-    // Calcular centros de las casillas relativo al tablero
-    const x1 = fromRect.left + fromRect.width / 2 - boardRect.left;
-    const y1 = fromRect.top + fromRect.height / 2 - boardRect.top;
-    const x2 = toRect.left + toRect.width / 2 - boardRect.left;
-    const y2 = toRect.top + toRect.height / 2 - boardRect.top;
-
-    // Crear SVG path
-    const svg = document.getElementById('trailOverlay');
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-
-    line.setAttribute('x1', x1);
-    line.setAttribute('y1', y1);
-    line.setAttribute('x2', x2);
-    line.setAttribute('y2', y2);
-    line.setAttribute('stroke', color.hex);
-    line.classList.add('trail-line');
-
-    // Establecer viewBox del SVG si no está set
-    if (!svg.getAttribute('viewBox')) {
-        svg.setAttribute('viewBox', `0 0 ${boardRect.width} ${boardRect.height}`);
-        svg.style.width = boardRect.width + 'px';
-        svg.style.height = boardRect.height + 'px';
-    }
-
-    svg.appendChild(line);
-
-    // Remover la línea después de la animación
-    setTimeout(() => {
-        if (line.parentNode) {
-            line.parentNode.removeChild(line);
-        }
-    }, 1000);
-}
-```
-
-**Integración en showSequence()** (game.js, líneas 423-427):
-```javascript
-// Dibujar trail desde casilla anterior (PASO 6)
-if (i > 0) {
-    const previousSquare = gameState.sequence[i - 1];
-    drawTrail(previousSquare, square, color);
-}
-```
+**Razón**: Los trails visuales conectando casillas resultaron distractores en vez de útiles. La secuencia es más clara sin ellos.
 
 ---
 
-### 2. Partículas de Éxito al Acertar
+### 2. Partículas de Éxito al Acertar ✅
 
 **Concepto**: Mini explosión de confeti cuando el jugador acierta una casilla.
 
@@ -395,23 +273,23 @@ if (newRecords.length > 0) {
 ### Código Agregado:
 
 **HTML**:
-- +4 líneas (SVG overlay)
+- 0 líneas (SVG overlay removido)
 
 **CSS**:
-- +62 líneas (trail overlay + partículas + animaciones)
+- +24 líneas (partículas + animaciones)
 
 **JavaScript**:
-- +135 líneas (drawTrail, spawnParticles, launchGoldenConfetti)
+- +86 líneas (spawnParticles, launchGoldenConfetti)
 - +42 líneas audio.js (playColorNote + COLOR_NOTES)
-- ~10 líneas de integración en funciones existentes
+- ~5 líneas de integración en funciones existentes
 
-**Total**: ~253 líneas nuevas
+**Total**: ~157 líneas nuevas (tras remover trails)
 
 ### Archivos Modificados:
 
-1. `games/master-sequence/index.html` (SVG overlay)
-2. `games/master-sequence/styles.css` (estilos + animaciones)
-3. `games/master-sequence/game.js` (funciones de efectos + integración)
+1. `games/master-sequence/index.html` (sin cambios tras remover trails)
+2. `games/master-sequence/styles.css` (estilos partículas + animaciones)
+3. `games/master-sequence/game.js` (spawnParticles, launchGoldenConfetti + integración)
 4. `games/master-sequence/audio.js` (notas musicales por color)
 
 ### Archivos Nuevos:
@@ -423,10 +301,10 @@ if (newRecords.length > 0) {
 ## 🎨 Mejoras UX
 
 ### Visual:
-✅ Trails SVG animados conectan casillas durante secuencia
+❌ ~~Trails SVG animados~~ (removido - no gustó)
 ✅ Partículas explotan en cada acierto (feedback inmediato)
 ✅ Confeti dorado especial para celebrar records
-✅ Animaciones suaves (0.8s-1s) que no bloquean juego
+✅ Animaciones suaves (0.8s-5s) que no bloquean juego
 
 ### Auditivo:
 ✅ Cada color tiene su nota musical única
@@ -445,12 +323,7 @@ if (newRecords.length > 0) {
 
 **Escenarios probados**:
 
-1. **Trail entre casillas**:
-   - ✅ Línea conecta casilla anterior con actual
-   - ✅ Color de línea coincide con color de casilla destino
-   - ✅ Fade-out suave después de 1s
-   - ✅ No bloquea clicks del tablero
-   - ✅ Responsive en desktop y mobile
+1. ~~**Trail entre casillas**~~ ❌ REMOVIDO
 
 2. **Partículas al acertar**:
    - ✅ Explotan desde centro de casilla
@@ -478,6 +351,7 @@ if (newRecords.length > 0) {
    - ✅ Limpieza correcta de elementos del DOM
    - ✅ 60fps mantenido en animaciones
    - ✅ Funciona bien en mobile
+   - ✅ Menos elementos en DOM tras remover trails (mejor rendimiento)
 
 ---
 
@@ -485,7 +359,7 @@ if (newRecords.length > 0) {
 
 ### Decisiones de Diseño:
 
-1. **SVG para trails**: Más eficiente que canvas para líneas simples, mejor integración con CSS
+1. ~~**SVG para trails**~~ ❌ Removido - resultó distractor visualmente
 
 2. **Partículas con CSS custom properties**: Variables `--tx` y `--ty` permiten direcciones únicas por partícula con una sola animación
 
@@ -516,18 +390,18 @@ if (newRecords.length > 0) {
 ## 🎯 Impacto en Gameplay
 
 ### Antes del PASO 6:
-- Secuencia se mostraba casilla por casilla (sin conexión visual)
+- Secuencia se mostraba casilla por casilla
 - Sonido genérico (frecuencia incrementaba ligeramente)
 - Feedback de acierto: solo highlight de casilla
 - Records: log en consola, sin celebración especial
 
 ### Después del PASO 6:
-- **Trails visuales** conectan casillas (patrón más claro)
+- ~~**Trails visuales**~~ (removido - no gustó)
 - **Melodías únicas** por secuencia (memoria auditiva)
 - **Partículas** explotan en cada acierto (satisfacción inmediata)
 - **Confeti dorado** para records (celebración épica)
 
-**Resultado**: Juego más inmersivo, satisfactorio y memorable.
+**Resultado**: Juego más inmersivo, satisfactorio y memorable, sin distracciones visuales innecesarias.
 
 ---
 
@@ -538,7 +412,7 @@ if (newRecords.length > 0) {
 1. **Animaciones adicionales**:
    - Vibración sutil del tablero al completar nivel
    - Glow pulsante en casilla siguiente (hint visual sutil)
-   - Trail que persiste brevemente después de cada casilla
+   - ~~Trail que persiste brevemente~~ (descartado - no gustó)
 
 2. **Efectos de sonido adicionales**:
    - Sonido especial al romper racha perfecta x5, x10

@@ -420,12 +420,6 @@ async function showSequence() {
         // Usar el color guardado para esta casilla
         const color = gameState.sequenceColors[i];
 
-        // Dibujar trail desde casilla anterior (PASO 6)
-        if (i > 0) {
-            const previousSquare = gameState.sequence[i - 1];
-            drawTrail(previousSquare, square, color);
-        }
-
         // Highlight la casilla con el color correspondiente
         await highlightSquare(square, highlightDuration, color);
 
@@ -1193,58 +1187,6 @@ function sleep(ms) {
 /* ============================================
    PASO 6: ANIMACIONES Y EFECTOS VISUALES
    ============================================ */
-
-/**
- * Dibuja una línea trail/camino entre dos casillas
- * @param {string} fromSquare - Casilla origen (ej: "e4")
- * @param {string} toSquare - Casilla destino (ej: "e5")
- * @param {Object} color - Objeto con hex y shadowColor
- */
-function drawTrail(fromSquare, toSquare, color) {
-    const fromElement = document.querySelector(`[data-square="${fromSquare}"]`);
-    const toElement = document.querySelector(`[data-square="${toSquare}"]`);
-
-    if (!fromElement || !toElement) return;
-
-    // Obtener posiciones relativas al tablero
-    const board = document.getElementById('chessboard');
-    const boardRect = board.getBoundingClientRect();
-    const fromRect = fromElement.getBoundingClientRect();
-    const toRect = toElement.getBoundingClientRect();
-
-    // Calcular centros de las casillas relativo al tablero
-    const x1 = fromRect.left + fromRect.width / 2 - boardRect.left;
-    const y1 = fromRect.top + fromRect.height / 2 - boardRect.top;
-    const x2 = toRect.left + toRect.width / 2 - boardRect.left;
-    const y2 = toRect.top + toRect.height / 2 - boardRect.top;
-
-    // Crear SVG path
-    const svg = document.getElementById('trailOverlay');
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-
-    line.setAttribute('x1', x1);
-    line.setAttribute('y1', y1);
-    line.setAttribute('x2', x2);
-    line.setAttribute('y2', y2);
-    line.setAttribute('stroke', color.hex);
-    line.classList.add('trail-line');
-
-    // Establecer viewBox del SVG si no está set
-    if (!svg.getAttribute('viewBox')) {
-        svg.setAttribute('viewBox', `0 0 ${boardRect.width} ${boardRect.height}`);
-        svg.style.width = boardRect.width + 'px';
-        svg.style.height = boardRect.height + 'px';
-    }
-
-    svg.appendChild(line);
-
-    // Remover la línea después de la animación
-    setTimeout(() => {
-        if (line.parentNode) {
-            line.parentNode.removeChild(line);
-        }
-    }, 1000);
-}
 
 /**
  * Crea partículas que explotan desde una casilla
