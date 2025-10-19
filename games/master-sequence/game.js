@@ -488,12 +488,21 @@ function highlightSquare(squareId, duration, color = null) {
         }
 
         setTimeout(() => {
+            // Desactivar transiciones temporalmente para evitar efecto de "aclarado"
+            squareElement.style.transition = 'none';
             squareElement.classList.remove('highlighting');
+
             // Limpiar estilos inline
             if (color) {
                 squareElement.style.removeProperty('--highlight-color');
                 squareElement.style.removeProperty('--highlight-shadow');
             }
+
+            // Restaurar transiciones después de que el browser procese el cambio
+            requestAnimationFrame(() => {
+                squareElement.style.removeProperty('transition');
+            });
+
             resolve();
         }, duration);
     });
