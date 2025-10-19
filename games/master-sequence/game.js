@@ -544,8 +544,8 @@ function handleSquareClick(e) {
         // ✅ Correcto
         console.log(`✅ Correct! (${gameState.currentStep + 1}/${gameState.sequence.length})`);
 
-        // Limpiar hint de ESTA casilla específica (flechas/símbolos/labels)
-        clearHintFromSquare(square);
+        // Limpiar TODO el hint (líneas, flechas, coordenadas, bordes)
+        clearHints();
 
         // Mostrar con el MISMO COLOR que se usó en la secuencia original
         const color = gameState.sequenceColors[gameState.currentStep];
@@ -559,9 +559,6 @@ function handleSquareClick(e) {
         }
 
         gameState.currentStep++;
-
-        // Actualizar la siguiente casilla hint (mover borde pulsante)
-        updateNextHint();
 
         // ¿Completó toda la secuencia?
         if (gameState.currentStep === gameState.sequence.length) {
