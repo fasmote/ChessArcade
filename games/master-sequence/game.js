@@ -834,6 +834,9 @@ function showHint() {
     // Activar flag de hint
     gameState.hintActive = true;
 
+    // Dibujar líneas conectoras PRIMERO (debajo de todo)
+    drawConnectingLines();
+
     // Marcar toda la secuencia: fondo blanco + coordenada con color neón
     gameState.sequence.forEach((squareId, index) => {
         const square = document.querySelector(`[data-square="${squareId}"]`);
@@ -889,6 +892,64 @@ function showHint() {
 
     // NOTA: Los hints ahora persisten hasta que el jugador haga click
     // Se limpiarán progresivamente en onSquareClick()
+}
+
+/**
+ * Dibuja líneas conectoras negras entre las casillas de la secuencia
+ * Crea un SVG overlay que conecta los centros de las casillas
+ */
+function drawConnectingLines() {
+    // Buscar o crear el contenedor SVG para las líneas
+    let svgContainer = document.getElementById('hint-lines-container');
+    if (!svgContainer) {
+        svgContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svgContainer.id = 'hint-lines-container';
+        svgContainer.classList.add('hint-lines-svg');
+        document.getElementById('chessboard').appendChild(svgContainer);
+    }
+
+    // Limpiar líneas anteriores
+    svgContainer.innerHTML = '';
+
+    // Obtener el tablero para calcular posiciones
+    const board = document.getElementById('chessboard');
+    const boardRect = board.getBoundingClientRect();
+
+    // Dibujar líneas entre casillas consecutivas
+    for (let i = 0; i < gameState.sequence.length - 1; i++) {
+        const currentSquareId = gameState.sequence[i];
+        const nextSquareId = gameState.sequence[i + 1];
+
+        // Si repite la misma casilla, no dibujar línea
+        if (currentSquareId === nextSquareId) continue;
+
+        const currentSquare = document.querySelector(`[data-square="${currentSquareId}"]`);
+        const nextSquare = document.querySelector(`[data-square="${nextSquareId}"]`);
+
+        if (currentSquare && nextSquare) {
+            // Calcular centros relativos al tablero
+            const currentRect = currentSquare.getBoundingClientRect();
+            const nextRect = nextSquare.getBoundingClientRect();
+
+            const x1 = currentRect.left - boardRect.left + currentRect.width / 2;
+            const y1 = currentRect.top - boardRect.top + currentRect.height / 2;
+            const x2 = nextRect.left - boardRect.left + nextRect.width / 2;
+            const y2 = nextRect.top - boardRect.top + nextRect.height / 2;
+
+            // Crear línea SVG
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', '#000');
+            line.setAttribute('stroke-width', '4');
+            line.setAttribute('stroke-linecap', 'round');
+            line.classList.add('hint-connecting-line');
+
+            svgContainer.appendChild(line);
+        }
+    }
 }
 
 /**
@@ -1033,6 +1094,12 @@ function updateNextHint() {
 function clearHints() {
     // Desactivar flag de hint
     gameState.hintActive = false;
+
+    // Eliminar líneas conectoras
+    const svgContainer = document.getElementById('hint-lines-container');
+    if (svgContainer) {
+        svgContainer.remove();
+    }
 
     // Limpiar casillas de secuencia
     document.querySelectorAll('.hint-sequence').forEach(sq => {
