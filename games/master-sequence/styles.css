@@ -779,9 +779,8 @@ body::before {
    ============================================ */
 
 .square.hint-sequence {
-    background: #555 !important;
-    opacity: 0.6;
-    border: 2px solid #777 !important;
+    opacity: 0.4 !important;
+    filter: brightness(0.7);
 }
 
 .square.hint-next {
