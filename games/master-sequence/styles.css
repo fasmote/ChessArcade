@@ -814,14 +814,16 @@ body::before {
     text-transform: uppercase;
 }
 
-/* Siguiente casilla: borde amarillo grueso pulsante */
+/* Siguiente casilla: borde amarillo MUY grueso + fondo amarillo pulsante */
 .square.hint-next {
-    border: 6px solid var(--neon-yellow) !important;
+    border: 8px solid var(--neon-yellow) !important;
+    background: rgba(255, 255, 0, 0.2) !important;
     box-shadow:
-        0 0 20px var(--neon-yellow),
-        0 0 40px var(--neon-yellow),
-        inset 0 0 20px rgba(255, 255, 0, 0.3);
-    animation: hintPulse 1s ease-in-out infinite;
+        0 0 30px var(--neon-yellow),
+        0 0 60px var(--neon-yellow),
+        inset 0 0 30px rgba(255, 255, 0, 0.4);
+    animation: hintPulse 0.8s ease-in-out infinite;
+    transform: scale(1.05);
 }
 
 /* Label de siguiente casilla: más grande y brillante */
@@ -833,15 +835,17 @@ body::before {
 @keyframes hintPulse {
     0%, 100% {
         box-shadow:
-            0 0 20px var(--neon-yellow),
-            0 0 40px var(--neon-yellow),
-            inset 0 0 20px rgba(255, 255, 0, 0.3);
+            0 0 30px var(--neon-yellow),
+            0 0 60px var(--neon-yellow),
+            inset 0 0 30px rgba(255, 255, 0, 0.4);
+        border-width: 8px;
     }
     50% {
         box-shadow:
-            0 0 30px var(--neon-yellow),
-            0 0 60px var(--neon-yellow),
-            inset 0 0 30px rgba(255, 255, 0, 0.5);
+            0 0 50px var(--neon-yellow),
+            0 0 100px var(--neon-yellow),
+            inset 0 0 50px rgba(255, 255, 0, 0.6);
+        border-width: 10px;
     }
 }
 
