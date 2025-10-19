@@ -775,14 +775,8 @@ body::before {
 }
 
 /* ============================================
-   HINT - Fondo blanco + coordenadas neón + blur
+   HINT - Fondo blanco + coordenadas neón + flechas persistentes
    ============================================ */
-
-/* Blur del tablero cuando hint está activo */
-.chessboard.hint-active .square:not(.hint-sequence) {
-    filter: blur(4px);
-    opacity: 0.5;
-}
 
 /* Casillas de la secuencia: fondo blanco limpio */
 .square.hint-sequence {
