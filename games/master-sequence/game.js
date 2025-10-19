@@ -33,6 +33,7 @@ let gameState = {
     // Config
     soundEnabled: true,
     coordinatesEnabled: false,  // Mostrar coordenadas dentro de casillas (modo ayuda)
+    hintActive: false,          // Si el jugador activó el HINT
 
     // Stats
     bestLevel: 1,
@@ -830,6 +831,9 @@ function showHint() {
     // Limpiar hints anteriores
     clearHints();
 
+    // Activar flag de hint
+    gameState.hintActive = true;
+
     // Marcar toda la secuencia: fondo blanco + coordenada con color neón
     gameState.sequence.forEach((squareId, index) => {
         const square = document.querySelector(`[data-square="${squareId}"]`);
@@ -929,21 +933,30 @@ function addDirectionalArrow(square, fromSquare, toSquare, color) {
     else if (deltaFile < 0 && deltaRank === 0) rotation = 270; // ← Oeste
     else if (deltaFile < 0 && deltaRank > 0) rotation = 315; // ↖ Noroeste
 
-    // Crear contenedor de flecha
+    // Crear contenedor de flecha GRANDE
     const arrow = document.createElement('div');
     arrow.className = 'hint-arrow';
-    arrow.style.transform = `rotate(${rotation}deg)`;
+    arrow.style.setProperty('--rotation', `${rotation}deg`);
 
-    // Crear SVG de flecha
+    // Crear SVG de flecha CONTINUA GRANDE (60x60)
     arrow.innerHTML = `
-        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 4 L12 16 M12 16 L8 12 M12 16 L16 12"
+        <svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <filter id="glow-${color.replace('#', '')}">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <path d="M30 10 L30 40 M30 40 L20 30 M30 40 L40 30"
                   stroke="${color}"
-                  stroke-width="3"
+                  stroke-width="6"
                   fill="none"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  filter="drop-shadow(0 0 4px ${color}) drop-shadow(0 0 8px ${color})"/>
+                  filter="url(#glow-${color.replace('#', '')})"/>
         </svg>
     `;
 
@@ -981,8 +994,14 @@ function clearHintFromSquare(square) {
 
 /**
  * Actualiza el hint de la siguiente casilla (mueve el borde pulsante)
+ * SOLO si el hint está activo
  */
 function updateNextHint() {
+    // Solo ejecutar si el hint está activo
+    if (!gameState.hintActive) {
+        return;
+    }
+
     // Remover hint-next de todas las casillas
     document.querySelectorAll('.hint-next').forEach(sq => {
         sq.classList.remove('hint-next');
@@ -1012,6 +1031,9 @@ function updateNextHint() {
  * Limpia TODOS los hints del tablero (llamado en clearHints completo)
  */
 function clearHints() {
+    // Desactivar flag de hint
+    gameState.hintActive = false;
+
     // Limpiar casillas de secuencia
     document.querySelectorAll('.hint-sequence').forEach(sq => {
         clearHintFromSquare(sq);

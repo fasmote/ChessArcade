@@ -839,22 +839,35 @@ body::before {
     }
 }
 
-/* Flecha direccional: indica hacia dónde continúa la secuencia */
+/* Flecha direccional GRANDE: indica hacia dónde continúa la secuencia */
 .hint-arrow {
     position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 24px;
-    height: 24px;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    margin-top: -30px;
+    margin-left: -30px;
     pointer-events: none;
-    z-index: 11;
+    z-index: 12;
     transform-origin: center;
+    animation: arrowPulse 1.5s ease-in-out infinite;
 }
 
 .hint-arrow svg {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 0 4px currentColor) drop-shadow(0 0 8px currentColor);
+}
+
+@keyframes arrowPulse {
+    0%, 100% {
+        opacity: 0.8;
+        transform: scale(1) rotate(var(--rotation, 0deg));
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.15) rotate(var(--rotation, 0deg));
+    }
 }
 
 /* Símbolo de repetición: cuando la secuencia repite la misma casilla */
