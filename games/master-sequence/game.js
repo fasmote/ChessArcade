@@ -420,13 +420,13 @@ async function showSequence() {
         // Usar el color guardado para esta casilla
         const color = gameState.sequenceColors[i];
 
-        // Highlight la casilla con el color correspondiente
-        await highlightSquare(square, highlightDuration, color);
-
-        // Reproducir sonido (frecuencia aumenta ligeramente)
+        // Reproducir sonido ANTES de iluminar (sincronización perfecta)
         if (gameState.soundEnabled && typeof playBeep === 'function') {
             playBeep(440 + i * 50);
         }
+
+        // Highlight la casilla con el color correspondiente
+        await highlightSquare(square, highlightDuration, color);
 
         // Pausa entre casillas (excepto la última)
         if (i < gameState.sequence.length - 1) {
