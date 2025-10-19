@@ -2,7 +2,7 @@
 
 ![ChessArcade Banner](./assets/images/chessarcade-banner.png)
 
-## 🚀 [Play Now!](https://fasmote.github.io/ChessArcade/) | [🎯 Square Rush](./games/square-rush/index.html) | [🐴 Knight Quest](./games/knight-quest/index.html) | [🧠 Memory Matrix](./games/memory-matrix-v2/index.html) | [🟦 Master Sequence](./games/coordinate-sequence/index.html)
+## 🚀 [Play Now!](https://fasmote.github.io/ChessArcade/) | [🎯 Square Rush](./games/square-rush/index.html) | [🐴 Knight Quest](./games/knight-quest/index.html) | [🧠 Memory Matrix](./games/memory-matrix-v2/index.html) | [🟦 Master Sequence](./games/master-sequence/index.html)
 
 ---
 
@@ -136,7 +136,7 @@
 - **🎯 [Play Square Rush](./games/square-rush/index.html)** - Master coordinates A1-H8!
 - **🐴 [Play Knight Quest](./games/knight-quest/index.html)** - Conquer the knight's tour!
 - **🧠 [Play Memory Matrix](./games/memory-matrix-v2/index.html)** - Train your visual memory!
-- **🟦 [Play Master Sequence](./games/coordinate-sequence/index.html)** - Master growing patterns!
+- **🟦 [Play Master Sequence](./games/master-sequence/index.html)** - Master growing patterns!
 - **📁 [View Source Code](https://github.com/fasmote/ChessArcade)**
 - **🐛 [Report Issues](https://github.com/fasmote/ChessArcade/issues)**
 
@@ -198,7 +198,7 @@ ChessArcade uses a custom **NeonChess Design System** featuring:
 │   ├── 📁 knight-quest/             # ✅ Knight's Tour game
 │   ├── 📁 square-rush/              # ✅ Coordinate training
 │   ├── 📁 memory-matrix-v2/         # ✅ Visual memory training
-│   └── 📁 coordinate-sequence/      # ✅ Master Sequence (Simon Says)
+│   └── 📁 master-sequence/          # ✅ Master Sequence (Simon Says)
 ├── 📁 screenshots/                  # Game screenshots
 └── 📁 docs/                         # Documentation
 ```
@@ -256,7 +256,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 [![Play Square Rush](https://img.shields.io/badge/🎯_Play_Square_Rush-FF8000?style=for-the-badge)](./games/square-rush/index.html)
 [![Play Knight Quest](https://img.shields.io/badge/🐴_Play_Knight_Quest-FF0080?style=for-the-badge)](./games/knight-quest/index.html)
 [![Play Memory Matrix](https://img.shields.io/badge/🧠_Play_Memory_Matrix-00FF80?style=for-the-badge)](./games/memory-matrix-v2/index.html)
-[![Play Master Sequence](https://img.shields.io/badge/🟦_Play_Master_Sequence-8000FF?style=for-the-badge)](./games/coordinate-sequence/index.html)
+[![Play Master Sequence](https://img.shields.io/badge/🟦_Play_Master_Sequence-8000FF?style=for-the-badge)](./games/master-sequence/index.html)
 [![GitHub](https://img.shields.io/badge/⭐_Star_on_GitHub-00FFFF?style=for-the-badge&logo=github)](https://github.com/fasmote/ChessArcade)
 
 **Made with ⚡ by ChessArcade | Powered by NeonChess Design System**
