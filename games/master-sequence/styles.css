@@ -312,6 +312,7 @@ body::before {
 
 /* Botones de control en sidebar - TODOS mismo ancho */
 .btn-coordinates,
+.btn-hint,
 .btn-stats,
 .btn-end-game {
     display: flex;
