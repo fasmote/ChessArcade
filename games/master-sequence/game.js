@@ -348,6 +348,7 @@ function startLevel(levelNumber) {
             }
 
             // Buscar casillas del área que SÍ sean alcanzables por rey/caballo desde ALGUNA casilla anterior
+            let originSquare = null;
             for (let i = gameState.masterSequence.length - 1; i >= 0; i--) {
                 const previousSquare = gameState.masterSequence[i];
                 const movesFromPrevious = window.ChessGameLibrary.BoardUtils.getKingOrKnightMoves(previousSquare);
@@ -361,7 +362,8 @@ function startLevel(levelNumber) {
 
                 if (validFromPrevious.length > 0) {
                     availableSquares = validFromPrevious;
-                    console.log(`   ✅ Usando movimiento desde ${previousSquare} (${i+1} casillas atrás)`);
+                    originSquare = previousSquare;
+                    console.log(`   ✅ Usando movimiento desde ${previousSquare} (${gameState.masterSequence.length - i} casillas atrás)`);
                     break;
                 }
             }
@@ -370,6 +372,7 @@ function startLevel(levelNumber) {
             if (availableSquares.length === 0) {
                 console.warn(`   ⚠️ FALLBACK EXTREMO: usando casilla aleatoria del área`);
                 availableSquares = allAreaSquares;
+                originSquare = null;
             }
         }
 
@@ -388,7 +391,9 @@ function startLevel(levelNumber) {
             { name: 'cyan', hex: '#00ffff', shadowColor: 'rgba(0, 255, 255, 0.8)' };
         gameState.sequenceColors.push(newColor);
 
-        console.log(`   ➕ Casilla agregada: ${newSquare} (desde ${lastSquare} con movimiento rey/caballo) - Color: ${newColor.name}`);
+        // Determinar origen correcto para el log
+        const actualOrigin = originSquare || lastSquare;
+        console.log(`   ➕ Casilla agregada: ${newSquare} (desde ${actualOrigin} con movimiento rey/caballo) - Color: ${newColor.name}`);
     }
 
     // La secuencia actual es una copia de la master sequence
@@ -812,18 +817,27 @@ function showHint() {
     // Limpiar hints anteriores
     clearHints();
 
-    // Marcar toda la secuencia en gris
-    gameState.sequence.forEach(squareId => {
+    // Marcar toda la secuencia con sus colores originales semi-transparentes
+    gameState.sequence.forEach((squareId, index) => {
         const square = document.querySelector(`[data-square="${squareId}"]`);
         if (square) {
+            // Aplicar el color original de la secuencia
+            const color = gameState.sequenceColors[index];
+            square.style.setProperty('--hint-color', color.hex);
+            square.style.backgroundColor = color.hex;
             square.classList.add('hint-sequence');
         }
     });
 
-    // Resaltar la siguiente casilla con borde amarillo pulsante
+    // Resaltar la siguiente casilla con su color completo + borde amarillo pulsante
     const nextSquareId = gameState.sequence[gameState.currentStep];
     const nextSquare = document.querySelector(`[data-square="${nextSquareId}"]`);
     if (nextSquare) {
+        // Color brillante para la siguiente
+        const nextColor = gameState.sequenceColors[gameState.currentStep];
+        nextSquare.style.backgroundColor = nextColor.hex;
+        nextSquare.style.opacity = '1';
+        nextSquare.style.filter = 'brightness(1.2)';
         nextSquare.classList.add('hint-next');
     }
 
@@ -839,14 +853,19 @@ function showHint() {
 }
 
 /**
- * Limpia las clases de hint del tablero
+ * Limpia las clases de hint del tablero y restaura estilos originales
  */
 function clearHints() {
     document.querySelectorAll('.hint-sequence').forEach(sq => {
         sq.classList.remove('hint-sequence');
+        sq.style.removeProperty('background-color');
+        sq.style.removeProperty('--hint-color');
     });
     document.querySelectorAll('.hint-next').forEach(sq => {
         sq.classList.remove('hint-next');
+        sq.style.removeProperty('background-color');
+        sq.style.removeProperty('opacity');
+        sq.style.removeProperty('filter');
     });
 }
 
