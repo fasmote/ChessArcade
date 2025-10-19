@@ -850,6 +850,20 @@ function showHint() {
             label.textContent = squareId.toUpperCase();
             label.style.color = color.hex;
             label.style.textShadow = `0 0 10px ${color.hex}, 0 0 20px ${color.hex}`;
+
+            // Agregar flecha o símbolo de repetición si no es la última casilla
+            if (index < gameState.sequence.length - 1) {
+                const currentSquare = squareId;
+                const nextSquare = gameState.sequence[index + 1];
+
+                // Si repite la misma casilla, mostrar símbolo de repetición
+                if (currentSquare === nextSquare) {
+                    addRepeatSymbol(square, color.hex);
+                } else {
+                    // Si es diferente, mostrar flecha direccional
+                    addDirectionalArrow(square, currentSquare, nextSquare, color.hex);
+                }
+            }
         }
     });
 
@@ -876,6 +890,69 @@ function showHint() {
 }
 
 /**
+ * Agrega símbolo de repetición (⟲) cuando la secuencia repite la misma casilla
+ * @param {HTMLElement} square - Elemento de la casilla
+ * @param {string} color - Color en hexadecimal para el símbolo
+ */
+function addRepeatSymbol(square, color) {
+    const symbol = document.createElement('div');
+    symbol.className = 'hint-repeat';
+    symbol.innerHTML = '⟲';
+    symbol.style.color = color;
+    symbol.style.textShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
+    square.appendChild(symbol);
+}
+
+/**
+ * Agrega flecha direccional SVG indicando hacia dónde continúa la secuencia
+ * @param {HTMLElement} square - Elemento de la casilla actual
+ * @param {string} fromSquare - Coordenada de la casilla actual (ej: "e4")
+ * @param {string} toSquare - Coordenada de la casilla siguiente (ej: "d5")
+ * @param {string} color - Color en hexadecimal para la flecha
+ */
+function addDirectionalArrow(square, fromSquare, toSquare, color) {
+    // Calcular dirección de la flecha
+    const fromFile = fromSquare.charCodeAt(0) - 'a'.charCodeAt(0);
+    const fromRank = parseInt(fromSquare[1]) - 1;
+    const toFile = toSquare.charCodeAt(0) - 'a'.charCodeAt(0);
+    const toRank = parseInt(toSquare[1]) - 1;
+
+    const deltaFile = toFile - fromFile;
+    const deltaRank = toRank - fromRank;
+
+    // Determinar ángulo de rotación para la flecha
+    let rotation = 0;
+    if (deltaFile === 0 && deltaRank > 0) rotation = 0;      // ↑ Norte
+    else if (deltaFile > 0 && deltaRank > 0) rotation = 45;  // ↗ Noreste
+    else if (deltaFile > 0 && deltaRank === 0) rotation = 90; // → Este
+    else if (deltaFile > 0 && deltaRank < 0) rotation = 135; // ↘ Sureste
+    else if (deltaFile === 0 && deltaRank < 0) rotation = 180; // ↓ Sur
+    else if (deltaFile < 0 && deltaRank < 0) rotation = 225; // ↙ Suroeste
+    else if (deltaFile < 0 && deltaRank === 0) rotation = 270; // ← Oeste
+    else if (deltaFile < 0 && deltaRank > 0) rotation = 315; // ↖ Noroeste
+
+    // Crear contenedor de flecha
+    const arrow = document.createElement('div');
+    arrow.className = 'hint-arrow';
+    arrow.style.transform = `rotate(${rotation}deg)`;
+
+    // Crear SVG de flecha
+    arrow.innerHTML = `
+        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 4 L12 16 M12 16 L8 12 M12 16 L16 12"
+                  stroke="${color}"
+                  stroke-width="3"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  filter="drop-shadow(0 0 4px ${color}) drop-shadow(0 0 8px ${color})"/>
+        </svg>
+    `;
+
+    square.appendChild(arrow);
+}
+
+/**
  * Limpia las clases de hint del tablero y restaura estilos originales
  */
 function clearHints() {
@@ -891,6 +968,18 @@ function clearHints() {
         const label = sq.querySelector('.hint-label');
         if (label) {
             label.remove();
+        }
+
+        // Remover flechas
+        const arrow = sq.querySelector('.hint-arrow');
+        if (arrow) {
+            arrow.remove();
+        }
+
+        // Remover símbolos de repetición
+        const repeat = sq.querySelector('.hint-repeat');
+        if (repeat) {
+            repeat.remove();
         }
     });
 
