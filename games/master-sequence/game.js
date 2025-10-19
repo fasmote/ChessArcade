@@ -322,6 +322,9 @@ function startLevel(levelNumber) {
 
         console.log(`   📊 Casillas disponibles después de filtrar saturadas: ${availableSquares.length}`);
 
+        // Trackear origen del movimiento (por defecto es lastSquare, cambia en backtracking)
+        let originSquare = null;
+
         // Si no hay movimientos válidos en el área, EXPANDIR búsqueda a toda el área
         if (availableSquares.length === 0) {
             console.warn(`   ⚠️ No hay movimientos válidos desde ${lastSquare} en área restringida`);
@@ -348,7 +351,6 @@ function startLevel(levelNumber) {
             }
 
             // Buscar casillas del área que SÍ sean alcanzables por rey/caballo desde ALGUNA casilla anterior
-            let originSquare = null;
             for (let i = gameState.masterSequence.length - 1; i >= 0; i--) {
                 const previousSquare = gameState.masterSequence[i];
                 const movesFromPrevious = window.ChessGameLibrary.BoardUtils.getKingOrKnightMoves(previousSquare);
