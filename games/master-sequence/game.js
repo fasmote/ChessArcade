@@ -203,6 +203,9 @@ function setupEventListeners() {
     // Botón STATS (consultar estadísticas actuales)
     document.getElementById('btnStats')?.addEventListener('click', showCurrentStats);
 
+    // Botón HINT (mostrar ayuda visual)
+    document.getElementById('btnHint')?.addEventListener('click', showHint);
+
     // Botón TERMINAR (terminar partida = perder todas las vidas)
     document.getElementById('btnEndGame')?.addEventListener('click', endGame);
 
@@ -533,6 +536,9 @@ function handleSquareClick(e) {
         // ✅ Correcto
         console.log(`✅ Correct! (${gameState.currentStep + 1}/${gameState.sequence.length})`);
 
+        // Limpiar hints si estaban activos
+        clearHints();
+
         // Mostrar con el MISMO COLOR que se usó en la secuencia original
         const color = gameState.sequenceColors[gameState.currentStep];
         highlightSquare(squareId, 500, color);
@@ -770,6 +776,78 @@ function confirmEndGame() {
 function cancelEndGame() {
     hideAllOverlays();
     console.log('✗ Usuario canceló terminar partida');
+}
+
+/**
+ * Muestra hint visual: marca toda la secuencia en gris + borde amarillo en siguiente casilla
+ * Penalización: -100 puntos + rompe racha perfecta
+ */
+function showHint() {
+    // Solo funciona durante la fase de juego
+    if (gameState.phase !== 'playing') {
+        console.log('⚠️ Hint solo disponible durante la fase de juego');
+        updateStatus('El hint solo está disponible cuando estás jugando', 'error');
+        return;
+    }
+
+    // Verificar que hay una casilla siguiente
+    if (gameState.currentStep >= gameState.sequence.length) {
+        console.log('⚠️ Ya completaste toda la secuencia');
+        updateStatus('Ya has completado toda la secuencia', 'info');
+        return;
+    }
+
+    console.log('💡 Mostrando hint...');
+
+    // Aplicar penalización: -100 puntos
+    const penalty = 100;
+    gameState.score = Math.max(0, gameState.score - penalty);
+
+    // Romper racha perfecta
+    const previousStreak = gameState.perfectStreak;
+    gameState.perfectStreak = 0;
+
+    console.log(`💸 Penalización: -${penalty} puntos, racha rota (era ${previousStreak})`);
+
+    // Limpiar hints anteriores
+    clearHints();
+
+    // Marcar toda la secuencia en gris
+    gameState.sequence.forEach(squareId => {
+        const square = document.querySelector(`[data-square="${squareId}"]`);
+        if (square) {
+            square.classList.add('hint-sequence');
+        }
+    });
+
+    // Resaltar la siguiente casilla con borde amarillo pulsante
+    const nextSquareId = gameState.sequence[gameState.currentStep];
+    const nextSquare = document.querySelector(`[data-square="${nextSquareId}"]`);
+    if (nextSquare) {
+        nextSquare.classList.add('hint-next');
+    }
+
+    // Actualizar UI
+    updateUI();
+    updateStatus(`💡 Hint activado (-${penalty} pts, racha perdida). Siguiente: ${nextSquareId.toUpperCase()}`, 'hint');
+
+    // Auto-ocultar hint después de 3 segundos
+    setTimeout(() => {
+        clearHints();
+        updateStatus('¡Continúa la secuencia!', 'playing');
+    }, 3000);
+}
+
+/**
+ * Limpia las clases de hint del tablero
+ */
+function clearHints() {
+    document.querySelectorAll('.hint-sequence').forEach(sq => {
+        sq.classList.remove('hint-sequence');
+    });
+    document.querySelectorAll('.hint-next').forEach(sq => {
+        sq.classList.remove('hint-next');
+    });
 }
 
 /**
