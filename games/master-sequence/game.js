@@ -797,6 +797,14 @@ function showHint() {
         return;
     }
 
+    // Verificar que tiene puntos suficientes
+    const HINT_COST = 100;
+    if (gameState.score < HINT_COST) {
+        console.log(`⚠️ Puntos insuficientes para hint (tienes ${gameState.score}, necesitas ${HINT_COST})`);
+        updateStatus(`Necesitas al menos ${HINT_COST} puntos para usar el hint. Tienes ${gameState.score} pts.`, 'error');
+        return;
+    }
+
     // Verificar que hay una casilla siguiente
     if (gameState.currentStep >= gameState.sequence.length) {
         console.log('⚠️ Ya completaste toda la secuencia');
@@ -819,28 +827,41 @@ function showHint() {
     // Limpiar hints anteriores
     clearHints();
 
-    // Marcar toda la secuencia con sus colores originales semi-transparentes
+    // Aplicar blur al resto del tablero
+    document.getElementById('chessboard').classList.add('hint-active');
+
+    // Marcar toda la secuencia: fondo blanco + coordenada con color neón
     gameState.sequence.forEach((squareId, index) => {
         const square = document.querySelector(`[data-square="${squareId}"]`);
         if (square) {
-            // Aplicar el color original de la secuencia
             const color = gameState.sequenceColors[index];
-            square.style.setProperty('--hint-color', color.hex);
-            square.style.backgroundColor = color.hex;
+
+            // Fondo blanco
+            square.style.backgroundColor = '#fff';
             square.classList.add('hint-sequence');
+
+            // Crear o actualizar coordenada con color neón en el centro
+            let label = square.querySelector('.hint-label');
+            if (!label) {
+                label = document.createElement('span');
+                label.className = 'hint-label';
+                square.appendChild(label);
+            }
+            label.textContent = squareId.toUpperCase();
+            label.style.color = color.hex;
+            label.style.textShadow = `0 0 10px ${color.hex}, 0 0 20px ${color.hex}`;
         }
     });
 
-    // Resaltar la siguiente casilla con su color completo + borde amarillo pulsante
+    // Resaltar la SIGUIENTE casilla: borde amarillo grueso + coordenada más grande
     const nextSquareId = gameState.sequence[gameState.currentStep];
     const nextSquare = document.querySelector(`[data-square="${nextSquareId}"]`);
     if (nextSquare) {
-        // Color brillante para la siguiente
-        const nextColor = gameState.sequenceColors[gameState.currentStep];
-        nextSquare.style.backgroundColor = nextColor.hex;
-        nextSquare.style.opacity = '1';
-        nextSquare.style.filter = 'brightness(1.2)';
         nextSquare.classList.add('hint-next');
+        const nextLabel = nextSquare.querySelector('.hint-label');
+        if (nextLabel) {
+            nextLabel.classList.add('hint-next-label');
+        }
     }
 
     // Actualizar UI
@@ -858,16 +879,29 @@ function showHint() {
  * Limpia las clases de hint del tablero y restaura estilos originales
  */
 function clearHints() {
+    // Quitar blur del tablero
+    document.getElementById('chessboard').classList.remove('hint-active');
+
+    // Limpiar casillas de secuencia
     document.querySelectorAll('.hint-sequence').forEach(sq => {
         sq.classList.remove('hint-sequence');
         sq.style.removeProperty('background-color');
-        sq.style.removeProperty('--hint-color');
+
+        // Remover labels de hint
+        const label = sq.querySelector('.hint-label');
+        if (label) {
+            label.remove();
+        }
     });
+
+    // Limpiar siguiente casilla
     document.querySelectorAll('.hint-next').forEach(sq => {
         sq.classList.remove('hint-next');
-        sq.style.removeProperty('background-color');
-        sq.style.removeProperty('opacity');
-        sq.style.removeProperty('filter');
+    });
+
+    // Limpiar labels de siguiente casilla
+    document.querySelectorAll('.hint-next-label').forEach(label => {
+        label.classList.remove('hint-next-label');
     });
 }
 

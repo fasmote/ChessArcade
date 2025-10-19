@@ -775,21 +775,50 @@ body::before {
 }
 
 /* ============================================
-   HINT - Mostrar secuencia en gris
+   HINT - Fondo blanco + coordenadas neón + blur
    ============================================ */
 
-.square.hint-sequence {
-    opacity: 0.4 !important;
-    filter: brightness(0.7);
+/* Blur del tablero cuando hint está activo */
+.chessboard.hint-active .square:not(.hint-sequence) {
+    filter: blur(4px);
+    opacity: 0.5;
 }
 
+/* Casillas de la secuencia: fondo blanco limpio */
+.square.hint-sequence {
+    background: #fff !important;
+    border: 2px solid #ddd !important;
+    position: relative;
+}
+
+/* Label con coordenada en color neón */
+.hint-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Orbitron', monospace;
+    font-size: 24px;
+    font-weight: 900;
+    pointer-events: none;
+    z-index: 10;
+    text-transform: uppercase;
+}
+
+/* Siguiente casilla: borde amarillo grueso pulsante */
 .square.hint-next {
-    border: 4px solid var(--neon-yellow) !important;
+    border: 6px solid var(--neon-yellow) !important;
     box-shadow:
         0 0 20px var(--neon-yellow),
         0 0 40px var(--neon-yellow),
         inset 0 0 20px rgba(255, 255, 0, 0.3);
     animation: hintPulse 1s ease-in-out infinite;
+}
+
+/* Label de siguiente casilla: más grande y brillante */
+.hint-next-label {
+    font-size: 32px !important;
+    animation: hintLabelPulse 1s ease-in-out infinite;
 }
 
 @keyframes hintPulse {
@@ -804,6 +833,15 @@ body::before {
             0 0 30px var(--neon-yellow),
             0 0 60px var(--neon-yellow),
             inset 0 0 30px rgba(255, 255, 0, 0.5);
+    }
+}
+
+@keyframes hintLabelPulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
     }
 }
 
