@@ -423,6 +423,8 @@ async function showSequence() {
         // Reproducir sonido ANTES de iluminar (sincronización perfecta)
         if (gameState.soundEnabled && typeof playBeep === 'function') {
             playBeep(440 + i * 50);
+            // Pequeño delay para que el audio inicie antes que el visual (Web Audio API latency)
+            await sleep(10);
         }
 
         // Highlight la casilla con el color correspondiente
@@ -751,34 +753,34 @@ function cancelEndGame() {
 function showCurrentStats() {
     console.log('📊 Mostrando estadísticas actuales...');
 
-    // Calcular estadísticas de la sesión actual
+    const overlay = document.getElementById('advancedStatsOverlay');
     const sequenceLength = gameState.sequence.length || 0;
     const streakMultiplier = gameState.perfectStreak >= 3 ? calculateStreakMultiplier(gameState.perfectStreak) : 1.0;
 
-    // Preparar objeto de estadísticas con datos COMPLETOS de la sesión
-    const stats = {
-        timeElapsed: '-',
-        basePoints: '-',
-        speedBonus: '-',
-        streakMultiplier: streakMultiplier,
-        finalPoints: gameState.score, // Score acumulado de la sesión
-        newRecords: [] // Records guardados (no nuevos en esta consulta)
-    };
+    // Título y mensaje del overlay
+    document.getElementById('successMessage').textContent = '📊 Estadísticas de Sesión Actual';
 
-    // Cambiar el título y mensaje del overlay
-    const overlayTitle = document.querySelector('#advancedStatsOverlay .overlay-title');
-    const overlayMessage = document.querySelector('#advancedStatsOverlay .overlay-message');
-    const overlayIcon = document.querySelector('#advancedStatsOverlay .overlay-icon');
-
-    overlayTitle.textContent = '📊 Estadísticas de Sesión Actual';
-    overlayMessage.textContent = `Nivel ${gameState.currentLevel} - Longitud: ${sequenceLength}`;
-    overlayIcon.textContent = '📊';
-
-    // Actualizar valores en el overlay
+    // Grid de estadísticas - DATOS REALES DE LA SESIÓN
     document.getElementById('successLevel').textContent = gameState.currentLevel;
-    document.getElementById('successTime').textContent = `Longitud: ${sequenceLength}`;
+    document.getElementById('successTime').textContent = `Long: ${sequenceLength}`;
     document.getElementById('successBasePoints').textContent = `Vidas: ${gameState.lives}/${gameState.maxLives}`;
     document.getElementById('successSpeedBonus').textContent = `Racha: ${gameState.perfectStreak}`;
+
+    // Ocultar speed badge
+    document.getElementById('speedBadge').style.display = 'none';
+    document.getElementById('speedBonusCard').style.opacity = '0.5';
+
+    // Sección de racha perfecta
+    const streakSection = document.getElementById('streakSection');
+    if (gameState.perfectStreak >= 3) {
+        streakSection.style.display = 'block';
+        document.getElementById('successStreak').textContent = gameState.perfectStreak;
+        document.getElementById('successMultiplier').textContent = `x${streakMultiplier.toFixed(1)}`;
+    } else {
+        streakSection.style.display = 'none';
+    }
+
+    // Puntos finales (score total de la sesión)
     document.getElementById('successFinalPoints').textContent = gameState.score;
 
     // Mostrar high scores guardados en la sección de records
@@ -802,8 +804,8 @@ function showCurrentStats() {
         recordsList.appendChild(item);
     });
 
-    // Mostrar el overlay avanzado
-    showAdvancedStatsOverlay(stats);
+    // Mostrar el overlay directamente (NO llamar showAdvancedStatsOverlay para evitar sobrescritura)
+    overlay.classList.remove('hidden');
 }
 
 /**
