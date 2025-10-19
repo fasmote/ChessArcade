@@ -543,8 +543,8 @@ function handleSquareClick(e) {
         // ✅ Correcto
         console.log(`✅ Correct! (${gameState.currentStep + 1}/${gameState.sequence.length})`);
 
-        // Limpiar hints si estaban activos
-        clearHints();
+        // Limpiar hint de ESTA casilla específica (flechas/símbolos/labels)
+        clearHintFromSquare(square);
 
         // Mostrar con el MISMO COLOR que se usó en la secuencia original
         const color = gameState.sequenceColors[gameState.currentStep];
@@ -558,6 +558,9 @@ function handleSquareClick(e) {
         }
 
         gameState.currentStep++;
+
+        // Actualizar la siguiente casilla hint (mover borde pulsante)
+        updateNextHint();
 
         // ¿Completó toda la secuencia?
         if (gameState.currentStep === gameState.sequence.length) {
@@ -827,9 +830,6 @@ function showHint() {
     // Limpiar hints anteriores
     clearHints();
 
-    // Aplicar blur al resto del tablero
-    document.getElementById('chessboard').classList.add('hint-active');
-
     // Marcar toda la secuencia: fondo blanco + coordenada con color neón
     gameState.sequence.forEach((squareId, index) => {
         const square = document.querySelector(`[data-square="${squareId}"]`);
@@ -867,26 +867,24 @@ function showHint() {
         }
     });
 
-    // Resaltar la SIGUIENTE casilla: borde amarillo grueso + coordenada más grande
+    // Resaltar la SIGUIENTE casilla: borde amarillo grueso SIN coordenada (oculta)
     const nextSquareId = gameState.sequence[gameState.currentStep];
     const nextSquare = document.querySelector(`[data-square="${nextSquareId}"]`);
     if (nextSquare) {
         nextSquare.classList.add('hint-next');
         const nextLabel = nextSquare.querySelector('.hint-label');
         if (nextLabel) {
-            nextLabel.classList.add('hint-next-label');
+            // Ocultar la coordenada de la siguiente casilla (solo borde pulsante visible)
+            nextLabel.style.display = 'none';
         }
     }
 
     // Actualizar UI
     updateUI();
-    updateStatus(`💡 Hint activado (-${penalty} pts, racha perdida). Siguiente: ${nextSquareId.toUpperCase()}`, 'hint');
+    updateStatus(`💡 Hint activado (-${penalty} pts, racha perdida). Las flechas te guiarán...`, 'hint');
 
-    // Auto-ocultar hint después de 3 segundos
-    setTimeout(() => {
-        clearHints();
-        updateStatus('¡Continúa la secuencia!', 'playing');
-    }, 3000);
+    // NOTA: Los hints ahora persisten hasta que el jugador haga click
+    // Se limpiarán progresivamente en onSquareClick()
 }
 
 /**
@@ -953,44 +951,79 @@ function addDirectionalArrow(square, fromSquare, toSquare, color) {
 }
 
 /**
- * Limpia las clases de hint del tablero y restaura estilos originales
+ * Limpia el hint de UNA casilla específica (llamado al hacer click correcto)
+ * @param {HTMLElement} square - Elemento de la casilla a limpiar
  */
-function clearHints() {
-    // Quitar blur del tablero
-    document.getElementById('chessboard').classList.remove('hint-active');
+function clearHintFromSquare(square) {
+    // Remover clase hint-sequence
+    square.classList.remove('hint-sequence');
+    square.classList.remove('hint-next');
+    square.style.removeProperty('background-color');
 
-    // Limpiar casillas de secuencia
-    document.querySelectorAll('.hint-sequence').forEach(sq => {
-        sq.classList.remove('hint-sequence');
-        sq.style.removeProperty('background-color');
+    // Remover label de hint
+    const label = square.querySelector('.hint-label');
+    if (label) {
+        label.remove();
+    }
 
-        // Remover labels de hint
+    // Remover flecha
+    const arrow = square.querySelector('.hint-arrow');
+    if (arrow) {
+        arrow.remove();
+    }
+
+    // Remover símbolo de repetición
+    const repeat = square.querySelector('.hint-repeat');
+    if (repeat) {
+        repeat.remove();
+    }
+}
+
+/**
+ * Actualiza el hint de la siguiente casilla (mueve el borde pulsante)
+ */
+function updateNextHint() {
+    // Remover hint-next de todas las casillas
+    document.querySelectorAll('.hint-next').forEach(sq => {
+        sq.classList.remove('hint-next');
+        // Restaurar display de label si estaba oculta
         const label = sq.querySelector('.hint-label');
         if (label) {
-            label.remove();
+            label.style.removeProperty('display');
         }
+    });
 
-        // Remover flechas
-        const arrow = sq.querySelector('.hint-arrow');
-        if (arrow) {
-            arrow.remove();
+    // Si aún hay casillas por completar, marcar la siguiente
+    if (gameState.currentStep < gameState.sequence.length) {
+        const nextSquareId = gameState.sequence[gameState.currentStep];
+        const nextSquare = document.querySelector(`[data-square="${nextSquareId}"]`);
+        if (nextSquare) {
+            nextSquare.classList.add('hint-next');
+            // Ocultar su coordenada (solo borde visible)
+            const nextLabel = nextSquare.querySelector('.hint-label');
+            if (nextLabel) {
+                nextLabel.style.display = 'none';
+            }
         }
+    }
+}
 
-        // Remover símbolos de repetición
-        const repeat = sq.querySelector('.hint-repeat');
-        if (repeat) {
-            repeat.remove();
-        }
+/**
+ * Limpia TODOS los hints del tablero (llamado en clearHints completo)
+ */
+function clearHints() {
+    // Limpiar casillas de secuencia
+    document.querySelectorAll('.hint-sequence').forEach(sq => {
+        clearHintFromSquare(sq);
     });
 
     // Limpiar siguiente casilla
     document.querySelectorAll('.hint-next').forEach(sq => {
         sq.classList.remove('hint-next');
-    });
-
-    // Limpiar labels de siguiente casilla
-    document.querySelectorAll('.hint-next-label').forEach(label => {
-        label.classList.remove('hint-next-label');
+        const label = sq.querySelector('.hint-label');
+        if (label) {
+            label.style.removeProperty('display');
+        }
     });
 }
 
