@@ -9,11 +9,11 @@
 | Campo | Valor |
 |-------|-------|
 | **Proyecto** | Master Sequence - ChessArcade |
-| **Versión** | 1.2.0 |
-| **Fecha** | 17 de Octubre, 2025 |
+| **Versión** | 2.0.0 |
+| **Fecha** | 19 de Octubre, 2025 |
 | **Autor** | ChessArcade Team |
 | **Estado** | ✅ En Producción |
-| **Última Actualización** | 17/10/2025 |
+| **Última Actualización** | 19/10/2025 - Sistema HINT completo implementado |
 
 ---
 
@@ -78,8 +78,16 @@ Este documento especifica los requerimientos funcionales y no funcionales del ju
 - ✅ Audio sintético (Web Audio API)
 - ✅ Responsive design (mobile + desktop)
 - ✅ Toggle de coordenadas y sonido
+- ✅ Sistema HINT visual avanzado (v2.0):
+  - Coordenadas neón en casillas de secuencia
+  - Flechas direccionales grandes y pulsantes
+  - Líneas conectoras negras entre casillas
+  - Símbolo de repetición (⟲) para casillas duplicadas
+  - Borde amarillo pulsante en siguiente casilla
+  - Costo: -100 pts y pérdida de racha perfecta
+  - Validación: requiere score >= 100 pts
 
-**No Incluido (fuera de alcance v1.2):**
+**No Incluido (fuera de alcance v2.0):**
 - ❌ Multiplayer / modo competitivo
 - ❌ Servidor backend / base de datos
 - ❌ Sistema de cuentas de usuario

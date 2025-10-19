@@ -20,7 +20,10 @@
       "Bash(do if [ -f \"$file\" ])",
       "Bash(then if grep -q \"G-N3EKXHPD5Y\" \"$file\")",
       "Bash(git merge:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(git mv:*)",
+      "Bash(robocopy:*)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []
