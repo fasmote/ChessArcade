@@ -61,6 +61,15 @@ let gameState = {
     }
 };
 
+// Estadísticas de la última sesión (se preservan después de Game Over)
+let lastSessionStats = {
+    level: 1,
+    score: 0,
+    lives: 5,
+    streak: 0,
+    sequenceLength: 1
+};
+
 // ============================================
 // INICIALIZACIÓN
 // ============================================
@@ -655,6 +664,16 @@ function onLevelFailed() {
 function gameOver() {
     console.log('💀 Game Over');
 
+    // Preservar estadísticas de la sesión para mostrar en STATS después
+    lastSessionStats = {
+        level: gameState.currentLevel,
+        score: gameState.score,
+        lives: gameState.lives,
+        streak: gameState.perfectStreak,
+        sequenceLength: gameState.sequence.length
+    };
+    console.log('📊 Last session stats saved:', lastSessionStats);
+
     gameState.phase = 'gameover';
 
     if (gameState.soundEnabled && typeof playGameOver === 'function') {
@@ -754,17 +773,26 @@ function showCurrentStats() {
     console.log('📊 Mostrando estadísticas actuales...');
 
     const overlay = document.getElementById('advancedStatsOverlay');
-    const sequenceLength = gameState.sequence.length || 0;
-    const streakMultiplier = gameState.perfectStreak >= 3 ? calculateStreakMultiplier(gameState.perfectStreak) : 1.0;
+
+    // Usar lastSessionStats si existe (después de Game Over), sino usar gameState actual
+    const stats = lastSessionStats.level > 1 ? lastSessionStats : {
+        level: gameState.currentLevel,
+        score: gameState.score,
+        lives: gameState.lives,
+        streak: gameState.perfectStreak,
+        sequenceLength: gameState.sequence.length
+    };
+
+    const streakMultiplier = stats.streak >= 3 ? calculateStreakMultiplier(stats.streak) : 1.0;
 
     // Título y mensaje del overlay
-    document.getElementById('successMessage').textContent = '📊 Estadísticas de Sesión Actual';
+    document.getElementById('successMessage').textContent = '📊 Estadísticas de Última Sesión';
 
     // Grid de estadísticas - DATOS REALES DE LA SESIÓN
-    document.getElementById('successLevel').textContent = gameState.currentLevel;
-    document.getElementById('successTime').textContent = `Long: ${sequenceLength}`;
-    document.getElementById('successBasePoints').textContent = `Vidas: ${gameState.lives}/${gameState.maxLives}`;
-    document.getElementById('successSpeedBonus').textContent = `Racha: ${gameState.perfectStreak}`;
+    document.getElementById('successLevel').textContent = stats.level;
+    document.getElementById('successTime').textContent = `Long: ${stats.sequenceLength}`;
+    document.getElementById('successBasePoints').textContent = `Vidas: ${stats.lives}/${gameState.maxLives}`;
+    document.getElementById('successSpeedBonus').textContent = `Racha: ${stats.streak}`;
 
     // Ocultar speed badge
     document.getElementById('speedBadge').style.display = 'none';
@@ -772,16 +800,16 @@ function showCurrentStats() {
 
     // Sección de racha perfecta
     const streakSection = document.getElementById('streakSection');
-    if (gameState.perfectStreak >= 3) {
+    if (stats.streak >= 3) {
         streakSection.style.display = 'block';
-        document.getElementById('successStreak').textContent = gameState.perfectStreak;
+        document.getElementById('successStreak').textContent = stats.streak;
         document.getElementById('successMultiplier').textContent = `x${streakMultiplier.toFixed(1)}`;
     } else {
         streakSection.style.display = 'none';
     }
 
     // Puntos finales (score total de la sesión)
-    document.getElementById('successFinalPoints').textContent = gameState.score;
+    document.getElementById('successFinalPoints').textContent = stats.score;
 
     // Mostrar high scores guardados en la sección de records
     const recordsList = document.getElementById('recordsList');
