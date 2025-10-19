@@ -1098,18 +1098,30 @@ function clearHints() {
         svgContainer.remove();
     }
 
-    // Limpiar casillas de secuencia
+    // Limpiar TODAS las flechas del tablero (no solo .hint-sequence)
+    document.querySelectorAll('.hint-arrow').forEach(arrow => {
+        arrow.remove();
+    });
+
+    // Limpiar TODOS los símbolos de repetición
+    document.querySelectorAll('.hint-repeat').forEach(repeat => {
+        repeat.remove();
+    });
+
+    // Limpiar TODOS los labels de hint
+    document.querySelectorAll('.hint-label').forEach(label => {
+        label.remove();
+    });
+
+    // Limpiar casillas de secuencia (solo clases y backgrounds)
     document.querySelectorAll('.hint-sequence').forEach(sq => {
-        clearHintFromSquare(sq);
+        sq.classList.remove('hint-sequence');
+        sq.style.removeProperty('background-color');
     });
 
     // Limpiar siguiente casilla
     document.querySelectorAll('.hint-next').forEach(sq => {
         sq.classList.remove('hint-next');
-        const label = sq.querySelector('.hint-label');
-        if (label) {
-            label.style.removeProperty('display');
-        }
     });
 }
 
