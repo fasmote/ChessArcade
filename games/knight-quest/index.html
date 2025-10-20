@@ -1443,14 +1443,15 @@
         
         // Check if knight move is valid (Same logic as your working code)
         function isValidKnightMove(from, to) {
-            const fromRow = Math.floor(from / gameState.boardSize);
-            const fromCol = from % gameState.boardSize;
-            const toRow = Math.floor(to / gameState.boardSize);
-            const toCol = to % gameState.boardSize;
-            
+            const cols = gameState.boardCols;
+            const fromRow = Math.floor(from / cols);
+            const fromCol = from % cols;
+            const toRow = Math.floor(to / cols);
+            const toCol = to % cols;
+
             const rowDiff = Math.abs(toRow - fromRow);
             const colDiff = Math.abs(toCol - fromCol);
-            
+
             return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
         }
         
@@ -1552,7 +1553,7 @@
             
             // Use Warnsdorff's rule to suggest best move
             let bestMove = possibleMoves[0];
-            let fewestOnward = gameState.boardSize * 2; // Max possible onward moves
+            let fewestOnward = Math.max(gameState.boardRows, gameState.boardCols) * 2; // Max possible onward moves
             
             possibleMoves.forEach(move => {
                 const onwardMoves = getPossibleMoves(move).length;
