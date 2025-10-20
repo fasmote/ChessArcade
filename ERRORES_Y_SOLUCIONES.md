@@ -13,6 +13,7 @@
 1. [Problema del Caché del Navegador](#1-problema-del-caché-del-navegador)
 2. [Posicionamiento de Botones UI](#2-posicionamiento-de-botones-ui)
 3. [Centrado de Elementos en Desktop](#3-centrado-de-elementos-en-desktop)
+4. [innerHTML Borra Elementos que Queremos Preservar](#4-innerhtml-borra-elementos-que-queremos-preservar)
 
 ---
 
@@ -246,6 +247,211 @@ El contenedor `.timer-hint-container` tenía `justify-content: space-between` en
 
 ---
 
+## 4. innerHTML Borra Elementos que Queremos Preservar
+
+### 🔴 Síntoma
+Al implementar coordenadas tipo "taxi" en Knight Quest, las coordenadas aparecían correctamente al crear el tablero, pero **desaparecían** cuando el caballo visitaba casillas del borde (primera columna o última fila).
+
+**Contexto:**
+- Coordenadas agregadas en `createBoard()` ✅
+- CSS correcto y posicionamiento funcional ✅
+- Coordenadas visibles inicialmente ✅
+- **Desaparecen al jugar** ❌
+
+### 🔍 Diagnóstico del Problema
+
+**Código problemático en `updateDisplay()`:**
+
+```javascript
+// Limpiar contenido de la casilla
+square.innerHTML = '';  // ← Borra TODO
+
+// Más adelante: agregar contenido a casillas visitadas
+gameState.visitedSquares.forEach(index => {
+    squares[index].innerHTML = `<span class="move-number">5</span>`;
+    // ← Sobrescribe TODO, incluyendo coordenadas
+});
+```
+
+**¿Por qué falla?**
+
+1. `createBoard()` agrega coordenadas: `<span class="coord-file">a</span>`
+2. `updateDisplay()` se llama cada vez que hay cambio
+3. `square.innerHTML = ''` **borra TODO** el contenido, incluyendo coordenadas
+4. Luego `square.innerHTML = '<span>...</span>'` **sobrescribe TODO**
+5. Resultado: Las coordenadas se pierden
+
+### ✅ Solución Implementada
+
+**Opción 1: Preservar antes de limpiar (más seguro)**
+
+```javascript
+function updateDisplay() {
+    squares.forEach(square => {
+        // GUARDAR coordenadas antes de limpiar
+        const coordFile = square.querySelector('.coord-file');
+        const coordRank = square.querySelector('.coord-rank');
+
+        // Limpiar TODO el contenido
+        square.innerHTML = '';
+
+        // RESTAURAR coordenadas
+        if (coordFile) square.appendChild(coordFile);
+        if (coordRank) square.appendChild(coordRank);
+    });
+
+    // Ahora agregar contenido nuevo usando appendChild
+    gameState.visitedSquares.forEach(index => {
+        const moveNumber = document.createElement('span');
+        moveNumber.className = 'move-number';
+        moveNumber.textContent = gameState.board[index];
+
+        squares[index].appendChild(moveNumber);  // ← Agrega sin borrar
+    });
+}
+```
+
+**Opción 2: Nunca usar innerHTML (más limpio)**
+
+```javascript
+// Crear función helper
+function clearSquareContent(square) {
+    const coordFile = square.querySelector('.coord-file');
+    const coordRank = square.querySelector('.coord-rank');
+
+    square.innerHTML = '';
+
+    if (coordFile) square.appendChild(coordFile);
+    if (coordRank) square.appendChild(coordRank);
+}
+
+// Usar en updateDisplay
+function updateDisplay() {
+    squares.forEach(square => {
+        clearSquareContent(square);  // ← Preserva coordenadas
+    });
+
+    // Agregar contenido siempre con appendChild
+    gameState.visitedSquares.forEach(index => {
+        const moveNumber = document.createElement('span');
+        moveNumber.className = 'move-number';
+        moveNumber.textContent = gameState.board[index];
+
+        squares[index].appendChild(moveNumber);
+    });
+}
+```
+
+### 🎯 Implementación en ChessGameLibrary
+
+Se creó un módulo reutilizable: **BoardCoordinates.js**
+
+**Funciones exportadas:**
+```javascript
+// Agregar coordenadas tipo "taxi" (amarillo/negro)
+addTaxiCoordinates({
+    rows: 8,
+    cols: 8,
+    boardSelector: '#chessboard',
+    useLetters: true  // a-h o 1-8
+});
+
+// Limpiar contenido preservando coordenadas
+clearSquareContent(square);
+
+// Agregar contenido preservando coordenadas
+addContentToSquare(square, moveNumber, knightSymbol);
+```
+
+**Nombre:** "Coordenadas Taxi" 🚕 (amarillo/negro, alta visibilidad)
+
+### 📚 Lección Aprendida
+
+**Regla de oro: innerHTML sobrescribe TODO**
+
+| Acción | Efecto | Cuándo usar |
+|--------|--------|-------------|
+| `element.innerHTML = ''` | Borra **TODO** el contenido | Solo si querés eliminar TODO |
+| `element.innerHTML = '<span>...</span>'` | Sobrescribe **TODO** | Solo si creás contenido desde cero |
+| `element.appendChild(newElement)` | Agrega sin borrar | Cuando querés **agregar** contenido |
+| `element.querySelector('.class').remove()` | Elimina elemento específico | Cuando querés eliminar algo específico |
+
+**Patrón recomendado para contenido dinámico:**
+
+```javascript
+// ❌ MAL
+function updateContent() {
+    square.innerHTML = '<span>New content</span>';
+    // Problema: Borra coordenadas, tooltips, data-attributes, etc.
+}
+
+// ✅ BIEN
+function updateContent() {
+    // 1. Guardar elementos que queremos preservar
+    const preserve = square.querySelectorAll('.preserve-me');
+
+    // 2. Limpiar
+    square.innerHTML = '';
+
+    // 3. Restaurar elementos preservados
+    preserve.forEach(el => square.appendChild(el));
+
+    // 4. Agregar nuevo contenido con appendChild
+    const newContent = document.createElement('span');
+    newContent.textContent = 'New content';
+    square.appendChild(newContent);
+}
+```
+
+### 🐛 Señales de que tenés este problema
+
+1. Elementos aparecen al cargar pero desaparecen al interactuar
+2. Event listeners dejan de funcionar después de actualizar
+3. Atributos `data-*` se pierden
+4. Elementos con `position: absolute` desaparecen
+
+### 🔧 Herramientas para Debuggear
+
+```javascript
+// Antes de limpiar, ver qué hay en el elemento
+console.log('Before:', square.innerHTML);
+square.innerHTML = '';
+console.log('After:', square.innerHTML);  // Vacío
+
+// O usar MutationObserver para rastrear cambios
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach(mutation => {
+        console.log('DOM changed:', mutation);
+    });
+});
+
+observer.observe(square, {
+    childList: true,
+    subtree: true
+});
+```
+
+### 📊 Resumen de Commits
+
+| Commit | Descripción |
+|--------|-------------|
+| `b1be442` | Estilos DEBUG para ver si coordenadas se crean |
+| `1dc7485` | FIX: Preservar coordenadas al limpiar con innerHTML |
+| `8c677f1` | Mover coordenadas de fila superior a inferior |
+| `4f9e343` | Cambiar a appendChild, letras en columnas, estilo final |
+
+### 💡 Casos de Uso Adicionales
+
+Este mismo problema ocurre con:
+- **Tooltips**: Se pierden al actualizar contenido
+- **Drag handles**: Desaparecen después de operaciones DOM
+- **Loading spinners**: Se borran antes de terminar animación
+- **Badges/indicators**: Se eliminan sin querer
+
+**Solución universal:** Siempre preservar elementos que no son parte del contenido dinámico.
+
+---
+
 ## 🎓 Lecciones Generales del Proyecto
 
 ### 1. Cache Busting es OBLIGATORIO
@@ -325,14 +531,21 @@ Antes de implementar nuevos componentes UI, verificar:
 - [ ] Media queries ajustan `justify-content` según elementos visibles
 - [ ] Probado en al menos 3 tamaños: mobile (360px), tablet (768px), desktop (1440px)
 - [ ] DevTools "Disable cache" activado durante desarrollo
+- [ ] **NO usar `innerHTML` si hay elementos a preservar** ← NUEVO
+- [ ] Usar `appendChild()` para agregar contenido dinámico ← NUEVO
 - [ ] Commit incluye HTML + CSS + incremento de versión juntos
 
 ---
 
 ## 📝 Notas Finales
 
-**Tiempo invertido en este bug:** ~3 horas
+**Tiempo invertido en bugs documentados:** ~6 horas
 **Tiempo que ahorrará este documento:** Inestimable
+
+**Nuevas lecciones agregadas (Octubre 2025):**
+- innerHTML sobrescribe TODO (problema de coordenadas)
+- Creación del módulo BoardCoordinates.js ("coordenadas taxi" 🚕)
+- Patrón preservar-limpiar-restaurar para contenido dinámico
 
 **Conclusión:** Los bugs más frustrantes suelen tener soluciones simples. La clave es:
 1. Diagnosticar correctamente (no asumir)
