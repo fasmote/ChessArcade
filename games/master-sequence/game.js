@@ -2236,6 +2236,9 @@ async function showReplaySequence(levelData) {
     const baseDuration = 800;  // Duración base por casilla (aumentado)
     const pauseDuration = 400;  // Pausa entre casillas (aumentado)
 
+    // Dibujar líneas conectoras negras al inicio (como en HINT)
+    drawReplayConnectingLines(levelData.sequence);
+
     for (let i = 0; i < levelData.sequence.length; i++) {
         // Esperar si está pausado
         while (replayState.isPaused && replayState.isPlaying) {
@@ -2258,6 +2261,9 @@ async function showReplaySequence(levelData) {
 
     // Pausa después de mostrar secuencia (aumentada)
     await sleep(1200 / replayState.playbackSpeed);
+
+    // Limpiar líneas al finalizar
+    clearReplayConnectingLines();
 }
 
 /**
@@ -2345,12 +2351,83 @@ function clearBoardForReplay() {
         labels.forEach(label => label.remove());
     });
 
-    // Limpiar SVG de líneas conectoras
+    // Limpiar SVG de líneas conectoras de hint
     const svgContainer = document.getElementById('hintLinesSvg');
     if (svgContainer) {
         while (svgContainer.firstChild) {
             svgContainer.removeChild(svgContainer.firstChild);
         }
+    }
+
+    // Limpiar líneas de replay
+    clearReplayConnectingLines();
+}
+
+/**
+ * Dibuja líneas conectoras negras entre casillas para el replay
+ * Similar a drawConnectingLines() pero para replay (sin HINT UI)
+ */
+function drawReplayConnectingLines(sequence) {
+    // Buscar o crear el contenedor SVG para las líneas de replay
+    let svgContainer = document.getElementById('replay-lines-container');
+    if (!svgContainer) {
+        svgContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svgContainer.id = 'replay-lines-container';
+        svgContainer.classList.add('hint-lines-svg'); // Usar mismos estilos que hint
+        document.getElementById('chessboard').appendChild(svgContainer);
+    }
+
+    // Limpiar líneas anteriores
+    svgContainer.innerHTML = '';
+
+    // Obtener el tablero para calcular posiciones
+    const board = document.getElementById('chessboard');
+    const boardRect = board.getBoundingClientRect();
+
+    // Dibujar líneas entre todas las casillas de la secuencia
+    for (let i = 0; i < sequence.length - 1; i++) {
+        const currentSquareId = sequence[i];
+        const nextSquareId = sequence[i + 1];
+
+        // Si repite la misma casilla, no dibujar línea
+        if (currentSquareId === nextSquareId) continue;
+
+        const currentSquare = document.querySelector(`[data-square="${currentSquareId}"]`);
+        const nextSquare = document.querySelector(`[data-square="${nextSquareId}"]`);
+
+        if (currentSquare && nextSquare) {
+            // Calcular centros relativos al tablero
+            const currentRect = currentSquare.getBoundingClientRect();
+            const nextRect = nextSquare.getBoundingClientRect();
+
+            const x1 = currentRect.left - boardRect.left + currentRect.width / 2;
+            const y1 = currentRect.top - boardRect.top + currentRect.height / 2;
+            const x2 = nextRect.left - boardRect.left + nextRect.width / 2;
+            const y2 = nextRect.top - boardRect.top + nextRect.height / 2;
+
+            // Crear línea SVG (negra, sin cabezas de flecha)
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', '#000');
+            line.setAttribute('stroke-width', '4');
+            line.setAttribute('stroke-linecap', 'round');
+            line.classList.add('replay-connecting-line');
+
+            svgContainer.appendChild(line);
+        }
+    }
+}
+
+/**
+ * Limpia las líneas conectoras del replay
+ */
+function clearReplayConnectingLines() {
+    const svgContainer = document.getElementById('replay-lines-container');
+    if (svgContainer) {
+        svgContainer.remove();
     }
 }
 
