@@ -1,10 +1,90 @@
 # 📧 Configuración del Formulario de Contacto
 
 **Email de destino:** contact@chessarcade.com.ar
+**Hosting:** Hostinger Argentina (compartido)
 
-## 🔴 Situación Actual
+## ✅ IMPLEMENTADO - Usando Hostinger PHP
 
-El formulario en `contact.html` es **FAKE** (simulado). No envía emails reales.
+El formulario ahora envía emails REALES usando el hosting de Hostinger.
+
+**Archivos:**
+- `contact.html` - Formulario frontend
+- `contact-send.php` - Script backend PHP que envía los emails
+
+**Estado:** ✅ FUNCIONAL - Listo para subir a Hostinger
+
+---
+
+## 🚀 INSTRUCCIONES DE DESPLIEGUE EN HOSTINGER
+
+### Paso 1: Subir archivos
+
+1. Conectarse a Hostinger vía FTP o File Manager
+2. Subir `contact-send.php` a la **raíz** del sitio (mismo nivel que contact.html)
+3. Subir `contact.html` actualizado (reemplazar el anterior)
+
+### Paso 2: Configurar email en Hostinger
+
+**IMPORTANTE:** El email `noreply@chessarcade.com.ar` debe existir en Hostinger.
+
+1. Ir a **hPanel → Emails**
+2. Si no existe `noreply@chessarcade.com.ar`:
+   - Click en **"Crear cuenta de email"**
+   - Email: `noreply@chessarcade.com.ar`
+   - Contraseña: (elige una segura)
+   - Click "Crear"
+
+**Alternativa:** Cambiar línea 20 de `contact-send.php`:
+```php
+// En vez de:
+define('EMAIL_ORIGEN', 'noreply@chessarcade.com.ar');
+
+// Usar contact@ directamente:
+define('EMAIL_ORIGEN', 'contact@chessarcade.com.ar');
+```
+
+### Paso 3: Verificar Sendmail en Hostinger
+
+1. Ir a **hPanel → Emails → Mail Service Control**
+2. Verificar que **Sendmail** esté **Habilitado** (verde)
+3. Si está deshabilitado, habilitarlo
+
+### Paso 4: Probar el formulario
+
+1. Ir a `https://chessarcade.com.ar/contact.html`
+2. Llenar el formulario con datos de prueba
+3. Enviar
+4. Verificar que llegue a `contact@chessarcade.com.ar`
+
+**Si no llega el email:**
+- Revisar carpeta de SPAM
+- Esperar 5-10 minutos (a veces demora)
+- Verificar logs en Hostinger (hPanel → Error Logs)
+
+### Paso 5: Permisos (si es necesario)
+
+Si da error de permisos, conectar por SSH o File Manager:
+```bash
+chmod 644 contact-send.php
+chmod 666 contact-log.txt  # Si querés guardar logs
+```
+
+### Paso 6: Seguridad Adicional (Opcional)
+
+**Crear archivo `.htaccess` para proteger el log:**
+```apache
+# Denegar acceso directo a archivos de log
+<Files "contact-log.txt">
+    Order Allow,Deny
+    Deny from all
+</Files>
+```
+
+---
+
+## 🔴 Situación Anterior (RESUELTO)
+
+El formulario en `contact.html` ERA **FAKE** (simulado). No enviaba emails reales.
 
 ```javascript
 // Líneas 237-256 de contact.html
