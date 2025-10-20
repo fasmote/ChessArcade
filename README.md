@@ -48,6 +48,33 @@
 
 ---
 
+## 🆕 Recent Updates (Octubre 2025)
+
+### Knight Quest - Coordenadas "Taxi" 🚕
+- ✅ **Coordenadas visuales** en todos los tableros (a-h, 1-10)
+- ✅ **Centrado perfecto** en mobile y desktop
+- ✅ **Estilo de alta visibilidad** (amarillo/negro)
+- ✅ **Responsive** en 3 breakpoints
+
+### Formulario de Contacto Funcional 📧
+- ✅ **Envío real de emails** a contact@chessarcade.com.ar
+- ✅ **Implementación PHP** para Hostinger
+- ✅ **Anti-spam** (honeypot + rate limiting)
+- ✅ **UX profesional** con AJAX y animaciones
+
+### ChessGameLibrary - Nuevo Módulo 📦
+- ✅ **BoardCoordinates.js** - Sistema de coordenadas reutilizable
+- ✅ **Funciones helper** para preservar coordenadas
+- ✅ **Documentación completa** con ejemplos
+- ✅ **Listo para usar** en todos los juegos
+
+### Documentación Mejorada 📚
+- ✅ **ERRORES_Y_SOLUCIONES.md** actualizado
+- ✅ **DEPLOY_CONTACTO_HOSTINGER.md** - Guía paso a paso
+- ✅ **Organización** de docs en carpetas `/docs/`
+
+---
+
 ## 🎯 Square Rush - Perfect for Learning Chess Coordinates
 
 ![Square Rush Screenshot](./screenshots/square-rush-preview.png)
@@ -216,6 +243,38 @@ ChessArcade uses a custom **NeonChess Design System** featuring:
 
 ### Master Sequence
 ![Master Sequence Gameplay](./screenshots/master-sequence-preview.png)
+
+---
+
+## 🚀 **Roadmap y Planes Futuros**
+
+### 🎮 Mejoras Planificadas para Juegos Actuales
+Todos los juegos existentes recibirán mejoras continuas:
+- **Knight Quest**: Más modos de juego, tableros personalizados
+- **Square Rush**: Nuevos desafíos y power-ups
+- **Memory Matrix**: Niveles adicionales, temas visuales
+- **Master Sequence**: Modos de dificultad avanzados
+
+### 🗄️ Backend y Base de Datos (Coming Soon!)
+Próximas funcionalidades que transformarán ChessArcade:
+- **🏆 Rankings Globales**: Compite con jugadores de todo el mundo
+- **👤 Sistema de Usuarios**: Cuentas personales y perfiles
+- **📊 Estadísticas Detalladas**: Tracking completo de progreso
+- **🎖️ Sistema de Logros**: Desbloquea insignias y recompensas
+- **⚡ Desafíos Diarios**: Nuevos retos cada día
+- **👥 Modo Multijugador**: Compite en tiempo real
+
+**Tecnologías Planificadas:**
+- Backend: Node.js + Express o Python + FastAPI
+- Base de Datos: PostgreSQL o MongoDB
+- Auth: JWT + OAuth (Google, GitHub)
+- Hosting: Railway, Render, o Vercel
+
+### 🎨 Nuevos Juegos en Desarrollo
+- **Vision Blitz**: Entrenamiento de visión táctica
+- **Endgame Trainer**: Practica finales de ajedrez
+- **Puzzle Rush**: Resuelve problemas tácticos a contrarreloj
+- **Board Blindness**: Juega sin ver el tablero (memoria)
 
 ---
 
