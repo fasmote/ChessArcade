@@ -82,10 +82,10 @@
     position: relative;
 }
 
-.chessboard.size-4x4 {
+.chessboard.size-3x4 {
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    max-width: 300px;
+    grid-template-rows: repeat(3, 1fr);
+    max-width: 320px;
 }
 
 .chessboard.size-6x6 {
@@ -560,14 +560,14 @@
         justify-content: center;
     }
     
-    .chessboard.size-4x4 {
-        max-width: 250px;
+    .chessboard.size-3x4 {
+        max-width: 260px;
     }
-    
+
     .chessboard.size-6x6 {
         max-width: 300px;
     }
-    
+
     .chessboard.size-8x8 {
         max-width: 320px;
     }
@@ -589,14 +589,14 @@
 }
 
 @media (max-width: 480px) {
-    .chessboard.size-4x4 {
-        max-width: 200px;
+    .chessboard.size-3x4 {
+        max-width: 220px;
     }
-    
+
     .chessboard.size-6x6 {
         max-width: 240px;
     }
-    
+
     .chessboard.size-8x8 {
         max-width: 260px;
     }
