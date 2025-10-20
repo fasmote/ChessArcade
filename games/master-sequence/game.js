@@ -2133,8 +2133,11 @@ async function startReplayPlayback() {
     // Limpiar tablero
     clearBoardForReplay();
 
-    // Iniciar reproducción
-    playReplay();
+    // Iniciar reproducción (sin await para no bloquear UI)
+    playReplay().catch(err => {
+        console.error('❌ Error during replay:', err);
+        stopReplay();
+    });
 }
 
 /**
@@ -2155,9 +2158,9 @@ async function playReplay() {
         // Avanzar al siguiente nivel
         replayState.currentLevelIndex++;
 
-        // Pequeña pausa entre niveles
+        // Pausa entre niveles (aumentada para ver transición)
         if (replayState.currentLevelIndex < bestReplay.levels.length) {
-            await sleep(1000 / replayState.playbackSpeed);
+            await sleep(2000 / replayState.playbackSpeed);
         }
     }
 
@@ -2195,8 +2198,8 @@ async function playReplayLevel(levelData) {
  * Muestra la secuencia del nivel en el replay
  */
 async function showReplaySequence(levelData) {
-    const baseDuration = 600;  // Duración base por casilla
-    const pauseDuration = 300;
+    const baseDuration = 800;  // Duración base por casilla (aumentado)
+    const pauseDuration = 400;  // Pausa entre casillas (aumentado)
 
     for (let i = 0; i < levelData.sequence.length; i++) {
         // Esperar si está pausado
@@ -2218,8 +2221,8 @@ async function showReplaySequence(levelData) {
         }
     }
 
-    // Pausa después de mostrar secuencia
-    await sleep(800 / replayState.playbackSpeed);
+    // Pausa después de mostrar secuencia (aumentada)
+    await sleep(1200 / replayState.playbackSpeed);
 }
 
 /**
@@ -2246,16 +2249,16 @@ async function showReplayPlayerMoves(levelData) {
             { name: 'red', hex: '#ff0000', shadowColor: 'rgba(255, 0, 0, 0.8)' };
 
         // Mostrar movimiento
-        await highlightSquareReplay(squareId, 500 / replayState.playbackSpeed, color);
+        await highlightSquareReplay(squareId, 600 / replayState.playbackSpeed, color);
 
         replayState.currentStepIndex++;
         updateReplayStepInfo(replayState.currentStepIndex, levelData.sequence.length);
 
-        await sleep(400 / replayState.playbackSpeed);
+        await sleep(500 / replayState.playbackSpeed);
     }
 
-    // Pausa final del nivel
-    await sleep(1000 / replayState.playbackSpeed);
+    // Pausa final del nivel (aumentada)
+    await sleep(1500 / replayState.playbackSpeed);
 }
 
 /**
