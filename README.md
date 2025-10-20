@@ -101,7 +101,8 @@
 
 ## 🟦 Master Sequence - NEW! Simon Says Meets Chess
 
-<img width="1048" height="919" alt="image" src="https://github.com/user-attachments/assets/b0daac00-8194-42d5-9735-bc3e0ffdbe50" />
+<img width="1160" height="913" alt="image" src="https://github.com/user-attachments/assets/91deaaf2-754b-44f7-9cd3-202022c01d1f" />
+
 
 
 ### 🎮 **What is Master Sequence?**
