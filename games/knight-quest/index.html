@@ -987,6 +987,9 @@
         @media (max-width: 768px) {
             .neon-container {
                 padding: 0.5rem;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             }
 
             .game-title {
@@ -998,24 +1001,25 @@
                 margin: 1rem auto;
                 padding: 8px;
                 width: fit-content;
+                justify-self: center;
             }
 
-            .chessboard.size-4 {
-                grid-template-columns: repeat(4, 80px);
-                grid-template-rows: repeat(4, 80px);
+            .chessboard.size-3x4 {
+                grid-template-columns: repeat(4, 70px);
+                grid-template-rows: repeat(3, 70px);
             }
 
-            .chessboard.size-6 {
+            .chessboard.size-6x6 {
                 grid-template-columns: repeat(6, 55px);
                 grid-template-rows: repeat(6, 55px);
             }
 
-            .chessboard.size-8 {
+            .chessboard.size-8x8 {
                 grid-template-columns: repeat(8, 43px);
                 grid-template-rows: repeat(8, 43px);
             }
 
-            .chessboard.size-10 {
+            .chessboard.size-10x10 {
                 grid-template-columns: repeat(10, 34px);
                 grid-template-rows: repeat(10, 34px);
             }
@@ -1131,7 +1135,7 @@
         </div>
         
         <!-- Chessboard -->
-        <div id="chessboard" class="chessboard size-4"></div>
+        <div id="chessboard" class="chessboard size-3x4"></div>
         
         <!-- DEBUG: Botones de prueba (COMENTADOS - descomentar si necesitas debuggear)
         <div class="game-controls" style="background: rgba(255,0,0,0.2); padding: 1rem; margin: 1rem 0;">
