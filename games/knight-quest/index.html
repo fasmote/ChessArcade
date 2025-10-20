@@ -405,41 +405,67 @@
             100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
         }
 
-        /* COORDENADAS DEL TABLERO */
-        /* Coordenadas horizontales (a-h, 1-2-3...) - En el borde inferior */
+        /* ==========================================
+           COORDENADAS DEL TABLERO
+           ==========================================
+           Las coordenadas se posicionan FUERA de las casillas,
+           en el padding negro del tablero.
+           - coord-file: números de columna (1,2,3...) en borde inferior
+           - coord-rank: números de fila (1,2,3...) en borde izquierdo
+        */
+
+        /* Coordenadas horizontales (columnas: 1, 2, 3, 4...) */
         .coord-file {
+            /* Posicionamiento absoluto respecto a la casilla padre */
             position: absolute;
-            bottom: -18px;
-            left: 50%;
-            transform: translateX(-50%);
+            bottom: -18px;        /* Fuera de la casilla, hacia abajo */
+            left: 50%;            /* Centrado horizontalmente */
+            transform: translateX(-50%);  /* Ajuste fino del centrado */
 
-            color: #ffffff;
-            font-size: 11px;
-            font-weight: 700;
+            /* Estilo del texto */
+            color: #ff0000;       /* ROJO TEMPORAL PARA DEBUG - cambiar a #ffffff */
+            font-size: 14px;      /* Tamaño más grande para DEBUG */
+            font-weight: 900;     /* Extra bold para DEBUG */
             font-family: 'Orbitron', sans-serif;
+            background: yellow;   /* FONDO AMARILLO TEMPORAL PARA DEBUG */
+            padding: 2px 4px;     /* Padding temporal para DEBUG */
 
-            pointer-events: none;
-            user-select: none;
-            z-index: 20;
-            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+            /* Evitar interacción */
+            pointer-events: none; /* No bloquea clicks en las casillas */
+            user-select: none;    /* No se puede seleccionar el texto */
+
+            /* Z-index para estar sobre otros elementos */
+            z-index: 50;          /* Aumentado de 20 a 50 para estar seguro */
+
+            /* Efecto visual neón */
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);  /* Rojo brillante para DEBUG */
         }
 
-        /* Coordenadas verticales (1-2-3...) - En el borde izquierdo */
+        /* Coordenadas verticales (filas: 1, 2, 3...) */
         .coord-rank {
+            /* Posicionamiento absoluto respecto a la casilla padre */
             position: absolute;
-            left: -12px;
-            top: 50%;
-            transform: translateY(-50%);
+            left: -15px;          /* Fuera de la casilla, hacia la izquierda */
+            top: 50%;             /* Centrado verticalmente */
+            transform: translateY(-50%);  /* Ajuste fino del centrado */
 
-            color: #ffffff;
-            font-size: 11px;
-            font-weight: 700;
+            /* Estilo del texto */
+            color: #ff0000;       /* ROJO TEMPORAL PARA DEBUG - cambiar a #ffffff */
+            font-size: 14px;      /* Tamaño más grande para DEBUG */
+            font-weight: 900;     /* Extra bold para DEBUG */
             font-family: 'Orbitron', sans-serif;
+            background: yellow;   /* FONDO AMARILLO TEMPORAL PARA DEBUG */
+            padding: 2px 4px;     /* Padding temporal para DEBUG */
 
-            pointer-events: none;
-            user-select: none;
-            z-index: 20;
-            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+            /* Evitar interacción */
+            pointer-events: none; /* No bloquea clicks en las casillas */
+            user-select: none;    /* No se puede seleccionar el texto */
+
+            /* Z-index para estar sobre otros elementos */
+            z-index: 50;          /* Aumentado de 20 a 50 para estar seguro */
+
+            /* Efecto visual neón */
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);  /* Rojo brillante para DEBUG */
         }
 
         /* Coordenadas responsive */
@@ -1340,45 +1366,81 @@
             newGame();
         }
         
-        // Create the visual board (FIXED - no more memory leaks)
+        /**
+         * ========================================
+         * CREAR TABLERO VISUAL
+         * ========================================
+         * Genera el tablero HTML con todas las casillas y coordenadas.
+         * Se ejecuta cada vez que se cambia el tamaño del tablero.
+         *
+         * IMPORTANTE: Las coordenadas se agregan como elementos <span>
+         * DENTRO de las casillas del borde, posicionados absolutamente
+         * para aparecer en el padding negro del tablero.
+         */
         function createBoard() {
+            // Obtener el elemento contenedor del tablero
             const board = document.getElementById('chessboard');
-            board.innerHTML = ''; // Clear completely
 
-            const rows = gameState.boardRows;
-            const cols = gameState.boardCols;
+            // Limpiar completamente el tablero (eliminar casillas anteriores)
+            board.innerHTML = '';
+
+            // Obtener dimensiones del tablero desde el estado del juego
+            const rows = gameState.boardRows;  // Número de filas (3, 6, 8, o 10)
+            const cols = gameState.boardCols;  // Número de columnas (4, 6, 8, o 10)
             const totalSquares = rows * cols;
             console.log(`📋 Creating ${rows}x${cols} board (${totalSquares} squares)`);
 
-            // Update board CSS class
+            // Actualizar la clase CSS del tablero para aplicar grid correcto
             board.className = `chessboard size-${rows}x${cols}`;
 
+            // ITERAR POR CADA FILA
             for (let row = 0; row < rows; row++) {
-                for (let col = 0; col < cols; col++) {
-                    const square = document.createElement('div');
-                    const index = row * cols + col;
 
+                // ITERAR POR CADA COLUMNA
+                for (let col = 0; col < cols; col++) {
+
+                    // ==========================================
+                    // CREAR CASILLA
+                    // ==========================================
+                    const square = document.createElement('div');
+                    const index = row * cols + col;  // Índice único: 0, 1, 2, 3...
+
+                    // Clase de color: light o dark (patrón ajedrez alternado)
+                    // Si la suma de fila+columna es par → light, si es impar → dark
                     square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+
+                    // Guardar índice en data-attribute para referencia
                     square.dataset.index = index;
+
+                    // Event listener: cuando se clickea, intentar mover el caballo
                     square.addEventListener('click', () => makeMove(index));
 
-                    // AGREGAR COORDENADAS
-                    // Coordenada horizontal (columnas: 1, 2, 3, 4...) en la primera fila (row = 0)
+                    // ==========================================
+                    // AGREGAR COORDENADAS (SOLO EN LOS BORDES)
+                    // ==========================================
+
+                    // COORDENADAS HORIZONTALES (números de columna: 1, 2, 3, 4...)
+                    // Se agregan en la PRIMERA FILA (row = 0)
                     if (row === 0) {
                         const coordFile = document.createElement('span');
                         coordFile.className = 'coord-file';
-                        coordFile.textContent = col + 1;
+                        coordFile.textContent = col + 1;  // Columna 1, 2, 3...
                         square.appendChild(coordFile);
+                        console.log(`  ➕ Added coord-file: ${col + 1} at square ${index}`);
                     }
 
-                    // Coordenada vertical (filas: 1, 2, 3...) en la primera columna (col = 0)
+                    // COORDENADAS VERTICALES (números de fila: 3, 2, 1...)
+                    // Se agregan en la PRIMERA COLUMNA (col = 0)
+                    // NOTA: Las filas se numeran de arriba a abajo, por eso rows - row
                     if (col === 0) {
                         const coordRank = document.createElement('span');
                         coordRank.className = 'coord-rank';
-                        coordRank.textContent = rows - row;
+                        coordRank.textContent = rows - row;  // De arriba abajo: 3, 2, 1
                         square.appendChild(coordRank);
+                        console.log(`  ➕ Added coord-rank: ${rows - row} at square ${index}`);
                     }
 
+                    // Agregar la casilla al tablero
                     board.appendChild(square);
                 }
             }
