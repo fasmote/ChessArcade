@@ -201,6 +201,19 @@ function setupEventListeners() {
     // Botón X de Game Over (misma función que "Volver al Inicio")
     document.getElementById('btnCloseGameOver')?.addEventListener('click', backToMainScreen);
 
+    // Botón X de Stats Overlay (misma función que "Continuar")
+    document.getElementById('btnCloseStats')?.addEventListener('click', () => {
+        hideAllOverlays();
+        // Si estaba mostrando stats actuales, limpiar cambios de título
+        const overlayTitle = document.querySelector('#advancedStatsOverlay .overlay-title');
+        if (overlayTitle && overlayTitle.textContent === '📊 Estadísticas Actuales') {
+            // Restaurar valores por defecto para próxima vez que se use en nivel completado
+            overlayTitle.textContent = '¡Nivel Completado!';
+            document.querySelector('#advancedStatsOverlay .overlay-message').textContent = 'Excelente memoria';
+            document.querySelector('#advancedStatsOverlay .overlay-icon').textContent = '🎉';
+        }
+    });
+
     // Botón STATS (consultar estadísticas actuales)
     document.getElementById('btnStats')?.addEventListener('click', showCurrentStats);
 
