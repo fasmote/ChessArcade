@@ -430,7 +430,30 @@ function startLevel(levelNumber) {
                 if (validFromPrevious.length > 0) {
                     availableSquares = validFromPrevious;
                     originSquare = previousSquare;
-                    console.log(`   ✅ Usando movimiento desde ${previousSquare} (${gameState.masterSequence.length - i} casillas atrás)`);
+
+                    // IMPORTANTE: Eliminar casillas "muertas" al hacer backtracking
+                    // Si retrocedemos N casillas, eliminar las últimas (N-1) casillas de la secuencia
+                    const backtrackSteps = gameState.masterSequence.length - i - 1;
+                    if (backtrackSteps > 0) {
+                        console.log(`   ⏪ BACKTRACKING: Eliminando ${backtrackSteps} casilla(s) muerta(s)`);
+
+                        // Eliminar las casillas muertas del masterSequence
+                        const removedSquares = gameState.masterSequence.splice(i + 1, backtrackSteps);
+
+                        // También eliminar sus colores correspondientes
+                        gameState.sequenceColors.splice(i + 1, backtrackSteps);
+
+                        // Decrementar contador de uso de las casillas eliminadas
+                        removedSquares.forEach(sq => {
+                            if (gameState.squareUsageCount[sq]) {
+                                gameState.squareUsageCount[sq]--;
+                            }
+                        });
+
+                        console.log(`   ⏪ Casillas eliminadas:`, removedSquares);
+                    }
+
+                    console.log(`   ✅ Usando movimiento desde ${previousSquare} (${backtrackSteps + 1} casillas atrás en la búsqueda original)`);
                     break;
                 }
             }
