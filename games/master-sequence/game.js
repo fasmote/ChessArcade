@@ -2154,7 +2154,8 @@ async function startReplayPlayback() {
     // Resetear estado del reproductor
     replayState.isPlaying = true;
     replayState.isPaused = false;
-    replayState.currentLevelIndex = 0;
+    // Comenzar desde el ÚLTIMO nivel (el más largo), no desde el nivel 1
+    replayState.currentLevelIndex = bestReplay.levels.length - 1;
     replayState.currentStepIndex = 0;
     replayState.playbackSpeed = 1.0;
 
@@ -2172,10 +2173,17 @@ async function startReplayPlayback() {
 }
 
 /**
- * Reproduce el replay nivel por nivel
+ * Reproduce SOLO el último nivel completo (el más difícil alcanzado)
  */
 async function playReplay() {
-    while (replayState.isPlaying && replayState.currentLevelIndex < bestReplay.levels.length) {
+    // Solo reproducir el último nivel, no todos
+    const lastLevelIndex = bestReplay.levels.length - 1;
+    const levelData = bestReplay.levels[lastLevelIndex];
+
+    console.log(`🎬 Playing ONLY last level: ${levelData.level} (${levelData.sequence.length} moves)`);
+
+    // Loop infinito mientras no se detenga manualmente
+    while (replayState.isPlaying) {
         // Esperar si está pausado
         while (replayState.isPaused) {
             await sleep(100);
@@ -2183,23 +2191,17 @@ async function playReplay() {
 
         if (!replayState.isPlaying) break;
 
-        const levelData = bestReplay.levels[replayState.currentLevelIndex];
+        // Reproducir el nivel
         await playReplayLevel(levelData);
 
-        // Avanzar al siguiente nivel
-        replayState.currentLevelIndex++;
+        // Pausa entre repeticiones
+        await sleep(2000 / replayState.playbackSpeed);
 
-        // Pausa entre niveles (aumentada para ver transición)
-        if (replayState.currentLevelIndex < bestReplay.levels.length) {
-            await sleep(2000 / replayState.playbackSpeed);
-        }
+        // Volver a empezar el mismo nivel (loop infinito)
+        console.log('🔄 Repeating last level...');
     }
 
-    // Replay terminado
-    if (replayState.isPlaying) {
-        console.log('🎬 Replay finished');
-        stopReplay();
-    }
+    console.log('🎬 Replay stopped');
 }
 
 /**
