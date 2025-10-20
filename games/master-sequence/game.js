@@ -2099,11 +2099,18 @@ function loadBestReplay() {
 // ============================================
 
 /**
- * Muestra el botón VER REPLAY si hay un replay guardado
+ * Muestra el botón VER REPLAY si hay un replay guardado Y no hay partida en curso
  */
 function updateReplayButtonVisibility() {
     const btnReplay = document.getElementById('btnReplay');
-    if (bestReplay && bestReplay.levels.length > 0) {
+
+    // Solo mostrar si:
+    // 1. Hay replay guardado
+    // 2. NO hay partida activa (idle o gameover)
+    const hasReplay = bestReplay && bestReplay.levels.length > 0;
+    const isGameInactive = gameState.phase === 'idle' || gameState.phase === 'gameover';
+
+    if (hasReplay && isGameInactive) {
         btnReplay.style.display = 'flex';
     } else {
         btnReplay.style.display = 'none';
@@ -2120,6 +2127,9 @@ async function startReplayPlayback() {
     }
 
     console.log('🎬 Starting replay playback...');
+
+    // Ocultar botón PLAY central si está visible
+    hidePlayButton();
 
     // Mostrar overlay de replay
     showReplayOverlay();
