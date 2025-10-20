@@ -1420,24 +1420,26 @@
                     // ==========================================
 
                     // COORDENADAS HORIZONTALES (números de columna: 1, 2, 3, 4...)
-                    // Se agregan en la PRIMERA FILA (row = 0)
-                    if (row === 0) {
+                    // Se agregan en la ÚLTIMA FILA (row = rows - 1)
+                    // Con bottom: -18px quedarán DEBAJO del tablero, en el borde inferior
+                    if (row === rows - 1) {
                         const coordFile = document.createElement('span');
                         coordFile.className = 'coord-file';
                         coordFile.textContent = col + 1;  // Columna 1, 2, 3...
                         square.appendChild(coordFile);
-                        console.log(`  ➕ Added coord-file: ${col + 1} at square ${index}`);
+                        console.log(`  ➕ Added coord-file: ${col + 1} at square ${index} (bottom row)`);
                     }
 
                     // COORDENADAS VERTICALES (números de fila: 3, 2, 1...)
                     // Se agregan en la PRIMERA COLUMNA (col = 0)
+                    // Con left: -15px quedarán A LA IZQUIERDA del tablero
                     // NOTA: Las filas se numeran de arriba a abajo, por eso rows - row
                     if (col === 0) {
                         const coordRank = document.createElement('span');
                         coordRank.className = 'coord-rank';
                         coordRank.textContent = rows - row;  // De arriba abajo: 3, 2, 1
                         square.appendChild(coordRank);
-                        console.log(`  ➕ Added coord-rank: ${rows - row} at square ${index}`);
+                        console.log(`  ➕ Added coord-rank: ${rows - row} at square ${index} (left column)`);
                     }
 
                     // Agregar la casilla al tablero
