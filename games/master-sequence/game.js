@@ -301,6 +301,10 @@ function startGame() {
     gameState.sequenceColors = []; // Resetear colores
     gameState.squareUsageCount = {}; // Resetear contador de uso
 
+    // Ocultar badge de cámara y marco retro (por si estaban visibles)
+    document.getElementById('replayCameraBadge')?.classList.add('hidden');
+    document.getElementById('retroFrame')?.classList.add('hidden');
+
     // Iniciar nueva grabación
     startRecording();
 
@@ -2117,14 +2121,20 @@ function loadBestReplay() {
 function updateReplayButtonVisibility() {
     const btnReplay = document.getElementById('btnReplay');
 
-    // Botón SIEMPRE visible
+    // Si no hay replay guardado, ocultar botón
+    const hasReplay = bestReplay && bestReplay.levels.length > 0;
+    if (!hasReplay) {
+        btnReplay.style.display = 'none';
+        return;
+    }
+
+    // Si hay replay, botón SIEMPRE visible
     btnReplay.style.display = 'flex';
 
-    // Habilitar solo si hay replay Y el juego está en fase idle o gameover
-    const hasReplay = bestReplay && bestReplay.levels.length > 0;
+    // Habilitar solo si el juego está en fase idle o gameover
     const isGameInactive = gameState.phase === 'idle' || gameState.phase === 'gameover';
 
-    if (hasReplay && isGameInactive) {
+    if (isGameInactive) {
         btnReplay.disabled = false;
         btnReplay.style.opacity = '1';
         btnReplay.style.cursor = 'pointer';
@@ -2204,6 +2214,8 @@ async function playReplay() {
 
 /**
  * Reproduce un nivel específico del replay
+ * SOLO muestra la secuencia de la máquina (NO los movimientos del jugador)
+ * Funciona como un "HINT animado" mostrando qué casillas iluminar
  */
 async function playReplayLevel(levelData) {
     console.log(`🎬 Playing level ${levelData.level}`);
@@ -2211,18 +2223,9 @@ async function playReplayLevel(levelData) {
     // Actualizar mensaje de estado
     updateStatus(`🎬 REPLAY - Nivel ${levelData.level}`, 'playing');
 
-    // Fase 1: Mostrar secuencia
+    // SOLO Fase 1: Mostrar secuencia de la máquina
+    // (NO mostrar movimientos del jugador - esto es un HINT animado)
     await showReplaySequence(levelData);
-
-    // Esperar si está pausado
-    while (replayState.isPaused && replayState.isPlaying) {
-        await sleep(100);
-    }
-
-    if (!replayState.isPlaying) return;
-
-    // Fase 2: Mostrar jugadas del jugador
-    await showReplayPlayerMoves(levelData);
 }
 
 /**
