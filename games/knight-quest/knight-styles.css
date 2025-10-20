@@ -78,6 +78,8 @@
    ======================================== */
 .chessboard {
     /* Heredamos del CSS compartido y agregamos específicos */
+    display: grid;
+    gap: 0;
     transition: all 0.5s ease;
     position: relative;
 }
