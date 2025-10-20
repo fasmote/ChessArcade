@@ -834,9 +834,11 @@ function showHint() {
     // Dibujar líneas conectoras PRIMERO (debajo de todo)
     drawConnectingLines();
 
-    // Marcar toda la secuencia: fondo blanco + coordenada con color neón
-    gameState.sequence.forEach((squareId, index) => {
+    // Marcar SOLO la secuencia RESTANTE (desde currentStep hasta el final)
+    for (let index = gameState.currentStep; index < gameState.sequence.length; index++) {
+        const squareId = gameState.sequence[index];
         const square = document.querySelector(`[data-square="${squareId}"]`);
+
         if (square) {
             const color = gameState.sequenceColors[index];
 
@@ -869,7 +871,7 @@ function showHint() {
                 }
             }
         }
-    });
+    }
 
     // Resaltar la SIGUIENTE casilla: borde amarillo grueso SIN coordenada (oculta)
     const nextSquareId = gameState.sequence[gameState.currentStep];
@@ -912,8 +914,8 @@ function drawConnectingLines() {
     const board = document.getElementById('chessboard');
     const boardRect = board.getBoundingClientRect();
 
-    // Dibujar líneas entre casillas consecutivas
-    for (let i = 0; i < gameState.sequence.length - 1; i++) {
+    // Dibujar líneas SOLO entre casillas restantes (desde currentStep hasta el final)
+    for (let i = gameState.currentStep; i < gameState.sequence.length - 1; i++) {
         const currentSquareId = gameState.sequence[i];
         const nextSquareId = gameState.sequence[i + 1];
 
