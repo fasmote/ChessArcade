@@ -298,10 +298,10 @@
             display: grid;
             gap: 2px;
             background: linear-gradient(45deg, #222, #444);
-            padding: 15px;
+            padding: 25px 20px 25px 20px; /* Aumentado para que las coordenadas quepan */
             border-radius: 15px;
             border: 4px solid var(--neon-cyan);
-            box-shadow: 
+            box-shadow:
                 var(--glow-large) var(--neon-cyan),
                 inset 0 0 50px rgba(0,255,255,0.1);
             margin: 2rem auto;
@@ -1061,7 +1061,7 @@
             /* Centrar todos los tamaños de tablero en móvil */
             .chessboard {
                 margin: 1rem auto;
-                padding: 8px;
+                padding: 20px 15px 20px 15px; /* Aumentado para coordenadas en mobile */
                 width: fit-content;
                 justify-self: center;
             }
