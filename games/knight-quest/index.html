@@ -1625,17 +1625,49 @@
             return moves;
         }
         
-        // Update display (ENHANCED version of your working code)
+        /**
+         * ========================================
+         * ACTUALIZAR DISPLAY DEL TABLERO
+         * ========================================
+         * Se llama cada vez que cambia el estado del juego.
+         * Actualiza las casillas visitadas, posición actual, etc.
+         *
+         * IMPORTANTE: Debe PRESERVAR las coordenadas que están en el HTML.
+         * No usar innerHTML = '' porque borra las coordenadas también.
+         */
         function updateDisplay() {
             const squares = document.querySelectorAll('.square');
             const totalSquares = gameState.boardRows * gameState.boardCols;
-            
-            // Clear all special classes
+
+            // ==========================================
+            // LIMPIAR CLASES ESPECIALES Y CONTENIDO
+            // ==========================================
             squares.forEach(square => {
-                square.className = square.className.split(' ').filter(c => 
+                // Limpiar solo las clases de estado (visited, current, possible)
+                // PRESERVAR las clases base: 'square', 'light', 'dark'
+                square.className = square.className.split(' ').filter(c =>
                     c === 'square' || c === 'light' || c === 'dark'
                 ).join(' ');
+
+                // ==========================================
+                // LIMPIAR CONTENIDO PERO PRESERVAR COORDENADAS
+                // ==========================================
+                // NO usar: square.innerHTML = '';  ← Esto borra las coordenadas
+                //
+                // En su lugar, eliminar solo elementos que NO sean coordenadas:
+                // - Remover .move-number
+                // - Remover .knight-symbol
+                // - MANTENER .coord-file y .coord-rank
+
+                const coordFile = square.querySelector('.coord-file');
+                const coordRank = square.querySelector('.coord-rank');
+
+                // Limpiar todo el contenido
                 square.innerHTML = '';
+
+                // Restaurar coordenadas si existían
+                if (coordFile) square.appendChild(coordFile);
+                if (coordRank) square.appendChild(coordRank);
             });
             
             // Mark visited squares
