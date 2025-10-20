@@ -1124,10 +1124,10 @@
         
         <!-- Size Selector -->
         <div class="size-selector">
-            <button class="size-btn active" onclick="changeBoardSize(4)" data-size="4">4x4</button>
-            <button class="size-btn" onclick="changeBoardSize(6)" data-size="6">6x6</button>
-            <button class="size-btn" onclick="changeBoardSize(8)" data-size="8">8x8</button>
-            <button class="size-btn" onclick="changeBoardSize(10)" data-size="10">10x10</button>
+            <button class="size-btn active" onclick="changeBoardSize(3, 4)" data-size="3x4">3x4</button>
+            <button class="size-btn" onclick="changeBoardSize(6, 6)" data-size="6x6">6x6</button>
+            <button class="size-btn" onclick="changeBoardSize(8, 8)" data-size="8x8">8x8</button>
+            <button class="size-btn" onclick="changeBoardSize(10, 10)" data-size="10x10">10x10</button>
         </div>
         
         <!-- Chessboard -->
@@ -1198,14 +1198,15 @@
         </div>
         <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
             <button class="btn btn-primary" onclick="newGame()">🎮 TRY AGAIN</button>
-            <button class="btn btn-secondary" onclick="closeGameOverModal(); changeBoardSize(4);">📉 EASIER</button>
+            <button class="btn btn-secondary" onclick="closeGameOverModal(); changeBoardSize(3, 4);">📉 EASIER</button>
         </div>
     </div>
     
     <script>
         // Game state - Clean and Simple like your working code
         let gameState = {
-            boardSize: 4,
+            boardRows: 3,
+            boardCols: 4,
             board: [],
             currentPos: null,
             visitedSquares: new Set(),
@@ -1277,59 +1278,62 @@
         function createBoard() {
             const board = document.getElementById('chessboard');
             board.innerHTML = ''; // Clear completely
-            
-            const totalSquares = gameState.boardSize * gameState.boardSize;
-            console.log(`📋 Creating ${gameState.boardSize}x${gameState.boardSize} board (${totalSquares} squares)`);
-            
+
+            const rows = gameState.boardRows;
+            const cols = gameState.boardCols;
+            const totalSquares = rows * cols;
+            console.log(`📋 Creating ${rows}x${cols} board (${totalSquares} squares)`);
+
             // Update board CSS class
-            board.className = `chessboard size-${gameState.boardSize}`;
-            
-            for (let row = 0; row < gameState.boardSize; row++) {
-                for (let col = 0; col < gameState.boardSize; col++) {
+            board.className = `chessboard size-${rows}x${cols}`;
+
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
                     const square = document.createElement('div');
-                    const index = row * gameState.boardSize + col;
-                    
+                    const index = row * cols + col;
+
                     square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
                     square.dataset.index = index;
                     square.addEventListener('click', () => makeMove(index));
-                    
+
                     board.appendChild(square);
                 }
             }
-            
+
             console.log(`✅ Board created with ${totalSquares} squares`);
         }
         
         // Change board size (FIXED - robust implementation)
-        function changeBoardSize(newSize) {
-            console.log(`🔄 Changing board size from ${gameState.boardSize} to ${newSize}`);
-            
-            if (gameState.boardSize === newSize) {
+        function changeBoardSize(newRows, newCols) {
+            console.log(`🔄 Changing board size from ${gameState.boardRows}x${gameState.boardCols} to ${newRows}x${newCols}`);
+
+            if (gameState.boardRows === newRows && gameState.boardCols === newCols) {
                 console.log('⚠️ Same size selected, ignoring');
                 return;
             }
-            
+
             // Clear any existing game
             if (gameState.gameTimer) {
                 clearInterval(gameState.gameTimer);
             }
-            
+
             // Update state
-            gameState.boardSize = newSize;
-            
+            gameState.boardRows = newRows;
+            gameState.boardCols = newCols;
+
             // Update active button
             document.querySelectorAll('.size-btn').forEach(btn => {
                 btn.classList.remove('active');
-                if (parseInt(btn.dataset.size) === newSize) {
+                if (btn.dataset.size === `${newRows}x${newCols}`) {
                     btn.classList.add('active');
                 }
             });
-            
+
             // Recreate board and start new game
             createBoard();
             newGame();
-            
-            console.log(`✅ Board size changed to ${newSize}x${newSize}`);
+
+            console.log(`✅ Board size changed to ${newRows}x${newCols}`);
         }
         
         // Start new game (Based on your working code)
@@ -1337,7 +1341,7 @@
             console.log('🎮 Starting new game...');
             
             // Reset game state
-            const totalSquares = gameState.boardSize * gameState.boardSize;
+            const totalSquares = gameState.boardRows * gameState.boardCols;
             gameState.board = Array(totalSquares).fill(null);
             gameState.visitedSquares.clear();
             gameState.moveHistory = [];
@@ -1367,7 +1371,7 @@
             // Play start sound
             playSound('start');
             
-            console.log(`🚀 New game started on ${gameState.boardSize}x${gameState.boardSize} board`);
+            console.log(`🚀 New game started on ${gameState.boardRows}x${gameState.boardCols} board`);
         }
         
         // Make a move (FIXED - proper validation)
@@ -1375,7 +1379,7 @@
             console.log(`🎯 Attempting move to square ${targetIndex}`);
             
             const squares = document.querySelectorAll('.square');
-            const totalSquares = gameState.boardSize * gameState.boardSize;
+            const totalSquares = gameState.boardRows * gameState.boardCols;
             
             // Validate index
             if (targetIndex < 0 || targetIndex >= totalSquares) {
@@ -1453,30 +1457,32 @@
         // Get possible moves for current position (FIXED for all board sizes)
         function getPossibleMoves(pos) {
             if (pos === null) return [];
-            
-            const row = Math.floor(pos / gameState.boardSize);
-            const col = pos % gameState.boardSize;
+
+            const rows = gameState.boardRows;
+            const cols = gameState.boardCols;
+            const row = Math.floor(pos / cols);
+            const col = pos % cols;
             const moves = [];
-            
+
             knightMoves.forEach(([dRow, dCol]) => {
                 const newRow = row + dRow;
                 const newCol = col + dCol;
-                
-                if (newRow >= 0 && newRow < gameState.boardSize && newCol >= 0 && newCol < gameState.boardSize) {
-                    const newPos = newRow * gameState.boardSize + newCol;
+
+                if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+                    const newPos = newRow * cols + newCol;
                     if (!gameState.visitedSquares.has(newPos)) {
                         moves.push(newPos);
                     }
                 }
             });
-            
+
             return moves;
         }
         
         // Update display (ENHANCED version of your working code)
         function updateDisplay() {
             const squares = document.querySelectorAll('.square');
-            const totalSquares = gameState.boardSize * gameState.boardSize;
+            const totalSquares = gameState.boardRows * gameState.boardCols;
             
             // Clear all special classes
             squares.forEach(square => {
@@ -1618,10 +1624,10 @@
             const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
             const minutes = Math.floor(elapsed / 60);
             const seconds = elapsed % 60;
-            const totalSquares = gameState.boardSize * gameState.boardSize;
+            const totalSquares = gameState.boardRows * gameState.boardCols;
             
             document.getElementById('finalStats').innerHTML = `
-                <p><span class="stat-label">🎯 Board Size:</span> <span class="stat-value">${gameState.boardSize}x${gameState.boardSize} (${totalSquares} squares)</span></p>
+                <p><span class="stat-label">🎯 Board Size:</span> <span class="stat-value">${gameState.boardRows}x${gameState.boardCols} (${totalSquares} squares)</span></p>
                 <p><span class="stat-label">⏱️ Time:</span> <span class="stat-value">${minutes}:${seconds.toString().padStart(2, '0')}</span></p>
                 <p><span class="stat-label">🎮 Moves:</span> <span class="stat-value">${gameState.moveHistory.length}</span></p>
                 <p><span class="stat-label">💡 Hints Used:</span> <span class="stat-value">${3 - gameState.hintsLeft}</span></p>
@@ -1629,17 +1635,17 @@
                     <strong>🐴 You are a Knight Quest Master! ✨</strong>
                 </p>
             `;
-            
+
             showVictoryModal();
             playSound('victory');
             addCoins(500);
-            
+
             // Save best score
-            const scoreKey = `knight-quest-best-${gameState.boardSize}x${gameState.boardSize}`;
+            const scoreKey = `knight-quest-best-${gameState.boardRows}x${gameState.boardCols}`;
             const currentBest = localStorage.getItem(scoreKey);
             if (!currentBest || gameState.moveHistory.length < parseInt(currentBest)) {
                 localStorage.setItem(scoreKey, gameState.moveHistory.length.toString());
-                console.log(`🏆 New best score for ${gameState.boardSize}x${gameState.boardSize}: ${gameState.moveHistory.length} moves`);
+                console.log(`🏆 New best score for ${gameState.boardRows}x${gameState.boardCols}: ${gameState.moveHistory.length} moves`);
             }
         }
         
@@ -1665,7 +1671,7 @@
             console.log('💀 Game Over - No more moves');
             clearInterval(gameState.gameTimer);
             
-            const totalSquares = gameState.boardSize * gameState.boardSize;
+            const totalSquares = gameState.boardRows * gameState.boardCols;
             const percentage = Math.round((gameState.visitedSquares.size / totalSquares) * 100);
             const elapsed = gameState.startTime ? Math.floor((Date.now() - gameState.startTime) / 1000) : 0;
             const minutes = Math.floor(elapsed / 60);
@@ -1673,7 +1679,7 @@
             
             // Update game over stats
             document.getElementById('gameOverStats').innerHTML = `
-                <p><span class="stat-label">🎯 Board Size:</span> <span class="stat-value">${gameState.boardSize}x${gameState.boardSize} (${totalSquares} squares)</span></p>
+                <p><span class="stat-label">🎯 Board Size:</span> <span class="stat-value">${gameState.boardRows}x${gameState.boardCols} (${totalSquares} squares)</span></p>
                 <p><span class="stat-label">⏱️ Time:</span> <span class="stat-value">${minutes}:${seconds.toString().padStart(2, '0')}</span></p>
                 <p><span class="stat-label">🎮 Moves:</span> <span class="stat-value">${gameState.moveHistory.length}</span></p>
                 <p><span class="stat-label">📊 Completed:</span> <span class="stat-value">${gameState.visitedSquares.size}/${totalSquares} squares (${percentage}%)</span></p>
@@ -1860,19 +1866,19 @@
                 newGame();
             } else if (e.key === 'u' || e.key === 'U') {
                 undoMove();
-            } else if (e.key === '4') {
-                changeBoardSize(4);
+            } else if (e.key === '3') {
+                changeBoardSize(3, 4);
             } else if (e.key === '6') {
-                changeBoardSize(6);
+                changeBoardSize(6, 6);
             } else if (e.key === '8') {
-                changeBoardSize(8);
+                changeBoardSize(8, 8);
             } else if (e.key === '0' || e.key === '1' && e.shiftKey) { // 1 with shift = ! but we use 0 or shift+1
-                changeBoardSize(10);
+                changeBoardSize(10, 10);
             }
         });
         
         console.log('🎮 Knight Quest Enhanced loaded successfully!');
-        console.log('🎯 Keyboard shortcuts: Space=Hint, R=New Game, U=Undo, 4/6/8/0=Board Size');
+        console.log('🎯 Keyboard shortcuts: Space=Hint, R=New Game, U=Undo, 3/6/8/0=Board Size');
         
     </script>
     
