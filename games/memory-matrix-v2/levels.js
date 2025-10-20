@@ -22,13 +22,13 @@ const LEVELS = [
         difficulty: 'easy',
         pieceTypes: ['K', 'Q'],
         allowedColors: ['w', 'b'],
-        attemptsRequired: 10,  // 10 intentos exitosos para pasar nivel
+        attemptsRequired: 5,  // 5 intentos exitosos para pasar nivel
         hidePiecesConfig: {
-            // Intentos 1-8: Solo desaparece 1 pieza (el rey negro)
-            // Intentos 9-10: Desaparecen ambas piezas
+            // Intentos 1-4: Solo desaparece 1 pieza (el rey negro)
+            // Intento 5: Desaparecen ambas piezas
             progressiveHiding: [
-                { attempts: [1, 2, 3, 4, 5, 6, 7, 8], hideCount: 1, hideIndices: [1] }, // Solo bK
-                { attempts: [9, 10], hideCount: 2, hideIndices: [0, 1] }  // Ambos
+                { attempts: [1, 2, 3, 4], hideCount: 1, hideIndices: [1] }, // Solo bK
+                { attempts: [5], hideCount: 2, hideIndices: [0, 1] }  // Ambos
             ]
         }
     },
@@ -44,13 +44,13 @@ const LEVELS = [
         difficulty: 'easy',
         pieceTypes: ['K', 'Q', 'R'], // Agregar torres
         allowedColors: ['w', 'b'],
-        attemptsRequired: 10,
+        attemptsRequired: 5,
         hidePiecesConfig: {
-            // Intentos 1-7: Rey blanco (wK) siempre visible como referencia
-            // Intentos 8-10: Todas las piezas desaparecen
+            // Intentos 1-3: Rey blanco (wK) siempre visible como referencia
+            // Intentos 4-5: Todas las piezas desaparecen
             progressiveHiding: [
-                { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 2, hideIndices: [1, 2] }, // Oculta rey negro + 1 más
-                { attempts: [8, 9, 10], hideCount: 3, hideIndices: [0, 1, 2] }  // Todas
+                { attempts: [1, 2, 3], hideCount: 2, hideIndices: [1, 2] }, // Oculta rey negro + 1 más
+                { attempts: [4, 5], hideCount: 3, hideIndices: [0, 1, 2] }  // Todas
             ]
         }
     },
@@ -66,13 +66,13 @@ const LEVELS = [
         difficulty: 'medium',
         pieceTypes: ['K', 'Q', 'R', 'B'], // Agregar alfiles
         allowedColors: ['w', 'b'],
-        attemptsRequired: 10,
+        attemptsRequired: 5,
         hidePiecesConfig: {
-            // Intentos 1-7: Rey blanco (wK) siempre visible como referencia
-            // Intentos 8-10: Todas las piezas desaparecen
+            // Intentos 1-3: Rey blanco (wK) siempre visible como referencia
+            // Intentos 4-5: Todas las piezas desaparecen
             progressiveHiding: [
-                { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 3, hideIndices: [1, 2, 3] }, // Oculta bK + 2 más
-                { attempts: [8, 9, 10], hideCount: 4, hideIndices: [0, 1, 2, 3] }  // Todas
+                { attempts: [1, 2, 3], hideCount: 3, hideIndices: [1, 2, 3] }, // Oculta bK + 2 más
+                { attempts: [4, 5], hideCount: 4, hideIndices: [0, 1, 2, 3] }  // Todas
             ]
         }
     },
@@ -88,13 +88,13 @@ const LEVELS = [
         difficulty: 'medium',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N'], // Agregar caballos
         allowedColors: ['w', 'b'],
-        attemptsRequired: 10,
+        attemptsRequired: 5,
         hidePiecesConfig: {
-            // Intentos 1-7: Rey blanco (wK) siempre visible como referencia
-            // Intentos 8-10: Todas las piezas desaparecen
+            // Intentos 1-3: Rey blanco (wK) siempre visible como referencia
+            // Intentos 4-5: Todas las piezas desaparecen
             progressiveHiding: [
-                { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 4, hideIndices: [1, 2, 3, 4] }, // Oculta bK + 3 más
-                { attempts: [8, 9, 10], hideCount: 5, hideIndices: [0, 1, 2, 3, 4] }  // Todas
+                { attempts: [1, 2, 3], hideCount: 4, hideIndices: [1, 2, 3, 4] }, // Oculta bK + 3 más
+                { attempts: [4, 5], hideCount: 5, hideIndices: [0, 1, 2, 3, 4] }  // Todas
             ]
         }
     },
@@ -110,13 +110,13 @@ const LEVELS = [
         difficulty: 'hard',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'], // Todas las piezas
         allowedColors: ['w', 'b'],
-        attemptsRequired: 10,
+        attemptsRequired: 5,
         hidePiecesConfig: {
-            // Intentos 1-7: Rey blanco (wK) siempre visible como referencia
-            // Intentos 8-10: Todas las piezas desaparecen
+            // Intentos 1-3: Rey blanco (wK) siempre visible como referencia
+            // Intentos 4-5: Todas las piezas desaparecen
             progressiveHiding: [
-                { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 5, hideIndices: [1, 2, 3, 4, 5] }, // Oculta bK + 4 más
-                { attempts: [8, 9, 10], hideCount: 6, hideIndices: [0, 1, 2, 3, 4, 5] }  // Todas
+                { attempts: [1, 2, 3], hideCount: 5, hideIndices: [1, 2, 3, 4, 5] }, // Oculta bK + 4 más
+                { attempts: [4, 5], hideCount: 6, hideIndices: [0, 1, 2, 3, 4, 5] }  // Todas
             ]
         }
     },
@@ -132,13 +132,13 @@ const LEVELS = [
         difficulty: 'hard',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'],
         allowedColors: ['w', 'b'],
-        attemptsRequired: 10,
+        attemptsRequired: 5,
         hidePiecesConfig: {
-            // Intentos 1-7: Rey blanco (wK) siempre visible como referencia
-            // Intentos 8-10: Todas las piezas desaparecen
+            // Intentos 1-3: Rey blanco (wK) siempre visible como referencia
+            // Intentos 4-5: Todas las piezas desaparecen
             progressiveHiding: [
-                { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 6, hideIndices: [1, 2, 3, 4, 5, 6] }, // Oculta bK + 5 más
-                { attempts: [8, 9, 10], hideCount: 7, hideIndices: [0, 1, 2, 3, 4, 5, 6] }  // Todas
+                { attempts: [1, 2, 3], hideCount: 6, hideIndices: [1, 2, 3, 4, 5, 6] }, // Oculta bK + 5 más
+                { attempts: [4, 5], hideCount: 7, hideIndices: [0, 1, 2, 3, 4, 5, 6] }  // Todas
             ]
         }
     },
@@ -154,13 +154,13 @@ const LEVELS = [
         difficulty: 'expert',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'],
         allowedColors: ['w', 'b'],
-        attemptsRequired: 10,
+        attemptsRequired: 5,
         hidePiecesConfig: {
-            // Intentos 1-7: Rey blanco (wK) siempre visible como referencia
-            // Intentos 8-10: Todas las piezas desaparecen
+            // Intentos 1-3: Rey blanco (wK) siempre visible como referencia
+            // Intentos 4-5: Todas las piezas desaparecen
             progressiveHiding: [
-                { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 7, hideIndices: [1, 2, 3, 4, 5, 6, 7] }, // Oculta bK + 6 más
-                { attempts: [8, 9, 10], hideCount: 8, hideIndices: [0, 1, 2, 3, 4, 5, 6, 7] }  // Todas
+                { attempts: [1, 2, 3], hideCount: 7, hideIndices: [1, 2, 3, 4, 5, 6, 7] }, // Oculta bK + 6 más
+                { attempts: [4, 5], hideCount: 8, hideIndices: [0, 1, 2, 3, 4, 5, 6, 7] }  // Todas
             ]
         }
     },
@@ -176,13 +176,13 @@ const LEVELS = [
         difficulty: 'expert',
         pieceTypes: ['K', 'Q', 'R', 'B', 'N', 'P'],
         allowedColors: ['w', 'b'],
-        attemptsRequired: 10,
+        attemptsRequired: 5,
         hidePiecesConfig: {
-            // Intentos 1-7: Rey blanco (wK) siempre visible como referencia
-            // Intentos 8-10: Todas las piezas desaparecen
+            // Intentos 1-3: Rey blanco (wK) siempre visible como referencia
+            // Intentos 4-5: Todas las piezas desaparecen
             progressiveHiding: [
-                { attempts: [1, 2, 3, 4, 5, 6, 7], hideCount: 9, hideIndices: [1, 2, 3, 4, 5, 6, 7, 8, 9] }, // Oculta bK + 8 más
-                { attempts: [8, 9, 10], hideCount: 10, hideIndices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }  // Todas
+                { attempts: [1, 2, 3], hideCount: 9, hideIndices: [1, 2, 3, 4, 5, 6, 7, 8, 9] }, // Oculta bK + 8 más
+                { attempts: [4, 5], hideCount: 10, hideIndices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }  // Todas
             ]
         }
     }
