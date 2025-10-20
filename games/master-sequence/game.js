@@ -301,6 +301,12 @@ function startGame() {
     gameState.sequenceColors = []; // Resetear colores
     gameState.squareUsageCount = {}; // Resetear contador de uso
 
+    // Limpiar líneas de replay si quedaron como residuo
+    clearReplayConnectingLines();
+
+    // Quitar efecto vintage si estaba activo
+    const chessboard = document.getElementById('chessboard');
+    chessboard.classList.remove('replay-mode');
 
     // Iniciar nueva grabación
     startRecording();
@@ -1088,15 +1094,16 @@ function addDirectionalArrow(square, fromSquare, toSquare, color) {
     const deltaRank = toRank - fromRank;
 
     // Determinar ángulo de rotación para la flecha
+    // NOTA: SVG base apunta hacia ABAJO (Sur), por eso rotation=0 es Sur
     let rotation = 0;
-    if (deltaFile === 0 && deltaRank > 0) rotation = 0;      // ↑ Norte
-    else if (deltaFile > 0 && deltaRank > 0) rotation = 45;  // ↗ Noreste
-    else if (deltaFile > 0 && deltaRank === 0) rotation = 90; // → Este
-    else if (deltaFile > 0 && deltaRank < 0) rotation = 135; // ↘ Sureste
-    else if (deltaFile === 0 && deltaRank < 0) rotation = 180; // ↓ Sur
-    else if (deltaFile < 0 && deltaRank < 0) rotation = 225; // ↙ Suroeste
-    else if (deltaFile < 0 && deltaRank === 0) rotation = 270; // ← Oeste
-    else if (deltaFile < 0 && deltaRank > 0) rotation = 315; // ↖ Noroeste
+    if (deltaFile === 0 && deltaRank > 0) rotation = 180;    // ↑ Norte (invertido)
+    else if (deltaFile > 0 && deltaRank > 0) rotation = 225;  // ↗ Noreste (invertido)
+    else if (deltaFile > 0 && deltaRank === 0) rotation = 270; // → Este (invertido)
+    else if (deltaFile > 0 && deltaRank < 0) rotation = 315; // ↘ Sureste (invertido)
+    else if (deltaFile === 0 && deltaRank < 0) rotation = 0; // ↓ Sur (ya correcto)
+    else if (deltaFile < 0 && deltaRank < 0) rotation = 45; // ↙ Suroeste (invertido)
+    else if (deltaFile < 0 && deltaRank === 0) rotation = 90; // ← Oeste (invertido)
+    else if (deltaFile < 0 && deltaRank > 0) rotation = 135; // ↖ Noroeste (invertido)
 
     // Crear contenedor de flecha GRANDE
     const arrow = document.createElement('div');
