@@ -139,6 +139,16 @@ body::before {
         padding: 0.6rem 1rem;
         font-size: 0.85rem;
     }
+
+    .btn-replay {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.8rem;
+        min-width: auto;
+    }
+
+    .btn-replay .btn-text {
+        font-size: 0.75rem;
+    }
 }
 
 .btn-icon {
@@ -536,6 +546,34 @@ body::before {
 
     /* Posición relativa para coordenadas absolutas */
     position: relative;
+
+    /* Transición suave para efectos de replay */
+    transition: filter 0.5s ease, box-shadow 0.5s ease;
+}
+
+/* Efecto VINTAGE para modo REPLAY */
+.chessboard.replay-mode {
+    /* Filtro vintage: sepia + desaturación + contraste reducido */
+    filter: sepia(0.3) saturate(0.6) contrast(0.9);
+
+    /* Animación de grain/noise sutil (parpadeo de opacidad) */
+    animation: vintageGrain 0.15s infinite alternate;
+
+    /* Borde más oscuro durante replay */
+    border-color: rgba(0, 255, 255, 0.4);
+    box-shadow:
+        0 0 20px rgba(0, 255, 255, 0.3),
+        inset 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Animación de grain/noise (simula película vieja) */
+@keyframes vintageGrain {
+    0% {
+        opacity: 0.97;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 /* Responsive: Tablero más grande en tablets */

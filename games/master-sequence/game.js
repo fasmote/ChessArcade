@@ -301,9 +301,6 @@ function startGame() {
     gameState.sequenceColors = []; // Resetear colores
     gameState.squareUsageCount = {}; // Resetear contador de uso
 
-    // Ocultar badge de cámara y marco retro (por si estaban visibles)
-    document.getElementById('replayCameraBadge')?.classList.add('hidden');
-    document.getElementById('retroFrame')?.classList.add('hidden');
 
     // Iniciar nueva grabación
     startRecording();
@@ -2163,9 +2160,9 @@ async function startReplayPlayback() {
     // Ocultar botón PLAY central si está visible
     hidePlayButton();
 
-    // Mostrar badge de cámara y marco retro
-    document.getElementById('replayCameraBadge').classList.remove('hidden');
-    document.getElementById('retroFrame').classList.remove('hidden');
+    // Aplicar efecto vintage al tablero (filtro sepia + grain)
+    const chessboard = document.getElementById('chessboard');
+    chessboard.classList.add('replay-mode');
 
     // Cambiar botón COMENZAR a rojo (modo pausar)
     const btnStart = document.getElementById('btnStart');
@@ -2386,9 +2383,9 @@ function stopReplay() {
     replayState.isPlaying = false;
     replayState.isPaused = false;
 
-    // Ocultar badge de cámara y marco retro
-    document.getElementById('replayCameraBadge').classList.add('hidden');
-    document.getElementById('retroFrame').classList.add('hidden');
+    // Quitar efecto vintage del tablero
+    const chessboard = document.getElementById('chessboard');
+    chessboard.classList.remove('replay-mode');
 
     // Restaurar botón COMENZAR
     const btnStart = document.getElementById('btnStart');
