@@ -1715,10 +1715,26 @@ body::before {
     transform: translateY(-2px);
 }
 
-/* Overlay de replay - más ancho para ver el tablero */
+/* Overlay de replay - compacto en esquina superior */
 .replay-content {
-    max-width: 700px;
-    position: relative;
+    max-width: 450px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(10, 10, 30, 0.95);
+    backdrop-filter: blur(10px);
+    pointer-events: auto;
+}
+
+/* El overlay padre debe permitir ver el tablero */
+#replayOverlay {
+    background: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(2px);
+    pointer-events: none;
+}
+
+#replayOverlay .overlay-content {
+    pointer-events: auto;
 }
 
 /* Badge REPLAY MODE (esquina superior, fijo) */
@@ -1825,27 +1841,35 @@ body::before {
 /* Responsive */
 @media (max-width: 768px) {
     .replay-content {
-        max-width: 95%;
-        padding: 80px 20px 40px 20px;
+        max-width: calc(100% - 20px);
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        padding: 60px 15px 30px 15px;
     }
 
     .replay-badge {
         top: 10px;
-        font-size: 12px;
-        padding: 6px 16px;
+        font-size: 11px;
+        padding: 5px 12px;
     }
 
     .btn-replay-control {
-        width: 50px;
-        height: 50px;
+        width: 45px;
+        height: 45px;
     }
 
     .btn-replay-control svg {
-        width: 24px !important;
-        height: 24px !important;
+        width: 20px !important;
+        height: 20px !important;
     }
 
     .btn-replay-speed {
-        font-size: 16px;
+        font-size: 14px;
+    }
+
+    .replay-controls {
+        gap: 10px;
+        padding: 12px;
     }
 }
