@@ -405,6 +405,68 @@
             100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
         }
 
+        /* COORDENADAS DEL TABLERO */
+        /* Coordenadas horizontales (a-h, 1-2-3...) - En el borde inferior */
+        .coord-file {
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+
+            pointer-events: none;
+            user-select: none;
+            z-index: 20;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Coordenadas verticales (1-2-3...) - En el borde izquierdo */
+        .coord-rank {
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+
+            pointer-events: none;
+            user-select: none;
+            z-index: 20;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Coordenadas responsive */
+        @media (min-width: 600px) {
+            .coord-file {
+                bottom: -20px;
+                font-size: 12px;
+            }
+
+            .coord-rank {
+                left: -14px;
+                font-size: 12px;
+            }
+        }
+
+        @media (min-width: 900px) {
+            .coord-file {
+                bottom: -22px;
+                font-size: 13px;
+            }
+
+            .coord-rank {
+                left: -16px;
+                font-size: 13px;
+            }
+        }
+
         .square:hover.possible {
             transform: scale(1.15);
             box-shadow: 0 0 20px rgba(255, 255, 0, 1);
@@ -1300,11 +1362,28 @@
                     square.dataset.index = index;
                     square.addEventListener('click', () => makeMove(index));
 
+                    // AGREGAR COORDENADAS
+                    // Coordenada horizontal (columnas: 1, 2, 3, 4...) en la primera fila (row = 0)
+                    if (row === 0) {
+                        const coordFile = document.createElement('span');
+                        coordFile.className = 'coord-file';
+                        coordFile.textContent = col + 1;
+                        square.appendChild(coordFile);
+                    }
+
+                    // Coordenada vertical (filas: 1, 2, 3...) en la primera columna (col = 0)
+                    if (col === 0) {
+                        const coordRank = document.createElement('span');
+                        coordRank.className = 'coord-rank';
+                        coordRank.textContent = rows - row;
+                        square.appendChild(coordRank);
+                    }
+
                     board.appendChild(square);
                 }
             }
 
-            console.log(`✅ Board created with ${totalSquares} squares`);
+            console.log(`✅ Board created with ${totalSquares} squares and coordinates`);
         }
         
         // Change board size (FIXED - robust implementation)
