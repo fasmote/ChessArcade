@@ -186,10 +186,18 @@ function setupEventListeners() {
         btnHome.addEventListener('click', goHome);
     }
 
-    // Botón COMENZAR
+    // Botón COMENZAR (dual: iniciar partida O pausar/reanudar replay)
     const btnStart = document.getElementById('btnStart');
     if (btnStart) {
-        btnStart.addEventListener('click', startGame);
+        btnStart.addEventListener('click', () => {
+            if (replayState.isPlaying) {
+                // Si estamos en replay, pausar/reanudar
+                toggleReplayPause();
+            } else {
+                // Si no, iniciar partida normal
+                startGame();
+            }
+        });
     }
 
     // Botón PLAY OVERLAY (central en tablero)
@@ -248,8 +256,16 @@ function setupEventListeners() {
     // Botón HINT (mostrar ayuda visual)
     document.getElementById('btnHint')?.addEventListener('click', showHint);
 
-    // Botón TERMINAR (terminar partida = perder todas las vidas)
-    document.getElementById('btnEndGame')?.addEventListener('click', endGame);
+    // Botón TERMINAR (dual: terminar partida O detener replay)
+    document.getElementById('btnEndGame')?.addEventListener('click', () => {
+        if (replayState.isPlaying) {
+            // Si estamos en replay, detenerlo
+            stopReplay();
+        } else {
+            // Si no, terminar partida normal
+            endGame();
+        }
+    });
 
     // Botones de confirmación de terminar
     document.getElementById('btnConfirmEnd')?.addEventListener('click', confirmEndGame);
@@ -257,12 +273,6 @@ function setupEventListeners() {
 
     // Botones de REPLAY
     document.getElementById('btnReplay')?.addEventListener('click', startReplayPlayback);
-    document.getElementById('btnReplayPlay')?.addEventListener('click', toggleReplayPause);
-    document.getElementById('btnReplayPause')?.addEventListener('click', toggleReplayPause);
-    document.getElementById('btnReplaySpeed')?.addEventListener('click', cycleReplaySpeed);
-    document.getElementById('btnReplayNext')?.addEventListener('click', skipToNextReplayLevel);
-    document.getElementById('btnStopReplay')?.addEventListener('click', stopReplay);
-    document.getElementById('btnCloseReplay')?.addEventListener('click', stopReplay);
 
     // Clicks en el tablero
     const chessboard = document.getElementById('chessboard');
@@ -2131,17 +2141,28 @@ async function startReplayPlayback() {
     // Ocultar botón PLAY central si está visible
     hidePlayButton();
 
-    // Mostrar overlay de replay
-    showReplayOverlay();
+    // Mostrar badge de cámara y marco retro
+    document.getElementById('replayCameraBadge').classList.remove('hidden');
+    document.getElementById('retroFrame').classList.remove('hidden');
+
+    // Cambiar botón COMENZAR a rojo (modo pausar)
+    const btnStart = document.getElementById('btnStart');
+    btnStart.textContent = '⏸ Pausar';
+    btnStart.style.background = 'linear-gradient(135deg, #ff0000, #8B0000)';
+    btnStart.style.borderColor = '#ff0000';
 
     // Resetear estado del reproductor
     replayState.isPlaying = true;
     replayState.isPaused = false;
     replayState.currentLevelIndex = 0;
     replayState.currentStepIndex = 0;
+    replayState.playbackSpeed = 1.0;
 
     // Limpiar tablero
     clearBoardForReplay();
+
+    // Actualizar visibilidad de botones
+    updateReplayButtonVisibility();
 
     // Iniciar reproducción (sin await para no bloquear UI)
     playReplay().catch(err => {
@@ -2187,8 +2208,8 @@ async function playReplay() {
 async function playReplayLevel(levelData) {
     console.log(`🎬 Playing level ${levelData.level}`);
 
-    // Actualizar info en overlay
-    updateReplayLevelInfo(levelData);
+    // Actualizar mensaje de estado
+    updateStatus(`🎬 REPLAY - Nivel ${levelData.level}`, 'playing');
 
     // Fase 1: Mostrar secuencia
     await showReplaySequence(levelData);
@@ -2262,7 +2283,6 @@ async function showReplayPlayerMoves(levelData) {
         await highlightSquareReplay(squareId, 600 / replayState.playbackSpeed, color);
 
         replayState.currentStepIndex++;
-        updateReplayStepInfo(replayState.currentStepIndex, levelData.sequence.length);
 
         await sleep(500 / replayState.playbackSpeed);
     }
@@ -2331,97 +2351,50 @@ function clearBoardForReplay() {
 }
 
 /**
- * Pausa/Resume del replay
+ * Pausa/Resume del replay usando botón COMENZAR
  */
 function toggleReplayPause() {
+    if (!replayState.isPlaying) return;
+
     replayState.isPaused = !replayState.isPaused;
-    updateReplayControls();
-    console.log(`🎬 Replay ${replayState.isPaused ? 'paused' : 'resumed'}`);
-}
 
-/**
- * Cambia velocidad de reproducción (0.5x -> 1x -> 2x -> 0.5x...)
- */
-function cycleReplaySpeed() {
-    const speeds = [0.5, 1.0, 2.0];
-    const currentIndex = speeds.indexOf(replayState.playbackSpeed);
-    const nextIndex = (currentIndex + 1) % speeds.length;
-    replayState.playbackSpeed = speeds[nextIndex];
-
-    document.getElementById('speedLabel').textContent = `${replayState.playbackSpeed}x`;
-    console.log(`🎬 Replay speed: ${replayState.playbackSpeed}x`);
-}
-
-/**
- * Salta al siguiente nivel en el replay
- */
-function skipToNextReplayLevel() {
-    if (replayState.currentLevelIndex < bestReplay.levels.length - 1) {
-        replayState.currentLevelIndex++;
-        console.log(`🎬 Skipped to level ${replayState.currentLevelIndex + 1}`);
+    const btnStart = document.getElementById('btnStart');
+    if (replayState.isPaused) {
+        btnStart.textContent = '▶ Reanudar';
+        btnStart.style.background = 'linear-gradient(135deg, #00ff00, #008000)';
+        btnStart.style.borderColor = '#00ff00';
+        console.log('🎬 Replay paused');
+    } else {
+        btnStart.textContent = '⏸ Pausar';
+        btnStart.style.background = 'linear-gradient(135deg, #ff0000, #8B0000)';
+        btnStart.style.borderColor = '#ff0000';
+        console.log('🎬 Replay resumed');
     }
 }
 
 /**
- * Detiene el replay
+ * Detiene el replay y vuelve a pantalla principal
  */
 function stopReplay() {
     replayState.isPlaying = false;
     replayState.isPaused = false;
-    hideAllOverlays();
+
+    // Ocultar badge de cámara y marco retro
+    document.getElementById('replayCameraBadge').classList.add('hidden');
+    document.getElementById('retroFrame').classList.add('hidden');
+
+    // Restaurar botón COMENZAR
+    const btnStart = document.getElementById('btnStart');
+    btnStart.textContent = '▶ Comenzar';
+    btnStart.style.background = '';
+    btnStart.style.borderColor = '';
+
     clearBoardForReplay();
+
+    // Actualizar visibilidad de botones
+    updateReplayButtonVisibility();
+
     console.log('🎬 Replay stopped');
-}
-
-/**
- * Actualiza controles de reproducción (Play/Pause visibility)
- */
-function updateReplayControls() {
-    const btnPlay = document.getElementById('btnReplayPlay');
-    const btnPause = document.getElementById('btnReplayPause');
-
-    if (replayState.isPaused) {
-        btnPlay.style.display = 'flex';
-        btnPause.style.display = 'none';
-    } else {
-        btnPlay.style.display = 'none';
-        btnPause.style.display = 'flex';
-    }
-}
-
-/**
- * Actualiza info del nivel en el overlay de replay
- */
-function updateReplayLevelInfo(levelData) {
-    document.getElementById('replayLevelText').textContent = `Nivel ${levelData.level}`;
-    document.getElementById('replayStepText').textContent = `Paso: 0 / ${levelData.sequence.length}`;
-}
-
-/**
- * Actualiza info del paso actual
- */
-function updateReplayStepInfo(step, total) {
-    document.getElementById('replayStepText').textContent = `Paso: ${step} / ${total}`;
-}
-
-/**
- * Muestra overlay de replay
- */
-function showReplayOverlay() {
-    hideAllOverlays();
-
-    const overlay = document.getElementById('replayOverlay');
-    const replayInfo = document.getElementById('replayInfo');
-
-    // Actualizar info del replay
-    replayInfo.textContent = `Nivel alcanzado: ${bestReplay.finalLevel} | Score: ${bestReplay.finalScore}`;
-
-    // Resetear controles
-    document.getElementById('speedLabel').textContent = '1x';
-    replayState.playbackSpeed = 1.0;
-    updateReplayControls();
-
-    overlay.classList.remove('hidden');
 }
 
 console.log('🎮 Coordinate Sequence - Game logic loaded');

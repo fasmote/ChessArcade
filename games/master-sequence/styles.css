@@ -1699,7 +1699,7 @@ body::before {
 }
 
 /* ============================================
-   REPLAY SYSTEM STYLES
+   REPLAY SYSTEM STYLES - RETRO DESIGN
    ============================================ */
 
 /* Botón VER REPLAY */
@@ -1715,161 +1715,164 @@ body::before {
     transform: translateY(-2px);
 }
 
-/* Overlay de replay - compacto en esquina superior */
-.replay-content {
-    max-width: 450px;
+/* ============================================
+   BADGE DE CÁMARA RETRO (Esquina superior izquierda)
+   ============================================ */
+.replay-camera-badge {
     position: fixed;
     top: 20px;
-    right: 20px;
-    background: rgba(10, 10, 30, 0.95);
-    backdrop-filter: blur(10px);
-    pointer-events: auto;
-}
-
-/* El overlay padre debe permitir ver el tablero */
-#replayOverlay {
-    background: rgba(0, 0, 0, 0.3) !important;
-    backdrop-filter: blur(2px);
-    pointer-events: none;
-}
-
-#replayOverlay .overlay-content {
-    pointer-events: auto;
-}
-
-/* Badge REPLAY MODE (esquina superior, fijo) */
-.replay-badge {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 20px;
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255, 0, 128, 0.2);
-    border: 2px solid var(--neon-pink);
-    border-radius: 20px;
-    padding: 8px 20px;
+    background: rgba(255, 0, 0, 0.15);
+    border: 2px solid #ff0000;
+    border-radius: 4px;
+    padding: 8px 16px;
     font-family: 'Orbitron', monospace;
     font-weight: 700;
     font-size: 14px;
-    color: var(--neon-pink);
-    text-shadow: 0 0 10px var(--neon-pink);
-    box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
-    animation: replayBadgePulse 2s ease-in-out infinite;
-    z-index: 100;
+    color: #ff0000;
+    text-shadow: 0 0 10px #ff0000;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.5), inset 0 0 10px rgba(255, 0, 0, 0.2);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
 }
 
-.replay-icon {
+.camera-icon {
     font-size: 20px;
+    animation: cameraFlicker 0.1s infinite alternate;
 }
 
-@keyframes replayBadgePulse {
+.rec-text {
+    font-size: 16px;
+    letter-spacing: 2px;
+}
+
+.rec-dot {
+    width: 10px;
+    height: 10px;
+    background: #ff0000;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ff0000;
+    animation: recBlink 1s ease-in-out infinite;
+}
+
+@keyframes recBlink {
     0%, 100% {
-        box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+        opacity: 1;
+        box-shadow: 0 0 10px #ff0000;
     }
     50% {
-        box-shadow: 0 0 30px rgba(255, 0, 128, 0.8);
+        opacity: 0.3;
+        box-shadow: 0 0 5px #ff0000;
     }
 }
 
-/* Controles de reproducción */
-.replay-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    margin: 24px 0;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 12px;
-    border: 1px solid rgba(0, 255, 255, 0.3);
+@keyframes cameraFlicker {
+    0% { opacity: 1; }
+    100% { opacity: 0.95; }
 }
 
-.btn-replay-control {
+/* ============================================
+   MARCO RETRO (4 esquinas que no se tocan - estilo CRT)
+   ============================================ */
+.retro-frame {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+}
+
+.frame-corner {
+    position: absolute;
     width: 60px;
     height: 60px;
-    border-radius: 50%;
-    border: 2px solid var(--neon-cyan);
-    background: rgba(0, 255, 255, 0.1);
-    color: var(--neon-cyan);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    border: 3px solid var(--neon-cyan);
+    box-shadow: 0 0 10px var(--neon-cyan), inset 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
-.btn-replay-control:hover {
-    background: rgba(0, 255, 255, 0.2);
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
-    transform: scale(1.1);
+/* Esquina superior izquierda */
+.frame-top-left {
+    top: 100px;
+    left: 20px;
+    border-right: none;
+    border-bottom: none;
 }
 
-.btn-replay-control:active {
-    transform: scale(0.95);
+/* Esquina superior derecha */
+.frame-top-right {
+    top: 100px;
+    right: 20px;
+    border-left: none;
+    border-bottom: none;
 }
 
-.btn-replay-speed {
-    font-family: 'Orbitron', monospace;
-    font-weight: 700;
-    font-size: 18px;
+/* Esquina inferior izquierda */
+.frame-bottom-left {
+    bottom: 100px;
+    left: 20px;
+    border-right: none;
+    border-top: none;
 }
 
-#speedLabel {
-    text-shadow: 0 0 10px var(--neon-cyan);
+/* Esquina inferior derecha */
+.frame-bottom-right {
+    bottom: 100px;
+    right: 20px;
+    border-left: none;
+    border-top: none;
 }
 
-/* Info del nivel en replay */
-.replay-level-info {
-    text-align: center;
-    margin: 16px 0;
-    padding: 16px;
-    background: rgba(0, 255, 255, 0.05);
-    border-radius: 8px;
-    border: 1px solid rgba(0, 255, 255, 0.2);
-}
-
-.replay-level-info p {
-    margin: 8px 0;
-    font-family: 'Orbitron', monospace;
-    font-size: 16px;
-    color: var(--neon-cyan);
-    text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
-}
-
-/* Responsive */
+/* Responsive - Esquinas más pequeñas en mobile */
 @media (max-width: 768px) {
-    .replay-content {
-        max-width: calc(100% - 20px);
+    .replay-camera-badge {
         top: 10px;
-        right: 10px;
         left: 10px;
-        padding: 60px 15px 30px 15px;
-    }
-
-    .replay-badge {
-        top: 10px;
+        padding: 6px 12px;
         font-size: 11px;
-        padding: 5px 12px;
     }
 
-    .btn-replay-control {
-        width: 45px;
-        height: 45px;
+    .camera-icon {
+        font-size: 16px;
     }
 
-    .btn-replay-control svg {
-        width: 20px !important;
-        height: 20px !important;
+    .rec-text {
+        font-size: 12px;
+        letter-spacing: 1px;
     }
 
-    .btn-replay-speed {
-        font-size: 14px;
+    .rec-dot {
+        width: 8px;
+        height: 8px;
     }
 
-    .replay-controls {
-        gap: 10px;
-        padding: 12px;
+    .frame-corner {
+        width: 40px;
+        height: 40px;
+        border-width: 2px;
+    }
+
+    .frame-top-left,
+    .frame-top-right {
+        top: 70px;
+    }
+
+    .frame-bottom-left,
+    .frame-bottom-right {
+        bottom: 70px;
+    }
+
+    .frame-top-left,
+    .frame-bottom-left {
+        left: 10px;
+    }
+
+    .frame-top-right,
+    .frame-bottom-right {
+        right: 10px;
     }
 }
