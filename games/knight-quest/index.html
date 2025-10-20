@@ -414,7 +414,11 @@
            - coord-rank: números de fila (1,2,3...) en borde izquierdo
         */
 
-        /* Coordenadas horizontales (columnas: 1, 2, 3, 4...) */
+        /* ==========================================
+           COORDENADAS HORIZONTALES (letras: a, b, c, d...)
+           ==========================================
+           Se muestran en el BORDE INFERIOR del tablero
+        */
         .coord-file {
             /* Posicionamiento absoluto respecto a la casilla padre */
             position: absolute;
@@ -422,26 +426,36 @@
             left: 50%;            /* Centrado horizontalmente */
             transform: translateX(-50%);  /* Ajuste fino del centrado */
 
-            /* Estilo del texto */
-            color: #ff0000;       /* ROJO TEMPORAL PARA DEBUG - cambiar a #ffffff */
-            font-size: 14px;      /* Tamaño más grande para DEBUG */
-            font-weight: 900;     /* Extra bold para DEBUG */
+            /* Estilo del texto - FINAL VERSION */
+            color: #000000;       /* Negro para buen contraste con amarillo */
+            font-size: 12px;      /* Tamaño legible */
+            font-weight: 900;     /* Extra bold para visibilidad */
             font-family: 'Orbitron', sans-serif;
-            background: yellow;   /* FONDO AMARILLO TEMPORAL PARA DEBUG */
-            padding: 2px 4px;     /* Padding temporal para DEBUG */
+
+            /* Fondo amarillo estilo etiqueta */
+            background: linear-gradient(135deg, #ffeb3b 0%, #fdd835 100%);
+            padding: 2px 6px;     /* Padding para crear "etiqueta" */
+            border-radius: 3px;   /* Bordes ligeramente redondeados */
+            border: 1px solid rgba(0, 0, 0, 0.2);  /* Borde sutil */
+
+            /* Sombra para destacar del fondo */
+            box-shadow:
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                0 0 8px rgba(255, 235, 59, 0.5);
 
             /* Evitar interacción */
             pointer-events: none; /* No bloquea clicks en las casillas */
             user-select: none;    /* No se puede seleccionar el texto */
 
             /* Z-index para estar sobre otros elementos */
-            z-index: 50;          /* Aumentado de 20 a 50 para estar seguro */
-
-            /* Efecto visual neón */
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);  /* Rojo brillante para DEBUG */
+            z-index: 50;
         }
 
-        /* Coordenadas verticales (filas: 1, 2, 3...) */
+        /* ==========================================
+           COORDENADAS VERTICALES (números: 1, 2, 3...)
+           ==========================================
+           Se muestran en el BORDE IZQUIERDO del tablero
+        */
         .coord-rank {
             /* Posicionamiento absoluto respecto a la casilla padre */
             position: absolute;
@@ -449,23 +463,29 @@
             top: 50%;             /* Centrado verticalmente */
             transform: translateY(-50%);  /* Ajuste fino del centrado */
 
-            /* Estilo del texto */
-            color: #ff0000;       /* ROJO TEMPORAL PARA DEBUG - cambiar a #ffffff */
-            font-size: 14px;      /* Tamaño más grande para DEBUG */
-            font-weight: 900;     /* Extra bold para DEBUG */
+            /* Estilo del texto - FINAL VERSION */
+            color: #000000;       /* Negro para buen contraste con amarillo */
+            font-size: 12px;      /* Tamaño legible */
+            font-weight: 900;     /* Extra bold para visibilidad */
             font-family: 'Orbitron', sans-serif;
-            background: yellow;   /* FONDO AMARILLO TEMPORAL PARA DEBUG */
-            padding: 2px 4px;     /* Padding temporal para DEBUG */
+
+            /* Fondo amarillo estilo etiqueta */
+            background: linear-gradient(135deg, #ffeb3b 0%, #fdd835 100%);
+            padding: 2px 6px;     /* Padding para crear "etiqueta" */
+            border-radius: 3px;   /* Bordes ligeramente redondeados */
+            border: 1px solid rgba(0, 0, 0, 0.2);  /* Borde sutil */
+
+            /* Sombra para destacar del fondo */
+            box-shadow:
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                0 0 8px rgba(255, 235, 59, 0.5);
 
             /* Evitar interacción */
             pointer-events: none; /* No bloquea clicks en las casillas */
             user-select: none;    /* No se puede seleccionar el texto */
 
             /* Z-index para estar sobre otros elementos */
-            z-index: 50;          /* Aumentado de 20 a 50 para estar seguro */
-
-            /* Efecto visual neón */
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);  /* Rojo brillante para DEBUG */
+            z-index: 50;
         }
 
         /* Coordenadas responsive */
@@ -1419,15 +1439,17 @@
                     // AGREGAR COORDENADAS (SOLO EN LOS BORDES)
                     // ==========================================
 
-                    // COORDENADAS HORIZONTALES (números de columna: 1, 2, 3, 4...)
+                    // COORDENADAS HORIZONTALES (letras de columna: a, b, c, d...)
                     // Se agregan en la ÚLTIMA FILA (row = rows - 1)
                     // Con bottom: -18px quedarán DEBAJO del tablero, en el borde inferior
                     if (row === rows - 1) {
                         const coordFile = document.createElement('span');
                         coordFile.className = 'coord-file';
-                        coordFile.textContent = col + 1;  // Columna 1, 2, 3...
+                        // Convertir número de columna a letra: 0→a, 1→b, 2→c...
+                        // Usar String.fromCharCode(97 + col) donde 97 es 'a' en ASCII
+                        coordFile.textContent = String.fromCharCode(97 + col);  // a, b, c...
                         square.appendChild(coordFile);
-                        console.log(`  ➕ Added coord-file: ${col + 1} at square ${index} (bottom row)`);
+                        console.log(`  ➕ Added coord-file: ${String.fromCharCode(97 + col)} at square ${index} (bottom row)`);
                     }
 
                     // COORDENADAS VERTICALES (números de fila: 3, 2, 1...)
@@ -1672,22 +1694,45 @@
                 if (coordRank) square.appendChild(coordRank);
             });
             
-            // Mark visited squares
+            // ==========================================
+            // MARCAR CASILLAS VISITADAS
+            // ==========================================
+            // IMPORTANTE: NO usar innerHTML porque borra las coordenadas
+            // En su lugar, crear elementos y agregarlos con appendChild
             gameState.visitedSquares.forEach(index => {
                 if (squares[index]) {
                     squares[index].classList.add('visited');
-                    squares[index].innerHTML = `<span class="move-number">${gameState.board[index]}</span>`;
+
+                    // Crear elemento de número de movimiento
+                    const moveNumber = document.createElement('span');
+                    moveNumber.className = 'move-number';
+                    moveNumber.textContent = gameState.board[index];
+
+                    // Agregar el número (las coordenadas ya están ahí si es una casilla del borde)
+                    squares[index].appendChild(moveNumber);
                 }
             });
-            
-            // Mark current position
+
+            // ==========================================
+            // MARCAR POSICIÓN ACTUAL (donde está el caballo)
+            // ==========================================
             if (gameState.currentPos !== null && squares[gameState.currentPos]) {
                 squares[gameState.currentPos].classList.remove('visited');
                 squares[gameState.currentPos].classList.add('current');
-                squares[gameState.currentPos].innerHTML = `
-                    <span class="move-number">${gameState.board[gameState.currentPos]}</span>
-                    <span class="knight-symbol">♘</span>
-                `;
+
+                // Crear elemento de número de movimiento
+                const moveNumber = document.createElement('span');
+                moveNumber.className = 'move-number';
+                moveNumber.textContent = gameState.board[gameState.currentPos];
+
+                // Crear elemento del caballo
+                const knightSymbol = document.createElement('span');
+                knightSymbol.className = 'knight-symbol';
+                knightSymbol.textContent = '♘';
+
+                // Agregar ambos elementos (las coordenadas ya están si es casilla del borde)
+                squares[gameState.currentPos].appendChild(moveNumber);
+                squares[gameState.currentPos].appendChild(knightSymbol);
                 
                 // Show possible moves
                 const possibleMoves = getPossibleMoves(gameState.currentPos);
