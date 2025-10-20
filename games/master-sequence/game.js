@@ -72,6 +72,31 @@ let lastSessionStats = {
 };
 
 // ============================================
+// SISTEMA DE REPLAY
+// ============================================
+
+// Grabación de la partida actual (se va llenando mientras juegas)
+let currentRecording = {
+    timestamp: null,
+    finalLevel: 0,
+    finalScore: 0,
+    levels: []
+};
+
+// Mejor replay guardado (el que se puede ver)
+let bestReplay = null;
+
+// Estado del reproductor
+let replayState = {
+    isPlaying: false,
+    isPaused: false,
+    currentLevelIndex: 0,
+    currentStepIndex: 0,
+    playbackSpeed: 1.0,  // 0.5x, 1x, 2x
+    autoAdvance: true
+};
+
+// ============================================
 // INICIALIZACIÓN
 // ============================================
 
@@ -95,6 +120,9 @@ function initGame() {
     // Cargar high scores desde localStorage
     gameState.highScores = loadHighScores();
     console.log('💾 High scores loaded:', gameState.highScores);
+
+    // Cargar mejor replay desde localStorage
+    loadBestReplay();
 
     updateUI();
     console.log('🎮 Game initialized');
@@ -227,6 +255,15 @@ function setupEventListeners() {
     document.getElementById('btnConfirmEnd')?.addEventListener('click', confirmEndGame);
     document.getElementById('btnCancelEnd')?.addEventListener('click', cancelEndGame);
 
+    // Botones de REPLAY
+    document.getElementById('btnReplay')?.addEventListener('click', startReplayPlayback);
+    document.getElementById('btnReplayPlay')?.addEventListener('click', toggleReplayPause);
+    document.getElementById('btnReplayPause')?.addEventListener('click', toggleReplayPause);
+    document.getElementById('btnReplaySpeed')?.addEventListener('click', cycleReplaySpeed);
+    document.getElementById('btnReplayNext')?.addEventListener('click', skipToNextReplayLevel);
+    document.getElementById('btnStopReplay')?.addEventListener('click', stopReplay);
+    document.getElementById('btnCloseReplay')?.addEventListener('click', stopReplay);
+
     // Clicks en el tablero
     const chessboard = document.getElementById('chessboard');
     chessboard.addEventListener('click', handleSquareClick);
@@ -253,6 +290,9 @@ function startGame() {
     gameState.masterSequence = []; // Resetear secuencia acumulativa
     gameState.sequenceColors = []; // Resetear colores
     gameState.squareUsageCount = {}; // Resetear contador de uso
+
+    // Iniciar nueva grabación
+    startRecording();
 
     hideAllOverlays();
     hidePlayButton(); // Ocultar botón play central
@@ -422,6 +462,9 @@ function startLevel(levelNumber) {
     console.log(`   Sequence:`, gameState.sequence);
     console.log(`   Use colors: ${config.useColors}`);
 
+    // Grabar inicio del nivel
+    recordLevelStart(levelNumber, gameState.sequence, gameState.sequenceColors);
+
     updateUI();
     updateStatus(`Nivel ${levelNumber} - ${config.name}`, 'info');
 
@@ -546,6 +589,9 @@ function handleSquareClick(e) {
     const squareId = square.dataset.square;
     console.log(`🖱️ Player clicked: ${squareId}`);
 
+    // Grabar el movimiento del jugador
+    recordPlayerMove(squareId);
+
     // Agregar a la secuencia del jugador
     gameState.playerSequence.push(squareId);
 
@@ -656,6 +702,9 @@ function onLevelComplete() {
 
     updateUI();
 
+    // Grabar finalización exitosa del nivel
+    recordLevelEnd(true, parseFloat(timeElapsedSeconds), gameState.currentLevelAttempts);
+
     // Reproducir sonido de victoria
     if (gameState.soundEnabled && typeof playLevelComplete === 'function') {
         playLevelComplete();
@@ -709,6 +758,12 @@ function gameOver() {
         sequenceLength: gameState.sequence.length
     };
     console.log('📊 Last session stats saved:', lastSessionStats);
+
+    // Finalizar grabación y decidir si guardar
+    const savedNewRecord = finishRecording();
+    if (savedNewRecord) {
+        console.log('🎬 ¡Nuevo mejor replay guardado!');
+    }
 
     gameState.phase = 'gameover';
 
@@ -827,6 +882,9 @@ function showHint() {
     }
 
     console.log('💡 Mostrando hint...');
+
+    // Grabar uso de hint
+    recordHintUsed();
 
     // Aplicar penalización: -100 puntos
     const penalty = 100;
@@ -1305,6 +1363,9 @@ function updateUI() {
 
     // Best Score
     document.getElementById('bestDisplay').textContent = gameState.highScores.topScore;
+
+    // Actualizar visibilidad del botón REPLAY
+    updateReplayButtonVisibility();
 }
 
 /**
@@ -1891,6 +1952,463 @@ function resetHighScores() {
     gameState.highScores = getDefaultHighScores();
     saveHighScores();
     console.log('🗑️ High scores reset');
+}
+
+// ============================================
+// SISTEMA DE REPLAY - GRABACIÓN
+// ============================================
+
+/**
+ * Inicia una nueva grabación al comenzar partida
+ */
+function startRecording() {
+    currentRecording = {
+        timestamp: new Date().toISOString(),
+        finalLevel: 0,
+        finalScore: 0,
+        finalStreak: 0,
+        levels: []
+    };
+    console.log('📹 Recording started');
+}
+
+/**
+ * Graba el inicio de un nivel
+ */
+function recordLevelStart(levelNumber, sequence, colors) {
+    const levelData = {
+        level: levelNumber,
+        sequence: [...sequence],  // Copia de la secuencia
+        colors: colors.map(c => ({name: c.name, hex: c.hex})),  // Copia de colores
+        playerMoves: [],
+        timeElapsed: 0,
+        success: false,
+        hintsUsed: 0,
+        attempts: 0
+    };
+
+    currentRecording.levels.push(levelData);
+    console.log(`📹 Recording level ${levelNumber}`);
+}
+
+/**
+ * Graba un movimiento del jugador
+ */
+function recordPlayerMove(squareId) {
+    if (currentRecording.levels.length === 0) return;
+
+    const currentLevel = currentRecording.levels[currentRecording.levels.length - 1];
+    currentLevel.playerMoves.push(squareId);
+}
+
+/**
+ * Graba el uso de un hint
+ */
+function recordHintUsed() {
+    if (currentRecording.levels.length === 0) return;
+
+    const currentLevel = currentRecording.levels[currentRecording.levels.length - 1];
+    currentLevel.hintsUsed++;
+}
+
+/**
+ * Marca el nivel como completado (éxito o fallo)
+ */
+function recordLevelEnd(success, timeElapsed, attempts) {
+    if (currentRecording.levels.length === 0) return;
+
+    const currentLevel = currentRecording.levels[currentRecording.levels.length - 1];
+    currentLevel.success = success;
+    currentLevel.timeElapsed = timeElapsed;
+    currentLevel.attempts = attempts;
+
+    console.log(`📹 Level ${currentLevel.level} recorded: ${success ? 'SUCCESS' : 'FAIL'} in ${timeElapsed}s`);
+}
+
+/**
+ * Finaliza la grabación y decide si guardar como mejor replay
+ */
+function finishRecording() {
+    currentRecording.finalLevel = gameState.currentLevel;
+    currentRecording.finalScore = gameState.score;
+    currentRecording.finalStreak = gameState.perfectStreak;
+
+    console.log(`📹 Recording finished: Level ${currentRecording.finalLevel}, Score ${currentRecording.finalScore}`);
+
+    // Guardar si es mejor que el replay actual
+    if (shouldSaveReplay()) {
+        bestReplay = JSON.parse(JSON.stringify(currentRecording));  // Deep copy
+        saveBestReplay();
+        console.log('💾 New best replay saved!');
+        return true;  // Indica que se guardó un nuevo record
+    }
+
+    return false;
+}
+
+/**
+ * Determina si el replay actual debe guardarse
+ * Criterio: Mayor nivel alcanzado, o mismo nivel pero mayor score
+ */
+function shouldSaveReplay() {
+    if (!bestReplay) return true;  // No hay replay guardado
+
+    if (currentRecording.finalLevel > bestReplay.finalLevel) {
+        return true;  // Alcanzó nivel más alto
+    }
+
+    if (currentRecording.finalLevel === bestReplay.finalLevel &&
+        currentRecording.finalScore > bestReplay.finalScore) {
+        return true;  // Mismo nivel pero mejor score
+    }
+
+    return false;
+}
+
+/**
+ * Guarda el mejor replay en localStorage
+ */
+function saveBestReplay() {
+    try {
+        localStorage.setItem('master_sequence_best_replay', JSON.stringify(bestReplay));
+        console.log('💾 Best replay saved to localStorage');
+    } catch (e) {
+        console.error('❌ Error saving replay:', e);
+    }
+}
+
+/**
+ * Carga el mejor replay desde localStorage
+ */
+function loadBestReplay() {
+    try {
+        const saved = localStorage.getItem('master_sequence_best_replay');
+        if (saved) {
+            bestReplay = JSON.parse(saved);
+            console.log('💾 Best replay loaded from localStorage');
+            return true;
+        }
+    } catch (e) {
+        console.error('❌ Error loading replay:', e);
+    }
+    return false;
+}
+
+// ============================================
+// SISTEMA DE REPLAY - REPRODUCTOR
+// ============================================
+
+/**
+ * Muestra el botón VER REPLAY si hay un replay guardado
+ */
+function updateReplayButtonVisibility() {
+    const btnReplay = document.getElementById('btnReplay');
+    if (bestReplay && bestReplay.levels.length > 0) {
+        btnReplay.style.display = 'flex';
+    } else {
+        btnReplay.style.display = 'none';
+    }
+}
+
+/**
+ * Inicia la reproducción del replay
+ */
+async function startReplayPlayback() {
+    if (!bestReplay || bestReplay.levels.length === 0) {
+        console.log('⚠️ No hay replay guardado');
+        return;
+    }
+
+    console.log('🎬 Starting replay playback...');
+
+    // Mostrar overlay de replay
+    showReplayOverlay();
+
+    // Resetear estado del reproductor
+    replayState.isPlaying = true;
+    replayState.isPaused = false;
+    replayState.currentLevelIndex = 0;
+    replayState.currentStepIndex = 0;
+
+    // Limpiar tablero
+    clearBoardForReplay();
+
+    // Iniciar reproducción
+    playReplay();
+}
+
+/**
+ * Reproduce el replay nivel por nivel
+ */
+async function playReplay() {
+    while (replayState.isPlaying && replayState.currentLevelIndex < bestReplay.levels.length) {
+        // Esperar si está pausado
+        while (replayState.isPaused) {
+            await sleep(100);
+        }
+
+        if (!replayState.isPlaying) break;
+
+        const levelData = bestReplay.levels[replayState.currentLevelIndex];
+        await playReplayLevel(levelData);
+
+        // Avanzar al siguiente nivel
+        replayState.currentLevelIndex++;
+
+        // Pequeña pausa entre niveles
+        if (replayState.currentLevelIndex < bestReplay.levels.length) {
+            await sleep(1000 / replayState.playbackSpeed);
+        }
+    }
+
+    // Replay terminado
+    if (replayState.isPlaying) {
+        console.log('🎬 Replay finished');
+        stopReplay();
+    }
+}
+
+/**
+ * Reproduce un nivel específico del replay
+ */
+async function playReplayLevel(levelData) {
+    console.log(`🎬 Playing level ${levelData.level}`);
+
+    // Actualizar info en overlay
+    updateReplayLevelInfo(levelData);
+
+    // Fase 1: Mostrar secuencia
+    await showReplaySequence(levelData);
+
+    // Esperar si está pausado
+    while (replayState.isPaused && replayState.isPlaying) {
+        await sleep(100);
+    }
+
+    if (!replayState.isPlaying) return;
+
+    // Fase 2: Mostrar jugadas del jugador
+    await showReplayPlayerMoves(levelData);
+}
+
+/**
+ * Muestra la secuencia del nivel en el replay
+ */
+async function showReplaySequence(levelData) {
+    const baseDuration = 600;  // Duración base por casilla
+    const pauseDuration = 300;
+
+    for (let i = 0; i < levelData.sequence.length; i++) {
+        // Esperar si está pausado
+        while (replayState.isPaused && replayState.isPlaying) {
+            await sleep(100);
+        }
+
+        if (!replayState.isPlaying) return;
+
+        const squareId = levelData.sequence[i];
+        const color = levelData.colors[i];
+
+        // Highlight casilla
+        await highlightSquareReplay(squareId, baseDuration / replayState.playbackSpeed, color);
+
+        // Pausa entre casillas
+        if (i < levelData.sequence.length - 1) {
+            await sleep(pauseDuration / replayState.playbackSpeed);
+        }
+    }
+
+    // Pausa después de mostrar secuencia
+    await sleep(800 / replayState.playbackSpeed);
+}
+
+/**
+ * Muestra los movimientos del jugador en el replay
+ */
+async function showReplayPlayerMoves(levelData) {
+    replayState.currentStepIndex = 0;
+
+    for (let i = 0; i < levelData.playerMoves.length; i++) {
+        // Esperar si está pausado
+        while (replayState.isPaused && replayState.isPlaying) {
+            await sleep(100);
+        }
+
+        if (!replayState.isPlaying) return;
+
+        const squareId = levelData.playerMoves[i];
+        const expectedSquare = levelData.sequence[i];
+        const isCorrect = squareId === expectedSquare;
+
+        // Color: verde si correcto, rojo si error
+        const color = isCorrect ?
+            { name: 'green', hex: '#00ff00', shadowColor: 'rgba(0, 255, 0, 0.8)' } :
+            { name: 'red', hex: '#ff0000', shadowColor: 'rgba(255, 0, 0, 0.8)' };
+
+        // Mostrar movimiento
+        await highlightSquareReplay(squareId, 500 / replayState.playbackSpeed, color);
+
+        replayState.currentStepIndex++;
+        updateReplayStepInfo(replayState.currentStepIndex, levelData.sequence.length);
+
+        await sleep(400 / replayState.playbackSpeed);
+    }
+
+    // Pausa final del nivel
+    await sleep(1000 / replayState.playbackSpeed);
+}
+
+/**
+ * Highlight de casilla para replay (sin side effects en gameState)
+ */
+function highlightSquareReplay(squareId, duration, color) {
+    return new Promise((resolve) => {
+        const squareElement = document.querySelector(`[data-square="${squareId}"]`);
+        if (!squareElement) {
+            resolve();
+            return;
+        }
+
+        // Aplicar highlight
+        squareElement.classList.add('highlighting');
+
+        if (color) {
+            squareElement.style.setProperty('--highlight-color', color.hex);
+            squareElement.style.setProperty('--highlight-shadow', color.shadowColor);
+        }
+
+        // Reproducir sonido si está habilitado
+        if (gameState.soundEnabled && typeof playBeep === 'function') {
+            playBeep(440);
+        }
+
+        setTimeout(() => {
+            squareElement.classList.remove('highlighting');
+            if (color) {
+                squareElement.style.removeProperty('--highlight-color');
+                squareElement.style.removeProperty('--highlight-shadow');
+            }
+            resolve();
+        }, duration);
+    });
+}
+
+/**
+ * Limpia el tablero para replay
+ */
+function clearBoardForReplay() {
+    const squares = document.querySelectorAll('.square');
+    squares.forEach(sq => {
+        sq.classList.remove('highlighting', 'hint-sequence', 'hint-next');
+        sq.style.removeProperty('--highlight-color');
+        sq.style.removeProperty('--highlight-shadow');
+
+        // Limpiar hints y labels
+        const labels = sq.querySelectorAll('.hint-label, .hint-arrow, .repeat-symbol');
+        labels.forEach(label => label.remove());
+    });
+
+    // Limpiar SVG de líneas conectoras
+    const svgContainer = document.getElementById('hintLinesSvg');
+    if (svgContainer) {
+        while (svgContainer.firstChild) {
+            svgContainer.removeChild(svgContainer.firstChild);
+        }
+    }
+}
+
+/**
+ * Pausa/Resume del replay
+ */
+function toggleReplayPause() {
+    replayState.isPaused = !replayState.isPaused;
+    updateReplayControls();
+    console.log(`🎬 Replay ${replayState.isPaused ? 'paused' : 'resumed'}`);
+}
+
+/**
+ * Cambia velocidad de reproducción (0.5x -> 1x -> 2x -> 0.5x...)
+ */
+function cycleReplaySpeed() {
+    const speeds = [0.5, 1.0, 2.0];
+    const currentIndex = speeds.indexOf(replayState.playbackSpeed);
+    const nextIndex = (currentIndex + 1) % speeds.length;
+    replayState.playbackSpeed = speeds[nextIndex];
+
+    document.getElementById('speedLabel').textContent = `${replayState.playbackSpeed}x`;
+    console.log(`🎬 Replay speed: ${replayState.playbackSpeed}x`);
+}
+
+/**
+ * Salta al siguiente nivel en el replay
+ */
+function skipToNextReplayLevel() {
+    if (replayState.currentLevelIndex < bestReplay.levels.length - 1) {
+        replayState.currentLevelIndex++;
+        console.log(`🎬 Skipped to level ${replayState.currentLevelIndex + 1}`);
+    }
+}
+
+/**
+ * Detiene el replay
+ */
+function stopReplay() {
+    replayState.isPlaying = false;
+    replayState.isPaused = false;
+    hideAllOverlays();
+    clearBoardForReplay();
+    console.log('🎬 Replay stopped');
+}
+
+/**
+ * Actualiza controles de reproducción (Play/Pause visibility)
+ */
+function updateReplayControls() {
+    const btnPlay = document.getElementById('btnReplayPlay');
+    const btnPause = document.getElementById('btnReplayPause');
+
+    if (replayState.isPaused) {
+        btnPlay.style.display = 'flex';
+        btnPause.style.display = 'none';
+    } else {
+        btnPlay.style.display = 'none';
+        btnPause.style.display = 'flex';
+    }
+}
+
+/**
+ * Actualiza info del nivel en el overlay de replay
+ */
+function updateReplayLevelInfo(levelData) {
+    document.getElementById('replayLevelText').textContent = `Nivel ${levelData.level}`;
+    document.getElementById('replayStepText').textContent = `Paso: 0 / ${levelData.sequence.length}`;
+}
+
+/**
+ * Actualiza info del paso actual
+ */
+function updateReplayStepInfo(step, total) {
+    document.getElementById('replayStepText').textContent = `Paso: ${step} / ${total}`;
+}
+
+/**
+ * Muestra overlay de replay
+ */
+function showReplayOverlay() {
+    hideAllOverlays();
+
+    const overlay = document.getElementById('replayOverlay');
+    const replayInfo = document.getElementById('replayInfo');
+
+    // Actualizar info del replay
+    replayInfo.textContent = `Nivel alcanzado: ${bestReplay.finalLevel} | Score: ${bestReplay.finalScore}`;
+
+    // Resetear controles
+    document.getElementById('speedLabel').textContent = '1x';
+    replayState.playbackSpeed = 1.0;
+    updateReplayControls();
+
+    overlay.classList.remove('hidden');
 }
 
 console.log('🎮 Coordinate Sequence - Game logic loaded');

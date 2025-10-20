@@ -164,6 +164,13 @@
                     <span class="btn-text">STATS</span>
                 </button>
 
+                <button class="btn-secondary btn-replay" id="btnReplay" style="display: none;">
+                    <svg class="icon-replay" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span class="btn-text">VER REPLAY</span>
+                </button>
+
                 <button class="btn-secondary btn-end-game" id="btnEndGame">
                     <svg class="icon-end-game" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="3" width="18" height="18" rx="2"></rect>
@@ -367,6 +374,68 @@
                     ✓ Terminar
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- ==================================================
+         OVERLAY DE REPLAY
+         ================================================== -->
+    <div class="overlay hidden" id="replayOverlay">
+        <div class="overlay-content replay-content">
+            <!-- Botón X para cerrar -->
+            <button class="btn-close-overlay" id="btnCloseReplay" aria-label="Cerrar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <!-- Indicador REPLAY MODE -->
+            <div class="replay-badge">
+                <span class="replay-icon">🎬</span>
+                <span class="replay-text">REPLAY MODE</span>
+            </div>
+
+            <!-- Título -->
+            <h2 class="overlay-title">📹 Mejor Partida</h2>
+            <p class="overlay-message" id="replayInfo">Nivel alcanzado: 10 | Score: 5000</p>
+
+            <!-- Controles de reproducción -->
+            <div class="replay-controls">
+                <button class="btn-replay-control" id="btnReplayPlay" title="Play/Pause">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                </button>
+
+                <button class="btn-replay-control" id="btnReplayPause" style="display: none;" title="Pause">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                </button>
+
+                <button class="btn-replay-control btn-replay-speed" id="btnReplaySpeed" title="Velocidad">
+                    <span id="speedLabel">1x</span>
+                </button>
+
+                <button class="btn-replay-control" id="btnReplayNext" title="Siguiente Nivel">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                        <line x1="19" y1="5" x2="19" y2="19"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Info del nivel actual en replay -->
+            <div class="replay-level-info">
+                <p id="replayLevelText">Nivel 1</p>
+                <p id="replayStepText">Paso: 0 / 3</p>
+            </div>
+
+            <button class="btn-secondary btn-overlay" id="btnStopReplay">
+                ✗ Cerrar Replay
+            </button>
         </div>
     </div>
 

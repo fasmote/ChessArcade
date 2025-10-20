@@ -1697,3 +1697,155 @@ body::before {
         transform: translateY(100vh) rotate(720deg);
     }
 }
+
+/* ============================================
+   REPLAY SYSTEM STYLES
+   ============================================ */
+
+/* Botón VER REPLAY */
+.btn-replay {
+    background: linear-gradient(135deg, #ff0080, #8000ff);
+    border: 2px solid #ff0080;
+    box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+}
+
+.btn-replay:hover {
+    background: linear-gradient(135deg, #ff3399, #9933ff);
+    box-shadow: 0 0 30px rgba(255, 0, 128, 0.8);
+    transform: translateY(-2px);
+}
+
+/* Overlay de replay - más ancho para ver el tablero */
+.replay-content {
+    max-width: 700px;
+    position: relative;
+}
+
+/* Badge REPLAY MODE (esquina superior, fijo) */
+.replay-badge {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 0, 128, 0.2);
+    border: 2px solid var(--neon-pink);
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--neon-pink);
+    text-shadow: 0 0 10px var(--neon-pink);
+    box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+    animation: replayBadgePulse 2s ease-in-out infinite;
+    z-index: 100;
+}
+
+.replay-icon {
+    font-size: 20px;
+}
+
+@keyframes replayBadgePulse {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(255, 0, 128, 0.8);
+    }
+}
+
+/* Controles de reproducción */
+.replay-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.btn-replay-control {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid var(--neon-cyan);
+    background: rgba(0, 255, 255, 0.1);
+    color: var(--neon-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-replay-control:hover {
+    background: rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+    transform: scale(1.1);
+}
+
+.btn-replay-control:active {
+    transform: scale(0.95);
+}
+
+.btn-replay-speed {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+#speedLabel {
+    text-shadow: 0 0 10px var(--neon-cyan);
+}
+
+/* Info del nivel en replay */
+.replay-level-info {
+    text-align: center;
+    margin: 16px 0;
+    padding: 16px;
+    background: rgba(0, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.replay-level-info p {
+    margin: 8px 0;
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .replay-content {
+        max-width: 95%;
+        padding: 80px 20px 40px 20px;
+    }
+
+    .replay-badge {
+        top: 10px;
+        font-size: 12px;
+        padding: 6px 16px;
+    }
+
+    .btn-replay-control {
+        width: 50px;
+        height: 50px;
+    }
+
+    .btn-replay-control svg {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    .btn-replay-speed {
+        font-size: 16px;
+    }
+}
