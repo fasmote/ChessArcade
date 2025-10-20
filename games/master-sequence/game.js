@@ -2116,7 +2116,7 @@ function loadBestReplay() {
  * Controla la habilitación del botón VER REPLAY
  * El botón siempre es visible, pero solo se habilita cuando:
  * 1. Hay replay guardado
- * 2. La partida terminó (gameover o el jugador clickeó TERMINAR)
+ * 2. La partida terminó COMPLETAMENTE (gameover o volvió a pantalla principal)
  */
 function updateReplayButtonVisibility() {
     const btnReplay = document.getElementById('btnReplay');
@@ -2131,10 +2131,14 @@ function updateReplayButtonVisibility() {
     // Si hay replay, botón SIEMPRE visible
     btnReplay.style.display = 'flex';
 
-    // Habilitar solo si el juego está en fase idle o gameover
-    const isGameInactive = gameState.phase === 'idle' || gameState.phase === 'gameover';
+    // Habilitar SOLO si:
+    // 1. phase === 'gameover' (perdió todas las vidas)
+    // 2. currentLevel === 1 Y phase === 'idle' (volvió a pantalla principal)
+    // NUNCA habilitar durante retry (phase puede ser idle pero currentLevel > 1)
+    const isGameOver = gameState.phase === 'gameover';
+    const isAtMainScreen = gameState.phase === 'idle' && gameState.currentLevel === 1;
 
-    if (isGameInactive) {
+    if (isGameOver || isAtMainScreen) {
         btnReplay.disabled = false;
         btnReplay.style.opacity = '1';
         btnReplay.style.cursor = 'pointer';
