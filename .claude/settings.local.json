@@ -24,7 +24,14 @@
       "Bash(git mv:*)",
       "Bash(robocopy:*)",
       "Bash(git rm:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(git add games/knight-quest/index.html)",
+      "Bash(git add ERRORES_Y_SOLUCIONES.md games/memory-matrix-v2/ChessGameLibrary/BoardCoordinates.js games/memory-matrix-v2/ChessGameLibrary/README.md)",
+      "WebSearch",
+      "Bash(git add docs/CONTACT_FORM_SETUP.md)",
+      "Bash(git add contact.html contact-send.php docs/CONTACT_FORM_SETUP.md)",
+      "Bash(git add DEPLOY_CONTACTO_HOSTINGER.md)",
+      "Bash(git add -A)"
     ],
     "deny": [],
     "ask": []
