@@ -2109,21 +2109,29 @@ function loadBestReplay() {
 // ============================================
 
 /**
- * Muestra el botón VER REPLAY si hay un replay guardado Y no hay partida en curso
+ * Controla la habilitación del botón VER REPLAY
+ * El botón siempre es visible, pero solo se habilita cuando:
+ * 1. Hay replay guardado
+ * 2. La partida terminó (gameover o el jugador clickeó TERMINAR)
  */
 function updateReplayButtonVisibility() {
     const btnReplay = document.getElementById('btnReplay');
 
-    // Solo mostrar si:
-    // 1. Hay replay guardado
-    // 2. NO hay partida activa (idle o gameover)
+    // Botón SIEMPRE visible
+    btnReplay.style.display = 'flex';
+
+    // Habilitar solo si hay replay Y el juego está en fase idle o gameover
     const hasReplay = bestReplay && bestReplay.levels.length > 0;
     const isGameInactive = gameState.phase === 'idle' || gameState.phase === 'gameover';
 
     if (hasReplay && isGameInactive) {
-        btnReplay.style.display = 'flex';
+        btnReplay.disabled = false;
+        btnReplay.style.opacity = '1';
+        btnReplay.style.cursor = 'pointer';
     } else {
-        btnReplay.style.display = 'none';
+        btnReplay.disabled = true;
+        btnReplay.style.opacity = '0.4';
+        btnReplay.style.cursor = 'not-allowed';
     }
 }
 
@@ -2176,32 +2184,22 @@ async function startReplayPlayback() {
  * Reproduce SOLO el último nivel completo (el más difícil alcanzado)
  */
 async function playReplay() {
-    // Solo reproducir el último nivel, no todos
+    // Solo reproducir el último nivel, UNA SOLA VEZ (no loop infinito)
     const lastLevelIndex = bestReplay.levels.length - 1;
     const levelData = bestReplay.levels[lastLevelIndex];
 
     console.log(`🎬 Playing ONLY last level: ${levelData.level} (${levelData.sequence.length} moves)`);
 
-    // Loop infinito mientras no se detenga manualmente
-    while (replayState.isPlaying) {
-        // Esperar si está pausado
-        while (replayState.isPaused) {
-            await sleep(100);
-        }
+    // Reproducir el nivel UNA VEZ
+    await playReplayLevel(levelData);
 
-        if (!replayState.isPlaying) break;
+    // Pausa final antes de detener
+    await sleep(2000 / replayState.playbackSpeed);
 
-        // Reproducir el nivel
-        await playReplayLevel(levelData);
+    console.log('🎬 Replay finished - stopping automatically');
 
-        // Pausa entre repeticiones
-        await sleep(2000 / replayState.playbackSpeed);
-
-        // Volver a empezar el mismo nivel (loop infinito)
-        console.log('🔄 Repeating last level...');
-    }
-
-    console.log('🎬 Replay stopped');
+    // Detener automáticamente después de una reproducción
+    stopReplay();
 }
 
 /**
