@@ -223,12 +223,39 @@ const UIController = {
     },
 
     /**
-     * Update turn indicator
+     * Update turn indicator (Actualizar indicador de turno)
+     *
+     * Esta función se encarga de actualizar el indicador visual del turno actual.
+     * Hace 3 cosas:
+     * 1. Actualiza el texto ("CYAN PLAYER" o "MAGENTA PLAYER")
+     * 2. Cambia el color del texto
+     * 3. Cambia el borde y glow del contenedor
+     *
+     * Técnica: BEM-style modifiers con clases CSS
+     * - Removemos las clases anteriores (.turn-cyan, .turn-magenta)
+     * - Agregamos la clase correspondiente al jugador actual
+     * - El CSS hace la transición suave automáticamente
      */
     updateTurnIndicator() {
+        // 1. Obtener elementos del DOM
         const turnText = document.getElementById('currentTurnText');
+        const turnContainer = document.querySelector('.turn-indicator');
+
+        // 2. Actualizar el texto del turno
         turnText.textContent = GameState.currentPlayer.toUpperCase() + ' PLAYER';
-        turnText.style.color = GameState.currentPlayer === 'cyan' ? 'var(--cyan-primary)' : 'var(--magenta-primary)';
+
+        // 3. Cambiar color del texto según jugador
+        // Operador ternario: condición ? valor_si_true : valor_si_false
+        turnText.style.color = GameState.currentPlayer === 'cyan'
+            ? 'var(--cyan-primary)'  // Si es cyan, usar color cyan
+            : 'var(--magenta-primary)'; // Si es magenta, usar color magenta
+
+        // 4. Cambiar el borde y glow del contenedor
+        // Primero removemos ambas clases (limpieza)
+        turnContainer.classList.remove('turn-cyan', 'turn-magenta');
+        // Luego agregamos la clase correspondiente al jugador actual
+        turnContainer.classList.add(`turn-${GameState.currentPlayer}`);
+        // Ejemplo: Si currentPlayer es 'cyan', agrega clase 'turn-cyan'
     },
 
     /**

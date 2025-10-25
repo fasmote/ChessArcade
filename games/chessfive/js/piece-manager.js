@@ -1,6 +1,29 @@
 /**
- * PIECE MANAGER
- * Handles piece types, symbols, and validation
+ * ==========================================
+ * PIECE MANAGER (Gestor de Piezas)
+ * ==========================================
+ *
+ * Este módulo maneja TODO lo relacionado con las piezas de ajedrez:
+ * - Símbolos Unicode para renderizar las piezas
+ * - Reglas de movimiento de cada tipo de pieza
+ * - Validación de movimientos
+ *
+ * CONCEPTOS IMPORTANTES:
+ *
+ * 1. UNICODE CHESS SYMBOLS
+ *    - ♜♞♝♛♚ = Piezas negras (usamos para cyan)
+ *    - ♖♘♗♕♔ = Piezas blancas (usamos para magenta)
+ *    - Son caracteres de texto, no imágenes
+ *
+ * 2. ALGORITMO DE MOVIMIENTOS
+ *    - Cada pieza tiene un patrón de movimiento
+ *    - Rook/Bishop/Queen: direccionales (hasta chocar)
+ *    - Knight: saltos en forma de L (puede saltar)
+ *    - King: 1 casilla en cualquier dirección
+ *
+ * 3. NO HAY CAPTURA en ChessFive
+ *    - Casillas ocupadas = bloqueadas
+ *    - Solo se valida si el destino está vacío
  */
 
 const PieceManager = {

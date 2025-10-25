@@ -315,15 +315,49 @@ button:disabled {
     text-align: center;
 }
 
-/* Turn Indicator */
+/**
+ * TURN INDICATOR (Indicador de Turno)
+ *
+ * Este componente muestra de quién es el turno actual.
+ * Características visuales:
+ * - Borde de color que cambia según el jugador (cyan/magenta)
+ * - Box-shadow (sombra) que coincide con el color del borde
+ * - Animación de pulso para llamar la atención
+ *
+ * El color se cambia dinámicamente con JavaScript
+ * usando clases .turn-cyan y .turn-magenta
+ */
 .turn-indicator {
     background: rgba(10, 10, 26, 0.95);
+    /* El borde empieza cyan (jugador por defecto) */
     border: 3px solid var(--cyan-primary);
     border-radius: 15px;
     padding: 20px;
     text-align: center;
+    /* Box-shadow crea el efecto de brillo/glow */
     box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+    /* Animación definida más abajo */
     animation: turnPulse 2s ease-in-out infinite;
+    /* Transición suave al cambiar de color */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/**
+ * Modificador para turno CYAN
+ * Se aplica con JavaScript: element.classList.add('turn-cyan')
+ */
+.turn-indicator.turn-cyan {
+    border-color: var(--cyan-primary);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+}
+
+/**
+ * Modificador para turno MAGENTA
+ * Se aplica con JavaScript: element.classList.add('turn-magenta')
+ */
+.turn-indicator.turn-magenta {
+    border-color: var(--magenta-primary);
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
 }
 
 .turn-indicator p {
@@ -615,25 +649,59 @@ button:disabled {
     line-height: 1.6;
 }
 
-/* Responsive Design */
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+/**
+ * TABLET Y MOBILE (max-width: 1024px)
+ *
+ * Objetivo: En pantallas pequeñas, mostrar el tablero PRIMERO (arriba)
+ * y el panel de información DESPUÉS (abajo).
+ *
+ * Técnica usada: flex-direction: column-reverse
+ * - Invierte el orden visual de los elementos flex
+ * - En HTML: info-panel está primero, board-container segundo
+ * - En pantalla: board-container se muestra arriba, info-panel abajo
+ *
+ * Alternativa: Usar 'order' property de flexbox
+ * - order: -1 (aparece primero)
+ * - order: 1 (aparece segundo)
+ */
 @media (max-width: 1024px) {
+    /* Cambiar dirección de columna a reversa */
     .game-container {
-        flex-direction: column-reverse; /* Tablero arriba, info abajo */
+        flex-direction: column-reverse;
+        padding: 15px;
     }
 
+    /*
+     * El tablero ahora aparece ARRIBA visualmente
+     * aunque está DESPUÉS en el HTML
+     */
     .board-container {
-        order: -1; /* Forzar tablero arriba */
+        order: -1; /* Refuerzo: asegurar que esté primero */
         margin-bottom: 20px;
+        width: 100%;
     }
 
+    /* El panel de info ahora aparece ABAJO */
     .info-panel {
         flex: 1;
         width: 100%;
-        order: 1; /* Info panel abajo */
+        order: 1; /* Refuerzo: asegurar que esté segundo */
     }
 
+    /* Players en fila horizontal para ahorrar espacio vertical */
     .players-container {
         flex-direction: row;
+        gap: 10px;
+    }
+
+    /* Reducir tamaño de players para que quepan lado a lado */
+    .player-info {
+        flex: 1;
+        min-width: 0; /* Permitir que se encoja */
     }
 }
 

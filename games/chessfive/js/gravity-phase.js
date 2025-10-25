@@ -1,6 +1,22 @@
 /**
- * GRAVITY PHASE CONTROLLER
- * Handles piece placement with gravity mechanics
+ * ==========================================
+ * GRAVITY PHASE CONTROLLER (Controlador de Fase Gravedad)
+ * ==========================================
+ *
+ * Esta fase simula el juego "Connect Four" (4 en línea).
+ * Los jugadores sueltan piezas en columnas y caen por gravedad.
+ *
+ * MECÁNICA:
+ * 1. Jugador selecciona tipo de pieza (rook, knight, etc.)
+ * 2. Click en columna del tablero
+ * 3. Pieza "cae" hasta el fondo o hasta chocar con otra pieza
+ * 4. Se alterna el turno
+ * 5. Cuando se colocan las 16 piezas → transición a Chess Phase
+ *
+ * PATRÓN: Event-Driven Programming
+ * - Los event listeners solo se agregan UNA vez (flag initialized)
+ * - Los handlers verifican estado antes de ejecutar
+ * - Previene duplicación de listeners en múltiples partidas
  */
 
 const GravityPhase = {

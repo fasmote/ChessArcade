@@ -1,6 +1,24 @@
 /**
- * GAME STATE MANAGEMENT
- * Handles all game state and data structures
+ * ==========================================
+ * GAME STATE MANAGEMENT (Gestión del Estado del Juego)
+ * ==========================================
+ *
+ * Este módulo es el "cerebro" del juego. Maneja TODOS los datos del estado actual:
+ * - En qué fase estamos (gravity o chess)
+ * - De quién es el turno
+ * - Qué piezas hay en el tablero
+ * - Cuántas piezas tiene cada jugador
+ * - Historial de movimientos
+ *
+ * PATRÓN DE DISEÑO: State Object Pattern
+ * - Un solo objeto centralizado contiene todo el estado
+ * - Otros módulos leen de aquí pero no modifican directamente
+ * - Funciones helper proveen acceso controlado a los datos
+ *
+ * VENTAJAS:
+ * - Fácil debuggear (todo está en un lugar)
+ * - Fácil guardar/cargar juegos (solo serializar este objeto)
+ * - Evita bugs de sincronización entre componentes
  */
 
 const GameState = {
@@ -10,8 +28,23 @@ const GameState = {
     // Current player ('cyan' or 'magenta')
     currentPlayer: 'cyan',
 
-    // Board state (8x8 grid)
-    // Each cell: null or { player: 'cyan'|'magenta', type: 'rook'|'knight'|'bishop'|'queen'|'king' }
+    /**
+     * TABLERO (Board State)
+     *
+     * Estructura de datos 2D (matriz 8x8) que representa el tablero.
+     *
+     * IMPORTANTE: Array(8).fill(null) NO funciona para arrays 2D
+     * Problema: fill() copia la REFERENCIA, creando 8 referencias al MISMO array
+     * Solución: Usar .map() para crear arrays NUEVOS independientes
+     *
+     * Cada celda puede ser:
+     * - null: casilla vacía
+     * - objeto: { player: 'cyan'|'magenta', type: 'rook'|'knight'|... }
+     *
+     * Ejemplo de tablero:
+     * board[0][0] = null              // a8 vacía
+     * board[7][0] = { player: 'cyan', type: 'rook' } // a1 tiene torre cyan
+     */
     board: Array(8).fill(null).map(() => Array(8).fill(null)),
 
     // Piece inventories for each player
