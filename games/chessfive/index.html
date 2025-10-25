@@ -61,7 +61,39 @@
             <!-- Phase Indicator -->
             <div class="phase-indicator">
                 <h2 id="phaseTitle">PHASE 1: GRAVITY PLACEMENT</h2>
-                <p id="phaseDescription">Click on a column to drop your piece</p>
+                <p id="phaseDescription">Select a piece and click on a column</p>
+            </div>
+
+            <!-- Piece Selector (Gravity Phase only) -->
+            <div class="piece-selector" id="pieceSelector">
+                <h3>SELECT PIECE</h3>
+                <div class="piece-options">
+                    <button class="piece-option" data-piece="rook">
+                        <span class="piece-symbol" id="selectedRook"></span>
+                        <span class="piece-name">ROOK</span>
+                        <span class="piece-count" id="countRook">2</span>
+                    </button>
+                    <button class="piece-option" data-piece="knight">
+                        <span class="piece-symbol" id="selectedKnight"></span>
+                        <span class="piece-name">KNIGHT</span>
+                        <span class="piece-count" id="countKnight">2</span>
+                    </button>
+                    <button class="piece-option" data-piece="bishop">
+                        <span class="piece-symbol" id="selectedBishop"></span>
+                        <span class="piece-name">BISHOP</span>
+                        <span class="piece-count" id="countBishop">2</span>
+                    </button>
+                    <button class="piece-option" data-piece="queen">
+                        <span class="piece-symbol" id="selectedQueen"></span>
+                        <span class="piece-name">QUEEN</span>
+                        <span class="piece-count" id="countQueen">1</span>
+                    </button>
+                    <button class="piece-option" data-piece="king">
+                        <span class="piece-symbol" id="selectedKing"></span>
+                        <span class="piece-name">KING</span>
+                        <span class="piece-count" id="countKing">1</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Players Info -->

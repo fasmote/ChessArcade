@@ -240,25 +240,124 @@ button:disabled {
     opacity: 0.2;
 }
 
-/* Turn Indicator */
-.turn-indicator {
+/* Piece Selector */
+.piece-selector {
     background: rgba(10, 10, 26, 0.8);
     border: 2px solid var(--cyan-primary);
     border-radius: 10px;
     padding: 15px;
+    margin-bottom: 15px;
+}
+
+.piece-selector h3 {
+    margin: 0 0 12px 0;
+    font-size: 0.9rem;
+    color: var(--cyan-primary);
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+.piece-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.piece-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.piece-option:hover:not(:disabled) {
+    border-color: var(--cyan-primary);
+    background: rgba(0, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.piece-option.selected {
+    border-color: var(--cyan-primary);
+    background: rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+}
+
+.piece-option:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.piece-symbol {
+    font-size: 1.8rem;
+    min-width: 35px;
     text-align: center;
 }
 
+.piece-name {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-light);
+    margin-left: 10px;
+}
+
+.piece-count {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--cyan-primary);
+    min-width: 25px;
+    text-align: center;
+}
+
+/* Turn Indicator */
+.turn-indicator {
+    background: rgba(10, 10, 26, 0.95);
+    border: 3px solid var(--cyan-primary);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+    animation: turnPulse 2s ease-in-out infinite;
+}
+
 .turn-indicator p {
-    margin: 0 0 5px 0;
-    font-size: 0.8rem;
-    opacity: 0.7;
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
 .turn-indicator h3 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1.8rem;
     font-weight: 900;
+    text-shadow: 0 0 20px currentColor;
+    animation: textGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes turnPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes textGlow {
+    0%, 100% {
+        text-shadow: 0 0 20px currentColor;
+    }
+    50% {
+        text-shadow: 0 0 30px currentColor, 0 0 40px currentColor;
+    }
 }
 
 /* Game Controls */
@@ -519,12 +618,18 @@ button:disabled {
 /* Responsive Design */
 @media (max-width: 1024px) {
     .game-container {
-        flex-direction: column;
+        flex-direction: column-reverse; /* Tablero arriba, info abajo */
+    }
+
+    .board-container {
+        order: -1; /* Forzar tablero arriba */
+        margin-bottom: 20px;
     }
 
     .info-panel {
         flex: 1;
         width: 100%;
+        order: 1; /* Info panel abajo */
     }
 
     .players-container {

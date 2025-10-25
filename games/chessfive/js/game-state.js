@@ -41,6 +41,9 @@ const GameState = {
     // Selected piece (for chess phase)
     selectedPiece: null, // { row, col }
 
+    // Selected piece type (for gravity phase)
+    selectedPieceType: null, // 'rook', 'knight', 'bishop', 'queen', 'king'
+
     // Move history (for undo)
     moveHistory: [],
 
@@ -63,6 +66,7 @@ const GameState = {
 
         this.piecesPlaced = { cyan: 0, magenta: 0 };
         this.selectedPiece = null;
+        this.selectedPieceType = null;
         this.moveHistory = [];
         this.gameOver = false;
         this.winner = null;

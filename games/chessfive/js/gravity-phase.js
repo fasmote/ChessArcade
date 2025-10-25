@@ -44,10 +44,18 @@ const GravityPhase = {
         const square = e.currentTarget;
         const col = parseInt(square.dataset.col);
 
-        // Get next piece type for current player
-        const pieceType = GameState.getNextPieceType(GameState.currentPlayer);
+        // Get selected piece type
+        const pieceType = GameState.selectedPieceType;
         if (!pieceType) {
-            console.warn('⚠️ No pieces left for', GameState.currentPlayer);
+            console.warn('⚠️ Please select a piece first');
+            SoundManager.play('invalid');
+            return;
+        }
+
+        // Verify player has this piece available
+        if (GameState.inventory[GameState.currentPlayer][pieceType] <= 0) {
+            console.warn('⚠️ No pieces of this type left');
+            SoundManager.play('invalid');
             return;
         }
 
@@ -65,6 +73,7 @@ const GravityPhase = {
 
             // Update UI
             UIController.updatePlayerInfo();
+            UIController.updatePieceSelector(); // Update selector counts
 
             // Check for win
             const winResult = WinDetection.checkWin(row, placedCol);
@@ -84,6 +93,7 @@ const GravityPhase = {
             // Switch player
             GameState.switchPlayer();
             UIController.updateTurnIndicator();
+            UIController.updatePieceSelector(); // Update for new player
 
         } else {
             console.warn('⚠️ Column', col, 'is full');
@@ -104,8 +114,10 @@ const GravityPhase = {
         // Show column highlight
         BoardRenderer.highlightColumn(col);
 
-        // Show ghost preview
-        BoardRenderer.showGhostPiece(col);
+        // Show ghost preview (if piece is selected)
+        if (GameState.selectedPieceType) {
+            BoardRenderer.showGhostPiece(col, GameState.selectedPieceType);
+        }
     },
 
     /**

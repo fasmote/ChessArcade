@@ -27,6 +27,15 @@ const UIController = {
             this.toggleSound();
         });
 
+        // Piece selector buttons
+        const pieceOptions = document.querySelectorAll('.piece-option');
+        pieceOptions.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const pieceType = btn.dataset.piece;
+                this.selectPiece(pieceType);
+            });
+        });
+
         // New game button
         document.getElementById('btnNewGame').addEventListener('click', () => {
             this.newGame();
@@ -65,6 +74,83 @@ const UIController = {
         this.updatePlayerInfo();
         this.updateTurnIndicator();
         this.updateSoundButton();
+        this.updatePieceSelector();
+    },
+
+    /**
+     * Select a piece type
+     */
+    selectPiece(pieceType) {
+        const player = GameState.currentPlayer;
+
+        // Check if piece is available
+        if (GameState.inventory[player][pieceType] <= 0) {
+            SoundManager.play('invalid');
+            return;
+        }
+
+        // Set selected piece
+        GameState.selectedPieceType = pieceType;
+
+        // Update visual selection
+        const buttons = document.querySelectorAll('.piece-option');
+        buttons.forEach(btn => {
+            if (btn.dataset.piece === pieceType) {
+                btn.classList.add('selected');
+            } else {
+                btn.classList.remove('selected');
+            }
+        });
+
+        SoundManager.play('select');
+        console.log(`✅ Selected ${pieceType}`);
+    },
+
+    /**
+     * Update piece selector (counts, symbols, disabled states)
+     */
+    updatePieceSelector() {
+        const player = GameState.currentPlayer;
+        const inventory = GameState.inventory[player];
+        const pieceTypes = ['rook', 'knight', 'bishop', 'queen', 'king'];
+
+        // Show/hide selector based on phase
+        const selector = document.getElementById('pieceSelector');
+        if (GameState.phase === 'gravity') {
+            selector.style.display = 'block';
+        } else {
+            selector.style.display = 'none';
+            return;
+        }
+
+        pieceTypes.forEach(type => {
+            const button = document.querySelector(`[data-piece="${type}"]`);
+            const symbol = document.getElementById(`selected${type.charAt(0).toUpperCase() + type.slice(1)}`);
+            const count = document.getElementById(`count${type.charAt(0).toUpperCase() + type.slice(1)}`);
+
+            // Update symbol
+            symbol.textContent = PieceManager.getSymbol(player, type);
+            symbol.style.color = player === 'cyan' ? 'var(--cyan-primary)' : 'var(--magenta-primary)';
+
+            // Update count
+            count.textContent = inventory[type];
+
+            // Enable/disable button
+            if (inventory[type] <= 0) {
+                button.disabled = true;
+                button.classList.remove('selected');
+            } else {
+                button.disabled = false;
+            }
+        });
+
+        // Auto-select first available piece if none selected
+        if (!GameState.selectedPieceType || inventory[GameState.selectedPieceType] <= 0) {
+            const firstAvailable = pieceTypes.find(type => inventory[type] > 0);
+            if (firstAvailable) {
+                this.selectPiece(firstAvailable);
+            }
+        }
     },
 
     /**

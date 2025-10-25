@@ -183,7 +183,7 @@ const BoardRenderer = {
     /**
      * Show ghost preview of piece (gravity phase)
      */
-    showGhostPiece(col) {
+    showGhostPiece(col, pieceType) {
         // Find lowest empty row
         for (let row = 7; row >= 0; row--) {
             if (GameState.isEmpty(row, col)) {
@@ -192,7 +192,6 @@ const BoardRenderer = {
                     const ghost = document.createElement('div');
                     ghost.className = `piece ${GameState.currentPlayer} ghost`;
                     ghost.style.opacity = '0.3';
-                    const pieceType = GameState.getNextPieceType(GameState.currentPlayer);
                     if (pieceType) {
                         ghost.textContent = PieceManager.getSymbol(GameState.currentPlayer, pieceType);
                         square.appendChild(ghost);
