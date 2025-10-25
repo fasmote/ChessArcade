@@ -68,11 +68,9 @@ const BoardRenderer = {
         const square = this.getSquare(row, col);
         if (!square) return;
 
-        // Remove existing piece
-        const existingPiece = square.querySelector('.piece');
-        if (existingPiece) {
-            existingPiece.remove();
-        }
+        // Remove ALL existing pieces (including ghosts)
+        const existingPieces = square.querySelectorAll('.piece');
+        existingPieces.forEach(p => p.remove());
 
         // Create new piece
         const piece = document.createElement('div');
@@ -103,7 +101,8 @@ const BoardRenderer = {
      * Render entire board state
      */
     renderBoard() {
-        // Clear all pieces
+        // Clear all pieces AND ghosts
+        this.removeGhosts();
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
                 this.removePiece(row, col);

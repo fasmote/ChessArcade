@@ -137,7 +137,12 @@ const GravityPhase = {
         console.log('♟️ Transitioning to Chess Phase...');
 
         GameState.switchToChessPhase();
+
+        // ALWAYS start chess phase with Cyan player
+        GameState.currentPlayer = 'cyan';
+
         UIController.updatePhaseIndicator();
+        UIController.updateTurnIndicator();
         BoardRenderer.clearHighlights();
 
         SoundManager.play('phase_change');
