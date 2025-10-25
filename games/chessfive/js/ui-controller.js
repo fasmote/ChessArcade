@@ -108,25 +108,60 @@ const UIController = {
 
     /**
      * Update piece selector (counts, symbols, disabled states)
+     * Actualiza AMBOS selectores (cyan y magenta)
      */
     updatePieceSelector() {
-        const player = GameState.currentPlayer;
-        const inventory = GameState.inventory[player];
+        const currentPlayer = GameState.currentPlayer;
         const pieceTypes = ['rook', 'knight', 'bishop', 'queen', 'king'];
 
-        // Show/hide selector based on phase
-        const selector = document.getElementById('pieceSelector');
+        // Show/hide both selectors based on phase
+        const selectorCyan = document.getElementById('pieceSelector');
+        const selectorMagenta = document.getElementById('pieceSelectorMagenta');
+
         if (GameState.phase === 'gravity') {
-            selector.style.display = 'block';
+            selectorCyan.style.display = 'block';
+            selectorMagenta.style.display = 'block';
         } else {
-            selector.style.display = 'none';
+            selectorCyan.style.display = 'none';
+            selectorMagenta.style.display = 'none';
             return;
         }
 
+        // Update CYAN selector
+        this.updatePlayerSelector('cyan', currentPlayer === 'cyan');
+
+        // Update MAGENTA selector
+        this.updatePlayerSelector('magenta', currentPlayer === 'magenta');
+
+        // Auto-select first available piece if none selected
+        const inventory = GameState.inventory[currentPlayer];
+        if (!GameState.selectedPieceType || inventory[GameState.selectedPieceType] <= 0) {
+            const firstAvailable = pieceTypes.find(type => inventory[type] > 0);
+            if (firstAvailable) {
+                this.selectPiece(firstAvailable);
+            }
+        }
+    },
+
+    /**
+     * Update a specific player's selector
+     * @param {string} player - 'cyan' or 'magenta'
+     * @param {boolean} isActive - true if this is the current player's turn
+     */
+    updatePlayerSelector(player, isActive) {
+        const inventory = GameState.inventory[player];
+        const pieceTypes = ['rook', 'knight', 'bishop', 'queen', 'king'];
+        const suffix = player === 'magenta' ? 'Magenta' : '';
+
         pieceTypes.forEach(type => {
-            const button = document.querySelector(`[data-piece="${type}"]`);
-            const symbol = document.getElementById(`selected${type.charAt(0).toUpperCase() + type.slice(1)}`);
-            const count = document.getElementById(`count${type.charAt(0).toUpperCase() + type.slice(1)}`);
+            const capitalType = type.charAt(0).toUpperCase() + type.slice(1);
+            const symbolId = `selected${capitalType}${suffix}`;
+            const countId = `count${capitalType}${suffix}`;
+
+            const symbol = document.getElementById(symbolId);
+            const count = document.getElementById(countId);
+
+            if (!symbol || !count) return; // Safety check
 
             // Update symbol
             symbol.textContent = PieceManager.getSymbol(player, type);
@@ -134,22 +169,34 @@ const UIController = {
 
             // Update count
             count.textContent = inventory[type];
-
-            // Enable/disable button
-            if (inventory[type] <= 0) {
-                button.disabled = true;
-                button.classList.remove('selected');
-            } else {
-                button.disabled = false;
-            }
         });
 
-        // Auto-select first available piece if none selected
-        if (!GameState.selectedPieceType || inventory[GameState.selectedPieceType] <= 0) {
-            const firstAvailable = pieceTypes.find(type => inventory[type] > 0);
-            if (firstAvailable) {
-                this.selectPiece(firstAvailable);
-            }
+        // Enable/disable entire selector based on turn
+        const selector = player === 'cyan'
+            ? document.getElementById('pieceSelector')
+            : document.getElementById('pieceSelectorMagenta');
+
+        if (isActive) {
+            selector.classList.remove('disabled');
+            // Enable individual buttons based on inventory
+            const buttons = selector.querySelectorAll('.piece-option');
+            buttons.forEach(btn => {
+                const type = btn.dataset.piece;
+                if (inventory[type] <= 0) {
+                    btn.disabled = true;
+                    btn.classList.remove('selected');
+                } else {
+                    btn.disabled = false;
+                }
+            });
+        } else {
+            // Disable entire selector for non-active player
+            selector.classList.add('disabled');
+            const buttons = selector.querySelectorAll('.piece-option');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.remove('selected');
+            });
         }
     },
 

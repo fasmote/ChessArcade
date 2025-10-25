@@ -26,13 +26,18 @@ body {
 
 /* Header */
 .game-header {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 100px 1fr 100px; /* Columnas simétricas: botón izq, título, botón der */
     align-items: center;
-    padding: 15px 30px;
+    padding: 15px 20px;
     background: rgba(10, 10, 26, 0.9);
-    border-bottom: 2px solid var(--cyan-primary);
-    box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
+    gap: 15px;
+}
+
+/* Title container with subtitle */
+.header-title-container {
+    text-align: center;
+    grid-column: 2; /* Título en columna central */
 }
 
 .game-title {
@@ -40,13 +45,22 @@ body {
     font-weight: 900;
     color: var(--cyan-primary);
     text-shadow: 0 0 20px var(--cyan-glow);
-    margin: 0;
+    margin: 0 0 5px 0;
     letter-spacing: 3px;
 }
 
 .game-title .icon {
     margin-right: 10px;
     font-size: 1.8rem;
+}
+
+.game-subtitle {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--text-light);
+    margin: 0;
+    opacity: 0.8;
+    letter-spacing: 1px;
 }
 
 /* Buttons */
@@ -87,9 +101,15 @@ body {
     color: var(--cyan-primary);
 }
 
+.btn-home {
+    width: 100%; /* Ocupa todo el ancho de la columna */
+    justify-content: center;
+}
+
 .btn-icon {
-    padding: 8px 12px;
+    padding: 10px 20px;
     font-size: 1.2rem;
+    width: 100%; /* Ocupa todo el ancho de la columna */
 }
 
 button:disabled {
@@ -98,21 +118,106 @@ button:disabled {
     pointer-events: none;
 }
 
-/* Main Container */
+/**
+ * MAIN CONTAINER (Contenedor Principal)
+ *
+ * Layout Desktop (>1024px):
+ * - Flexbox horizontal (row)
+ * - Tablero a la IZQUIERDA (puede expandirse)
+ * - Info panel a la DERECHA (ancho fijo 350px)
+ *
+ * Layout Mobile (<1024px):
+ * - Flexbox vertical (column)
+ * - Tablero ARRIBA (primera prioridad visual)
+ * - Info panel ABAJO (controles accesibles)
+ */
+/*
+ * NUEVO LAYOUT (según cf_13_desktop.png)
+ * ESTRUCTURA:
+ * - Top Panel: Phase + Piece Selector (ARRIBA - centrado)
+ * - Middle Row: Cyan Player | Tablero | Magenta Player (MEDIO - 3 columnas)
+ * - Bottom Panel: Turn Indicator + Controls (ABAJO - centrado)
+ */
 .game-container {
     display: flex;
-    gap: 30px;
+    flex-direction: column; /* Vertical: top, middle, bottom */
+    gap: 20px;
     padding: 30px;
     max-width: 1400px;
     margin: 0 auto;
+    align-items: center; /* Centrar horizontalmente */
 }
 
-/* Info Panel */
-.info-panel {
-    flex: 0 0 350px;
+/* TOP PANEL: Phase + Piece Selector (FLECHA AZUL) */
+.top-panel {
+    width: 100%;
+    max-width: 900px;
     display: flex;
     flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+/* MIDDLE ROW: 3 columnas (Players + Board) - (FLECHA AMARILLA) */
+.middle-row {
+    display: flex;
+    flex-direction: row;
     gap: 20px;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+}
+
+/* BOTTOM PANEL: Turn + Controls (FLECHA ROJA) */
+.bottom-panel {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+/**
+ * INFO PANEL (Panel de Información)
+ *
+ * Desktop: A la DERECHA, ancho fijo 350px
+ * Mobile: ABAJO, ancho completo
+ */
+/**
+ * PLAYER PANELS (Paneles de Jugadores)
+ * Desktop: Columnas laterales (cyan izquierda, magenta derecha)
+ * Mobile: Abajo del tablero
+ */
+/* PLAYER PANELS: En middle-row, a los lados del board */
+.player-panel {
+    flex: 0 0 280px; /* Ancho fijo 280px para acomodar piece selector */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.player-info {
+    background: rgba(10, 10, 26, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 150px; /* Altura mínima para mantener alineación */
+}
+
+/* Highlight del jugador activo */
+.player-info.active {
+    border-color: var(--cyan-primary);
+    border-width: 3px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+}
+
+#playerMagenta.active {
+    border-color: var(--magenta-primary);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
 }
 
 .phase-indicator {
@@ -246,7 +351,21 @@ button:disabled {
     border: 2px solid var(--cyan-primary);
     border-radius: 10px;
     padding: 15px;
-    margin-bottom: 15px;
+    width: 100%;
+}
+
+/* Piece selector for Magenta player */
+.piece-selector-magenta {
+    border-color: var(--magenta-primary);
+}
+
+.piece-selector-magenta h3 {
+    color: var(--magenta-primary);
+}
+
+/* Disabled state for selector (when it's not the player's turn) */
+.piece-selector.disabled {
+    display: none; /* Ocultar completamente cuando no es el turno */
 }
 
 .piece-selector h3 {
@@ -401,12 +520,21 @@ button:disabled {
     gap: 10px;
 }
 
-/* Board Container */
+/**
+ * BOARD CONTAINER (Contenedor del Tablero)
+ *
+ * Desktop: A la IZQUIERDA, ocupa el espacio restante
+ * Mobile: ARRIBA, ancho completo
+ *
+ * flex: 1 significa "usa todo el espacio disponible"
+ * Centra el tablero horizontal y verticalmente
+ */
 .board-container {
-    flex: 1;
+    flex: 0 0 auto; /* No crece ni se encoge, tamaño automático */
     display: flex;
     justify-content: center;
     align-items: center;
+    /* No necesita order porque está en middle-row con flujo normal */
 }
 
 .chess-board {
@@ -669,33 +797,49 @@ button:disabled {
  * - order: 1 (aparece segundo)
  */
 @media (max-width: 1024px) {
-    /* Cambiar dirección de columna a reversa */
-    .game-container {
-        flex-direction: column-reverse;
-        padding: 15px;
-    }
-
     /*
-     * El tablero ahora aparece ARRIBA visualmente
-     * aunque está DESPUÉS en el HTML
+     * MOBILE LAYOUT
+     * Orden vertical simplificado:
+     * 1. Board (tablero) - PRIMERO
+     * 2. Top Panel (phase + selector)
+     * 3. Bottom Panel (turn + controls)
+     * 4. Players (cyan y magenta)
      */
+    .game-container {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    /* Top panel (phase + selector) */
+    .top-panel {
+        order: 2; /* Después del board */
+        max-width: 100%;
+    }
+
+    /* Middle row se convierte en columna */
+    .middle-row {
+        flex-direction: column;
+        order: 1; /* Board primero */
+        gap: 15px;
+    }
+
+    /* Board dentro de middle-row */
     .board-container {
-        order: -1; /* Refuerzo: asegurar que esté primero */
-        margin-bottom: 20px;
         width: 100%;
+        order: 1;
     }
 
-    /* El panel de info ahora aparece ABAJO */
-    .info-panel {
+    /* Players abajo del board dentro de middle-row */
+    .player-panel {
         flex: 1;
-        width: 100%;
-        order: 1; /* Refuerzo: asegurar que esté segundo */
+        min-width: 0;
+        order: 3;
     }
 
-    /* Players en fila horizontal para ahorrar espacio vertical */
-    .players-container {
-        flex-direction: row;
-        gap: 10px;
+    /* Bottom panel */
+    .bottom-panel {
+        order: 3; /* Después de top-panel */
+        max-width: 100%;
     }
 
     /* Reducir tamaño de players para que quepan lado a lado */

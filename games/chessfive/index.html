@@ -43,10 +43,13 @@
             <span class="icon-home">🏠</span>
             <span class="btn-text">HOME</span>
         </button>
-        <h1 class="game-title">
-            <span class="icon">⚔️</span>
-            ChessFive
-        </h1>
+        <div class="header-title-container">
+            <h1 class="game-title">
+                <span class="icon">⚔️</span>
+                ChessFive
+            </h1>
+            <p class="game-subtitle">Place. Move. Align Five. Win.</p>
+        </div>
         <button id="soundToggle" class="btn-icon" title="Toggle Sound">
             <span class="icon-sound-on">🔊</span>
             <span class="icon-sound-off" style="display: none;">🔇</span>
@@ -56,49 +59,20 @@
     <!-- Main Game Container -->
     <main class="game-container">
 
-        <!-- Game Info Panel -->
-        <div class="info-panel">
+        <!-- Top Panel: Solo Phase Indicator (FLECHA AZUL - ARRIBA) -->
+        <div class="top-panel">
             <!-- Phase Indicator -->
             <div class="phase-indicator">
                 <h2 id="phaseTitle">PHASE 1: GRAVITY PLACEMENT</h2>
-                <p id="phaseDescription">Select a piece and click on a column</p>
+                <p id="phaseDescription">Click on a column to drop your piece</p>
             </div>
+        </div>
 
-            <!-- Piece Selector (Gravity Phase only) -->
-            <div class="piece-selector" id="pieceSelector">
-                <h3>SELECT PIECE</h3>
-                <div class="piece-options">
-                    <button class="piece-option" data-piece="rook">
-                        <span class="piece-symbol" id="selectedRook"></span>
-                        <span class="piece-name">ROOK</span>
-                        <span class="piece-count" id="countRook">2</span>
-                    </button>
-                    <button class="piece-option" data-piece="knight">
-                        <span class="piece-symbol" id="selectedKnight"></span>
-                        <span class="piece-name">KNIGHT</span>
-                        <span class="piece-count" id="countKnight">2</span>
-                    </button>
-                    <button class="piece-option" data-piece="bishop">
-                        <span class="piece-symbol" id="selectedBishop"></span>
-                        <span class="piece-name">BISHOP</span>
-                        <span class="piece-count" id="countBishop">2</span>
-                    </button>
-                    <button class="piece-option" data-piece="queen">
-                        <span class="piece-symbol" id="selectedQueen"></span>
-                        <span class="piece-name">QUEEN</span>
-                        <span class="piece-count" id="countQueen">1</span>
-                    </button>
-                    <button class="piece-option" data-piece="king">
-                        <span class="piece-symbol" id="selectedKing"></span>
-                        <span class="piece-name">KING</span>
-                        <span class="piece-count" id="countKing">1</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Players Info -->
-            <div class="players-container">
-                <!-- Player Cyan -->
+        <!-- Middle Row: Players + Board -->
+        <div class="middle-row">
+            <!-- Left: Cyan Player (FLECHA AMARILLA - IZQUIERDA) -->
+            <aside class="player-panel player-panel-left">
+                <!-- Player Info Box (header + pieces left + inventory) -->
                 <div class="player-info" id="playerCyan">
                     <div class="player-header">
                         <span class="player-icon">⚔️</span>
@@ -115,7 +89,49 @@
                     </div>
                 </div>
 
-                <!-- Player Magenta -->
+                <!-- Piece Selector for Cyan (SEPARADO - Gravity Phase only) -->
+                <div class="piece-selector" id="pieceSelector">
+                    <h3>SELECT PIECE</h3>
+                    <div class="piece-options">
+                        <button class="piece-option" data-piece="rook">
+                            <span class="piece-symbol" id="selectedRook"></span>
+                            <span class="piece-name">ROOK</span>
+                            <span class="piece-count" id="countRook">2</span>
+                        </button>
+                        <button class="piece-option" data-piece="knight">
+                            <span class="piece-symbol" id="selectedKnight"></span>
+                            <span class="piece-name">KNIGHT</span>
+                            <span class="piece-count" id="countKnight">2</span>
+                        </button>
+                        <button class="piece-option" data-piece="bishop">
+                            <span class="piece-symbol" id="selectedBishop"></span>
+                            <span class="piece-name">BISHOP</span>
+                            <span class="piece-count" id="countBishop">2</span>
+                        </button>
+                        <button class="piece-option" data-piece="queen">
+                            <span class="piece-symbol" id="selectedQueen"></span>
+                            <span class="piece-name">QUEEN</span>
+                            <span class="piece-count" id="countQueen">1</span>
+                        </button>
+                        <button class="piece-option" data-piece="king">
+                            <span class="piece-symbol" id="selectedKing"></span>
+                            <span class="piece-name">KING</span>
+                            <span class="piece-count" id="countKing">1</span>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center: Chess Board -->
+            <div class="board-container">
+                <div id="chessBoard" class="chess-board">
+                    <!-- Board will be generated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Right: Magenta Player (FLECHA AMARILLA - DERECHA) -->
+            <aside class="player-panel player-panel-right">
+                <!-- Player Info Box (header + pieces left + inventory) -->
                 <div class="player-info" id="playerMagenta">
                     <div class="player-header">
                         <span class="player-icon">⚔️</span>
@@ -131,8 +147,43 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
+                <!-- Piece Selector for Magenta (SEPARADO - Gravity Phase only) -->
+                <div class="piece-selector piece-selector-magenta" id="pieceSelectorMagenta">
+                    <h3>SELECT PIECE</h3>
+                    <div class="piece-options">
+                        <button class="piece-option" data-piece="rook">
+                            <span class="piece-symbol" id="selectedRookMagenta"></span>
+                            <span class="piece-name">ROOK</span>
+                            <span class="piece-count" id="countRookMagenta">2</span>
+                        </button>
+                        <button class="piece-option" data-piece="knight">
+                            <span class="piece-symbol" id="selectedKnightMagenta"></span>
+                            <span class="piece-name">KNIGHT</span>
+                            <span class="piece-count" id="countKnightMagenta">2</span>
+                        </button>
+                        <button class="piece-option" data-piece="bishop">
+                            <span class="piece-symbol" id="selectedBishopMagenta"></span>
+                            <span class="piece-name">BISHOP</span>
+                            <span class="piece-count" id="countBishopMagenta">2</span>
+                        </button>
+                        <button class="piece-option" data-piece="queen">
+                            <span class="piece-symbol" id="selectedQueenMagenta"></span>
+                            <span class="piece-name">QUEEN</span>
+                            <span class="piece-count" id="countQueenMagenta">1</span>
+                        </button>
+                        <button class="piece-option" data-piece="king">
+                            <span class="piece-symbol" id="selectedKingMagenta"></span>
+                            <span class="piece-name">KING</span>
+                            <span class="piece-count" id="countKingMagenta">1</span>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Bottom Panel: Turn + Controls (FLECHA ROJA - ABAJO) -->
+        <div class="bottom-panel">
             <!-- Current Turn Indicator -->
             <div class="turn-indicator">
                 <p>Current Turn:</p>
@@ -144,13 +195,6 @@
                 <button id="btnNewGame" class="btn-primary">NEW GAME</button>
                 <button id="btnUndo" class="btn-secondary" disabled>UNDO MOVE</button>
                 <button id="btnHelp" class="btn-secondary">HELP</button>
-            </div>
-        </div>
-
-        <!-- Chess Board -->
-        <div class="board-container">
-            <div id="chessBoard" class="chess-board">
-                <!-- Board will be generated by JavaScript -->
             </div>
         </div>
 
