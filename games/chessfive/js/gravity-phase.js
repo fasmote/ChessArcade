@@ -4,16 +4,22 @@
  */
 
 const GravityPhase = {
+    initialized: false,
+
     /**
      * Initialize gravity phase
      */
     init() {
-        this.attachEventListeners();
+        // Only attach listeners once
+        if (!this.initialized) {
+            this.attachEventListeners();
+            this.initialized = true;
+        }
         console.log('🪂 Gravity phase initialized');
     },
 
     /**
-     * Attach click listeners to board squares
+     * Attach click listeners to board squares (only called once)
      */
     attachEventListeners() {
         const squares = document.querySelectorAll('.square');

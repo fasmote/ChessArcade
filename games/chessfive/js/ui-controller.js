@@ -180,15 +180,16 @@ const UIController = {
         // Reset game state
         GameState.init();
 
-        // Re-render board
+        // Clear board highlights
+        BoardRenderer.clearHighlights();
+
+        // Re-render board (clears all pieces)
         BoardRenderer.renderBoard();
 
         // Update UI
         this.updateAll();
 
-        // Re-initialize gravity phase
-        GravityPhase.init();
-
+        // Note: GravityPhase listeners are already attached (done once on page load)
         console.log('🆕 New game started');
 
         // Track in analytics

@@ -25,7 +25,7 @@ define('EMAIL_DESTINO', 'contact@chessarcade.com.ar');
 
 // Email de origen (desde donde se envían)
 // Debe ser un email válido de tu dominio en Hostinger
-define('EMAIL_ORIGEN', 'noreply@chessarcade.com.ar');
+define('EMAIL_ORIGEN', 'contact@chessarcade.com.ar');
 
 // Nombre del remitente
 define('NOMBRE_ORIGEN', 'ChessArcade Contact Form');

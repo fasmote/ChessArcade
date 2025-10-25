@@ -4,16 +4,22 @@
  */
 
 const ChessPhase = {
+    initialized: false,
+
     /**
      * Initialize chess phase
      */
     init() {
-        this.attachEventListeners();
+        // Only attach listeners once
+        if (!this.initialized) {
+            this.attachEventListeners();
+            this.initialized = true;
+        }
         console.log('♟️ Chess phase initialized');
     },
 
     /**
-     * Attach click listeners for chess phase
+     * Attach click listeners for chess phase (only called once)
      */
     attachEventListeners() {
         const squares = document.querySelectorAll('.square');
