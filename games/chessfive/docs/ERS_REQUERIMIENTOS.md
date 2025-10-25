@@ -247,42 +247,95 @@ Después de cada movimiento, escanear:
 **Prioridad:** Alta
 **Descripción:** Diseñar UI completa con estilo NeonChess.
 
-**Componentes Obligatorios:**
+**ACTUALIZADO 25/10/2025 - Layout Final Implementado:**
 
-#### Panel de Estado (Side Panel):
+#### Estructura Desktop (3 Paneles):
 ```
-╔══════════════════════════════╗
-║ 🎮 CHESSFIVE                 ║
-╠══════════════════════════════╣
-║ PHASE: 🪂 Gravity Placement  ║
-║ TURN:  Cyan Player           ║
-║                              ║
-║ Pieces Remaining: 6/8        ║
-║                              ║
-║ ♖ ♖ ♘ ♘ ♗ ♗                 ║
-║                              ║
-║ 📍 Click column to drop      ║
-╚══════════════════════════════╝
+┌─────────────────────────────────────────────────┐
+│  🏠 HOME    ⚔️ CHESSFIVE              🔊       │
+│             Place. Move. Align Five. Win.       │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│    ┌─────────────────────────────────┐          │
+│    │ PHASE 1: GRAVITY PLACEMENT      │          │
+│    │ Click on a column to drop       │          │
+│    └─────────────────────────────────┘          │
+│                                                 │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐     │
+│  │ CYAN     │  │          │  │ MAGENTA  │     │
+│  │ PLAYER   │  │          │  │ PLAYER   │     │
+│  │          │  │          │  │          │     │
+│  │Pieces: 8 │  │  BOARD   │  │Pieces: 8 │     │
+│  │♜♜♞♞♝♝♛♚│  │   8x8    │  │♖♖♘♘♗♗♕♔│     │
+│  │          │  │          │  │          │     │
+│  │┌────────┐│  │          │  │┌────────┐│     │
+│  ││ SELECT ││  │          │  ││ SELECT ││     │
+│  ││ PIECE  ││  │          │  ││ PIECE  ││     │
+│  ││        ││  │          │  ││        ││     │
+│  ││♜ ROOK 2││  │          │  ││♖ ROOK 2││     │
+│  ││♞KNIGHT2││  │          │  ││♘KNIGHT2││     │
+│  ││♝BISHOP2││  │          │  ││♗BISHOP2││     │
+│  ││♛QUEEN 1││  │          │  ││♕QUEEN 1││     │
+│  ││♚ KING 1││  │          │  ││♔ KING 1││     │
+│  │└────────┘│  │          │  │└────────┘│     │
+│  └──────────┘  └──────────┘  └──────────┘     │
+│                                                 │
+│         ┌─────────────────────────┐            │
+│         │ CURRENT TURN:           │            │
+│         │ CYAN PLAYER             │            │
+│         └─────────────────────────┘            │
+│         ┌─────────────────────────┐            │
+│         │ NEW GAME │ UNDO │ HELP  │            │
+│         └─────────────────────────┘            │
+└─────────────────────────────────────────────────┘
 ```
 
-#### Tablero Principal:
-- 8x8 grid con CSS Grid
-- Casillas alternas (clara/oscura)
-- Coordenadas tipo "taxi" (amarillo/negro) en bordes
-- Padding adecuado (20-25px)
-- Responsive (mobile + desktop)
+**Componentes Implementados:**
 
-#### Controles:
-- 🔊 Toggle de sonido
-- ⚙️ Botón de configuración
-- ↩️ Undo (opcional para v1.1)
-- 🏠 Menú principal
+#### Top Panel:
+- Phase Indicator (PHASE 1: GRAVITY PLACEMENT / PHASE 2: CHESS MOVEMENT)
+- Descripción contextual según fase
+
+#### Middle Row (3 columnas):
+1. **Player Panel Left (Cyan):**
+   - Player Info Box (header + pieces left + inventory)
+   - SELECT PIECE (visible solo en turno del jugador)
+
+2. **Board Container (Centro):**
+   - Tablero 8x8 con CSS Grid
+   - Coordenadas tipo "taxi"
+   - Responsive sizing
+
+3. **Player Panel Right (Magenta):**
+   - Player Info Box (header + pieces left + inventory)
+   - SELECT PIECE (visible solo en turno del jugador)
+
+#### Bottom Panel:
+- Turn Indicator (con borde brillante según jugador activo)
+- Game Controls (NEW GAME, UNDO, HELP)
+
+#### Header:
+- CSS Grid con 3 columnas simétricas (100px | 1fr | 100px)
+- Botón HOME (izquierda)
+- Título + Subtitle (centro)
+- Botón SOUND (derecha)
+
+**Características UX Implementadas:**
+- ✅ Dual Piece Selectors (uno por jugador con IDs únicos)
+- ✅ Solo jugador activo puede interactuar (selector inactivo oculto)
+- ✅ Indicador visual de turno en Fase 2 (borde brillante + box-shadow)
+- ✅ Paneles alineados verticalmente (min-height: 150px)
+- ✅ SELECT PIECE separado de player-info (elementos hermanos)
+- ✅ Header perfectamente centrado
 
 **Criterios de Aceptación:**
 - ✅ UI responsive en móvil (320px+) y desktop (1920px)
+- ✅ Layout de 3 paneles (top/middle/bottom)
+- ✅ Tablero centrado horizontalmente
 - ✅ Todos los elementos visibles sin scroll horizontal
 - ✅ Fuentes legibles (mínimo 12px en móvil)
 - ✅ Contraste suficiente (WCAG AA)
+- ✅ Indicador visual claro de turno en ambas fases
 
 ---
 
@@ -845,6 +898,7 @@ Ver archivo: `wireframes/chessfive-mockups.png`
 | Versión | Fecha | Autor | Cambios |
 |---------|-------|-------|---------|
 | 1.0.0 | 2025-10-20 | ChessArcade Team | Versión inicial completa |
+| 1.1.0 | 2025-10-25 | ChessArcade Team | Actualización RF-008: Layout final implementado con dual piece selectors, 3 paneles (top/middle/bottom), header centrado con CSS Grid, indicador visual de turno en Fase 2 |
 
 ---
 
