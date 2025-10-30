@@ -1240,5 +1240,212 @@ init() {
 
 ---
 
+## Bug #14: Desktop Layout + Fase 2 Border Sync + Heartbeat Animation
+
+**Fecha:** 30 de Octubre 2025
+**Prioridad:** ALTA
+**Estado:** RESUELTO ✅
+
+### Descripción del Problema
+
+Tres problemas después de mover turn indicator en desktop:
+
+1. **Desktop layout "arruinado"**: Elementos redundantes visibles (YOUR TURN, SELECT PIECE)
+2. **Borde no sincroniza al inicio Fase 2**: Fase 1 termina con magenta → Fase 2 inicia, cyan mueve pero borde sigue magenta
+3. **Pulse animation simple**: Usuario pidió efecto "heartbeat" (latido de corazón)
+
+**Evidencia:**
+- Screenshot: `cf_29_mobile.png` (desktop) - YOUR TURN y SELECT PIECE visibles en desktop
+- Feedback usuario: "en desktop se arruino el layout"
+- Feedback usuario: "cuando termina la fase 1, el borde es magenta...al comenzar la fase 2, mueve el cyan y el borde y el cartel son magenta"
+- Feedback usuario: "me gusta que el cartel...sea pulsante (que haga como latidos de un corazon)"
+
+**Término Técnico:** El efecto se llama **"pulse animation"** o **"heartbeat animation"**
+
+### Root Cause (Análisis)
+
+**Problema 1 - Desktop Layout:**
+```html
+<!-- mobile-turn-indicator visible en desktop cuando no debería -->
+<div class="mobile-turn-indicator">YOUR TURN</div>
+
+<!-- piece-selector visible en Fase 2 cuando no debería -->
+<div class="piece-selector">SELECT PIECE</div>
+```
+
+Faltaban reglas CSS para ocultar estos elementos:
+- `.mobile-turn-indicator`: Solo debe aparecer en mobile Fase 2
+- `.piece-selector`: Solo debe aparecer en Fase 1 (ambos dispositivos)
+
+**Problema 2 - Borde No Sincroniza en Fase 2:**
+```javascript
+// gravity-phase.js transitionToChessPhase() - ANTES:
+GameState.currentPlayer = 'cyan';
+UIController.updatePhaseIndicator();
+UIController.updateTurnIndicator();
+// FALTA: UIController.updatePlayerInfo() ← actualiza borde
+```
+
+La función `updatePlayerInfo()` es la que actualiza las clases `.turn-cyan` / `.turn-magenta` en el borde del tablero (líneas 290-298 de `ui-controller.js`). Sin esta llamada, el borde no se actualiza.
+
+**Problema 3 - Pulse Animation Simple:**
+```css
+/* ANTES: Pulse simple */
+@keyframes turnPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+```
+
+Animación simple (un solo "latido"). Un heartbeat real tiene dos latidos rápidos seguidos de una pausa.
+
+### Solución Implementada
+
+#### 1. Ocultar mobile-turn-indicator en Desktop
+
+**Archivo:** `css/chessfive.css` líneas 529-532
+
+```css
+/* Mobile Turn Indicator - oculto por defecto (solo mobile Fase 2) */
+.mobile-turn-indicator {
+    display: none;
+}
+```
+
+**Resultado:** En desktop nunca aparece. En mobile, el media query lo muestra solo en Fase 2.
+
+#### 2. Ocultar piece-selector en Fase 2
+
+**Archivo:** `css/chessfive.css` líneas 534-538
+
+```css
+/* Ocultar piece selector en Fase 2 (solo visible en Fase 1: Gravity) */
+.phase-chess .piece-selector,
+.phase-chess .piece-selector-magenta {
+    display: none !important;
+}
+```
+
+**Resultado:** SELECT PIECE solo aparece en Fase 1 (gravity) en ambos dispositivos.
+
+#### 3. Agregar updatePlayerInfo() en transitionToChessPhase()
+
+**Archivo:** `js/gravity-phase.js` líneas 151-169
+
+```javascript
+transitionToChessPhase() {
+    console.log('♟️ Transitioning to Chess Phase...');
+
+    GameState.switchToChessPhase();
+
+    // ALWAYS start chess phase with Cyan player
+    GameState.currentPlayer = 'cyan';
+
+    // Update ALL UI elements (phase, turn, player panels, board border)
+    UIController.updatePhaseIndicator();
+    UIController.updateTurnIndicator();
+    UIController.updatePlayerInfo(); // ← AGREGADO - Updates board border
+    BoardRenderer.clearHighlights();
+
+    SoundManager.play('phase_change');
+
+    ChessPhase.init();
+}
+```
+
+**Explicación:**
+- Línea 157: Cambia turno a cyan
+- Línea 162: `updatePlayerInfo()` actualiza borde a cyan inmediatamente
+- Antes: Borde se actualizaba recién después de la primera jugada de Fase 2
+
+#### 4. Mejorar Pulse Animation (Heartbeat Effect)
+
+**Archivo:** `css/chessfive.css` líneas 540-560
+
+```css
+/* Heartbeat animation - dos latidos rápidos seguidos de pausa */
+@keyframes turnPulse {
+    0% {
+        transform: scale(1);
+    }
+    10% {
+        transform: scale(1.08); /* Primer latido */
+    }
+    20% {
+        transform: scale(1);
+    }
+    30% {
+        transform: scale(1.12); /* Segundo latido (más fuerte) */
+    }
+    40% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1); /* Pausa larga (60% del ciclo) */
+    }
+}
+```
+
+**Características Heartbeat:**
+- 0-10%: Primer latido (scale 1.08)
+- 20-30%: Segundo latido MÁS FUERTE (scale 1.12)
+- 40-100%: Pausa larga (60% del tiempo total)
+- Ciclo completo: 2 segundos (definido en `.turn-indicator`)
+
+**Comparación:**
+- **Antes**: Un solo pulse suave (1 → 1.05 → 1)
+- **Después**: Dos latidos distintos con pausa larga (heartbeat realista)
+
+### Resultado
+
+✅ **Desktop Layout**: Limpio, sin elementos redundantes
+✅ **Mobile Layout**: Intacto, funciona correctamente
+✅ **Borde Fase 2**: Sincronizado desde el inicio (cyan al empezar Fase 2)
+✅ **SELECT PIECE**: Solo visible en Fase 1
+✅ **YOUR TURN**: Solo visible en mobile Fase 2
+✅ **Heartbeat Animation**: Dos latidos seguidos de pausa (efecto realista)
+
+### Archivos Modificados
+
+1. **css/chessfive.css** (+23 líneas, -5 líneas)
+   - Líneas 529-532: Ocultar .mobile-turn-indicator en desktop
+   - Líneas 534-538: Ocultar .piece-selector en Fase 2
+   - Líneas 540-560: Heartbeat animation mejorada
+
+2. **js/gravity-phase.js** (+1 línea)
+   - Línea 162: Agregado `UIController.updatePlayerInfo()`
+
+3. **docs/BUGFIXES.md** (este archivo)
+   - Bug #14 documentado completamente
+
+### Lecciones Aprendidas
+
+1. **CSS Cascading**: Reglas globales primero, luego media queries. `.mobile-turn-indicator` necesita estar oculto por defecto, luego el media query mobile lo muestra.
+
+2. **Phase Transitions**: Al cambiar de fase, SIEMPRE actualizar TODA la UI con las funciones correspondientes:
+   - `updatePhaseIndicator()`
+   - `updateTurnIndicator()`
+   - `updatePlayerInfo()` ← **Critical for board border**
+
+3. **Animation Timing**: Heartbeat animations necesitan dos "beats" con pausa larga para ser realistas:
+   - Beat 1: 10% del tiempo
+   - Beat 2: 10% del tiempo (más fuerte)
+   - Pausa: 60% del tiempo
+
+4. **Responsive Testing**: Siempre testear en AMBOS dispositivos después de cambios mayores de layout.
+
+5. **Selector Specificity**: `.phase-chess .piece-selector` es más específico que `.piece-selector`, asegura override correcto.
+
+### Testing
+
+- ✅ Desktop Fase 1: SELECT PIECE visible, turn indicator debajo tablero
+- ✅ Desktop Fase 2: SELECT PIECE oculto, turn indicator con heartbeat
+- ✅ Mobile Fase 1: Piezas clickeables, sin turn indicator
+- ✅ Mobile Fase 2: YOUR TURN visible, alterna correctamente
+- ✅ Transition Fase 1→2: Borde cambia inmediatamente a cyan
+- ✅ Heartbeat Animation: Dos latidos visibles, pausa clara
+
+---
+
 **Autor:** Claude Code
 **Última actualización:** 30 de Octubre 2025

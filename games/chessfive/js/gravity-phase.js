@@ -156,8 +156,10 @@ const GravityPhase = {
         // ALWAYS start chess phase with Cyan player
         GameState.currentPlayer = 'cyan';
 
+        // Update ALL UI elements (phase, turn, player panels, board border)
         UIController.updatePhaseIndicator();
         UIController.updateTurnIndicator();
+        UIController.updatePlayerInfo(); // Updates board border + player panels
         BoardRenderer.clearHighlights();
 
         SoundManager.play('phase_change');
