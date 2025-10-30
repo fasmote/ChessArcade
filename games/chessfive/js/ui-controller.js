@@ -250,8 +250,8 @@ const UIController = {
             // Add phase-chess class for styling
             gameContainer.classList.add('phase-chess');
 
-            // MOBILE: Animate phase change
-            if (isMobile && phaseIndicator) {
+            // CROSS-DEVICE: Animate phase change (desktop y mobile)
+            if (phaseIndicator) {
                 // Reset animation
                 phaseIndicator.classList.remove('animate-fade', 'fade-complete');
 
@@ -261,10 +261,16 @@ const UIController = {
                 // Add animation class
                 phaseIndicator.classList.add('animate-fade');
 
-                // Hide after animation
+                // Hide after animation (2s)
                 setTimeout(() => {
                     phaseIndicator.classList.add('fade-complete');
-                }, 3000);
+                }, 2000);
+
+                // Re-attach click handler (may have been removed)
+                phaseIndicator.onclick = () => {
+                    phaseIndicator.classList.add('fade-complete');
+                    console.log('🖱️ Phase 2 indicator closed manually');
+                };
             }
         }
     },

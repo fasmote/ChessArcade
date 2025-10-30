@@ -136,7 +136,10 @@ const ChessPhase = {
 
             // Switch player
             GameState.switchPlayer();
+
+            // Update UI (turn indicator, player panels, board border)
             UIController.updateTurnIndicator();
+            UIController.updatePlayerInfo();
         }
     },
 

@@ -812,5 +812,249 @@ background: rgba(10, 10, 26, 0.75); /* Más traslúcido */
 
 ---
 
+## Bug #12: Fase 2 - Turn Indicator No Cambia + Borde No Actualiza + Phase Indicator Solo Mobile
+
+**Fecha:** 30 de Octubre 2025
+**Prioridad:** CRÍTICA
+**Estado:** RESUELTO ✅
+
+### Descripción del Problema
+
+Tres problemas relacionados con la Fase 2 (Chess Movement):
+
+1. **Mobile Turn Indicator no cambia color**: El cartel "YOUR TURN" permanece cyan en Fase 2, no alterna entre jugadores
+2. **Board Border no cambia en Fase 2**: El borde del tablero no se actualiza según el turno (solo funcionaba en Fase 1)
+3. **Phase Indicator solo Mobile**: El indicador de fase solo aparecía en mobile, no en desktop
+
+**Evidencia:**
+- Log: `093_chessfive.log` - Turnos cambian pero UI no se actualiza en Fase 2
+- Feedback usuario: "en la fase 2, sigue sin cambiar el cartel del turno"
+- Feedback usuario: "también que en la fase 2, cambie el color de borde como en la fase 1"
+- Feedback usuario: "El cartel de fase 1 y fase 2, esta bueno que aparezca en desktop tambien"
+
+### Root Cause (Análisis)
+
+**Problema 1 - Mobile Turn Indicator CSS Selector Incorrecto:**
+```css
+/* ANTES - NO FUNCIONA */
+.phase-chess #playerMagenta .mobile-turn-indicator {
+    background: rgba(255, 0, 255, 0.15);
+    /* ... */
+}
+```
+
+La estructura HTML tiene `.mobile-turn-indicator` como hermano de `#playerMagenta`, NO como hijo:
+```html
+<aside class="player-panel player-panel-right">
+    <div class="player-info" id="playerMagenta"></div>
+    <div class="mobile-turn-indicator"></div> <!-- Hermano, no hijo -->
+</aside>
+```
+
+Por lo tanto, el selector `#playerMagenta .mobile-turn-indicator` nunca encuentra el elemento.
+
+**Problema 2 - chess-phase.js No Llama updatePlayerInfo():**
+```javascript
+// chess-phase.js línea 137-139 (ANTES):
+GameState.switchPlayer();
+UIController.updateTurnIndicator(); // Solo actualiza texto del turno
+
+// FALTABA:
+// UIController.updatePlayerInfo(); // Esto actualiza panels Y board border
+```
+
+El borde del tablero se actualiza en `updatePlayerInfo()`, pero `chess-phase.js` solo llamaba a `updateTurnIndicator()`.
+
+**Problema 3 - Phase Indicator Desactivado en Desktop:**
+```css
+/* ANTES - Desktop media query desactivaba animación */
+@media (min-width: 1025px) {
+    .phase-indicator.animate-fade {
+        animation: none; /* Desactivado en desktop */
+    }
+}
+```
+
+### Solución Implementada
+
+#### 1. Arreglar CSS Selector (mobile-turn-indicator)
+
+**Archivo:** `css/chessfive.css` líneas 1044-1065
+
+```css
+/* ANTES - Selector hijo (no funcionaba) */
+.phase-chess #playerMagenta .mobile-turn-indicator { /* ... */ }
+#playerMagenta .mobile-turn-indicator h3 { /* ... */ }
+
+/* DESPUÉS - Selector correcto usando .player-panel */
+.phase-chess .player-panel-right .mobile-turn-indicator {
+    background: rgba(255, 0, 255, 0.15);
+    border-color: var(--magenta-primary);
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+}
+
+.player-panel-right .mobile-turn-indicator h3 {
+    color: var(--magenta-primary);
+    text-shadow: 0 0 15px var(--magenta-glow);
+}
+```
+
+**Explicación:** `.player-panel-right` es el contenedor padre, `.mobile-turn-indicator` es hijo directo. El selector CSS ahora coincide con la estructura HTML real.
+
+#### 2. Agregar updatePlayerInfo() en chess-phase.js
+
+**Archivo:** `js/chess-phase.js` líneas 137-142
+
+```javascript
+// ANTES:
+GameState.switchPlayer();
+UIController.updateTurnIndicator();
+
+// DESPUÉS:
+GameState.switchPlayer();
+
+// Update UI (turn indicator, player panels, board border)
+UIController.updateTurnIndicator();
+UIController.updatePlayerInfo(); // ← AGREGADO
+```
+
+**Resultado:** Ahora en Fase 2:
+- Mobile panels alternan correctamente
+- Board border cambia cyan ↔ magenta
+- Sincronización perfecta con `GameState.currentPlayer`
+
+#### 3. Phase Indicator Cross-Device
+
+**Archivo:** `css/chessfive.css` líneas 835-877
+
+**ANTES:**
+- Desktop: `position: relative`, sin animación
+- Mobile: `position: fixed`, con overlay y animación
+
+**DESPUÉS (Cross-Device):**
+```css
+/* FUERA de media queries - aplica a TODOS los dispositivos */
+.top-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    max-width: 90%;
+    width: auto;
+    pointer-events: all; /* Permitir clicks para cerrar */
+}
+
+.phase-indicator {
+    background: rgba(10, 10, 26, 0.5); /* Más transparente: 0.75 → 0.5 */
+    border: 3px solid var(--cyan-primary);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    cursor: pointer; /* Indicar que es clickeable */
+}
+```
+
+**Cambios adicionales:**
+- Duración reducida: 3s → 2s (línea 266)
+- Transparencia aumentada: 0.75 → 0.5
+- Click handler para cerrar manualmente
+
+**Archivo:** `js/main.js` líneas 20-36
+
+```javascript
+// ANTES: Solo mobile (if (isMobile) { ... })
+// DESPUÉS: Cross-device (sin condición)
+
+const phaseIndicator = document.querySelector('.phase-indicator');
+if (phaseIndicator) {
+    phaseIndicator.classList.add('animate-fade');
+
+    setTimeout(() => {
+        phaseIndicator.classList.add('fade-complete');
+    }, 2000); // 2s en lugar de 3s
+
+    // Click handler para cerrar manualmente
+    phaseIndicator.addEventListener('click', () => {
+        phaseIndicator.classList.add('fade-complete');
+        console.log('🖱️ Phase indicator closed manually');
+    });
+}
+```
+
+**Archivo:** `js/ui-controller.js` líneas 253-274
+
+```javascript
+// ANTES: if (isMobile && phaseIndicator) { ... }
+// DESPUÉS: if (phaseIndicator) { ... }
+
+// CROSS-DEVICE: Animate phase change (desktop y mobile)
+if (phaseIndicator) {
+    phaseIndicator.classList.remove('animate-fade', 'fade-complete');
+    void phaseIndicator.offsetWidth; // Force reflow
+    phaseIndicator.classList.add('animate-fade');
+
+    setTimeout(() => {
+        phaseIndicator.classList.add('fade-complete');
+    }, 2000); // 2s
+
+    // Click handler para Fase 2
+    phaseIndicator.onclick = () => {
+        phaseIndicator.classList.add('fade-complete');
+        console.log('🖱️ Phase 2 indicator closed manually');
+    };
+}
+```
+
+### Resultado
+
+✅ **Mobile Turn Indicator**: Ahora alterna correctamente cyan ↔ magenta en Fase 2
+✅ **Board Border**: Cambia de color en ambas fases (Fase 1 Y Fase 2)
+✅ **Phase Indicator Cross-Device**: Aparece en desktop Y mobile con overlay
+✅ **Duración Optimizada**: 2s en lugar de 3s (más rápido, menos intrusivo)
+✅ **Transparencia Mejorada**: 0.5 opacity (más traslúcido, mejor visibilidad del tablero)
+✅ **Click to Close**: Se puede cerrar manualmente haciendo click
+
+### Archivos Modificados
+
+1. **css/chessfive.css** (+42 líneas, -51 líneas)
+   - Líneas 266: Duración 3s → 2s
+   - Líneas 835-877: Phase indicator cross-device (movido fuera de media queries)
+   - Líneas 1044-1065: Selector CSS mobile-turn-indicator arreglado
+   - Líneas 994: Código duplicado eliminado
+
+2. **js/chess-phase.js** (+3 líneas)
+   - Líneas 137-142: Agregado `UIController.updatePlayerInfo()`
+
+3. **js/main.js** (+7 líneas, -3 líneas)
+   - Líneas 20-36: Removido `if (isMobile)`, agregado click handler
+
+4. **js/ui-controller.js** (+7 líneas, -1 línea)
+   - Líneas 253-274: Removido `if (isMobile)`, timeout 3s → 2s, agregado click handler
+
+### Lecciones Aprendidas
+
+1. **CSS Selector Debugging**: Siempre verificar la estructura HTML real antes de escribir selectores CSS. Los selectores descendientes (`.parent .child`) requieren relación padre-hijo en el DOM.
+
+2. **Consistencia de Llamadas UI**: Si algo se actualiza en Fase 1, asegurarse de que también se actualice en Fase 2. Mantener simetría en las llamadas `UIController`.
+
+3. **Cross-Device Design**: Evitar bifurcaciones `if (isMobile)` cuando la misma funcionalidad puede aplicarse a todos los dispositivos. Usar CSS responsive design en su lugar.
+
+4. **Timing de Animaciones**: Duración más corta (2s) es más user-friendly que animaciones largas (3s).
+
+5. **UX Enhancement**: Permitir cerrar overlays con click mejora la experiencia del usuario (control manual).
+
+### Testing
+
+- ✅ Desktop Fase 1: Phase indicator aparece, borde cyan
+- ✅ Desktop Fase 2: Phase indicator aparece, borde alterna cyan/magenta
+- ✅ Mobile Fase 1: Piezas clickeables, borde cyan
+- ✅ Mobile Fase 2: "YOUR TURN" alterna, borde alterna
+- ✅ Click to close: Funciona en desktop y mobile, ambas fases
+- ✅ Duración 2s: Más rápido y menos intrusivo
+
+---
+
 **Autor:** Claude Code
 **Última actualización:** 30 de Octubre 2025

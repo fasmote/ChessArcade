@@ -263,7 +263,7 @@ button:disabled {
 }
 
 .phase-indicator.animate-fade {
-    animation: phaseIndicatorFade 3s ease-in-out forwards;
+    animation: phaseIndicatorFade 2s ease-in-out forwards;
 }
 
 /* Players Container */
@@ -832,22 +832,48 @@ button:disabled {
  * - order: -1 (aparece primero)
  * - order: 1 (aparece segundo)
  */
-/* DESKTOP: Mantener phase indicator en su lugar */
-@media (min-width: 1025px) {
-    .top-panel {
-        position: relative;
-        transform: none;
-    }
+/* ==================================================
+ * PHASE INDICATOR OVERLAY (CROSS-DEVICE)
+ * Aparece en todos los dispositivos (mobile y desktop)
+ * ================================================== */
 
-    .phase-indicator {
-        background: rgba(0, 255, 255, 0.1);
-        backdrop-filter: none;
-    }
+/* Phase indicator como overlay en centro de pantalla */
+.top-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    max-width: 90%;
+    width: auto;
+    pointer-events: all; /* Permitir clicks para cerrar */
+}
 
-    /* No animar en desktop */
-    .phase-indicator.animate-fade {
-        animation: none;
-    }
+.phase-indicator {
+    background: rgba(10, 10, 26, 0.5); /* Más transparente: 0.75 -> 0.5 */
+    border: 3px solid var(--cyan-primary);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    cursor: pointer; /* Indicar que es clickeable */
+}
+
+.phase-indicator h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: var(--cyan-primary);
+    text-shadow: 0 0 15px var(--cyan-glow);
+}
+
+.phase-indicator p {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Ocultar phase indicator después de la animación */
+.phase-indicator.fade-complete {
+    display: none;
 }
 
 @media (max-width: 1024px) {
@@ -965,43 +991,7 @@ button:disabled {
         padding: 0 !important;
     }
 
-    /* Phase Indicator como overlay en centro del tablero (SOLO MOBILE) */
-    .top-panel {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1000;
-        max-width: 90%;
-        width: auto;
-        pointer-events: none; /* No bloquear clicks */
-    }
-
-    .phase-indicator {
-        background: rgba(10, 10, 26, 0.75); /* Más traslúcido: 0.98 -> 0.75 */
-        border: 3px solid var(--cyan-primary);
-        border-radius: 15px;
-        padding: 30px;
-        box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
-        backdrop-filter: blur(10px);
-    }
-
-    .phase-indicator h2 {
-        font-size: 1.5rem;
-        margin-bottom: 10px;
-        color: var(--cyan-primary);
-        text-shadow: 0 0 15px var(--cyan-glow);
-    }
-
-    .phase-indicator p {
-        font-size: 1rem;
-        color: rgba(255, 255, 255, 0.9);
-    }
-
-    /* Ocultar phase indicator después de la animación */
-    .phase-indicator.fade-complete {
-        display: none;
-    }
+    /* Phase Indicator - estilos definidos globalmente arriba (cross-device) */
 
     /* Pieces Inventory se convierte en SELECTOR clickeable (SOLO FASE 1) */
     .pieces-inventory {
@@ -1041,7 +1031,8 @@ button:disabled {
         min-height: 100px;
     }
 
-    .phase-chess #playerMagenta .mobile-turn-indicator {
+    /* Magenta player panel - mobile turn indicator */
+    .phase-chess .player-panel-right .mobile-turn-indicator {
         background: rgba(255, 0, 255, 0.15);
         border-color: var(--magenta-primary);
         box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
@@ -1057,7 +1048,8 @@ button:disabled {
         letter-spacing: 2px;
     }
 
-    #playerMagenta .mobile-turn-indicator h3 {
+    /* Magenta player panel - text color */
+    .player-panel-right .mobile-turn-indicator h3 {
         color: var(--magenta-primary);
         text-shadow: 0 0 15px var(--magenta-glow);
     }

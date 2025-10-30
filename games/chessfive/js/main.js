@@ -17,19 +17,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('✅ Game ready!');
 
-    // MOBILE: Animate phase indicator at start
-    const isMobile = window.innerWidth <= 1024;
-    if (isMobile) {
-        const phaseIndicator = document.querySelector('.phase-indicator');
-        if (phaseIndicator) {
-            // Add animation class
-            phaseIndicator.classList.add('animate-fade');
+    // CROSS-DEVICE: Animate phase indicator at start (desktop y mobile)
+    const phaseIndicator = document.querySelector('.phase-indicator');
+    if (phaseIndicator) {
+        // Add animation class
+        phaseIndicator.classList.add('animate-fade');
 
-            // Remove element after animation completes (3s)
-            setTimeout(() => {
-                phaseIndicator.classList.add('fade-complete');
-            }, 3000);
-        }
+        // Hide element after animation completes (2s)
+        setTimeout(() => {
+            phaseIndicator.classList.add('fade-complete');
+        }, 2000);
+
+        // Allow manual close on click
+        phaseIndicator.addEventListener('click', () => {
+            phaseIndicator.classList.add('fade-complete');
+            console.log('🖱️ Phase indicator closed manually');
+        });
     }
 
     // Track page view
