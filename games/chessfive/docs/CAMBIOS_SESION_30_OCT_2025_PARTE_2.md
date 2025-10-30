@@ -82,6 +82,60 @@
 
 **Razón:** El heartbeat se sentía "frenado", el pulse simple es más continuo y rítmico.
 
+### 5. Hover/Highlight Dinámico por Color de Jugador
+
+**Archivo:** `css/chessfive.css` (líneas 634-643, 701-708, 710-719)
+
+**Feedback Usuario:** "podrias hacer que la sombra sobre el tablero cuando estoy moviendo el cursor, sea del color del jugador que le toca el turno? actualmente siempre es cyan"
+
+**Problema:** Todos los efectos hover/highlight eran siempre cyan, sin importar de quién era el turno.
+
+**Solución:**
+```css
+/* Hover dinámico según turno del jugador */
+.board-container.turn-cyan .square:hover {
+    background: rgba(0, 255, 255, 0.2);
+    box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.board-container.turn-magenta .square:hover {
+    background: rgba(255, 0, 255, 0.2);
+    box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.5);
+}
+
+/* Column hover dinámico según turno */
+.board-container.turn-cyan .square.column-hover {
+    background: rgba(0, 255, 255, 0.15);
+}
+
+.board-container.turn-magenta .square.column-hover {
+    background: rgba(255, 0, 255, 0.15);
+}
+
+/* Selected Piece - dinámico según turno */
+.board-container.turn-cyan .square.selected {
+    box-shadow: inset 0 0 30px rgba(0, 255, 255, 0.8);
+    background: rgba(0, 255, 255, 0.3);
+}
+
+.board-container.turn-magenta .square.selected {
+    box-shadow: inset 0 0 30px rgba(255, 0, 255, 0.8);
+    background: rgba(255, 0, 255, 0.3);
+}
+```
+
+**Técnica Usada:**
+- Selectores CSS con clases padre: `.board-container.turn-cyan` / `.board-container.turn-magenta`
+- Estas clases ya son agregadas/removidas por `ui-controller.js` en `updatePlayerInfo()`
+- No se requieren cambios JavaScript adicionales
+
+**Estados Cubiertos:**
+1. **Square hover**: Mouseover sobre casilla vacía
+2. **Column hover**: Highlight de columna en Fase 1 (Gravity)
+3. **Selected piece**: Pieza seleccionada en Fase 2 (Chess)
+
+**Beneficio UX:** El jugador activo puede identificar visualmente de quién es el turno por el color de las sombras/highlights.
+
 ## Lecciones Aprendidas
 
 ### 1. CSS `aspect-ratio` para Geometría
@@ -119,6 +173,10 @@ El sistema de nombres está preparado para:
 - ✅ Mobile: Tablero cuadrado (aspect-ratio funciona)
 - ✅ Pulse animation: Rítmico y continuo
 - ✅ Nombre jugador: Visible en mobile Fase 2
+- ✅ Hover color cyan: Turno de CYAN PLAYER
+- ✅ Hover color magenta: Turno de MAGENTA PLAYER
+- ✅ Column hover dinámico: Ambas fases
+- ✅ Selected piece highlight: Ambos jugadores
 
 ## Próximos Pasos
 

@@ -631,9 +631,15 @@ button:disabled {
     background: var(--board-dark);
 }
 
-.square:hover {
+/* Hover dinámico según turno del jugador */
+.board-container.turn-cyan .square:hover {
     background: rgba(0, 255, 255, 0.2);
     box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.board-container.turn-magenta .square:hover {
+    background: rgba(255, 0, 255, 0.2);
+    box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.5);
 }
 
 /* Coordinate Labels */
@@ -692,14 +698,24 @@ button:disabled {
 }
 
 /* Column Hover Preview */
-.square.column-hover {
+/* Column hover dinámico según turno */
+.board-container.turn-cyan .square.column-hover {
     background: rgba(0, 255, 255, 0.15);
 }
 
-/* Selected Piece */
-.square.selected {
+.board-container.turn-magenta .square.column-hover {
+    background: rgba(255, 0, 255, 0.15);
+}
+
+/* Selected Piece - dinámico según turno */
+.board-container.turn-cyan .square.selected {
     box-shadow: inset 0 0 30px rgba(0, 255, 255, 0.8);
     background: rgba(0, 255, 255, 0.3);
+}
+
+.board-container.turn-magenta .square.selected {
+    box-shadow: inset 0 0 30px rgba(255, 0, 255, 0.8);
+    background: rgba(255, 0, 255, 0.3);
 }
 
 /* Valid Move Highlight */
