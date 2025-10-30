@@ -242,6 +242,30 @@ button:disabled {
     opacity: 0.8;
 }
 
+/* Phase Indicator Fade Animation */
+@keyframes phaseIndicatorFade {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+    }
+    15% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    85% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+    }
+}
+
+.phase-indicator.animate-fade {
+    animation: phaseIndicatorFade 3s ease-in-out forwards;
+}
+
 /* Players Container */
 .players-container {
     display: flex;
@@ -551,6 +575,18 @@ button:disabled {
     height: 600px;
     max-width: 90vw;
     max-height: 90vw;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Board border según turno del jugador */
+.board-container.turn-cyan .chess-board {
+    border-color: var(--cyan-primary);
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.4);
+}
+
+.board-container.turn-magenta .chess-board {
+    border-color: var(--magenta-primary);
+    box-shadow: 0 0 40px rgba(255, 0, 255, 0.4);
 }
 
 /* Board Squares */
@@ -796,56 +832,322 @@ button:disabled {
  * - order: -1 (aparece primero)
  * - order: 1 (aparece segundo)
  */
+/* DESKTOP: Mantener phase indicator en su lugar */
+@media (min-width: 1025px) {
+    .top-panel {
+        position: relative;
+        transform: none;
+    }
+
+    .phase-indicator {
+        background: rgba(0, 255, 255, 0.1);
+        backdrop-filter: none;
+    }
+
+    /* No animar en desktop */
+    .phase-indicator.animate-fade {
+        animation: none;
+    }
+}
+
 @media (max-width: 1024px) {
     /*
      * MOBILE LAYOUT
-     * Orden vertical simplificado:
-     * 1. Board (tablero) - PRIMERO
-     * 2. Top Panel (phase + selector)
+     * Orden vertical:
+     * 1. Middle Row (contiene el board) - PRIMERO
+     *    1.1 Board (tablero) - visible primero
+     *    1.2 Player Cyan
+     *    1.3 Player Magenta
+     * 2. Top Panel (phase indicator)
      * 3. Bottom Panel (turn + controls)
-     * 4. Players (cyan y magenta)
      */
     .game-container {
         padding: 15px;
         gap: 15px;
     }
 
-    /* Top panel (phase + selector) */
-    .top-panel {
-        order: 2; /* Después del board */
-        max-width: 100%;
-    }
-
-    /* Middle row se convierte en columna */
+    /* Middle row - PRIMERO (contiene el board) */
     .middle-row {
         flex-direction: column;
-        order: 1; /* Board primero */
+        order: 1; /* PRIMERO en game-container */
         gap: 15px;
+        width: 100%;
     }
 
-    /* Board dentro de middle-row */
+    /* Board dentro de middle-row - VISIBLE PRIMERO */
     .board-container {
         width: 100%;
-        order: 1;
+        max-width: 90vw;
+        order: 1; /* PRIMERO dentro de middle-row */
     }
 
-    /* Players abajo del board dentro de middle-row */
+    /* Chess board ajustado para mobile */
+    .chess-board {
+        width: 100%;
+        max-width: 90vw;
+        height: auto;
+        aspect-ratio: 1; /* Mantener cuadrado */
+    }
+
+    /* Players después del board dentro de middle-row */
+    .player-panel-left {
+        order: 2; /* SEGUNDO dentro de middle-row */
+        width: 100%;
+    }
+
+    .player-panel-right {
+        order: 3; /* TERCERO dentro de middle-row */
+        width: 100%;
+    }
+
     .player-panel {
         flex: 1;
         min-width: 0;
-        order: 3;
     }
 
-    /* Bottom panel */
+    /* Top panel - SEGUNDO en game-container */
+    .top-panel {
+        order: 2; /* Después del middle-row */
+        max-width: 100%;
+        width: 100%;
+    }
+
+    /* Bottom panel - TERCERO en game-container */
     .bottom-panel {
         order: 3; /* Después de top-panel */
         max-width: 100%;
+        width: 100%;
     }
 
-    /* Reducir tamaño de players para que quepan lado a lado */
+    /* Reducir tamaño de players para mejor visualización */
     .player-info {
         flex: 1;
         min-width: 0; /* Permitir que se encoja */
+        min-height: 100px; /* Reducir altura mínima en mobile */
+    }
+
+    /* MOBILE OPTIMIZATION: Ocultar SELECT PIECE, usar Inventory como selector */
+
+    /* Ocultar SELECT PIECE completamente en mobile */
+    .piece-selector,
+    .piece-selector-magenta {
+        display: none !important;
+    }
+
+    /* Solo mostrar el panel del jugador ACTIVO en Fase 1 (controlado por JS) */
+    .player-panel.mobile-hidden {
+        display: none !important;
+    }
+
+    /* En player-info, ocultar todo EXCEPTO el inventory */
+    .player-info {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        min-height: auto !important;
+    }
+
+    /* Ocultar header y stats del player-info */
+    .player-info .player-header,
+    .player-info .player-stats .stat {
+        display: none !important;
+    }
+
+    /* Hacer que player-panel solo muestre el inventory */
+    .player-panel {
+        padding: 0;
+        min-width: auto;
+    }
+
+    /* Mantener visible solo el pieces-inventory */
+    .player-stats {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Phase Indicator como overlay en centro del tablero (SOLO MOBILE) */
+    .top-panel {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        max-width: 90%;
+        width: auto;
+        pointer-events: none; /* No bloquear clicks */
+    }
+
+    .phase-indicator {
+        background: rgba(10, 10, 26, 0.75); /* Más traslúcido: 0.98 -> 0.75 */
+        border: 3px solid var(--cyan-primary);
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+    }
+
+    .phase-indicator h2 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        color: var(--cyan-primary);
+        text-shadow: 0 0 15px var(--cyan-glow);
+    }
+
+    .phase-indicator p {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Ocultar phase indicator después de la animación */
+    .phase-indicator.fade-complete {
+        display: none;
+    }
+
+    /* Pieces Inventory se convierte en SELECTOR clickeable (SOLO FASE 1) */
+    .pieces-inventory {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(0, 255, 255, 0.15);
+        border: 3px solid var(--cyan-primary);
+        border-radius: 15px;
+        min-height: auto;
+        margin: 0;
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+    }
+
+    /* FASE 2: Ocultar inventory y mostrar turn indicator */
+    .phase-chess .pieces-inventory {
+        display: none !important;
+    }
+
+    /* Turn Indicator Mobile (reemplaza inventory en Fase 2) */
+    .mobile-turn-indicator {
+        display: none; /* Oculto por defecto */
+    }
+
+    .phase-chess .mobile-turn-indicator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 25px;
+        background: rgba(0, 255, 255, 0.15);
+        border: 3px solid var(--cyan-primary);
+        border-radius: 15px;
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        min-height: 100px;
+    }
+
+    .phase-chess #playerMagenta .mobile-turn-indicator {
+        background: rgba(255, 0, 255, 0.15);
+        border-color: var(--magenta-primary);
+        box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+    }
+
+    .mobile-turn-indicator h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: var(--cyan-primary);
+        text-shadow: 0 0 15px var(--cyan-glow);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    #playerMagenta .mobile-turn-indicator h3 {
+        color: var(--magenta-primary);
+        text-shadow: 0 0 15px var(--magenta-glow);
+    }
+
+    .mobile-turn-indicator p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-align: center;
+    }
+
+    /* FASE 2: Ocultar bottom-panel en mobile */
+    .phase-chess .bottom-panel {
+        display: none !important;
+    }
+
+    #playerMagenta .pieces-inventory {
+        background: rgba(255, 0, 255, 0.15);
+        border-color: var(--magenta-primary);
+        box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+    }
+
+    /* Agregar label "TAP A PIECE TO PLACE:" */
+    .pieces-inventory::before {
+        content: "TAP A PIECE TO PLACE:";
+        display: block;
+        width: 100%;
+        text-align: center;
+        font-size: 1rem;
+        font-weight: bold;
+        color: var(--cyan-primary);
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        text-shadow: 0 0 10px var(--cyan-glow);
+    }
+
+    #playerMagenta .pieces-inventory::before {
+        color: var(--magenta-primary);
+        text-shadow: 0 0 10px var(--magenta-glow);
+    }
+
+    /* Piezas del inventory grandes y clickeables */
+    .pieces-inventory .piece {
+        font-size: 2.5rem;
+        cursor: pointer;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 8px;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+        min-width: 60px;
+        text-align: center;
+    }
+
+    .pieces-inventory .piece:hover,
+    .pieces-inventory .piece:active {
+        transform: scale(1.2);
+        border-color: var(--cyan-primary);
+        background: rgba(0, 255, 255, 0.2);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    }
+
+    #playerMagenta .pieces-inventory .piece:hover,
+    #playerMagenta .pieces-inventory .piece:active {
+        border-color: var(--magenta-primary);
+        background: rgba(255, 0, 255, 0.2);
+        box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+    }
+
+    /* Piezas sin stock - deshabilitadas */
+    .pieces-inventory .piece.disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    /* Label "Pieces Left" más prominente */
+    .player-stats .stat {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .player-stats .stat .label {
+        color: var(--cyan-primary);
+    }
+
+    #playerMagenta .player-stats .stat .label {
+        color: var(--magenta-primary);
     }
 }
 

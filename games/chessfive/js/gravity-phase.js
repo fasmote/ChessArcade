@@ -87,10 +87,6 @@ const GravityPhase = {
             // Play sound
             SoundManager.play('place');
 
-            // Update UI
-            UIController.updatePlayerInfo();
-            UIController.updatePieceSelector(); // Update selector counts
-
             // Check for win
             const winResult = WinDetection.checkWin(row, placedCol);
             if (winResult) {
@@ -108,8 +104,11 @@ const GravityPhase = {
 
             // Switch player
             GameState.switchPlayer();
+
+            // Update UI AFTER switching player
             UIController.updateTurnIndicator();
-            UIController.updatePieceSelector(); // Update for new player
+            UIController.updatePlayerInfo(); // Now updates with the NEW current player
+            UIController.updatePieceSelector(); // Update selector for new player
 
         } else {
             console.warn('⚠️ Column', col, 'is full');

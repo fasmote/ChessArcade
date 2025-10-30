@@ -433,5 +433,384 @@ El usuario solicitó eliminar la línea cyan debajo del header (border-bottom).
 
 ---
 
+## Bug #8: Mobile - Inventory No Visible (Piezas Ocultas)
+
+### 📅 Fecha
+30 de Octubre 2025
+
+### 🐛 Descripción del Problema
+Al simplificar la UI mobile para ocultar el header "CYAN PLAYER" y "Pieces Left:", el CSS ocultaba TODO el `.player-info` con `display: none !important`, lo que también ocultaba el `.pieces-inventory` que está dentro.
+
+**Evidencia:**
+- Screenshot: `cf_24_mobile.png` - Recuadro "TAP A PIECE TO PLACE:" visible pero sin piezas
+
+**Síntoma:** Las piezas no eran clickeables porque estaban ocultas por el CSS.
+
+### 🔍 Causa Raíz
+El CSS mobile tenía:
+```css
+.player-info {
+    display: none !important; /* Oculta TODO incluyendo inventory */
+}
+```
+
+Esto ocultaba el container completo, incluyendo `.pieces-inventory` que es hijo de `.player-info`.
+
+### ✅ Solución Implementada
+
+Cambiar la estrategia: En lugar de ocultar todo, ocultar solo los elementos específicos:
+
+```css
+/* En player-info, ocultar todo EXCEPTO el inventory */
+.player-info {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    min-height: auto !important;
+}
+
+/* Ocultar header y stats del player-info */
+.player-info .player-header,
+.player-info .player-stats .stat {
+    display: none !important;
+}
+
+/* Mantener visible solo el pieces-inventory */
+.player-stats {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+```
+
+### 📊 Resultado
+- ✅ Las piezas son visibles y clickeables
+- ✅ Solo se muestra el recuadro "TAP A PIECE TO PLACE:"
+- ✅ Header y contadores ocultos como se esperaba
+
+---
+
+## Bug #9: Mobile - Phase Indicator Ilegible (Fondo Cyan + Texto Cyan)
+
+### 📅 Fecha
+30 de Octubre 2025
+
+### 🐛 Descripción del Problema
+El phase indicator aparecía con fade animation en mobile, pero era completamente ilegible porque usaba fondo cyan transparente (0.95) con texto cyan, creando un contraste muy pobre.
+
+**Evidencia:**
+- Screenshot: `cf_25_mobile.png` - Cartel azul con texto azul invisible
+- Comentario usuario: "el cartel no se lee bien, los colores de letra y fondo es muy confuso"
+
+### 🔍 Causa Raíz
+CSS mobile usaba:
+```css
+.phase-indicator {
+    background: rgba(0, 255, 255, 0.95); /* Fondo cyan */
+    border: 3px solid var(--cyan-primary);
+}
+
+.phase-indicator h2 {
+    color: var(--cyan-primary); /* Texto cyan sobre fondo cyan */
+}
+```
+
+### ✅ Solución Implementada
+
+Cambiar a fondo oscuro con texto brillante:
+
+```css
+.phase-indicator {
+    background: rgba(10, 10, 26, 0.98); /* Fondo casi negro */
+    border: 3px solid var(--cyan-primary);
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+}
+
+.phase-indicator h2 {
+    font-size: 1.5rem;
+    color: var(--cyan-primary); /* Cyan sobre negro = alto contraste */
+    text-shadow: 0 0 15px var(--cyan-glow);
+}
+
+.phase-indicator p {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9); /* Blanco para descripción */
+}
+```
+
+### 📊 Resultado
+- ✅ Texto perfectamente legible con alto contraste
+- ✅ Mantiene el estilo visual cyan con glow
+- ✅ Descripción en blanco fácil de leer
+
+---
+
+## Bug #10: Mobile - Panel de Jugador Invertido (Timing Issue)
+
+### 📅 Fecha
+30 de Octubre 2025
+
+### 🐛 Descripción del Problema
+En mobile Fase 1, el panel de selector de piezas no cambiaba correctamente entre turnos:
+- Primer movimiento (cyan): ✅ Correcto
+- Segundo movimiento (magenta): ❌ Sigue mostrando panel cyan
+- Tercer movimiento (cyan): ✅ Cambia a magenta (1 turno atrasado)
+
+**Evidencia:**
+- Screenshot: `cf_25_mobile.png` - Panel magenta visible pero "CURRENT TURN: CYAN PLAYER"
+- Log: `090_chessfive.log` línea 1578-1581 - Turnos correctos pero UI desincronizada
+- Comentario usuario: "el primer movimiento del jugador cyan esta bien, luego cuando le toca al magenta no cambia y luego cambia cuando le vuelve a tocar al cyan"
+
+### 🔍 Causa Raíz
+En `gravity-phase.js`, `updatePlayerInfo()` se llamaba ANTES de `switchPlayer()`:
+
+```javascript
+// ❌ INCORRECTO (línea 91):
+UIController.updatePlayerInfo(); // Actualiza con jugador VIEJO (cyan)
+
+// Línea 110:
+GameState.switchPlayer(); // Cambia a jugador NUEVO (magenta)
+```
+
+Esto causaba que la UI se actualizara con el jugador que acababa de mover, no con el jugador que debe mover a continuación.
+
+### ✅ Solución Implementada
+
+**Archivo:** `games/chessfive/js/gravity-phase.js`
+
+Reordenar las llamadas para actualizar UI DESPUÉS de cambiar jugador:
+
+```javascript
+// Línea 87-111 (nueva versión):
+// Play sound
+SoundManager.play('place');
+
+// Check for win
+const winResult = WinDetection.checkWin(row, placedCol);
+if (winResult) {
+    this.handleWin(winResult);
+    return;
+}
+
+// Check if gravity phase is complete
+if (GameState.isGravityPhaseComplete()) {
+    setTimeout(() => {
+        this.transitionToChessPhase();
+    }, 1000);
+    return;
+}
+
+// Switch player
+GameState.switchPlayer();
+
+// ✅ Update UI AFTER switching player
+UIController.updateTurnIndicator();
+UIController.updatePlayerInfo(); // Ahora actualiza con jugador NUEVO
+UIController.updatePieceSelector();
+```
+
+**También agregado en `ui-controller.js`:**
+```javascript
+init() {
+    this.attachEventListeners();
+    this.updateAll();
+
+    // MOBILE: Inicializar visibilidad de paneles explícitamente
+    const isMobile = window.innerWidth <= 1024;
+    if (isMobile) {
+        const cyanPanelContainer = document.querySelector('.player-panel-left');
+        const magentaPanelContainer = document.querySelector('.player-panel-right');
+
+        // Al inicio siempre es turno de Cyan
+        if (GameState.currentPlayer === 'cyan') {
+            cyanPanelContainer.classList.remove('mobile-hidden');
+            magentaPanelContainer.classList.add('mobile-hidden');
+        }
+
+        console.log('📱 Mobile panel visibility initialized - Turn:', GameState.currentPlayer);
+    }
+}
+```
+
+### 📊 Resultado
+- ✅ El panel cambia correctamente en cada turno
+- ✅ Siempre muestra el panel del jugador que debe mover
+- ✅ Sincronización perfecta entre `GameState.currentPlayer` y UI
+
+---
+
+## Bug #11: Mobile - Turn Indicator No Cambia Color + Mejora Visual con Borde Tablero
+
+**Fecha:** 30 de Octubre 2025
+**Prioridad:** ALTA
+**Estado:** RESUELTO ✅
+
+### Descripción del Problema
+
+Después de implementar el turn indicator en Fase 2 mobile, se detectaron dos problemas:
+1. El indicador "YOUR TURN" quedaba siempre en color cyan, no alternaba entre jugadores
+2. No había suficiente énfasis visual sobre de quién es el turno
+3. El phase indicator (PHASE 1/PHASE 2) no era suficientemente translúcido
+
+**Evidencia:**
+- Screenshot: `cf_27_mobile.png` - "YOUR TURN" permanece cyan para ambos jugadores
+- Log: `092_chessfive.log` - Cambios de turno pero sin cambio de color
+- Feedback usuario: "volvio a quedarse en 'you turn' color cyan en la fase 2 en mobile"
+
+### Root Cause (Análisis)
+
+**Problema 1 - Turn Indicator:**
+```javascript
+// En ui-controller.js updatePlayerInfo() línea ~320-328
+if (isMobile && GameState.phase === 'gravity') {
+    magentaPanelContainer.classList.add('mobile-hidden');
+    // ...
+}
+```
+La condición `&& GameState.phase === 'gravity'` impedía que el código se ejecutara en Phase 2, causando que los paneles no se alternaran correctamente.
+
+**Problema 2 - Falta de Énfasis Visual:**
+No había indicador visual adicional aparte del "YOUR TURN" text. Se necesitaba otro elemento visual más prominente.
+
+**Problema 3 - Phase Indicator:**
+El phase indicator tenía `opacity: 0.98` que no era suficientemente translúcido sobre el tablero.
+
+### Solución Implementada
+
+#### 1. Remover Condición de Fase (Turn Indicator)
+```javascript
+// ui-controller.js updatePlayerInfo() líneas ~307-329
+
+// ANTES:
+if (isMobile && GameState.phase === 'gravity') {
+    magentaPanelContainer.classList.add('mobile-hidden');
+    // ...
+}
+
+// DESPUÉS:
+if (isMobile) {
+    // Funciona en AMBAS fases (gravity Y chess)
+    magentaPanelContainer.classList.add('mobile-hidden');
+    cyanPanelContainer.classList.remove('mobile-hidden');
+}
+```
+
+#### 2. Implementar Borde de Tablero como Indicador de Turno
+
+**CSS (chessfive.css líneas 564-590):**
+```css
+.chess-board {
+    border: 3px solid var(--cyan-primary);
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.4);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Board border según turno del jugador */
+.board-container.turn-cyan .chess-board {
+    border-color: var(--cyan-primary);
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.4);
+}
+
+.board-container.turn-magenta .chess-board {
+    border-color: var(--magenta-primary);
+    box-shadow: 0 0 40px rgba(255, 0, 255, 0.4);
+}
+```
+
+**JavaScript (ui-controller.js updatePlayerInfo() líneas 284-292):**
+```javascript
+// Update board border según turno
+const boardContainer = document.querySelector('.board-container');
+if (GameState.currentPlayer === 'cyan') {
+    boardContainer.classList.remove('turn-magenta');
+    boardContainer.classList.add('turn-cyan');
+} else {
+    boardContainer.classList.remove('turn-cyan');
+    boardContainer.classList.add('turn-magenta');
+}
+```
+
+**Inicialización (ui-controller.js init() líneas 14-20):**
+```javascript
+// Inicializar borde del tablero según turno inicial
+const boardContainer = document.querySelector('.board-container');
+if (GameState.currentPlayer === 'cyan') {
+    boardContainer.classList.add('turn-cyan');
+} else {
+    boardContainer.classList.add('turn-magenta');
+}
+```
+
+#### 3. Ajustar Opacidad Phase Indicator
+
+**CSS (chessfive.css línea ~862):**
+```css
+/* ANTES: */
+background: rgba(10, 10, 26, 0.98);
+
+/* DESPUÉS: */
+background: rgba(10, 10, 26, 0.75); /* Más traslúcido */
+```
+
+#### 4. Prevenir Animación en Desktop
+
+**CSS (chessfive.css líneas 823-839):**
+```css
+@media (min-width: 1025px) {
+    .top-panel {
+        position: relative;
+        transform: none;
+    }
+
+    .phase-indicator {
+        background: rgba(0, 255, 255, 0.1);
+        backdrop-filter: none;
+    }
+
+    /* No animar en desktop */
+    .phase-indicator.animate-fade {
+        animation: none;
+    }
+}
+```
+
+### Resultado
+
+✅ **Turn Indicator:** Ahora alterna correctamente entre cyan y magenta en ambas fases
+✅ **Board Border:** El borde del tablero cambia de color según el turno (cyan ↔ magenta)
+✅ **Visual Emphasis:** Doble indicador visual (panel + borde tablero) hace obvio de quién es el turno
+✅ **Phase Indicator:** Más traslúcido (0.75) permitiendo ver mejor el tablero
+✅ **Desktop:** Phase indicator no se anima ni aparece como overlay en desktop
+✅ **Mobile:** Experiencia fluida con transiciones suaves entre turnos
+
+### Archivos Modificados
+
+1. **css/chessfive.css** (+27 líneas)
+   - Líneas 564-590: Border styling con clases .turn-cyan / .turn-magenta
+   - Líneas 823-839: Media query desktop para prevenir animación
+   - Línea ~862: Opacidad phase indicator ajustada a 0.75
+
+2. **js/ui-controller.js** (+15 líneas)
+   - Líneas 14-20: Inicialización board border en init()
+   - Líneas 284-292: Update board border en updatePlayerInfo()
+   - Líneas ~307-329: Removida condición `&& GameState.phase === 'gravity'`
+
+### Lecciones Aprendidas
+
+1. **Doble Indicador Visual:** Usar múltiples elementos visuales (texto + color de borde) mejora la UX
+2. **Transiciones CSS:** Las transiciones suaves hacen que los cambios de estado sean más perceptibles
+3. **Media Queries Bidireccionales:** Necesario definir comportamiento tanto para mobile como desktop explícitamente
+4. **Condiciones de Fase:** Las condiciones `&& GameState.phase === 'X'` deben usarse solo cuando realmente se necesita comportamiento diferente por fase
+
+### Testing
+
+- ✅ Desktop: Borde cambia cyan ↔ magenta en ambas fases
+- ✅ Mobile Fase 1: Panel alterna + borde alterna
+- ✅ Mobile Fase 2: "YOUR TURN" alterna + borde alterna
+- ✅ Phase Indicator: Translúcido, no interfiere con visibilidad del tablero
+- ✅ Desktop Resize: No aparece overlay al cambiar tamaño de ventana
+
+---
+
 **Autor:** Claude Code
-**Última actualización:** 25 de Octubre 2025
+**Última actualización:** 30 de Octubre 2025

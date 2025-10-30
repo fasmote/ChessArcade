@@ -10,6 +10,33 @@ const UIController = {
     init() {
         this.attachEventListeners();
         this.updateAll();
+
+        // Inicializar borde del tablero según turno inicial
+        const boardContainer = document.querySelector('.board-container');
+        if (GameState.currentPlayer === 'cyan') {
+            boardContainer.classList.add('turn-cyan');
+        } else {
+            boardContainer.classList.add('turn-magenta');
+        }
+
+        // MOBILE: Inicializar visibilidad de paneles
+        const isMobile = window.innerWidth <= 1024;
+        if (isMobile) {
+            const cyanPanelContainer = document.querySelector('.player-panel-left');
+            const magentaPanelContainer = document.querySelector('.player-panel-right');
+
+            // Al inicio siempre es turno de Cyan
+            if (GameState.currentPlayer === 'cyan') {
+                cyanPanelContainer.classList.remove('mobile-hidden');
+                magentaPanelContainer.classList.add('mobile-hidden');
+            } else {
+                cyanPanelContainer.classList.add('mobile-hidden');
+                magentaPanelContainer.classList.remove('mobile-hidden');
+            }
+
+            console.log('📱 Mobile panel visibility initialized - Turn:', GameState.currentPlayer);
+        }
+
         console.log('🎮 UI controller initialized');
     },
 
@@ -206,13 +233,39 @@ const UIController = {
     updatePhaseIndicator() {
         const phaseTitle = document.getElementById('phaseTitle');
         const phaseDescription = document.getElementById('phaseDescription');
+        const phaseIndicator = document.querySelector('.phase-indicator');
+        const gameContainer = document.querySelector('.game-container');
+        const isMobile = window.innerWidth <= 1024;
 
         if (GameState.phase === 'gravity') {
             phaseTitle.textContent = 'PHASE 1: GRAVITY PLACEMENT';
             phaseDescription.textContent = 'Click on a column to drop your piece';
+
+            // Remove phase-chess class
+            gameContainer.classList.remove('phase-chess');
         } else {
             phaseTitle.textContent = 'PHASE 2: CHESS MOVEMENT';
             phaseDescription.textContent = 'Move your pieces to align 5 in a row';
+
+            // Add phase-chess class for styling
+            gameContainer.classList.add('phase-chess');
+
+            // MOBILE: Animate phase change
+            if (isMobile && phaseIndicator) {
+                // Reset animation
+                phaseIndicator.classList.remove('animate-fade', 'fade-complete');
+
+                // Force reflow to restart animation
+                void phaseIndicator.offsetWidth;
+
+                // Add animation class
+                phaseIndicator.classList.add('animate-fade');
+
+                // Hide after animation
+                setTimeout(() => {
+                    phaseIndicator.classList.add('fade-complete');
+                }, 3000);
+            }
         }
     },
 
@@ -228,21 +281,57 @@ const UIController = {
         this.updateInventory('cyan');
         this.updateInventory('magenta');
 
+        // Update board border según turno
+        const boardContainer = document.querySelector('.board-container');
+        if (GameState.currentPlayer === 'cyan') {
+            boardContainer.classList.remove('turn-magenta');
+            boardContainer.classList.add('turn-cyan');
+        } else {
+            boardContainer.classList.remove('turn-cyan');
+            boardContainer.classList.add('turn-magenta');
+        }
+
         // Update active player highlight
         const cyanPanel = document.getElementById('playerCyan');
         const magentaPanel = document.getElementById('playerMagenta');
+        const cyanPanelContainer = document.querySelector('.player-panel-left');
+        const magentaPanelContainer = document.querySelector('.player-panel-right');
+
+        // Detectar mobile
+        const isMobile = window.innerWidth <= 1024;
 
         if (GameState.currentPlayer === 'cyan') {
             cyanPanel.classList.add('active');
             magentaPanel.classList.remove('active');
+
+            // MOBILE: Solo mostrar panel del jugador activo (Fase 1 Y Fase 2)
+            if (isMobile) {
+                magentaPanelContainer.classList.add('mobile-hidden'); // Ocultar magenta (right)
+                cyanPanelContainer.classList.remove('mobile-hidden'); // Mostrar cyan (left)
+            } else {
+                // Desktop: mostrar ambos
+                cyanPanelContainer.classList.remove('mobile-hidden');
+                magentaPanelContainer.classList.remove('mobile-hidden');
+            }
         } else {
             magentaPanel.classList.add('active');
             cyanPanel.classList.remove('active');
+
+            // MOBILE: Solo mostrar panel del jugador activo (Fase 1 Y Fase 2)
+            if (isMobile) {
+                cyanPanelContainer.classList.add('mobile-hidden'); // Ocultar cyan (left)
+                magentaPanelContainer.classList.remove('mobile-hidden'); // Mostrar magenta (right)
+            } else {
+                // Desktop: mostrar ambos
+                cyanPanelContainer.classList.remove('mobile-hidden');
+                magentaPanelContainer.classList.remove('mobile-hidden');
+            }
         }
     },
 
     /**
      * Update piece inventory display
+     * MOBILE: Las piezas son clickeables y funcionan como selector
      */
     updateInventory(player) {
         const inventoryEl = document.getElementById(`${player}Inventory`);
@@ -250,6 +339,8 @@ const UIController = {
 
         const inventory = GameState.inventory[player];
         const pieceTypes = ['rook', 'knight', 'bishop', 'queen', 'king'];
+        const isMobile = window.innerWidth <= 1024;
+        const isActivePlayer = GameState.currentPlayer === player;
 
         for (const type of pieceTypes) {
             const count = inventory[type];
@@ -260,8 +351,30 @@ const UIController = {
                 piece.className = 'inventory-piece';
                 piece.textContent = PieceManager.getSymbol(player, type);
 
+                // Marcar piezas usadas
                 if (i >= count) {
                     piece.classList.add('used');
+                }
+
+                // MOBILE: Hacer piezas clickeables (solo las disponibles)
+                if (isMobile && i < count && isActivePlayer && GameState.phase === 'gravity') {
+                    piece.classList.add('piece'); // Clase adicional para CSS mobile
+                    piece.dataset.piece = type;
+                    piece.style.cursor = 'pointer';
+
+                    // Event listener para seleccionar pieza
+                    piece.addEventListener('click', () => {
+                        // Solo permitir si es el turno del jugador
+                        if (GameState.currentPlayer === player && GameState.phase === 'gravity') {
+                            this.selectPiece(type);
+
+                            // Visual feedback: highlight temporalmente
+                            piece.style.transform = 'scale(1.3)';
+                            setTimeout(() => {
+                                piece.style.transform = '';
+                            }, 200);
+                        }
+                    });
                 }
 
                 inventoryEl.appendChild(piece);

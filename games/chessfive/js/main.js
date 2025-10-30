@@ -17,6 +17,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('✅ Game ready!');
 
+    // MOBILE: Animate phase indicator at start
+    const isMobile = window.innerWidth <= 1024;
+    if (isMobile) {
+        const phaseIndicator = document.querySelector('.phase-indicator');
+        if (phaseIndicator) {
+            // Add animation class
+            phaseIndicator.classList.add('animate-fade');
+
+            // Remove element after animation completes (3s)
+            setTimeout(() => {
+                phaseIndicator.classList.add('fade-complete');
+            }, 3000);
+        }
+    }
+
     // Track page view
     gtag('event', 'page_view', {
         'page_title': 'ChessFive',
