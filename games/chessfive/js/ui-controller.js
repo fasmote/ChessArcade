@@ -11,14 +11,6 @@ const UIController = {
         this.attachEventListeners();
         this.updateAll();
 
-        // Inicializar borde del tablero según turno inicial
-        const boardContainer = document.querySelector('.board-container');
-        if (GameState.currentPlayer === 'cyan') {
-            boardContainer.classList.add('turn-cyan');
-        } else {
-            boardContainer.classList.add('turn-magenta');
-        }
-
         // MOBILE: Inicializar visibilidad de paneles
         const isMobile = window.innerWidth <= 1024;
         if (isMobile) {

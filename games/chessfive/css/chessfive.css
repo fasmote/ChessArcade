@@ -519,6 +519,13 @@ button:disabled {
     animation: textGlow 1.5s ease-in-out infinite;
 }
 
+/* Desktop Turn Indicator (debajo del tablero) */
+.desktop-turn {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 600px;
+}
+
 @keyframes turnPulse {
     0%, 100% {
         transform: scale(1);
@@ -890,6 +897,11 @@ button:disabled {
     .game-container {
         padding: 15px;
         gap: 15px;
+    }
+
+    /* Ocultar desktop turn indicator en mobile */
+    .desktop-turn {
+        display: none !important;
     }
 
     /* Middle row - PRIMERO (contiene el board) */
