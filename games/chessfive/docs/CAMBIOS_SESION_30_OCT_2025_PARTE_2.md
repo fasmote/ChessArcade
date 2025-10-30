@@ -136,6 +136,45 @@
 
 **Beneficio UX:** El jugador activo puede identificar visualmente de quién es el turno por el color de las sombras/highlights.
 
+### 6. Hover Selectivo - NO sobre Piezas Contrarias
+
+**Archivo:** `css/chessfive.css` (líneas 634-643, 710-719)
+
+**Feedback Usuario:** "te pido que el higlight no se haga si pasas por una pieza contraria, o sea que si es el turno de magenta en fase 2, y pasa el mouse por una pieza cyan, que no haga nada"
+
+**Problema:** El hover se aplicaba en TODAS las casillas, incluyendo piezas del oponente.
+
+**Solución:**
+```css
+/* ANTES - Hover en TODAS las casillas: */
+.board-container.turn-cyan .square:hover {
+    background: rgba(0, 255, 255, 0.2);
+}
+
+/* DESPUÉS - Hover SOLO si NO tiene pieza contraria: */
+.board-container.turn-cyan .square:hover:not(:has(.piece.magenta)) {
+    background: rgba(0, 255, 255, 0.2);
+}
+
+/* Selected piece - SOLO si tiene pieza propia: */
+.board-container.turn-cyan .square.selected:has(.piece.cyan) {
+    box-shadow: inset 0 0 30px rgba(0, 255, 255, 0.8);
+}
+```
+
+**Técnica CSS:**
+- `:not(:has(.piece.magenta))` - Excluye casillas que contienen pieza magenta
+- `:has(.piece.cyan)` - Solo aplica si contiene pieza cyan
+
+**Resultado:**
+- ✅ Hover en casillas vacías
+- ✅ Hover en piezas propias
+- ❌ NO hover en piezas contrarias
+
+**Beneficio UX:**
+- Más claro qué piezas puedes interactuar
+- No hay confusión visual con piezas del oponente
+
 ## Lecciones Aprendidas
 
 ### 1. CSS `aspect-ratio` para Geometría
@@ -167,6 +206,22 @@ El sistema de nombres está preparado para:
 - Fase 2: Nombres personalizados sin login
 - Fase 3: Backend con base de datos + autenticación
 
+### 5. CSS `:has()` Selector (Parent Selector)
+
+Selector moderno para condicionar estilos según elementos hijos:
+```css
+/* Aplicar SOLO si NO tiene .piece.magenta dentro */
+.square:hover:not(:has(.piece.magenta)) { }
+
+/* Aplicar SOLO si TIENE .piece.cyan dentro */
+.square.selected:has(.piece.cyan) { }
+```
+
+**Casos de uso:**
+- Hover condicional según contenido
+- Estilos dinámicos según estado de hijos
+- Selectores inversos (parent selector)
+
 ## Testing
 
 - ✅ Desktop: Tablero cuadrado
@@ -177,6 +232,10 @@ El sistema de nombres está preparado para:
 - ✅ Hover color magenta: Turno de MAGENTA PLAYER
 - ✅ Column hover dinámico: Ambas fases
 - ✅ Selected piece highlight: Ambos jugadores
+- ✅ NO hover sobre pieza contraria: Turno cyan + hover pieza magenta = sin efecto
+- ✅ NO hover sobre pieza contraria: Turno magenta + hover pieza cyan = sin efecto
+- ✅ SÍ hover sobre pieza propia: Se resalta correctamente
+- ✅ SÍ hover sobre casilla vacía: Se resalta correctamente
 
 ## Próximos Pasos
 
