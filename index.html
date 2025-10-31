@@ -155,18 +155,15 @@
                     </button>
                 </article>
 
-                <!-- ChessFive Game - PRÓXIMAMENTE -->
-                <article class="neon-card chessfive-card coming-soon" tabindex="0" role="button">
-                    <div class="neon-card-icon coming-soon-icon" aria-hidden="true">⚔️</div>
-                    <div class="coming-soon-overlay">
-                        <div class="coming-soon-badge">PRÓXIMAMENTE</div>
-                    </div>
+                <!-- ChessFive Game -->
+                <article class="neon-card chessfive-card" tabindex="0" role="button">
+                    <div class="neon-card-icon" aria-hidden="true">⚔️</div>
                     <h2 class="neon-heading">ChessFive</h2>
                     <p class="neon-text neon-mb-md">
-                        Place. Move. Align Five. Win. Drop pieces like Connect Four, then move them with chess rules to align 5 in a row!
+                        Connect Four meets Chess! Drop pieces with gravity, then move them strategically to align 5 in a row. Two-player tactical battle!
                     </p>
-                    <button class="neon-play-btn coming-soon-btn" type="button" disabled>
-                        Próximamente
+                    <button class="neon-play-btn" type="button" data-game="chessfive">
+                        Play Now
                     </button>
                 </article>
 
@@ -231,6 +228,10 @@
 
                     <p style="margin-bottom: 1rem;">
                         🟦 <strong>Master Sequence</strong> - Sharpen your <strong>pattern recognition</strong> and <strong>sequential memory</strong> with this Simon Says-style game on a chessboard. Watch the growing sequence, memorize the pattern, and repeat it perfectly. Essential for improving calculation and visualization skills.
+                    </p>
+
+                    <p style="margin-bottom: 1rem;">
+                        ⚔️ <strong>ChessFive</strong> - Experience a unique <strong>two-player strategy game</strong> that combines Connect Four's gravity mechanics with chess tactical movement. Drop pieces onto the board, then move them using authentic chess rules to align 5 in a row. Perfect for developing <strong>strategic thinking</strong>, <strong>positional understanding</strong>, and <strong>tactical planning</strong>. Play with a friend on the same device!
                     </p>
 
                     <p style="margin-bottom: 1.5rem;">
@@ -328,7 +329,7 @@
             console.log(`🔍 Checking if game is available...`);
 
             // Check if game is available
-            if (gameId === 'knight-quest' || gameId === 'square-rush' || gameId === 'memory-matrix' || gameId === 'master-sequence') {
+            if (gameId === 'knight-quest' || gameId === 'square-rush' || gameId === 'memory-matrix' || gameId === 'master-sequence' || gameId === 'chessfive') {
                 console.log(`✅ Game ${gameId} is available, proceeding...`);
                 // Add screen flash effect
                 document.body.style.background = 'white';

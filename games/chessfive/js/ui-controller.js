@@ -481,7 +481,10 @@ const UIController = {
         title.style.color = winner === 'cyan' ? 'var(--cyan-primary)' : 'var(--magenta-primary)';
         message.textContent = 'Five pieces aligned!';
 
-        modal.style.display = 'flex';
+        // Delay de 2 segundos para que el usuario disfrute la victoria
+        setTimeout(() => {
+            modal.style.display = 'flex';
+        }, 2000);
 
         // Track in analytics
         gtag('event', 'game_complete', {
