@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artículos - ChessArcade | Mejora tu Ajedrez con Ciencia</title>
+
+    <!-- Meta Tags SEO -->
+    <meta name="description" content="Artículos científicos sobre cómo mejorar tu ajedrez jugando. Descubre los secretos neurocientíficos detrás de cada juego de ChessArcade.">
+    <meta name="keywords" content="ajedrez, entrenamiento, neurociencia, memoria, cálculo, visión táctica, aprendizaje">
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/images/favicon.ico">
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N3EKXHPD5Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-N3EKXHPD5Y');
+    </script>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2472413468382197"
+            crossorigin="anonymous"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <!-- NeonChess Design System -->
+    <link rel="stylesheet" href="assets/css/neonchess-style.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0015 0%, #1a0033 50%, #0a0015 100%);
+            min-height: 100vh;
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 4rem 2rem 3rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid var(--neon-cyan);
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            text-shadow: 0 0 20px var(--neon-cyan);
+            margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .articles-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .article-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            box-shadow:
+                0 0 20px rgba(0, 217, 255, 0.3),
+                inset 0 0 20px rgba(0, 217, 255, 0.05);
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 0 30px rgba(0, 217, 255, 0.6),
+                inset 0 0 30px rgba(0, 217, 255, 0.1);
+            border-color: var(--neon-magenta);
+        }
+
+        .article-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .article-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            margin-bottom: 1rem;
+        }
+
+        .article-excerpt {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .article-link {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+        }
+
+        .article-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 217, 255, 0.8);
+        }
+
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            background: rgba(0, 217, 255, 0.2);
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 217, 255, 0.4);
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .article-card {
+                padding: 1.5rem;
+            }
+
+            .article-title {
+                font-size: 1.4rem;
+            }
+
+            .back-button {
+                position: static;
+                display: block;
+                width: fit-content;
+                margin: 2rem auto 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-button">🏠 VOLVER AL INICIO</a>
+
+    <div class="page-header">
+        <h1 class="page-title">📚 Artículos ChessArcade</h1>
+        <p class="page-subtitle">
+            Descubre la ciencia detrás de cada juego. Artículos basados en neurociencia
+            y psicología del aprendizaje para mejorar tu ajedrez jugando.
+        </p>
+    </div>
+
+    <div class="articles-container">
+
+        <!-- Square Rush Article -->
+        <article class="article-card">
+            <span class="article-icon">🎯</span>
+            <h2 class="article-title">"Habla" Ajedrez con Fluidez: Square Rush y tu Cerebro</h2>
+            <p class="article-excerpt">
+                Descubre cómo Square Rush graba el tablero de ajedrez en tu memoria permanente mediante
+                la repetición espaciada y el aprendizaje activo. La fluidez en coordenadas es el primer
+                paso para pensar como un maestro.
+            </p>
+            <a href="articulos/square-rush-fluidez.html" class="article-link">LEER ARTÍCULO</a>
+        </article>
+
+        <!-- Master Sequence Article -->
+        <article class="article-card">
+            <span class="article-icon">🟦</span>
+            <h2 class="article-title">Memoria de Trabajo: El Secreto del Cálculo en Ajedrez</h2>
+            <p class="article-excerpt">
+                Master Sequence entrena tu memoria de trabajo, el componente cognitivo más importante para
+                calcular variantes largas. Aprende cómo los grandes maestros mantienen múltiples líneas
+                en su cabeza simultáneamente.
+            </p>
+            <a href="articulos/master-sequence-calculo.html" class="article-link">LEER ARTÍCULO</a>
+        </article>
+
+        <!-- Memory Matrix Article -->
+        <article class="article-card">
+            <span class="article-icon">🧠</span>
+            <h2 class="article-title">Visión Táctica: Ve Más Allá del Tablero</h2>
+            <p class="article-excerpt">
+                Memory Matrix desarrolla tu memoria visual y reconocimiento de patrones tácticos.
+                Descubre cómo los grandes maestros "ven" combinaciones que otros jugadores no perciben.
+            </p>
+            <a href="articulos/memory-matrix-vision.html" class="article-link">LEER ARTÍCULO</a>
+        </article>
+
+        <!-- Knight Quest Article -->
+        <article class="article-card">
+            <span class="article-icon">🐴</span>
+            <h2 class="article-title">Planificación y Visión: El Recorrido del Caballo</h2>
+            <p class="article-excerpt">
+                Knight Quest te enseña a planificar secuencias complejas y pensar varios movimientos adelante.
+                Una habilidad esencial para dominar el juego posicional y encontrar la mejor maniobra en cada posición.
+            </p>
+            <a href="articulos/knight-quest-calculo.html" class="article-link">LEER ARTÍCULO</a>
+        </article>
+
+        <!-- ChessFive Article -->
+        <article class="article-card">
+            <span class="article-icon">⚔️</span>
+            <h2 class="article-title">ChessFive: Doble Estrategia, Doble Aprendizaje</h2>
+            <p class="article-excerpt">
+                ChessFive combina Connect Four con Ajedrez para entrenar dos tipos de pensamiento estratégico:
+                planificación posicional y cálculo táctico. Aprende a anticipar y crear amenazas múltiples
+                como los grandes maestros.
+            </p>
+            <a href="articulos/chessfive-doble-estrategia.html" class="article-link">LEER ARTÍCULO</a>
+        </article>
+
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: rgba(26, 0, 51, 0.9); padding: 2rem 1rem; margin-top: 4rem; border-top: 2px solid var(--neon-cyan); text-align: center;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; margin-bottom: 1.5rem;">
+                <a href="articles.html" style="color: var(--neon-cyan); text-decoration: none; font-weight: bold; transition: all 0.3s ease;">Artículos</a>
+                <a href="about.html" style="color: var(--neon-cyan); text-decoration: none; font-weight: bold; transition: all 0.3s ease;">Acerca de</a>
+                <a href="contact.html" style="color: var(--neon-cyan); text-decoration: none; font-weight: bold; transition: all 0.3s ease;">Contacto</a>
+                <a href="privacy-policy.html" style="color: var(--neon-cyan); text-decoration: none; font-weight: bold; transition: all 0.3s ease;">Política de Privacidad</a>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">
+                © 2025 ChessArcade. Todos los derechos reservados.
+            </p>
+            <p style="color: var(--neon-magenta); font-size: 0.85rem; margin-top: 0.5rem;">
+                Hecho con 💜 para la comunidad de ajedrez
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>

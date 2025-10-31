@@ -1214,4 +1214,62 @@ button:disabled {
         padding: 20px;
         margin: 15px;
     }
+
+    .how-to-play-section {
+        padding: 30px 15px;
+    }
+
+    .instructions {
+        padding: 20px;
+    }
+}
+
+/* ===================================================================
+   HOW TO PLAY SECTION
+   =================================================================== */
+.how-to-play-section {
+    margin-top: 40px;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.instructions {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--cyan-primary);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow:
+        0 0 20px var(--cyan-primary),
+        0 0 40px rgba(0, 217, 255, 0.3),
+        inset 0 0 20px rgba(0, 217, 255, 0.05);
+}
+
+.instructions h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--cyan-primary);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px var(--cyan-primary);
+}
+
+.instructions p {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #fff;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.instructions p:last-child {
+    margin-bottom: 0;
+}
+
+.instructions strong {
+    color: var(--cyan-primary);
+    font-weight: 700;
 }
