@@ -46,14 +46,14 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 60%;
-            max-width: 800px;
-            height: 60%;
+            width: 50%;
+            max-width: 600px;
+            height: 50%;
             background-image: url('assets/images/chessarcade-logo-transparent.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            opacity: 0.03;
+            opacity: 0.08;
             z-index: 0;
             pointer-events: none;
         }
@@ -98,12 +98,15 @@
             background: rgba(0, 0, 0, 0.5);
             border: 2px solid var(--neon-cyan);
             border-radius: 15px;
-            padding: 2rem;
+            padding: 1.5rem;
             margin-bottom: 2rem;
             transition: all 0.3s ease;
             box-shadow:
                 0 0 20px rgba(0, 217, 255, 0.3),
                 inset 0 0 20px rgba(0, 217, 255, 0.05);
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
         }
 
         .article-card:hover {
@@ -114,10 +117,25 @@
             border-color: var(--neon-magenta);
         }
 
+        .article-image {
+            width: 200px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid rgba(0, 217, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+            flex-shrink: 0;
+        }
+
+        .article-content {
+            flex: 1;
+        }
+
         .article-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            display: block;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            margin-right: 0.5rem;
         }
 
         .article-title {
@@ -181,6 +199,14 @@
 
             .article-card {
                 padding: 1.5rem;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .article-image {
+                width: 100%;
+                max-width: 300px;
+                height: auto;
             }
 
             .article-title {
@@ -212,60 +238,85 @@
 
         <!-- Square Rush Article -->
         <article class="article-card">
-            <span class="article-icon">🎯</span>
-            <h2 class="article-title">"Habla" Ajedrez con Fluidez: Square Rush y tu Cerebro</h2>
-            <p class="article-excerpt">
-                Descubre cómo Square Rush graba el tablero de ajedrez en tu memoria permanente mediante
-                la repetición espaciada y el aprendizaje activo. La fluidez en coordenadas es el primer
-                paso para pensar como un maestro.
-            </p>
-            <a href="articulos/square-rush-fluidez.html" class="article-link">LEER ARTÍCULO</a>
+            <img src="assets/images/articulo_square-rush.png" alt="Square Rush" class="article-image">
+            <div class="article-content">
+                <div>
+                    <span class="article-icon">🎯</span>
+                    <h2 class="article-title">"Habla" Ajedrez con Fluidez: Square Rush y tu Cerebro</h2>
+                </div>
+                <p class="article-excerpt">
+                    Descubre cómo Square Rush graba el tablero de ajedrez en tu memoria permanente mediante
+                    la repetición espaciada y el aprendizaje activo. La fluidez en coordenadas es el primer
+                    paso para pensar como un maestro.
+                </p>
+                <a href="articulos/square-rush-fluidez.html" class="article-link">LEER ARTÍCULO</a>
+            </div>
         </article>
 
         <!-- Master Sequence Article -->
         <article class="article-card">
-            <span class="article-icon">🟦</span>
-            <h2 class="article-title">Memoria de Trabajo: El Secreto del Cálculo en Ajedrez</h2>
-            <p class="article-excerpt">
-                Master Sequence entrena tu memoria de trabajo, el componente cognitivo más importante para
-                calcular variantes largas. Aprende cómo los grandes maestros mantienen múltiples líneas
-                en su cabeza simultáneamente.
-            </p>
-            <a href="articulos/master-sequence-calculo.html" class="article-link">LEER ARTÍCULO</a>
+            <img src="assets/images/articulo_master-sequence.png" alt="Master Sequence" class="article-image">
+            <div class="article-content">
+                <div>
+                    <span class="article-icon">🟦</span>
+                    <h2 class="article-title">Memoria de Trabajo: El Secreto del Cálculo en Ajedrez</h2>
+                </div>
+                <p class="article-excerpt">
+                    Master Sequence entrena tu memoria de trabajo, el componente cognitivo más importante para
+                    calcular variantes largas. Aprende cómo los grandes maestros mantienen múltiples líneas
+                    en su cabeza simultáneamente.
+                </p>
+                <a href="articulos/master-sequence-calculo.html" class="article-link">LEER ARTÍCULO</a>
+            </div>
         </article>
 
         <!-- Memory Matrix Article -->
         <article class="article-card">
-            <span class="article-icon">🧠</span>
-            <h2 class="article-title">Visión Táctica: Ve Más Allá del Tablero</h2>
-            <p class="article-excerpt">
-                Memory Matrix desarrolla tu memoria visual y reconocimiento de patrones tácticos.
-                Descubre cómo los grandes maestros "ven" combinaciones que otros jugadores no perciben.
-            </p>
-            <a href="articulos/memory-matrix-vision.html" class="article-link">LEER ARTÍCULO</a>
+            <img src="assets/images/articulo_memory-matrix.png" alt="Memory Matrix" class="article-image">
+            <div class="article-content">
+                <div>
+                    <span class="article-icon">🧠</span>
+                    <h2 class="article-title">Visión Táctica: Ve Más Allá del Tablero</h2>
+                </div>
+                <p class="article-excerpt">
+                    Memory Matrix desarrolla tu memoria visual y reconocimiento de patrones tácticos.
+                    Descubre cómo los grandes maestros "ven" combinaciones que otros jugadores no perciben.
+                </p>
+                <a href="articulos/memory-matrix-vision.html" class="article-link">LEER ARTÍCULO</a>
+            </div>
         </article>
 
         <!-- Knight Quest Article -->
         <article class="article-card">
-            <span class="article-icon">🐴</span>
-            <h2 class="article-title">Planificación y Visión: El Recorrido del Caballo</h2>
-            <p class="article-excerpt">
-                Knight Quest te enseña a planificar secuencias complejas y pensar varios movimientos adelante.
-                Una habilidad esencial para dominar el juego posicional y encontrar la mejor maniobra en cada posición.
-            </p>
-            <a href="articulos/knight-quest-calculo.html" class="article-link">LEER ARTÍCULO</a>
+            <img src="assets/images/articulo_knight-quest.png" alt="Knight Quest" class="article-image">
+            <div class="article-content">
+                <div>
+                    <span class="article-icon">🐴</span>
+                    <h2 class="article-title">Planificación y Visión: El Recorrido del Caballo</h2>
+                </div>
+                <p class="article-excerpt">
+                    Knight Quest te enseña a planificar secuencias complejas y pensar varios movimientos adelante.
+                    Una habilidad esencial para dominar el juego posicional y encontrar la mejor maniobra en cada posición.
+                </p>
+                <a href="articulos/knight-quest-calculo.html" class="article-link">LEER ARTÍCULO</a>
+            </div>
         </article>
 
         <!-- ChessFive Article -->
         <article class="article-card">
-            <span class="article-icon">⚔️</span>
-            <h2 class="article-title">ChessFive: Doble Estrategia, Doble Aprendizaje</h2>
-            <p class="article-excerpt">
-                ChessFive combina Connect Four con Ajedrez para entrenar dos tipos de pensamiento estratégico:
-                planificación posicional y cálculo táctico. Aprende a anticipar y crear amenazas múltiples
-                como los grandes maestros.
-            </p>
-            <a href="articulos/chessfive-doble-estrategia.html" class="article-link">LEER ARTÍCULO</a>
+            <img src="assets/images/articulo_chessfive.png" alt="ChessFive" class="article-image">
+            <div class="article-content">
+                <div>
+                    <span class="article-icon">⚔️</span>
+                    <h2 class="article-title">ChessFive: Doble Estrategia, Doble Aprendizaje</h2>
+                </div>
+                <p class="article-excerpt">
+                    ChessFive combina Connect Four con Ajedrez para entrenar dos tipos de pensamiento estratégico:
+                    planificación posicional y cálculo táctico. Aprende a anticipar y crear amenazas múltiples
+                    como los grandes maestros.
+                </p>
+                <a href="articulos/chessfive-doble-estrategia.html" class="article-link">LEER ARTÍCULO</a>
+            </div>
         </article>
 
     </div>
