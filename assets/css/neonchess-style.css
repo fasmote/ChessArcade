@@ -708,3 +708,50 @@ body {
 .neon-green { color: var(--neon-green); }
 .neon-orange { color: var(--neon-orange); }
 .neon-yellow { color: var(--neon-yellow); }
+/* ===============================
+   🎨 TOP-LEFT BACKGROUND IMAGE - RESPONSIVE
+=============================== */
+.top-left-bg-image {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.top-left-bg-image img {
+    width: 180px;
+    height: auto;
+    opacity: 0.15;
+    filter: blur(1px) drop-shadow(0 0 20px rgba(0, 217, 255, 0.3));
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+/* Tablets: reducir tamaño */
+@media (max-width: 1024px) {
+    .top-left-bg-image img {
+        width: 140px;
+        opacity: 0.12;
+    }
+}
+
+/* Mobile: hacerlo muy chiquito y casi invisible */
+@media (max-width: 768px) {
+    .top-left-bg-image {
+        top: 10px;
+        left: 10px;
+    }
+    .top-left-bg-image img {
+        width: 80px;
+        opacity: 0.08;
+        filter: blur(2px) drop-shadow(0 0 10px rgba(0, 217, 255, 0.2));
+    }
+}
+
+/* Mobile pequeño: ocultar completamente */
+@media (max-width: 480px) {
+    .top-left-bg-image {
+        display: none;
+    }
+}
