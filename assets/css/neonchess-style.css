@@ -720,10 +720,10 @@ body {
 }
 
 .top-left-bg-image img {
-    width: 180px;
+    width: 200px;
     height: auto;
-    opacity: 0.15;
-    filter: blur(1px) drop-shadow(0 0 20px rgba(0, 217, 255, 0.3));
+    opacity: 0.35;
+    filter: drop-shadow(0 0 25px rgba(0, 217, 255, 0.4));
     border-radius: 15px;
     transition: all 0.3s ease;
 }
@@ -731,21 +731,21 @@ body {
 /* Tablets: reducir tamaño */
 @media (max-width: 1024px) {
     .top-left-bg-image img {
-        width: 140px;
-        opacity: 0.12;
+        width: 160px;
+        opacity: 0.3;
     }
 }
 
-/* Mobile: hacerlo muy chiquito y casi invisible */
+/* Mobile: hacerlo más chiquito */
 @media (max-width: 768px) {
     .top-left-bg-image {
         top: 10px;
         left: 10px;
     }
     .top-left-bg-image img {
-        width: 80px;
-        opacity: 0.08;
-        filter: blur(2px) drop-shadow(0 0 10px rgba(0, 217, 255, 0.2));
+        width: 100px;
+        opacity: 0.25;
+        filter: drop-shadow(0 0 15px rgba(0, 217, 255, 0.3));
     }
 }
 
