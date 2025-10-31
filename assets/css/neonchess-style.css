@@ -720,7 +720,7 @@ body {
 }
 
 .top-left-bg-image img {
-    width: 200px;
+    width: 280px;
     height: auto;
     opacity: 0.35;
     filter: drop-shadow(0 0 25px rgba(0, 217, 255, 0.4));
@@ -731,7 +731,7 @@ body {
 /* Tablets: reducir tamaño */
 @media (max-width: 1024px) {
     .top-left-bg-image img {
-        width: 160px;
+        width: 200px;
         opacity: 0.3;
     }
 }
