@@ -43,7 +43,8 @@ class NeonChessEffects {
         this.setupCoinCounter();
         this.setupPowerUps();
         this.setupParticleSystem();
-        
+        this.setupFloatingAsteroids();
+
         console.log('🎮 NeonChess Effects System Initialized');
     }
     
@@ -525,6 +526,110 @@ class NeonChessEffects {
     getRandomNeonColor() {
         const colors = ['#00ffff', '#ff0080', '#00ff80', '#ff8000', '#8000ff', '#ffff00'];
         return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    /**
+     * ☄️ Sistema de asteroides flotantes (piezas que cruzan la pantalla)
+     */
+    setupFloatingAsteroids() {
+        this.asteroids = [];
+
+        // Crear asteroides periódicamente
+        setInterval(() => {
+            if (Math.random() < 0.3) { // 30% de probabilidad cada 3 segundos
+                this.createAsteroid();
+            }
+        }, 3000);
+
+        // Animar asteroides
+        this.animateAsteroids();
+    }
+
+    /**
+     * 🌠 Crear un nuevo asteroide (pieza flotante)
+     */
+    createAsteroid() {
+        const pieces = ['♔', '♕', '♖', '♗', '♘', '♙', '★', '✦', '◆', '●'];
+        const asteroid = document.createElement('div');
+
+        asteroid.textContent = pieces[Math.floor(Math.random() * pieces.length)];
+        asteroid.className = 'floating-asteroid';
+
+        // Posición inicial aleatoria (arriba o a la izquierda)
+        const startSide = Math.random() < 0.5 ? 'top' : 'left';
+
+        if (startSide === 'top') {
+            asteroid.style.left = Math.random() * 100 + '%';
+            asteroid.style.top = '-50px';
+        } else {
+            asteroid.style.left = '-50px';
+            asteroid.style.top = Math.random() * 100 + '%';
+        }
+
+        // Estilo del asteroide
+        asteroid.style.position = 'fixed';
+        asteroid.style.fontSize = (Math.random() * 30 + 20) + 'px';
+        asteroid.style.color = this.getRandomNeonColor();
+        asteroid.style.opacity = '0.3';
+        asteroid.style.pointerEvents = 'none';
+        asteroid.style.zIndex = '1';
+        asteroid.style.filter = `drop-shadow(0 0 10px ${asteroid.style.color})`;
+        asteroid.style.animation = 'floatAsteroid ' + (Math.random() * 15 + 10) + 's linear';
+
+        // Velocidad y dirección
+        const speed = Math.random() * 2 + 1;
+        const angle = Math.random() * Math.PI / 2 + Math.PI / 4; // 45-135 grados
+        asteroid.dataset.vx = Math.cos(angle) * speed;
+        asteroid.dataset.vy = Math.sin(angle) * speed;
+        asteroid.dataset.rotation = Math.random() * 360;
+        asteroid.dataset.rotationSpeed = (Math.random() - 0.5) * 3;
+
+        document.body.appendChild(asteroid);
+        this.asteroids.push(asteroid);
+
+        // Eliminar después de 25 segundos
+        setTimeout(() => {
+            if (asteroid.parentElement) {
+                asteroid.remove();
+            }
+            this.asteroids = this.asteroids.filter(a => a !== asteroid);
+        }, 25000);
+    }
+
+    /**
+     * 🎬 Animar asteroides existentes
+     */
+    animateAsteroids() {
+        const animate = () => {
+            this.asteroids.forEach(asteroid => {
+                if (!asteroid.parentElement) return;
+
+                const currentLeft = parseFloat(asteroid.style.left);
+                const currentTop = parseFloat(asteroid.style.top);
+                const vx = parseFloat(asteroid.dataset.vx);
+                const vy = parseFloat(asteroid.dataset.vy);
+                const rotation = parseFloat(asteroid.dataset.rotation);
+                const rotationSpeed = parseFloat(asteroid.dataset.rotationSpeed);
+
+                asteroid.style.left = (currentLeft + vx) + 'px';
+                asteroid.style.top = (currentTop + vy) + 'px';
+                asteroid.dataset.rotation = rotation + rotationSpeed;
+                asteroid.style.transform = `rotate(${asteroid.dataset.rotation}deg)`;
+
+                // Eliminar si sale de la pantalla
+                if (currentLeft > window.innerWidth + 100 ||
+                    currentTop > window.innerHeight + 100 ||
+                    currentLeft < -100 ||
+                    currentTop < -100) {
+                    asteroid.remove();
+                    this.asteroids = this.asteroids.filter(a => a !== asteroid);
+                }
+            });
+
+            requestAnimationFrame(animate);
+        };
+
+        animate();
     }
 }
 
