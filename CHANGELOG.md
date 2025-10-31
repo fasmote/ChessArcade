@@ -12,6 +12,86 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - Algoritmo simple pero efectivo
 - Nivel de dificultad ajustable (futuro)
 
+## [1.6.0] - 2025-10-31 🌠 Visual Effects & UX Enhancement
+
+### ✨ Added - Floating Asteroids System
+**Objetivo**: Mejorar experiencia visual con efectos dinámicos en todas las páginas
+
+#### 🌠 Floating Asteroids (Piezas Flotantes)
+- **Sistema de asteroides flotantes**: Piezas de ajedrez que cruzan la pantalla
+- Aparecen desde los **4 lados** (arriba, abajo, izquierda, derecha)
+- **Alta frecuencia**: ~1 asteroide cada 2 segundos (70% prob. cada 1.5s)
+- **Piezas incluidas**: ♔♕♖♗♘♙★✦◆● (caracteres Unicode vectoriales)
+- **Efectos visuales**:
+  - Colores neón aleatorios (cyan, magenta, verde, naranja, amarillo, morado)
+  - Tamaño aleatorio (20-50px)
+  - Rotación continua durante el movimiento
+  - Glow effect del mismo color que la pieza
+  - Opacidad sutil (0.3) para no interferir con contenido
+- **Movimiento**: Trayectorias diagonales aleatorias a través del viewport
+- **Auto-cleanup**: Se eliminan automáticamente al salir de pantalla
+
+#### 🎨 Grid Background Enhancement
+- **Fondo reticulado animado** agregado a 4 páginas:
+  - contact.html, about.html, privacy-policy.html, articles.html
+- Grid con líneas cyan que se mueve suavemente (animación 25s)
+- Mismo efecto que la página principal
+- Se mantiene detrás del contenido (z-index correcto)
+
+#### 🖼️ Logo Background Decoration
+- **Logo decorativo** en esquina superior izquierda (index.html)
+- Tamaño final: **390px** (desktop), 280px (tablet), 100px (mobile)
+- Opacidad: 0.35 (balance perfecto entre visible y sutil)
+- Efecto glow cyan con drop-shadow
+- Responsive con breakpoints para todos los dispositivos
+- Mobile pequeño (<480px): Se oculta completamente
+
+### 🔧 Fixed
+- **Footer agregado** a páginas que faltaban:
+  - contact.html, about.html, privacy-policy.html
+  - Footer estandarizado con links de navegación
+  - Copyright y branding consistente
+  - Z-index correcto para aparecer sobre grid background
+
+### 📜 Scripts & Automation
+- **update-pages-background.py**: Script para agregar grid + efectos en batch
+- **add-footer-pages.py**: Script para inyectar footer automáticamente
+- Ambos scripts con UTF-8 encoding para Windows
+
+### 🎮 Technical Implementation
+**JavaScript (neonchess-effects.js)**:
+- `setupFloatingAsteroids()`: Inicializa sistema de asteroides
+- `createAsteroid()`: Crea piezas con posición, velocidad y rotación aleatorias
+- `animateAsteroids()`: Loop de animación con requestAnimationFrame
+- Gestión automática de memoria (cleanup de asteroides fuera de pantalla)
+
+**CSS (neonchess-style.css)**:
+- `.neon-grid-bg::before`: Grid animado con keyframe neonGridMove
+- `.top-left-bg-image`: Logo decorativo con media queries responsive
+- Breakpoints: 1024px (tablet), 768px (mobile), 480px (mobile pequeño)
+
+### 📊 Performance
+- Sistema de asteroides optimizado con requestAnimationFrame
+- Cleanup automático previene memory leaks
+- Grid background con CSS puro (sin JS overhead)
+- Z-index layering correcto para performance de rendering
+
+### 🎨 Visual Polish
+- **Hover effects preservados** en articles.html (cards se elevan y brillan)
+- **Animaciones fluidas** con transiciones CSS
+- **Responsive design** en todos los efectos visuales
+- **Consistencia visual** mantenida en todo el sitio
+
+### 📦 Commits (8 commits)
+1. Add ChessArcade logo to homepage header
+2. Fix: Use correct logo image (chessarcade.jpg)
+3. Fix homepage logo visibility with z-index
+4. Move logo to top-left corner
+5. Convert logo to subtle responsive background decoration
+6. Increase visibility and size (280px → 390px)
+7. Add grid background and floating asteroids to all pages
+8. Fix asteroids spawn from all 4 sides + Add footers
+
 ## [1.5.0] - 2025-10-31 📚 Articles & AdSense Prep
 
 ### ✨ Added - Sistema de Artículos Educativos
