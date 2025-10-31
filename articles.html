@@ -37,6 +37,25 @@
         body {
             background: linear-gradient(135deg, #0a0015 0%, #1a0033 50%, #0a0015 100%);
             min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            max-width: 800px;
+            height: 60%;
+            background-image: url('assets/images/chessarcade-logo-transparent.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.03;
+            z-index: 0;
+            pointer-events: none;
         }
 
         .page-header {
@@ -45,6 +64,8 @@
             background: rgba(0, 0, 0, 0.3);
             border-bottom: 2px solid var(--neon-cyan);
             margin-bottom: 3rem;
+            position: relative;
+            z-index: 1;
         }
 
         .page-title {
@@ -69,6 +90,8 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 2rem 4rem;
+            position: relative;
+            z-index: 1;
         }
 
         .article-card {
