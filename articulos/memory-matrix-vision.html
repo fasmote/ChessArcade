@@ -16,14 +16,66 @@
             line-height: 1.6;
             margin: 0;
             padding: 0;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('../assets/images/articulo_memory-matrix.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.08;
+            z-index: 0;
+            pointer-events: none;
         }
         .container {
             max-width: 800px;
             margin: 20px auto;
             padding: 20px;
-            background-color: #2a2a4e;
+            background-color: rgba(42, 42, 78, 0.95);
             border-radius: 8px;
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        .article-nav {
+            background: rgba(0, 188, 212, 0.1);
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .article-nav h3 {
+            color: #00bcd4;
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+        }
+        .article-nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .article-nav-link {
+            display: inline-block;
+            padding: 8px 15px;
+            background: rgba(0, 188, 212, 0.2);
+            color: #00bcd4;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            border: 1px solid rgba(0, 188, 212, 0.3);
+        }
+        .article-nav-link:hover {
+            background: rgba(0, 188, 212, 0.4);
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
         }
         h1, h2 {
             color: #00bcd4; /* Color neón */
@@ -69,25 +121,25 @@
         .text-center {
             text-align: center;
         }
-        .article-image {
-            width: 100%;
-            max-width: 600px;
-            height: auto;
-            margin: 30px auto;
-            display: block;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 188, 212, 0.3);
-            border: 2px solid rgba(0, 188, 212, 0.5);
-        }
     </style>
 </head>
 <body>
 
     <div class="container">
+        <!-- Navegación entre artículos -->
+        <nav class="article-nav">
+            <h3>📚 Más Artículos</h3>
+            <div class="article-nav-links">
+                                <a href="../articles.html" class="article-nav-link">← Todos los Artículos</a>
+                <a href="square-rush-fluidez.html" class="article-nav-link">Square Rush</a>
+                <a href="master-sequence-calculo.html" class="article-nav-link">Master Sequence</a>
+                <a href="knight-quest-calculo.html" class="article-nav-link">Knight Quest</a>
+                <a href="chessfive-doble-estrategia.html" class="article-nav-link">ChessFive</a>
+            </div>
+        </nav>
+
         <h1>¡Memoria de Elefante! 5 Formas en que 'Memory Matrix' Desbloquea tu Visión del Tablero</h1>
         <p class="text-center" style="font-size: 1.2em; color: #aaa;"><em>¿Cansado de "no ver" esa táctica? Entrena el superpoder oculto del ajedrez.</em></p>
-
-        <img src="../assets/images/articulo_memory-matrix.png" alt="Memory Matrix - Entrenamiento de memoria visual" class="article-image">
 
         <p>En ajedrez, tu cerebro es un campo de batalla. Pero, ¿de qué sirve un arma si no recuerdas dónde la dejaste? Muchos jugadores se enfocan 100% en el cálculo (lo que hace 'Knight Quest'), pero olvidan la otra mitad de la ecuación: la **memoria visual**.</p>
         
@@ -119,10 +171,11 @@
     </div>
 
     <hr style="border-color: #444;">
-    <footer style="text-align: center; padding: 20px; font-family: 'Segoe UI', sans-serif; color: #ccc;">
+    <footer style="text-align: center; padding: 20px; font-family: 'Segoe UI', sans-serif; color: #ccc; position: relative; z-index: 1;">
       <p>© 2025 ChessArcade</p>
       <nav>
         <a href="../index.html" style="color: #00bcd4; margin: 0 10px;">Inicio</a>
+        <a href="../articles.html" style="color: #00bcd4; margin: 0 10px;">Artículos</a>
         <a href="../about.html" style="color: #00bcd4; margin: 0 10px;">Acerca de</a>
         <a href="../contact.html" style="color: #00bcd4; margin: 0 10px;">Contacto</a>
         <a href="../privacy-policy.html" style="color: #00bcd4; margin: 0 10px;">Política de Privacidad</a>

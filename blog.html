@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog y Artículos de ChessArcade - ¡Mejora tu Ajedrez!</title>
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2472413468382197"
+     crossorigin="anonymous"></script>
+
+    <style>
+        /* Estilos generales del cuerpo */
+        body {
+            background-color: #1a1a2e; /* Fondo oscuro neón */
+            color: #e0e0e0; /* Color de texto claro */
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Asegura que el footer esté abajo */
+        }
+
+        /* Contenedor principal de los artículos/blog */
+        .articles-container {
+            flex: 1; /* Permite que el contenedor crezca y empuje el footer hacia abajo */
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #2a2a4e; /* Contenedor oscuro */
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+        }
+
+        /* Estilos de títulos */
+        h1, h2, h3 {
+            color: #00bcd4; /* Color neón primario */
+            text-shadow: 0 0 5px #00bcd4;
+            border-bottom: 2px solid #444;
+            padding-bottom: 5px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.8em;
+            margin-bottom: 30px;
+        }
+        h2 {
+            font-size: 2em;
+            margin-top: 40px;
+            color: #f9a825; /* Color neón secundario para subtítulos */
+            text-shadow: 0 0 5px #f9a825;
+            border-bottom: none; /* Quitamos el borde para subtítulos */
+            padding-bottom: 0;
+        }
+        h3 {
+            font-size: 1.5em;
+            margin-top: 25px;
+        }
+
+        /* Párrafos y listas */
+        p {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+
+        /* Estilos para los enlaces de artículos */
+        .article-link {
+            display: block;
+            background-color: #3a3a5e; /* Fondo de cada enlace de artículo */
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #e0e0e0;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .article-link:hover {
+            background-color: #4a4a7e;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        .article-link h3 {
+            margin: 0;
+            color: #00bcd4;
+            text-shadow: 0 0 3px #00bcd4;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .article-link p {
+            font-size: 0.9em;
+            color: #aaa;
+            margin-top: 5px;
+            margin-bottom: 0;
+        }
+
+        /* --- Estilos para la cabecera con el logo --- */
+        .hero-section {
+            position: relative;
+            background-color: #1a1a2e;
+            padding: 50px 20px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .logo-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .main-logo {
+            max-width: 90%;
+            height: auto;
+            filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.7)) /* Resplandor cian */
+                    drop-shadow(0 0 30px rgba(255, 0, 255, 0.4)); /* Resplandor magenta */
+            animation: neon-pulse 2s infinite alternate; /* Animación de pulsación */
+        }
+
+        .tagline {
+            color: #f9a825;
+            /* Si usas una fuente retro/pixel, importala aquí */
+            font-family: 'Press Start 2P', cursive; 
+            font-size: 1.5em;
+            text-shadow: 0 0 8px #f9a825, 0 0 15px #f9a825;
+            margin-top: 15px;
+            letter-spacing: 2px;
+        }
+
+        @keyframes neon-pulse {
+            0% {
+                filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5))
+                        drop-shadow(0 0 20px rgba(255, 0, 255, 0.3));
+            }
+            100% {
+                filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.8))
+                        drop-shadow(0 0 30px rgba(255, 0, 255, 0.5));
+            }
+        }
+        
+        /* --- Estilos del pie de página --- */
+        footer {
+            margin-top: auto; /* Empuja el footer hacia abajo */
+            text-align: center;
+            padding: 20px;
+            font-family: 'Segoe UI', sans-serif;
+            color: #ccc;
+            background-color: #2a2a4e; /* Un poco más oscuro para diferenciarse del fondo del body */
+            border-top: 1px solid #444;
+        }
+        footer nav a {
+            color: #00bcd4;
+            margin: 0 10px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        footer nav a:hover {
+            color: #fff;
+            text-shadow: 0 0 5px #00bcd4;
+        }
+    </style>
+    </head>
+<body>
+
+    <header class="hero-section">
+        <div class="logo-container">
+            <img src="../assets/images/chessarcade-logo-transparent.png" alt="ChessArcade Logo" class="main-logo">
+            <h2 class="tagline">Level Up Your Chess Game</h2>
+        </div>
+    </header>
+
+    <div class="articles-container">
+        <h1>Blog y Artículos</h1>
+        <p>Aquí encontrarás guías, consejos y análisis profundos sobre cómo nuestros juegos de ChessArcade pueden transformar tu comprensión y tus habilidades en el ajedrez. ¡Prepárate para llevar tu juego al siguiente nivel!</p>
+
+        <h2>Nuestros Artículos Destacados</h2>
+        
+        <a href="knight-quest-calculo.html" class="article-link">
+            <h3>5 Formas en que 'Knight Quest' Mejora tu Cálculo de Ajedrez</h3>
+            <p>Descubre cómo dominar el movimiento del caballo es la clave para un cálculo táctico imparable.</p>
+        </a>
+
+        <a href="memory-matrix-vision.html" class="article-link">
+            <h3>¡Memoria de Elefante! 5 Formas en que 'Memory Matrix' Desbloquea tu Visión del Tablero</h3>
+            <p>Entrena tu cerebro para "fotografiar" posiciones y recordar patrones cruciales en el ajedrez.</p>
+        </a>
+
+        <a href="square-rush-fluidez.html" class="article-link">
+            <h3>"Habla" Ajedrez con Fluidez: Cómo 'Square Rush' Graba el Tablero en tu Cerebro</h3>
+            <p>Automatiza el reconocimiento de coordenadas y dispara tu velocidad de cálculo.</p>
+        </a>
+
+        <a href="master-sequence-calculo.html" class="article-link">
+            <h3>No Pierdas el Hilo: Por Qué 'Master Sequence' es Clave para Calcular Variantes Largas</h3>
+            <p>Fortalece tu memoria secuencial y evita errores al calcular líneas complejas.</p>
+        </a>
+
+        <a href="chessfive-doble-estrategia.html" class="article-link">
+            <h3>De la Gravedad al Ataque Total: 'ChessFive' y el Arte de la Doble Estrategia</h3>
+            <p>Explora el innovador juego que combina "Connect Four" con movimientos de ajedrez para un doble desafío táctico.</p>
+        </a>
+
+        </div>
+
+    <footer>
+      <p>© 2025 ChessArcade. Todos los derechos reservados. Hecho con ❤️ para la comunidad de ajedrez</p>
+      <nav>
+        <a href="../index.html">Inicio</a> | 
+        <a href="../about.html">Acerca de</a> | 
+        <a href="../contact.html">Contacto</a> | 
+        <a href="../privacy-policy.html">Política de Privacidad</a> |
+        <a href="blog.html">Blog</a>
+      </nav>
+    </footer>
+    
+</body>
+</html>

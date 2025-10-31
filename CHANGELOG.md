@@ -7,6 +7,95 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 
 ## [Unreleased]
 
+### 🎯 Next: ChessFive AI Opponent
+- Implementar oponente con IA para modo un jugador
+- Algoritmo simple pero efectivo
+- Nivel de dificultad ajustable (futuro)
+
+## [1.5.0] - 2025-10-31 📚 Articles & AdSense Prep
+
+### ✨ Added - Sistema de Artículos Educativos
+**Objetivo**: Preparar ChessArcade para aprobación de Google AdSense
+
+#### 📄 Articles Index Page (NEW)
+- **articles.html**: Página índice con 5 artículos educativos
+  - Layout horizontal con thumbnails (200x150px)
+  - Logo transparente como marca de agua (opacity 0.08)
+  - Cards con hover effects y diseño NeonChess
+  - Diseño responsive (vertical en móviles)
+  - Navegación consistente con footer estandarizado
+
+#### 📝 5 Artículos Educativos (articulos/)
+1. **square-rush-fluidez.html** - "Habla" Ajedrez con Fluidez
+2. **master-sequence-calculo.html** - Memoria de Trabajo y Cálculo
+3. **memory-matrix-vision.html** - Visión Táctica del Tablero
+4. **knight-quest-calculo.html** - Planificación y Cálculo
+5. **chessfive-doble-estrategia.html** - Doble Estrategia
+
+**Características de cada artículo**:
+- Imagen del juego como fondo sutil (opacity 0.08)
+- Navegación entre artículos en header
+- Footer estandarizado con link "Artículos"
+- Fondo translúcido (rgba) para legibilidad
+- Contenido educativo ~500 palabras
+- Google AdSense code integrado
+- Call-to-action para jugar el juego
+
+#### 🖼️ Imágenes Agregadas (6.6 MB total)
+- articulo_square-rush.png (1.05 MB)
+- articulo_master-sequence.png (1.13 MB)
+- articulo_memory-matrix.png (1.48 MB)
+- articulo_knight-quest.png (1.83 MB)
+- articulo_chessfive.png (1.08 MB)
+- chessarcade-logo-transparent.png (1.30 MB)
+
+### 🔗 Navigation Improvements
+- Link "Artículos" agregado en todos los footers:
+  - index.html (página principal)
+  - Todos los juegos (5 archivos)
+  - Todos los artículos (5 archivos)
+- Menú de navegación entre artículos
+- Link "← Todos los Artículos" en cada artículo
+- Enlaces cruzados consistentes
+
+### 🎨 Design System Updates
+- Background images con `body::before` pseudo-elemento
+- Z-index layering correcto (contenido sobre fondos)
+- Navegación responsiva con flexbox
+- Efectos hover suaves con transiciones
+- Bordes y sombras neon consistentes
+- Colors NeonChess (cyan/magenta) mantenidos
+
+### 📊 SEO & AdSense Optimization
+- Meta tags optimizados en cada artículo
+- Google AdSense code en todos los artículos
+- Google Analytics tracking (G-N3EKXHPD5Y)
+- Contenido educativo de calidad (~2500 palabras total)
+- Estructura semántica HTML5 correcta
+- Internal linking entre páginas
+
+### 🏗️ File Structure
+```
+articulos/
+├── square-rush-fluidez.html (UPDATED)
+├── master-sequence-calculo.html (UPDATED)
+├── memory-matrix-vision.html (UPDATED)
+├── knight-quest-calculo.html (UPDATED)
+└── chessfive-doble-estrategia.html (UPDATED)
+
+assets/images/
+├── articulo_*.png (5 NEW)
+└── chessarcade-logo-transparent.png (NEW)
+
+*.html (13 files UPDATED with footer)
+```
+
+### 📦 Commits
+1. `Add Articles section and standardized footer for Google AdSense`
+2. `Add images and logo watermark to articles for better visual appeal`
+3. `Improve articles page layout with thumbnail images and better logo visibility`
+4. `Complete articles enhancement with navigation and background images`
+
 ## [1.4.0] - 2025-09-18 🎯 Square Rush MVP Launch
 
 ### ✨ New Game: Square Rush
