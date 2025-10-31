@@ -47,10 +47,10 @@ const KNIGHT_CONFIG = {
     version: '1.0.0',
     maxScore: 10000,
     difficulties: {
-        beginner: { size: 4, hints: 99, name: 'Principiante' },
-        intermediate: { size: 6, hints: 5, name: 'Intermedio' },
-        advanced: { size: 8, hints: 3, name: 'Avanzado' },
-        expert: { size: 8, hints: 0, name: 'Experto' }
+        beginner: { rows: 3, cols: 4, hints: 99, name: 'Principiante' },
+        intermediate: { rows: 6, cols: 6, hints: 5, name: 'Intermedio' },
+        advanced: { rows: 8, cols: 8, hints: 3, name: 'Avanzado' },
+        expert: { rows: 8, cols: 8, hints: 0, name: 'Experto' }
     },
     scoring: {
         basePerSquare: 10,
@@ -73,7 +73,8 @@ let gameState = {
     isPlaying: false,
     isPaused: false,
     board: [],
-    boardSize: 4,
+    boardRows: 3,
+    boardCols: 4,
     currentPos: null,
     visitedSquares: new Set(),
     moveHistory: [],
@@ -125,28 +126,29 @@ function initGame() {
 function createBoard() {
     const board = document.getElementById('chessboard');
     board.innerHTML = '';
-    
+
     // Configurar tamaño del tablero
-    const size = gameState.boardSize;
-    board.className = `chessboard size-${size}x${size}`;
-    
+    const rows = gameState.boardRows;
+    const cols = gameState.boardCols;
+    board.className = `chessboard size-${rows}x${cols}`;
+
     // Inicializar array del tablero
-    gameState.board = Array(size * size).fill(null);
-    
+    gameState.board = Array(rows * cols).fill(null);
+
     // Crear casillas
-    for (let row = 0; row < size; row++) {
-        for (let col = 0; col < size; col++) {
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
             const square = document.createElement('div');
-            const index = row * size + col;
-            
+            const index = row * cols + col;
+
             square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
             square.dataset.index = index;
             square.dataset.row = row;
             square.dataset.col = col;
-            
+
             // Event listener para clicks
             square.addEventListener('click', () => handleSquareClick(index));
-            
+
             board.appendChild(square);
         }
     }
@@ -215,7 +217,7 @@ function makeMove(targetIndex) {
     updateUI();
     
     // Verificar victoria
-    const totalSquares = gameState.boardSize * gameState.boardSize;
+    const totalSquares = gameState.boardRows * gameState.boardCols;
     if (gameState.visitedSquares.size === totalSquares) {
         setTimeout(() => completeQuest(), 500);
     } else {
@@ -235,30 +237,31 @@ function makeMove(targetIndex) {
 // LÓGICA DEL CABALLO
 // ========================================
 function isValidKnightMove(from, to) {
-    const size = gameState.boardSize;
-    const fromRow = Math.floor(from / size);
-    const fromCol = from % size;
-    const toRow = Math.floor(to / size);
-    const toCol = to % size;
-    
+    const cols = gameState.boardCols;
+    const fromRow = Math.floor(from / cols);
+    const fromCol = from % cols;
+    const toRow = Math.floor(to / cols);
+    const toCol = to % cols;
+
     const rowDiff = Math.abs(toRow - fromRow);
     const colDiff = Math.abs(toCol - fromCol);
-    
+
     return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
 }
 
 function getPossibleMoves(pos) {
-    const size = gameState.boardSize;
-    const row = Math.floor(pos / size);
-    const col = pos % size;
+    const rows = gameState.boardRows;
+    const cols = gameState.boardCols;
+    const row = Math.floor(pos / cols);
+    const col = pos % cols;
     const moves = [];
-    
+
     KNIGHT_MOVES.forEach(([dRow, dCol]) => {
         const newRow = row + dRow;
         const newCol = col + dCol;
-        
-        if (newRow >= 0 && newRow < size && newCol >= 0 && newCol < size) {
-            const newPos = newRow * size + newCol;
+
+        if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+            const newPos = newRow * cols + newCol;
             if (!gameState.visitedSquares.has(newPos)) {
                 moves.push(newPos);
             }
@@ -399,7 +402,8 @@ function resetGameState() {
         isPlaying: true,
         isPaused: false,
         board: [],
-        boardSize: config.size,
+        boardRows: config.rows,
+        boardCols: config.cols,
         currentPos: null,
         visitedSquares: new Set(),
         moveHistory: [],
@@ -510,7 +514,7 @@ function calculateScore() {
     score *= config.difficultyMultiplier[gameState.difficulty];
     
     // Bonus por completar el juego
-    const totalSquares = gameState.boardSize * gameState.boardSize;
+    const totalSquares = gameState.boardRows * gameState.boardCols;
     if (gameState.visitedSquares.size === totalSquares) {
         score += 1000 * config.difficultyMultiplier[gameState.difficulty];
     }
@@ -595,7 +599,7 @@ function updateUI() {
     document.getElementById('hintsLeft').textContent = gameState.hintsLeft;
     
     // Progreso
-    const totalSquares = gameState.boardSize * gameState.boardSize;
+    const totalSquares = gameState.boardRows * gameState.boardCols;
     const progress = (gameState.visitedSquares.size / totalSquares) * 100;
     document.getElementById('progressFill').style.width = `${progress}%`;
     document.getElementById('progressText').textContent = `${Math.floor(progress)}% completado`;
@@ -721,7 +725,7 @@ function showGameOverModal(won, scoreData, result = null, achievements = []) {
             <span class="stat-label">Movimientos</span>
         </div>
         <div class="stat-item">
-            <span class="stat-value">${gameState.visitedSquares.size}/${gameState.boardSize * gameState.boardSize}</span>
+            <span class="stat-value">${gameState.visitedSquares.size}/${gameState.boardRows * gameState.boardCols}</span>
             <span class="stat-label">Casillas Visitadas</span>
         </div>
         <div class="stat-item">
@@ -850,11 +854,12 @@ function closeHelpModal() {
 // UTILIDADES
 // ========================================
 function getSquareName(index) {
-    const size = gameState.boardSize;
-    const row = Math.floor(index / size);
-    const col = index % size;
+    const cols = gameState.boardCols;
+    const rows = gameState.boardRows;
+    const row = Math.floor(index / cols);
+    const col = index % cols;
     const file = String.fromCharCode(65 + col); // A, B, C...
-    const rank = size - row; // 1, 2, 3...
+    const rank = rows - row; // 1, 2, 3...
     return `${file}${rank}`;
 }
 

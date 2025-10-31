@@ -2,7 +2,7 @@
 
 ![ChessArcade Banner](./assets/images/chessarcade-banner.png)
 
-## 🚀 [Play Now!](https://fasmote.github.io/ChessArcade/) | [🎯 Square Rush](./games/square-rush/index.html) | [🐴 Knight Quest](./games/knight-quest/index.html) | [🧠 Memory Matrix](./games/memory-matrix-v2/index.html) | [🟦 Master Sequence](./games/master-sequence/index.html)
+## 🚀 [Play Now!](https://fasmote.github.io/ChessArcade/) | [🎯 Square Rush](./games/square-rush/index.html) | [🐴 Knight Quest](./games/knight-quest/index.html) | [🧠 Memory Matrix](./games/memory-matrix-v2/index.html) | [🟦 Master Sequence](./games/master-sequence/index.html) | [⚔️ ChessFive](./games/chessfive/index.html)
 
 ---
 
@@ -17,6 +17,7 @@
 - **🐴 Knight Quest** - Master the knight's tour across pixel-perfect boards *(Available Now!)*
 - **🧠 Memory Matrix** - Train positional memory with progressive levels *(Available Now!)*
 - **🟦 Master Sequence** - Simon Says meets chess! Memorize growing patterns *(Available Now!)*
+- **⚔️ ChessFive** - Connect Four meets Chess! Two-player tactical strategy *(Available Now!)*
 
 #### 🎯 **Features:**
 - **Responsive Design**: Optimized for desktop and mobile
@@ -37,6 +38,7 @@
 - **🐴 Knight Quest** - Domina el recorrido del caballo en tableros perfectos *(¡Disponible Ahora!)*
 - **🧠 Memory Matrix** - Entrena la memoria posicional con niveles progresivos *(¡Disponible Ahora!)*
 - **🟦 Master Sequence** - ¡Simon Says encuentra el ajedrez! Memoriza patrones crecientes *(¡Disponible Ahora!)*
+- **⚔️ ChessFive** - ¡Conecta Cuatro conoce al Ajedrez! Estrategia táctica para dos jugadores *(¡Disponible Ahora!)*
 
 #### 🎯 **Características:**
 - **Diseño Responsivo**: Optimizado para escritorio y móvil
@@ -45,6 +47,33 @@
 - **Control de Audio**: Efectos de sonido inmersivos con toggle fácil
 - **Almacenamiento Local**: Guarda tus mejores puntuaciones y progreso
 - **CSS Moderno**: Animaciones fluidas y efectos visuales neón
+
+---
+
+## 🆕 Recent Updates (Octubre 2025)
+
+### Knight Quest - Coordenadas "Taxi" 🚕
+- ✅ **Coordenadas visuales** en todos los tableros (a-h, 1-10)
+- ✅ **Centrado perfecto** en mobile y desktop
+- ✅ **Estilo de alta visibilidad** (amarillo/negro)
+- ✅ **Responsive** en 3 breakpoints
+
+### Formulario de Contacto Funcional 📧
+- ✅ **Envío real de emails** a contact@chessarcade.com.ar
+- ✅ **Implementación PHP** para Hostinger
+- ✅ **Anti-spam** (honeypot + rate limiting)
+- ✅ **UX profesional** con AJAX y animaciones
+
+### ChessGameLibrary - Nuevo Módulo 📦
+- ✅ **BoardCoordinates.js** - Sistema de coordenadas reutilizable
+- ✅ **Funciones helper** para preservar coordenadas
+- ✅ **Documentación completa** con ejemplos
+- ✅ **Listo para usar** en todos los juegos
+
+### Documentación Mejorada 📚
+- ✅ **ERRORES_Y_SOLUCIONES.md** actualizado
+- ✅ **DEPLOY_CONTACTO_HOSTINGER.md** - Guía paso a paso
+- ✅ **Organización** de docs en carpetas `/docs/`
 
 ---
 
@@ -132,11 +161,47 @@
 
 ---
 
+## ⚔️ ChessFive - NEW! Connect Four Meets Chess
+
+### 🎮 **What is ChessFive?**
+**ChessFive** is a unique two-player strategy game that brilliantly combines Connect Four's gravity-drop mechanics with chess piece movement! Drop your pieces onto the board during Phase 1, then strategically move them using authentic chess rules in Phase 2 to align 5 in a row. First to get five wins!
+
+### ✨ **Game Features:**
+- **🎲 Two-Phase Gameplay**: Gravity placement + Chess movement
+- **♟️ Authentic Chess Rules**: Each piece moves as in real chess (NO captures)
+- **🎯 Strategic Depth**: Plan ahead during placement for tactical advantages
+- **👥 Local Multiplayer**: Two players on the same device
+- **🎨 Dynamic UI**: Color-coded turns and visual feedback
+- **📱 Fully Responsive**: Optimized for desktop and mobile play
+
+### 🎪 **Perfect For:**
+- **Strategic Thinking**: Combines positional planning with tactical execution
+- **Chess Training**: Practice piece movement and tactical vision
+- **Social Gaming**: Fun competitive game for friends and family
+- **All Skill Levels**: Easy to learn, challenging to master
+
+### 🎵 **How to Play:**
+```
+⚔️ Phase 1: GRAVITY PLACEMENT
+- Take turns dropping pieces into columns
+- Pieces fall to the lowest available square
+- Each player has 8 pieces: 2 Rooks, 2 Knights, 2 Bishops, 1 Queen, 1 King
+
+♟️ Phase 2: CHESS MOVEMENT
+- Move your pieces using authentic chess rules
+- NO captures - occupied squares block movement
+- Only knights can jump over other pieces
+- First to align 5 pieces in a row wins!
+```
+
+---
+
 ### 🔗 **Play All Games:**
 - **🎯 [Play Square Rush](./games/square-rush/index.html)** - Master coordinates A1-H8!
 - **🐴 [Play Knight Quest](./games/knight-quest/index.html)** - Conquer the knight's tour!
 - **🧠 [Play Memory Matrix](./games/memory-matrix-v2/index.html)** - Train your visual memory!
 - **🟦 [Play Master Sequence](./games/master-sequence/index.html)** - Master growing patterns!
+- **⚔️ [Play ChessFive](./games/chessfive/index.html)** - Connect Four meets Chess!
 - **📁 [View Source Code](https://github.com/fasmote/ChessArcade)**
 - **🐛 [Report Issues](https://github.com/fasmote/ChessArcade/issues)**
 
@@ -219,6 +284,38 @@ ChessArcade uses a custom **NeonChess Design System** featuring:
 
 ---
 
+## 🚀 **Roadmap y Planes Futuros**
+
+### 🎮 Mejoras Planificadas para Juegos Actuales
+Todos los juegos existentes recibirán mejoras continuas:
+- **Knight Quest**: Más modos de juego, tableros personalizados
+- **Square Rush**: Nuevos desafíos y power-ups
+- **Memory Matrix**: Niveles adicionales, temas visuales
+- **Master Sequence**: Modos de dificultad avanzados
+
+### 🗄️ Backend y Base de Datos (Coming Soon!)
+Próximas funcionalidades que transformarán ChessArcade:
+- **🏆 Rankings Globales**: Compite con jugadores de todo el mundo
+- **👤 Sistema de Usuarios**: Cuentas personales y perfiles
+- **📊 Estadísticas Detalladas**: Tracking completo de progreso
+- **🎖️ Sistema de Logros**: Desbloquea insignias y recompensas
+- **⚡ Desafíos Diarios**: Nuevos retos cada día
+- **👥 Modo Multijugador**: Compite en tiempo real
+
+**Tecnologías Planificadas:**
+- Backend: Node.js + Express o Python + FastAPI
+- Base de Datos: PostgreSQL o MongoDB
+- Auth: JWT + OAuth (Google, GitHub)
+- Hosting: Railway, Render, o Vercel
+
+### 🎨 Nuevos Juegos en Desarrollo
+- **Vision Blitz**: Entrenamiento de visión táctica
+- **Endgame Trainer**: Practica finales de ajedrez
+- **Puzzle Rush**: Resuelve problemas tácticos a contrarreloj
+- **Board Blindness**: Juega sin ver el tablero (memoria)
+
+---
+
 ## 🤝 **Contributing**
 
 We welcome contributions! Here's how you can help:
@@ -241,7 +338,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ## 🏅 **Achievements & Stats**
 
-- **🎯 Games Released**: 4 (Square Rush, Knight Quest, Memory Matrix, Master Sequence)
+- **🎯 Games Released**: 5 (Square Rush, Knight Quest, Memory Matrix, Master Sequence, ChessFive)
 - **⭐ GitHub Stars**: Growing!
 - **🔧 Last Updated**: October 2025
 - **📱 Mobile Support**: 100%
@@ -257,6 +354,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 [![Play Knight Quest](https://img.shields.io/badge/🐴_Play_Knight_Quest-FF0080?style=for-the-badge)](./games/knight-quest/index.html)
 [![Play Memory Matrix](https://img.shields.io/badge/🧠_Play_Memory_Matrix-00FF80?style=for-the-badge)](./games/memory-matrix-v2/index.html)
 [![Play Master Sequence](https://img.shields.io/badge/🟦_Play_Master_Sequence-8000FF?style=for-the-badge)](./games/master-sequence/index.html)
+[![Play ChessFive](https://img.shields.io/badge/⚔️_Play_ChessFive-FF00FF?style=for-the-badge)](./games/chessfive/index.html)
 [![GitHub](https://img.shields.io/badge/⭐_Star_on_GitHub-00FFFF?style=for-the-badge&logo=github)](https://github.com/fasmote/ChessArcade)
 
 **Made with ⚡ by ChessArcade | Powered by NeonChess Design System**

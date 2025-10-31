@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- SEO Meta Tags -->
-    <title>ChessArcade - Level Up Your Chess Game | NeonChess Style</title>
-    <meta name="description" content="Experience chess like never before with ChessArcade's neon-powered gaming platform. Master tactical puzzles, knight tours, and more in retro 80s style.">
-    <meta name="keywords" content="chess, arcade, games, tactics, knight tour, puzzle, neon, retro, 80s">
+    <title>ChessArcade - Ejercita tu Memoria y Agilidad Mental | Juegos de Ajedrez</title>
+    <meta name="description" content="Mejora tu memoria visual, concentración y agilidad mental con ChessArcade. Juegos divertidos inspirados en ajedrez para entrenar tu cerebro. No necesitas saber ajedrez.">
+    <meta name="keywords" content="ejercitar memoria, juegos de memoria, entrenamiento cerebral, agilidad mental, gimnasia cerebral, concentración, chess, arcade, games, tactics, knight tour, puzzle, neon, retro, 80s">
     
     <!-- Open Graph -->
-    <meta property="og:title" content="ChessArcade - Level Up Your Chess Game">
-    <meta property="og:description" content="Neon-powered chess gaming platform with tactical puzzles and arcade-style challenges">
+    <meta property="og:title" content="ChessArcade - Ejercita tu Memoria y Agilidad Mental">
+    <meta property="og:description" content="Mejora tu memoria, concentración y agilidad mental con juegos divertidos. Entrenamiento cerebral para todos.">
     <meta property="og:type" content="website">
     
     <!-- Favicon -->
@@ -64,6 +64,17 @@
             </nav>
         </section>
         
+        <!-- Brain Training Notice -->
+        <section class="neon-section">
+            <div style="max-width: 800px; margin: 0 auto; text-align: center; padding: 1.5rem; background: linear-gradient(135deg, rgba(255, 128, 0, 0.15), rgba(255, 0, 128, 0.15)); border-radius: 15px; border: 2px solid var(--neon-orange); box-shadow: 0 0 20px rgba(255, 128, 0, 0.3);">
+                <h2 style="color: var(--neon-orange); margin-bottom: 0.5rem; font-size: 1.5rem;">🧠 Ejercita tu Memoria y Agilidad Mental</h2>
+                <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 0;">
+                    <strong>¿No juegas ajedrez?</strong> ¡Perfecto! Estos juegos son ideales para <strong>entrenar tu cerebro</strong>: mejora tu memoria visual, concentración, velocidad de procesamiento y coordinación espacial.
+                    <span style="color: var(--neon-cyan);">Gimnasia cerebral divertida para todos.</span>
+                </p>
+            </div>
+        </section>
+
         <!-- Chess Pieces Showcase -->
         <section class="neon-section">
             <div class="neon-pieces" role="group" aria-label="Interactive chess pieces">
@@ -134,7 +145,7 @@
 
                 <!-- Master Sequence Game -->
                 <article class="neon-card master-sequence-card" tabindex="0" role="button">
-                    <div class="neon-card-icon" aria-hidden="true">🟦</div>
+                    <div class="neon-card-icon" aria-hidden="true">🟦🟪🟧</div>
                     <h2 class="neon-heading">Master Sequence</h2>
                     <p class="neon-text neon-mb-md">
                         Simon Says meets chess! Watch the neon sequence grow, memorize the pattern, then repeat it perfectly. How far can you go?
@@ -144,24 +155,21 @@
                     </button>
                 </article>
 
+                <!-- ChessFive Game -->
+                <article class="neon-card chessfive-card" tabindex="0" role="button">
+                    <div class="neon-card-icon" aria-hidden="true">⚔️</div>
+                    <h2 class="neon-heading">ChessFive</h2>
+                    <p class="neon-text neon-mb-md">
+                        Connect Four meets Chess! Drop pieces with gravity, then move them strategically to align 5 in a row. Two-player tactical battle!
+                    </p>
+                    <button class="neon-play-btn" type="button" data-game="chessfive">
+                        Play Now
+                    </button>
+                </article>
+
                 <!-- ============================================
                      PRÓXIMAMENTE (OCULTOS PARA GOOGLE ADS)
                      ============================================ -->
-
-                <!-- Vision Blitz Game - PRÓXIMAMENTE -->
-                <article class="neon-card vision-blitz-card coming-soon" tabindex="0" role="button" style="display: none;">
-                    <div class="neon-card-icon coming-soon-icon" aria-hidden="true">⚡</div>
-                    <div class="coming-soon-overlay">
-                        <div class="coming-soon-badge">PRÓXIMAMENTE</div>
-                    </div>
-                    <h2 class="neon-heading">Vision Blitz</h2>
-                    <p class="neon-text neon-mb-md">
-                        Lightning-fast tactical recognition. Spot attacks and defenses in neon-blazing speed through the cyberpunk chessboard!
-                    </p>
-                    <button class="neon-play-btn coming-soon-btn" type="button" disabled>
-                        Próximamente
-                    </button>
-                </article>
 
                 <!-- Tactic Burst Game - PRÓXIMAMENTE -->
                 <article class="neon-card tactic-burst-card coming-soon" tabindex="0" role="button" style="display: none;">
@@ -220,6 +228,10 @@
 
                     <p style="margin-bottom: 1rem;">
                         🟦 <strong>Master Sequence</strong> - Sharpen your <strong>pattern recognition</strong> and <strong>sequential memory</strong> with this Simon Says-style game on a chessboard. Watch the growing sequence, memorize the pattern, and repeat it perfectly. Essential for improving calculation and visualization skills.
+                    </p>
+
+                    <p style="margin-bottom: 1rem;">
+                        ⚔️ <strong>ChessFive</strong> - Experience a unique <strong>two-player strategy game</strong> that combines Connect Four's gravity mechanics with chess tactical movement. Drop pieces onto the board, then move them using authentic chess rules to align 5 in a row. Perfect for developing <strong>strategic thinking</strong>, <strong>positional understanding</strong>, and <strong>tactical planning</strong>. Play with a friend on the same device!
                     </p>
 
                     <p style="margin-bottom: 1.5rem;">
@@ -317,7 +329,7 @@
             console.log(`🔍 Checking if game is available...`);
 
             // Check if game is available
-            if (gameId === 'knight-quest' || gameId === 'square-rush' || gameId === 'memory-matrix' || gameId === 'master-sequence') {
+            if (gameId === 'knight-quest' || gameId === 'square-rush' || gameId === 'memory-matrix' || gameId === 'master-sequence' || gameId === 'chessfive') {
                 console.log(`✅ Game ${gameId} is available, proceeding...`);
                 // Add screen flash effect
                 document.body.style.background = 'white';
@@ -420,6 +432,23 @@
                 .catch(err => console.log('❌ Service Worker registration failed'));
         }
     </script>
-    
+
+    <!-- Footer -->
+    <footer style="background: rgba(26, 0, 51, 0.9); padding: 2rem 1rem; margin-top: 4rem; border-top: 2px solid var(--neon-cyan); text-align: center;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; margin-bottom: 1.5rem;">
+                <a href="about.html" style="color: var(--neon-cyan); text-decoration: none; font-weight: bold; transition: all 0.3s ease;">Acerca de</a>
+                <a href="contact.html" style="color: var(--neon-cyan); text-decoration: none; font-weight: bold; transition: all 0.3s ease;">Contacto</a>
+                <a href="privacy-policy.html" style="color: var(--neon-cyan); text-decoration: none; font-weight: bold; transition: all 0.3s ease;">Política de Privacidad</a>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">
+                © 2025 ChessArcade. Todos los derechos reservados.
+            </p>
+            <p style="color: var(--neon-magenta); font-size: 0.85rem; margin-top: 0.5rem;">
+                Hecho con 💜 para la comunidad de ajedrez
+            </p>
+        </div>
+    </footer>
+
 </body>
 </html>

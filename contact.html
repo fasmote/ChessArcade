@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - ChessArcade</title>
+    <meta name="description" content="Contacta con ChessArcade. Envíanos tus preguntas, sugerencias o reporta problemas técnicos.">
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N3EKXHPD5Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-N3EKXHPD5Y');
+    </script>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2472413468382197"
+            crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="assets/css/neonchess-style.css">
+    <style>
+        .contact-content {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(26, 0, 51, 0.8);
+            border-radius: 15px;
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        .contact-content h1 {
+            color: var(--neon-cyan);
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px var(--neon-cyan);
+        }
+        .contact-content h2 {
+            color: var(--neon-magenta);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+        .contact-content p {
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        .contact-form {
+            margin-top: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            color: var(--neon-cyan);
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+        }
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            box-shadow: 0 0 15px var(--neon-cyan);
+        }
+        .submit-btn {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+            color: var(--text-primary);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', monospace;
+            width: 100%;
+        }
+        .submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--neon-cyan);
+        }
+        .contact-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--neon-magenta);
+            margin-top: 2rem;
+        }
+        .contact-info h3 {
+            color: var(--neon-orange);
+            margin-bottom: 1rem;
+        }
+        .contact-info ul {
+            list-style: none;
+            padding: 0;
+        }
+        .contact-info li {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .contact-info li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: var(--neon-cyan);
+        }
+        .back-home {
+            display: inline-block;
+            margin: 2rem auto;
+            text-align: center;
+            width: 100%;
+        }
+        .back-home a {
+            color: var(--neon-cyan);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 1rem 2rem;
+            border: 2px solid var(--neon-cyan);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .back-home a:hover {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+        .success-message {
+            display: none;
+            background: rgba(0, 255, 128, 0.2);
+            border: 2px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="neon-container">
+        <div class="contact-content">
+            <h1>Contacto</h1>
+            <p style="text-align: center; color: var(--neon-yellow); font-size: 1.2rem;">¡Nos encantaría saber de ti!</p>
+
+            <p>¿Tienes preguntas, sugerencias o encontraste algún problema? Estamos aquí para ayudarte. Completa el formulario a continuación y nos pondremos en contacto contigo lo antes posible.</p>
+
+            <div id="successMessage" class="success-message">
+                ✓ ¡Mensaje enviado con éxito! Te responderemos pronto.
+            </div>
+
+            <form class="contact-form" id="contactForm" action="contact-send.php" method="POST">
+                <!-- Campo honeypot anti-spam (invisible para humanos) -->
+                <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
+
+                <div class="form-group">
+                    <label for="name">Nombre *</label>
+                    <input type="text" id="name" name="name" required placeholder="Tu nombre completo">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required placeholder="tu@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Asunto *</label>
+                    <select id="subject" name="subject" required>
+                        <option value="">Selecciona un asunto</option>
+                        <option value="pregunta">Pregunta General</option>
+                        <option value="bug">Reporte de Bug/Error</option>
+                        <option value="sugerencia">Sugerencia de Mejora</option>
+                        <option value="colaboracion">Propuesta de Colaboración</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Mensaje *</label>
+                    <textarea id="message" name="message" required placeholder="Escribe tu mensaje aquí..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Enviar Mensaje</button>
+            </form>
+
+            <div class="contact-info">
+                <h3>Información de Contacto</h3>
+                <ul>
+                    <li><strong>Email:</strong> contact@chessarcade.com.ar</li>
+                    <li><strong>Tiempo de respuesta:</strong> 24-48 horas</li>
+                    <li><strong>Horario:</strong> Lunes a Viernes, 9:00 - 18:00 (GMT-3)</li>
+                </ul>
+            </div>
+
+            <h2>Preguntas Frecuentes</h2>
+            <div class="contact-info">
+                <h3>¿Cómo reporto un bug?</h3>
+                <p>Selecciona "Reporte de Bug/Error" en el formulario e incluye:</p>
+                <ul>
+                    <li>Descripción detallada del problema</li>
+                    <li>Navegador y dispositivo que usas</li>
+                    <li>Pasos para reproducir el error</li>
+                    <li>Capturas de pantalla si es posible</li>
+                </ul>
+            </div>
+
+            <div class="contact-info">
+                <h3>¿Aceptan sugerencias para nuevos juegos?</h3>
+                <p>¡Absolutamente! Nos encanta escuchar ideas de nuestra comunidad. Usa el formulario con el asunto "Sugerencia de Mejora" y comparte tu propuesta detallada.</p>
+            </div>
+
+            <div class="back-home">
+                <a href="index.html">← Volver al Inicio</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * ========================================
+         * ENVÍO DEL FORMULARIO DE CONTACTO
+         * ========================================
+         * Envía el formulario vía AJAX a contact-send.php
+         * Mantiene la experiencia de usuario sin recargar la página
+         */
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Prevenir envío tradicional del form
+
+            const form = e.target;
+            const submitBtn = form.querySelector('.submit-btn');
+            const successMessage = document.getElementById('successMessage');
+
+            // Deshabilitar botón durante envío
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+
+            try {
+                // Enviar formulario vía AJAX
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                // Parsear respuesta JSON
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // ✅ ÉXITO: Mostrar mensaje de éxito
+                    successMessage.textContent = '✓ ' + data.message;
+                    successMessage.style.display = 'block';
+                    successMessage.style.background = 'rgba(0, 255, 128, 0.2)';
+                    successMessage.style.borderColor = 'var(--neon-green)';
+                    successMessage.style.color = 'var(--neon-green)';
+
+                    // Limpiar formulario
+                    form.reset();
+
+                    // Scroll al mensaje de éxito
+                    successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    // Ocultar mensaje después de 8 segundos
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 8000);
+
+                } else {
+                    // ❌ ERROR: Mostrar mensaje de error
+                    successMessage.textContent = '✗ ' + (data.message || 'Error al enviar el mensaje');
+                    successMessage.style.display = 'block';
+                    successMessage.style.background = 'rgba(255, 0, 0, 0.2)';
+                    successMessage.style.borderColor = 'var(--neon-magenta)';
+                    successMessage.style.color = 'var(--neon-magenta)';
+
+                    // Ocultar mensaje de error después de 8 segundos
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 8000);
+                }
+
+            } catch (error) {
+                // ❌ ERROR DE RED: Mostrar mensaje genérico
+                console.error('Error:', error);
+                successMessage.textContent = '✗ Error de conexión. Por favor intenta de nuevo.';
+                successMessage.style.display = 'block';
+                successMessage.style.background = 'rgba(255, 0, 0, 0.2)';
+                successMessage.style.borderColor = 'var(--neon-magenta)';
+                successMessage.style.color = 'var(--neon-magenta)';
+
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 8000);
+
+            } finally {
+                // Rehabilitar botón
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar Mensaje';
+            }
+        });
+    </script>
+</body>
+</html>

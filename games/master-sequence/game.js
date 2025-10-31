@@ -301,6 +301,13 @@ function startGame() {
     gameState.sequenceColors = []; // Resetear colores
     gameState.squareUsageCount = {}; // Resetear contador de uso
 
+    // Limpiar líneas de replay si quedaron como residuo
+    clearReplayConnectingLines();
+
+    // Quitar efecto vintage si estaba activo
+    const chessboard = document.getElementById('chessboard');
+    chessboard.classList.remove('replay-mode');
+
     // Iniciar nueva grabación
     startRecording();
 
@@ -429,7 +436,30 @@ function startLevel(levelNumber) {
                 if (validFromPrevious.length > 0) {
                     availableSquares = validFromPrevious;
                     originSquare = previousSquare;
-                    console.log(`   ✅ Usando movimiento desde ${previousSquare} (${gameState.masterSequence.length - i} casillas atrás)`);
+
+                    // IMPORTANTE: Eliminar casillas "muertas" al hacer backtracking
+                    // Si retrocedemos N casillas, eliminar las últimas (N-1) casillas de la secuencia
+                    const backtrackSteps = gameState.masterSequence.length - i - 1;
+                    if (backtrackSteps > 0) {
+                        console.log(`   ⏪ BACKTRACKING: Eliminando ${backtrackSteps} casilla(s) muerta(s)`);
+
+                        // Eliminar las casillas muertas del masterSequence
+                        const removedSquares = gameState.masterSequence.splice(i + 1, backtrackSteps);
+
+                        // También eliminar sus colores correspondientes
+                        gameState.sequenceColors.splice(i + 1, backtrackSteps);
+
+                        // Decrementar contador de uso de las casillas eliminadas
+                        removedSquares.forEach(sq => {
+                            if (gameState.squareUsageCount[sq]) {
+                                gameState.squareUsageCount[sq]--;
+                            }
+                        });
+
+                        console.log(`   ⏪ Casillas eliminadas:`, removedSquares);
+                    }
+
+                    console.log(`   ✅ Usando movimiento desde ${previousSquare} (${backtrackSteps + 1} casillas atrás en la búsqueda original)`);
                     break;
                 }
             }
@@ -923,47 +953,43 @@ function showHint() {
         if (square) {
             const color = gameState.sequenceColors[index];
 
-            // Fondo blanco
+            // Aplicar fondo blanco a la casilla para destacarla
             square.style.backgroundColor = '#fff';
             square.classList.add('hint-sequence');
 
-            // Crear o actualizar coordenada con color neón en el centro
-            let label = square.querySelector('.hint-label');
-            if (!label) {
-                label = document.createElement('span');
-                label.className = 'hint-label';
-                square.appendChild(label);
-            }
-            label.textContent = squareId.toUpperCase();
-            label.style.color = color.hex;
-            label.style.textShadow = `0 0 10px ${color.hex}, 0 0 20px ${color.hex}`;
+            // ====================================================================
+            // NOTA: NO crear coordenada de texto (e.g. "E4", "D5")
+            // Usuario prefiere solo las flechas de colores porque las coordenadas
+            // tapan las flechas y dificultan ver la dirección del movimiento.
+            // ====================================================================
 
             // Agregar flecha o símbolo de repetición si no es la última casilla
             if (index < gameState.sequence.length - 1) {
                 const currentSquare = squareId;
                 const nextSquare = gameState.sequence[index + 1];
 
-                // Si repite la misma casilla, mostrar símbolo de repetición
+                // Si la siguiente casilla es la misma (repetición), mostrar símbolo ⟲
                 if (currentSquare === nextSquare) {
                     addRepeatSymbol(square, color.hex);
                 } else {
-                    // Si es diferente, mostrar flecha direccional
+                    // Si la siguiente casilla es diferente, mostrar flecha direccional
+                    // La flecha apunta desde currentSquare hacia nextSquare
                     addDirectionalArrow(square, currentSquare, nextSquare, color.hex);
                 }
             }
         }
     }
 
-    // Resaltar la SIGUIENTE casilla: borde amarillo grueso SIN coordenada (oculta)
+    // Resaltar la SIGUIENTE casilla con borde amarillo pulsante
+    // Esta es la casilla que el jugador debe clickear ahora
     const nextSquareId = gameState.sequence[gameState.currentStep];
     const nextSquare = document.querySelector(`[data-square="${nextSquareId}"]`);
     if (nextSquare) {
+        // La clase 'hint-next' aplica un borde amarillo pulsante (ver CSS)
         nextSquare.classList.add('hint-next');
-        const nextLabel = nextSquare.querySelector('.hint-label');
-        if (nextLabel) {
-            // Ocultar la coordenada de la siguiente casilla (solo borde pulsante visible)
-            nextLabel.style.display = 'none';
-        }
+
+        // NOTA: Ya no hay label de coordenada que ocultar (se eliminó arriba)
+        // Solo dejamos el borde amarillo para indicar "esta es la siguiente"
     }
 
     // Actualizar UI
@@ -975,58 +1001,79 @@ function showHint() {
 }
 
 /**
- * Dibuja líneas conectoras negras entre las casillas de la secuencia
- * Crea un SVG overlay que conecta los centros de las casillas
+ * Dibuja líneas conectoras negras entre las casillas de la secuencia del HINT
+ *
+ * EDUCACIONAL: Esta función crea un overlay SVG sobre el tablero para dibujar
+ * líneas que conectan visualmente la secuencia de casillas. Esto ayuda al
+ * jugador a ver el "camino" que debe seguir.
+ *
+ * CONCEPTOS CLAVE:
+ * - SVG (Scalable Vector Graphics): Formato para gráficos vectoriales
+ * - createElementNS: Crea elementos SVG (requiere namespace XML)
+ * - getBoundingClientRect(): Obtiene posición/tamaño de elementos en pantalla
+ * - Coordenadas relativas: Calculamos posiciones respecto al tablero, no a la ventana
  */
 function drawConnectingLines() {
-    // Buscar o crear el contenedor SVG para las líneas
+    // 1. Buscar contenedor SVG existente o crear uno nuevo
+    // Los elementos SVG se crean con createElementNS (requiere namespace)
     let svgContainer = document.getElementById('hint-lines-container');
     if (!svgContainer) {
+        // Namespace SVG requerido para crear elementos SVG correctamente
         svgContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svgContainer.id = 'hint-lines-container';
-        svgContainer.classList.add('hint-lines-svg');
+        svgContainer.classList.add('hint-lines-svg'); // Clase CSS para estilo/posición
         document.getElementById('chessboard').appendChild(svgContainer);
     }
 
-    // Limpiar líneas anteriores
+    // 2. Limpiar líneas anteriores (si hay)
     svgContainer.innerHTML = '';
 
-    // Obtener el tablero para calcular posiciones
+    // 3. Obtener dimensiones y posición del tablero
+    // getBoundingClientRect() retorna un objeto con propiedades:
+    // - left, top: posición en pantalla
+    // - width, height: dimensiones del elemento
     const board = document.getElementById('chessboard');
     const boardRect = board.getBoundingClientRect();
 
-    // Dibujar líneas SOLO entre casillas restantes (desde currentStep hasta el final)
+    // 4. Iterar sobre la secuencia RESTANTE (no toda la secuencia, solo lo que falta)
+    // Desde currentStep (donde está el jugador) hasta el final
     for (let i = gameState.currentStep; i < gameState.sequence.length - 1; i++) {
-        const currentSquareId = gameState.sequence[i];
-        const nextSquareId = gameState.sequence[i + 1];
+        const currentSquareId = gameState.sequence[i];     // ej: "e4"
+        const nextSquareId = gameState.sequence[i + 1];    // ej: "d5"
 
-        // Si repite la misma casilla, no dibujar línea
+        // 5. Skip casillas repetidas (no dibujar línea si es la misma casilla)
         if (currentSquareId === nextSquareId) continue;
 
+        // 6. Obtener elementos DOM de ambas casillas
         const currentSquare = document.querySelector(`[data-square="${currentSquareId}"]`);
         const nextSquare = document.querySelector(`[data-square="${nextSquareId}"]`);
 
         if (currentSquare && nextSquare) {
-            // Calcular centros relativos al tablero
+            // 7. Calcular centro de cada casilla (relativo al tablero, no a la ventana)
             const currentRect = currentSquare.getBoundingClientRect();
             const nextRect = nextSquare.getBoundingClientRect();
 
+            // Coordenadas X, Y del centro de cada casilla (relativas al tablero)
+            // Restamos boardRect.left/top para convertir de coordenadas de ventana
+            // a coordenadas relativas al tablero
             const x1 = currentRect.left - boardRect.left + currentRect.width / 2;
             const y1 = currentRect.top - boardRect.top + currentRect.height / 2;
             const x2 = nextRect.left - boardRect.left + nextRect.width / 2;
             const y2 = nextRect.top - boardRect.top + nextRect.height / 2;
 
-            // Crear línea SVG
+            // 8. Crear elemento <line> SVG
+            // Las líneas SVG se definen con x1,y1 (punto inicial) y x2,y2 (punto final)
             const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            line.setAttribute('x1', x1);
-            line.setAttribute('y1', y1);
-            line.setAttribute('x2', x2);
-            line.setAttribute('y2', y2);
-            line.setAttribute('stroke', '#000');
-            line.setAttribute('stroke-width', '4');
-            line.setAttribute('stroke-linecap', 'round');
-            line.classList.add('hint-connecting-line');
+            line.setAttribute('x1', x1);  // Inicio X
+            line.setAttribute('y1', y1);  // Inicio Y
+            line.setAttribute('x2', x2);  // Final X
+            line.setAttribute('y2', y2);  // Final Y
+            line.setAttribute('stroke', '#000');           // Color negro
+            line.setAttribute('stroke-width', '4');        // Grosor 4px
+            line.setAttribute('stroke-linecap', 'round');  // Puntas redondeadas
+            line.classList.add('hint-connecting-line');    // Clase CSS para estilos
 
+            // 9. Agregar línea al contenedor SVG
             svgContainer.appendChild(line);
         }
     }
@@ -1034,63 +1081,116 @@ function drawConnectingLines() {
 
 /**
  * Agrega símbolo de repetición (⟲) cuando la secuencia repite la misma casilla
- * @param {HTMLElement} square - Elemento de la casilla
- * @param {string} color - Color en hexadecimal para el símbolo
+ *
+ * EDUCACIONAL: Cuando la secuencia pide clickear la misma casilla dos veces
+ * seguidas (ej: e4 → e4), en vez de flecha mostramos el símbolo ⟲ (reload/repeat)
+ *
+ * CONCEPTOS CLAVE:
+ * - innerHTML: Permite insertar caracteres Unicode como ⟲
+ * - style.color / style.textShadow: Aplicar estilos inline dinámicamente
+ * - appendChild: Agregar el símbolo como hijo del elemento casilla
+ *
+ * @param {HTMLElement} square - Elemento DOM de la casilla
+ * @param {string} color - Color en hexadecimal para el símbolo (ej: "#ff0080")
  */
 function addRepeatSymbol(square, color) {
+    // Crear contenedor div para el símbolo
     const symbol = document.createElement('div');
-    symbol.className = 'hint-repeat';
+    symbol.className = 'hint-repeat';  // Clase CSS para posicionamiento/tamaño
+
+    // Insertar símbolo Unicode ⟲ (significa "repetir/reload")
     symbol.innerHTML = '⟲';
+
+    // Aplicar color dinámico (usa el color de la secuencia actual)
     symbol.style.color = color;
+
+    // Agregar glow/resplandor con text-shadow (efecto neón)
+    // Dos sombras: una a 10px y otra a 20px para mayor intensidad
     symbol.style.textShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
+
+    // Agregar el símbolo a la casilla
     square.appendChild(symbol);
 }
 
 /**
  * Agrega flecha direccional SVG indicando hacia dónde continúa la secuencia
- * @param {HTMLElement} square - Elemento de la casilla actual
- * @param {string} fromSquare - Coordenada de la casilla actual (ej: "e4")
- * @param {string} toSquare - Coordenada de la casilla siguiente (ej: "d5")
- * @param {string} color - Color en hexadecimal para la flecha
+ *
+ * EDUCACIONAL: Esta función crea flechas de colores que apuntan desde una casilla
+ * hacia la siguiente en la secuencia. Calcula la dirección y rota un SVG de flecha.
+ *
+ * CONCEPTOS CLAVE:
+ * - charCodeAt(): Convierte letra a número ASCII (a=97, b=98, etc.)
+ * - parseInt(): Convierte string a número entero
+ * - CSS Custom Properties (--rotation): Variables CSS que podemos cambiar dinámicamente
+ * - SVG Filters: Efectos visuales como blur (desenfoque) para crear glow (resplandor)
+ * - Template literals (`): Permiten crear strings multilínea e interpolar variables
+ *
+ * @param {HTMLElement} square - Elemento DOM de la casilla actual
+ * @param {string} fromSquare - Coordenada origen (ej: "e4")
+ * @param {string} toSquare - Coordenada destino (ej: "d5")
+ * @param {string} color - Color hexadecimal para la flecha (ej: "#00ffff")
  */
 function addDirectionalArrow(square, fromSquare, toSquare, color) {
-    // Calcular dirección de la flecha
-    const fromFile = fromSquare.charCodeAt(0) - 'a'.charCodeAt(0);
-    const fromRank = parseInt(fromSquare[1]) - 1;
-    const toFile = toSquare.charCodeAt(0) - 'a'.charCodeAt(0);
-    const toRank = parseInt(toSquare[1]) - 1;
+    // 1. Convertir coordenadas de ajedrez (ej: "e4") a números
+    // charCodeAt(0) obtiene el código ASCII de la primera letra
+    // Restamos 'a'.charCodeAt(0) para convertir: a=0, b=1, c=2, ... h=7
+    const fromFile = fromSquare.charCodeAt(0) - 'a'.charCodeAt(0);  // Columna origen (0-7)
+    const fromRank = parseInt(fromSquare[1]) - 1;                     // Fila origen (0-7)
+    const toFile = toSquare.charCodeAt(0) - 'a'.charCodeAt(0);      // Columna destino (0-7)
+    const toRank = parseInt(toSquare[1]) - 1;                         // Fila destino (0-7)
 
-    const deltaFile = toFile - fromFile;
-    const deltaRank = toRank - fromRank;
+    // 2. Calcular diferencia (delta) entre origen y destino
+    // Ejemplo: si fromFile=4 (e) y toFile=3 (d), deltaFile=-1 (movimiento hacia izquierda)
+    const deltaFile = toFile - fromFile;  // Diferencia horizontal (-7 a +7)
+    const deltaRank = toRank - fromRank;  // Diferencia vertical (-7 a +7)
 
-    // Determinar ángulo de rotación para la flecha
+    // 3. Determinar ángulo de rotación basado en la dirección del movimiento
+    // IMPORTANTE: El SVG base (definido abajo) apunta hacia ABAJO (Sur = 180° en brújula)
+    // Por eso sumamos 180° a las rotaciones para que apunten correctamente
     let rotation = 0;
-    if (deltaFile === 0 && deltaRank > 0) rotation = 0;      // ↑ Norte
-    else if (deltaFile > 0 && deltaRank > 0) rotation = 45;  // ↗ Noreste
-    else if (deltaFile > 0 && deltaRank === 0) rotation = 90; // → Este
-    else if (deltaFile > 0 && deltaRank < 0) rotation = 135; // ↘ Sureste
-    else if (deltaFile === 0 && deltaRank < 0) rotation = 180; // ↓ Sur
-    else if (deltaFile < 0 && deltaRank < 0) rotation = 225; // ↙ Suroeste
-    else if (deltaFile < 0 && deltaRank === 0) rotation = 270; // ← Oeste
-    else if (deltaFile < 0 && deltaRank > 0) rotation = 315; // ↖ Noroeste
+    if (deltaFile === 0 && deltaRank > 0) rotation = 180;    // ↑ Norte (vertical arriba)
+    else if (deltaFile > 0 && deltaRank > 0) rotation = 225;  // ↗ Noreste (diagonal arriba-derecha)
+    else if (deltaFile > 0 && deltaRank === 0) rotation = 270; // → Este (horizontal derecha)
+    else if (deltaFile > 0 && deltaRank < 0) rotation = 315; // ↘ Sureste (diagonal abajo-derecha)
+    else if (deltaFile === 0 && deltaRank < 0) rotation = 0; // ↓ Sur (vertical abajo)
+    else if (deltaFile < 0 && deltaRank < 0) rotation = 45; // ↙ Suroeste (diagonal abajo-izquierda)
+    else if (deltaFile < 0 && deltaRank === 0) rotation = 90; // ← Oeste (horizontal izquierda)
+    else if (deltaFile < 0 && deltaRank > 0) rotation = 135; // ↖ Noroeste (diagonal arriba-izquierda)
 
-    // Crear contenedor de flecha GRANDE
+    // 4. Crear contenedor div para la flecha
     const arrow = document.createElement('div');
-    arrow.className = 'hint-arrow';
+    arrow.className = 'hint-arrow';  // Clase CSS que posiciona la flecha en el centro
+
+    // 5. Aplicar rotación usando CSS Custom Property (variable CSS)
+    // setProperty() permite cambiar variables CSS dinámicamente
+    // La clase .hint-arrow en CSS usa: transform: rotate(var(--rotation))
     arrow.style.setProperty('--rotation', `${rotation}deg`);
 
-    // Crear SVG de flecha CONTINUA GRANDE (60x60)
+    // 6. Crear SVG inline usando template literal
+    // Template literal (`) permite strings multilínea e interpolación ${variable}
     arrow.innerHTML = `
         <svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
             <defs>
+                <!-- Definir filtro de glow/resplandor para efecto neón -->
                 <filter id="glow-${color.replace('#', '')}">
+                    <!-- feGaussianBlur: Desenfoque gaussiano con radio 3px -->
                     <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <!-- feMerge: Combinar el blur con el gráfico original -->
                     <feMerge>
-                        <feMergeNode in="coloredBlur"/>
-                        <feMergeNode in="SourceGraphic"/>
+                        <feMergeNode in="coloredBlur"/>      <!-- Blur atrás (glow) -->
+                        <feMergeNode in="SourceGraphic"/>    <!-- Gráfico adelante -->
                     </feMerge>
                 </filter>
             </defs>
+            <!-- path: Define la forma de la flecha usando comandos SVG
+                 M = Move to (mover a punto)
+                 L = Line to (línea hasta punto)
+                 Coordenadas: (x, y) en el viewBox de 60x60
+                 M30 10 L30 40: Línea vertical desde (30,10) hasta (30,40) - tronco de flecha
+                 M30 40 L20 30: Línea desde (30,40) hasta (20,30) - punta izquierda
+                 M30 40 L40 30: Línea desde (30,40) hasta (40,30) - punta derecha
+                 Resultado: Flecha apuntando HACIA ABAJO ↓
+            -->
             <path d="M30 10 L30 40 M30 40 L20 30 M30 40 L40 30"
                   stroke="${color}"
                   stroke-width="6"
@@ -1098,9 +1198,17 @@ function addDirectionalArrow(square, fromSquare, toSquare, color) {
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   filter="url(#glow-${color.replace('#', '')})"/>
+                  <!-- stroke="${color}": Color interpolado desde parámetro (ej: #FF00FF)
+                       stroke-width="6": Grosor de línea en píxeles
+                       fill="none": Sin relleno, solo el contorno (línea)
+                       stroke-linecap="round": Extremos de línea redondeados
+                       stroke-linejoin="round": Uniones de línea redondeadas
+                       filter="url(#glow-...)": Aplica el filtro definido en <defs> -->
         </svg>
     `;
 
+    // 7. Agregar el elemento arrow (con SVG dentro) como hijo de la casilla
+    // La flecha ahora es visible y rotada según la dirección del movimiento
     square.appendChild(arrow);
 }
 
@@ -2109,21 +2217,39 @@ function loadBestReplay() {
 // ============================================
 
 /**
- * Muestra el botón VER REPLAY si hay un replay guardado Y no hay partida en curso
+ * Controla la habilitación del botón VER REPLAY
+ * El botón siempre es visible, pero solo se habilita cuando:
+ * 1. Hay replay guardado
+ * 2. La partida terminó COMPLETAMENTE (gameover o volvió a pantalla principal)
  */
 function updateReplayButtonVisibility() {
     const btnReplay = document.getElementById('btnReplay');
 
-    // Solo mostrar si:
-    // 1. Hay replay guardado
-    // 2. NO hay partida activa (idle o gameover)
+    // Si no hay replay guardado, ocultar botón
     const hasReplay = bestReplay && bestReplay.levels.length > 0;
-    const isGameInactive = gameState.phase === 'idle' || gameState.phase === 'gameover';
-
-    if (hasReplay && isGameInactive) {
-        btnReplay.style.display = 'flex';
-    } else {
+    if (!hasReplay) {
         btnReplay.style.display = 'none';
+        return;
+    }
+
+    // Si hay replay, botón SIEMPRE visible
+    btnReplay.style.display = 'flex';
+
+    // Habilitar SOLO si:
+    // 1. phase === 'gameover' (perdió todas las vidas)
+    // 2. currentLevel === 1 Y phase === 'idle' (volvió a pantalla principal)
+    // NUNCA habilitar durante retry (phase puede ser idle pero currentLevel > 1)
+    const isGameOver = gameState.phase === 'gameover';
+    const isAtMainScreen = gameState.phase === 'idle' && gameState.currentLevel === 1;
+
+    if (isGameOver || isAtMainScreen) {
+        btnReplay.disabled = false;
+        btnReplay.style.opacity = '1';
+        btnReplay.style.cursor = 'pointer';
+    } else {
+        btnReplay.disabled = true;
+        btnReplay.style.opacity = '0.4';
+        btnReplay.style.cursor = 'not-allowed';
     }
 }
 
@@ -2141,9 +2267,9 @@ async function startReplayPlayback() {
     // Ocultar botón PLAY central si está visible
     hidePlayButton();
 
-    // Mostrar badge de cámara y marco retro
-    document.getElementById('replayCameraBadge').classList.remove('hidden');
-    document.getElementById('retroFrame').classList.remove('hidden');
+    // Aplicar efecto vintage al tablero (filtro sepia + grain)
+    const chessboard = document.getElementById('chessboard');
+    chessboard.classList.add('replay-mode');
 
     // Cambiar botón COMENZAR a rojo (modo pausar)
     const btnStart = document.getElementById('btnStart');
@@ -2154,7 +2280,8 @@ async function startReplayPlayback() {
     // Resetear estado del reproductor
     replayState.isPlaying = true;
     replayState.isPaused = false;
-    replayState.currentLevelIndex = 0;
+    // Comenzar desde el ÚLTIMO nivel (el más largo), no desde el nivel 1
+    replayState.currentLevelIndex = bestReplay.levels.length - 1;
     replayState.currentStepIndex = 0;
     replayState.playbackSpeed = 1.0;
 
@@ -2172,38 +2299,31 @@ async function startReplayPlayback() {
 }
 
 /**
- * Reproduce el replay nivel por nivel
+ * Reproduce SOLO el último nivel completo (el más difícil alcanzado)
  */
 async function playReplay() {
-    while (replayState.isPlaying && replayState.currentLevelIndex < bestReplay.levels.length) {
-        // Esperar si está pausado
-        while (replayState.isPaused) {
-            await sleep(100);
-        }
+    // Solo reproducir el último nivel, UNA SOLA VEZ (no loop infinito)
+    const lastLevelIndex = bestReplay.levels.length - 1;
+    const levelData = bestReplay.levels[lastLevelIndex];
 
-        if (!replayState.isPlaying) break;
+    console.log(`🎬 Playing ONLY last level: ${levelData.level} (${levelData.sequence.length} moves)`);
 
-        const levelData = bestReplay.levels[replayState.currentLevelIndex];
-        await playReplayLevel(levelData);
+    // Reproducir el nivel UNA VEZ
+    await playReplayLevel(levelData);
 
-        // Avanzar al siguiente nivel
-        replayState.currentLevelIndex++;
+    // Pausa final antes de detener
+    await sleep(2000 / replayState.playbackSpeed);
 
-        // Pausa entre niveles (aumentada para ver transición)
-        if (replayState.currentLevelIndex < bestReplay.levels.length) {
-            await sleep(2000 / replayState.playbackSpeed);
-        }
-    }
+    console.log('🎬 Replay finished - stopping automatically');
 
-    // Replay terminado
-    if (replayState.isPlaying) {
-        console.log('🎬 Replay finished');
-        stopReplay();
-    }
+    // Detener automáticamente después de una reproducción
+    stopReplay();
 }
 
 /**
  * Reproduce un nivel específico del replay
+ * SOLO muestra la secuencia de la máquina (NO los movimientos del jugador)
+ * Funciona como un "HINT animado" mostrando qué casillas iluminar
  */
 async function playReplayLevel(levelData) {
     console.log(`🎬 Playing level ${levelData.level}`);
@@ -2211,18 +2331,9 @@ async function playReplayLevel(levelData) {
     // Actualizar mensaje de estado
     updateStatus(`🎬 REPLAY - Nivel ${levelData.level}`, 'playing');
 
-    // Fase 1: Mostrar secuencia
+    // SOLO Fase 1: Mostrar secuencia de la máquina
+    // (NO mostrar movimientos del jugador - esto es un HINT animado)
     await showReplaySequence(levelData);
-
-    // Esperar si está pausado
-    while (replayState.isPaused && replayState.isPlaying) {
-        await sleep(100);
-    }
-
-    if (!replayState.isPlaying) return;
-
-    // Fase 2: Mostrar jugadas del jugador
-    await showReplayPlayerMoves(levelData);
 }
 
 /**
@@ -2231,6 +2342,9 @@ async function playReplayLevel(levelData) {
 async function showReplaySequence(levelData) {
     const baseDuration = 800;  // Duración base por casilla (aumentado)
     const pauseDuration = 400;  // Pausa entre casillas (aumentado)
+
+    // Dibujar líneas conectoras negras al inicio (como en HINT)
+    drawReplayConnectingLines(levelData.sequence);
 
     for (let i = 0; i < levelData.sequence.length; i++) {
         // Esperar si está pausado
@@ -2254,6 +2368,9 @@ async function showReplaySequence(levelData) {
 
     // Pausa después de mostrar secuencia (aumentada)
     await sleep(1200 / replayState.playbackSpeed);
+
+    // Limpiar líneas al finalizar
+    clearReplayConnectingLines();
 }
 
 /**
@@ -2341,12 +2458,83 @@ function clearBoardForReplay() {
         labels.forEach(label => label.remove());
     });
 
-    // Limpiar SVG de líneas conectoras
+    // Limpiar SVG de líneas conectoras de hint
     const svgContainer = document.getElementById('hintLinesSvg');
     if (svgContainer) {
         while (svgContainer.firstChild) {
             svgContainer.removeChild(svgContainer.firstChild);
         }
+    }
+
+    // Limpiar líneas de replay
+    clearReplayConnectingLines();
+}
+
+/**
+ * Dibuja líneas conectoras negras entre casillas para el replay
+ * Similar a drawConnectingLines() pero para replay (sin HINT UI)
+ */
+function drawReplayConnectingLines(sequence) {
+    // Buscar o crear el contenedor SVG para las líneas de replay
+    let svgContainer = document.getElementById('replay-lines-container');
+    if (!svgContainer) {
+        svgContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svgContainer.id = 'replay-lines-container';
+        svgContainer.classList.add('hint-lines-svg'); // Usar mismos estilos que hint
+        document.getElementById('chessboard').appendChild(svgContainer);
+    }
+
+    // Limpiar líneas anteriores
+    svgContainer.innerHTML = '';
+
+    // Obtener el tablero para calcular posiciones
+    const board = document.getElementById('chessboard');
+    const boardRect = board.getBoundingClientRect();
+
+    // Dibujar líneas entre todas las casillas de la secuencia
+    for (let i = 0; i < sequence.length - 1; i++) {
+        const currentSquareId = sequence[i];
+        const nextSquareId = sequence[i + 1];
+
+        // Si repite la misma casilla, no dibujar línea
+        if (currentSquareId === nextSquareId) continue;
+
+        const currentSquare = document.querySelector(`[data-square="${currentSquareId}"]`);
+        const nextSquare = document.querySelector(`[data-square="${nextSquareId}"]`);
+
+        if (currentSquare && nextSquare) {
+            // Calcular centros relativos al tablero
+            const currentRect = currentSquare.getBoundingClientRect();
+            const nextRect = nextSquare.getBoundingClientRect();
+
+            const x1 = currentRect.left - boardRect.left + currentRect.width / 2;
+            const y1 = currentRect.top - boardRect.top + currentRect.height / 2;
+            const x2 = nextRect.left - boardRect.left + nextRect.width / 2;
+            const y2 = nextRect.top - boardRect.top + nextRect.height / 2;
+
+            // Crear línea SVG (negra, sin cabezas de flecha)
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', '#000');
+            line.setAttribute('stroke-width', '4');
+            line.setAttribute('stroke-linecap', 'round');
+            line.classList.add('replay-connecting-line');
+
+            svgContainer.appendChild(line);
+        }
+    }
+}
+
+/**
+ * Limpia las líneas conectoras del replay
+ */
+function clearReplayConnectingLines() {
+    const svgContainer = document.getElementById('replay-lines-container');
+    if (svgContainer) {
+        svgContainer.remove();
     }
 }
 
@@ -2379,9 +2567,9 @@ function stopReplay() {
     replayState.isPlaying = false;
     replayState.isPaused = false;
 
-    // Ocultar badge de cámara y marco retro
-    document.getElementById('replayCameraBadge').classList.add('hidden');
-    document.getElementById('retroFrame').classList.add('hidden');
+    // Quitar efecto vintage del tablero
+    const chessboard = document.getElementById('chessboard');
+    chessboard.classList.remove('replay-mode');
 
     // Restaurar botón COMENZAR
     const btnStart = document.getElementById('btnStart');

@@ -298,10 +298,10 @@
             display: grid;
             gap: 2px;
             background: linear-gradient(45deg, #222, #444);
-            padding: 15px;
+            padding: 25px 20px 25px 20px; /* Aumentado para que las coordenadas quepan */
             border-radius: 15px;
             border: 4px solid var(--neon-cyan);
-            box-shadow: 
+            box-shadow:
                 var(--glow-large) var(--neon-cyan),
                 inset 0 0 50px rgba(0,255,255,0.1);
             margin: 2rem auto;
@@ -310,22 +310,22 @@
         }
 
         /* Dynamic Grid Sizes */
-        .chessboard.size-4 {
+        .chessboard.size-3x4 {
             grid-template-columns: repeat(4, 80px);
-            grid-template-rows: repeat(4, 80px);
+            grid-template-rows: repeat(3, 80px);
         }
 
-        .chessboard.size-6 {
+        .chessboard.size-6x6 {
             grid-template-columns: repeat(6, 70px);
             grid-template-rows: repeat(6, 70px);
         }
 
-        .chessboard.size-8 {
+        .chessboard.size-8x8 {
             grid-template-columns: repeat(8, 60px);
             grid-template-rows: repeat(8, 60px);
         }
 
-        .chessboard.size-10 {
+        .chessboard.size-10x10 {
             grid-template-columns: repeat(10, 50px);
             grid-template-rows: repeat(10, 50px);
         }
@@ -403,6 +403,114 @@
             0% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
             50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
             100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* ==========================================
+           COORDENADAS DEL TABLERO
+           ==========================================
+           Las coordenadas se posicionan FUERA de las casillas,
+           en el padding negro del tablero.
+           - coord-file: números de columna (1,2,3...) en borde inferior
+           - coord-rank: números de fila (1,2,3...) en borde izquierdo
+        */
+
+        /* ==========================================
+           COORDENADAS HORIZONTALES (letras: a, b, c, d...)
+           ==========================================
+           Se muestran en el BORDE INFERIOR del tablero
+        */
+        .coord-file {
+            /* Posicionamiento absoluto respecto a la casilla padre */
+            position: absolute;
+            bottom: -18px;        /* Fuera de la casilla, hacia abajo */
+            left: 50%;            /* Centrado horizontalmente */
+            transform: translateX(-50%);  /* Ajuste fino del centrado */
+
+            /* Estilo del texto - FINAL VERSION */
+            color: #000000;       /* Negro para buen contraste con amarillo */
+            font-size: 12px;      /* Tamaño legible */
+            font-weight: 900;     /* Extra bold para visibilidad */
+            font-family: 'Orbitron', sans-serif;
+
+            /* Fondo amarillo estilo etiqueta */
+            background: linear-gradient(135deg, #ffeb3b 0%, #fdd835 100%);
+            padding: 2px 6px;     /* Padding para crear "etiqueta" */
+            border-radius: 3px;   /* Bordes ligeramente redondeados */
+            border: 1px solid rgba(0, 0, 0, 0.2);  /* Borde sutil */
+
+            /* Sombra para destacar del fondo */
+            box-shadow:
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                0 0 8px rgba(255, 235, 59, 0.5);
+
+            /* Evitar interacción */
+            pointer-events: none; /* No bloquea clicks en las casillas */
+            user-select: none;    /* No se puede seleccionar el texto */
+
+            /* Z-index para estar sobre otros elementos */
+            z-index: 50;
+        }
+
+        /* ==========================================
+           COORDENADAS VERTICALES (números: 1, 2, 3...)
+           ==========================================
+           Se muestran en el BORDE IZQUIERDO del tablero
+        */
+        .coord-rank {
+            /* Posicionamiento absoluto respecto a la casilla padre */
+            position: absolute;
+            left: -15px;          /* Fuera de la casilla, hacia la izquierda */
+            top: 50%;             /* Centrado verticalmente */
+            transform: translateY(-50%);  /* Ajuste fino del centrado */
+
+            /* Estilo del texto - FINAL VERSION */
+            color: #000000;       /* Negro para buen contraste con amarillo */
+            font-size: 12px;      /* Tamaño legible */
+            font-weight: 900;     /* Extra bold para visibilidad */
+            font-family: 'Orbitron', sans-serif;
+
+            /* Fondo amarillo estilo etiqueta */
+            background: linear-gradient(135deg, #ffeb3b 0%, #fdd835 100%);
+            padding: 2px 6px;     /* Padding para crear "etiqueta" */
+            border-radius: 3px;   /* Bordes ligeramente redondeados */
+            border: 1px solid rgba(0, 0, 0, 0.2);  /* Borde sutil */
+
+            /* Sombra para destacar del fondo */
+            box-shadow:
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                0 0 8px rgba(255, 235, 59, 0.5);
+
+            /* Evitar interacción */
+            pointer-events: none; /* No bloquea clicks en las casillas */
+            user-select: none;    /* No se puede seleccionar el texto */
+
+            /* Z-index para estar sobre otros elementos */
+            z-index: 50;
+        }
+
+        /* Coordenadas responsive */
+        @media (min-width: 600px) {
+            .coord-file {
+                bottom: -20px;
+                font-size: 12px;
+            }
+
+            .coord-rank {
+                left: -14px;
+                font-size: 12px;
+            }
+        }
+
+        @media (min-width: 900px) {
+            .coord-file {
+                bottom: -22px;
+                font-size: 13px;
+            }
+
+            .coord-rank {
+                left: -16px;
+                font-size: 13px;
+            }
         }
 
         .square:hover.possible {
@@ -987,6 +1095,9 @@
         @media (max-width: 768px) {
             .neon-container {
                 padding: 0.5rem;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             }
 
             .game-title {
@@ -996,26 +1107,27 @@
             /* Centrar todos los tamaños de tablero en móvil */
             .chessboard {
                 margin: 1rem auto;
-                padding: 8px;
+                padding: 20px 15px 20px 15px; /* Aumentado para coordenadas en mobile */
                 width: fit-content;
+                justify-self: center;
             }
 
-            .chessboard.size-4 {
-                grid-template-columns: repeat(4, 80px);
-                grid-template-rows: repeat(4, 80px);
+            .chessboard.size-3x4 {
+                grid-template-columns: repeat(4, 70px);
+                grid-template-rows: repeat(3, 70px);
             }
 
-            .chessboard.size-6 {
+            .chessboard.size-6x6 {
                 grid-template-columns: repeat(6, 55px);
                 grid-template-rows: repeat(6, 55px);
             }
 
-            .chessboard.size-8 {
+            .chessboard.size-8x8 {
                 grid-template-columns: repeat(8, 43px);
                 grid-template-rows: repeat(8, 43px);
             }
 
-            .chessboard.size-10 {
+            .chessboard.size-10x10 {
                 grid-template-columns: repeat(10, 34px);
                 grid-template-rows: repeat(10, 34px);
             }
@@ -1124,14 +1236,14 @@
         
         <!-- Size Selector -->
         <div class="size-selector">
-            <button class="size-btn active" onclick="changeBoardSize(4)" data-size="4">4x4</button>
-            <button class="size-btn" onclick="changeBoardSize(6)" data-size="6">6x6</button>
-            <button class="size-btn" onclick="changeBoardSize(8)" data-size="8">8x8</button>
-            <button class="size-btn" onclick="changeBoardSize(10)" data-size="10">10x10</button>
+            <button class="size-btn active" onclick="changeBoardSize(3, 4)" data-size="3x4">3x4</button>
+            <button class="size-btn" onclick="changeBoardSize(6, 6)" data-size="6x6">6x6</button>
+            <button class="size-btn" onclick="changeBoardSize(8, 8)" data-size="8x8">8x8</button>
+            <button class="size-btn" onclick="changeBoardSize(10, 10)" data-size="10x10">10x10</button>
         </div>
         
         <!-- Chessboard -->
-        <div id="chessboard" class="chessboard size-4"></div>
+        <div id="chessboard" class="chessboard size-3x4"></div>
         
         <!-- DEBUG: Botones de prueba (COMENTADOS - descomentar si necesitas debuggear)
         <div class="game-controls" style="background: rgba(255,0,0,0.2); padding: 1rem; margin: 1rem 0;">
@@ -1198,14 +1310,15 @@
         </div>
         <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
             <button class="btn btn-primary" onclick="newGame()">🎮 TRY AGAIN</button>
-            <button class="btn btn-secondary" onclick="closeGameOverModal(); changeBoardSize(4);">📉 EASIER</button>
+            <button class="btn btn-secondary" onclick="closeGameOverModal(); changeBoardSize(3, 4);">📉 EASIER</button>
         </div>
     </div>
     
     <script>
         // Game state - Clean and Simple like your working code
         let gameState = {
-            boardSize: 4,
+            boardRows: 3,
+            boardCols: 4,
             board: [],
             currentPos: null,
             visitedSquares: new Set(),
@@ -1273,63 +1386,123 @@
             newGame();
         }
         
-        // Create the visual board (FIXED - no more memory leaks)
+        /**
+         * ========================================
+         * CREAR TABLERO VISUAL
+         * ========================================
+         * Genera el tablero HTML con todas las casillas y coordenadas.
+         * Se ejecuta cada vez que se cambia el tamaño del tablero.
+         *
+         * IMPORTANTE: Las coordenadas se agregan como elementos <span>
+         * DENTRO de las casillas del borde, posicionados absolutamente
+         * para aparecer en el padding negro del tablero.
+         */
         function createBoard() {
+            // Obtener el elemento contenedor del tablero
             const board = document.getElementById('chessboard');
-            board.innerHTML = ''; // Clear completely
-            
-            const totalSquares = gameState.boardSize * gameState.boardSize;
-            console.log(`📋 Creating ${gameState.boardSize}x${gameState.boardSize} board (${totalSquares} squares)`);
-            
-            // Update board CSS class
-            board.className = `chessboard size-${gameState.boardSize}`;
-            
-            for (let row = 0; row < gameState.boardSize; row++) {
-                for (let col = 0; col < gameState.boardSize; col++) {
+
+            // Limpiar completamente el tablero (eliminar casillas anteriores)
+            board.innerHTML = '';
+
+            // Obtener dimensiones del tablero desde el estado del juego
+            const rows = gameState.boardRows;  // Número de filas (3, 6, 8, o 10)
+            const cols = gameState.boardCols;  // Número de columnas (4, 6, 8, o 10)
+            const totalSquares = rows * cols;
+            console.log(`📋 Creating ${rows}x${cols} board (${totalSquares} squares)`);
+
+            // Actualizar la clase CSS del tablero para aplicar grid correcto
+            board.className = `chessboard size-${rows}x${cols}`;
+
+            // ITERAR POR CADA FILA
+            for (let row = 0; row < rows; row++) {
+
+                // ITERAR POR CADA COLUMNA
+                for (let col = 0; col < cols; col++) {
+
+                    // ==========================================
+                    // CREAR CASILLA
+                    // ==========================================
                     const square = document.createElement('div');
-                    const index = row * gameState.boardSize + col;
-                    
+                    const index = row * cols + col;  // Índice único: 0, 1, 2, 3...
+
+                    // Clase de color: light o dark (patrón ajedrez alternado)
+                    // Si la suma de fila+columna es par → light, si es impar → dark
                     square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+
+                    // Guardar índice en data-attribute para referencia
                     square.dataset.index = index;
+
+                    // Event listener: cuando se clickea, intentar mover el caballo
                     square.addEventListener('click', () => makeMove(index));
-                    
+
+                    // ==========================================
+                    // AGREGAR COORDENADAS (SOLO EN LOS BORDES)
+                    // ==========================================
+
+                    // COORDENADAS HORIZONTALES (letras de columna: a, b, c, d...)
+                    // Se agregan en la ÚLTIMA FILA (row = rows - 1)
+                    // Con bottom: -18px quedarán DEBAJO del tablero, en el borde inferior
+                    if (row === rows - 1) {
+                        const coordFile = document.createElement('span');
+                        coordFile.className = 'coord-file';
+                        // Convertir número de columna a letra: 0→a, 1→b, 2→c...
+                        // Usar String.fromCharCode(97 + col) donde 97 es 'a' en ASCII
+                        coordFile.textContent = String.fromCharCode(97 + col);  // a, b, c...
+                        square.appendChild(coordFile);
+                        console.log(`  ➕ Added coord-file: ${String.fromCharCode(97 + col)} at square ${index} (bottom row)`);
+                    }
+
+                    // COORDENADAS VERTICALES (números de fila: 3, 2, 1...)
+                    // Se agregan en la PRIMERA COLUMNA (col = 0)
+                    // Con left: -15px quedarán A LA IZQUIERDA del tablero
+                    // NOTA: Las filas se numeran de arriba a abajo, por eso rows - row
+                    if (col === 0) {
+                        const coordRank = document.createElement('span');
+                        coordRank.className = 'coord-rank';
+                        coordRank.textContent = rows - row;  // De arriba abajo: 3, 2, 1
+                        square.appendChild(coordRank);
+                        console.log(`  ➕ Added coord-rank: ${rows - row} at square ${index} (left column)`);
+                    }
+
+                    // Agregar la casilla al tablero
                     board.appendChild(square);
                 }
             }
-            
-            console.log(`✅ Board created with ${totalSquares} squares`);
+
+            console.log(`✅ Board created with ${totalSquares} squares and coordinates`);
         }
         
         // Change board size (FIXED - robust implementation)
-        function changeBoardSize(newSize) {
-            console.log(`🔄 Changing board size from ${gameState.boardSize} to ${newSize}`);
-            
-            if (gameState.boardSize === newSize) {
+        function changeBoardSize(newRows, newCols) {
+            console.log(`🔄 Changing board size from ${gameState.boardRows}x${gameState.boardCols} to ${newRows}x${newCols}`);
+
+            if (gameState.boardRows === newRows && gameState.boardCols === newCols) {
                 console.log('⚠️ Same size selected, ignoring');
                 return;
             }
-            
+
             // Clear any existing game
             if (gameState.gameTimer) {
                 clearInterval(gameState.gameTimer);
             }
-            
+
             // Update state
-            gameState.boardSize = newSize;
-            
+            gameState.boardRows = newRows;
+            gameState.boardCols = newCols;
+
             // Update active button
             document.querySelectorAll('.size-btn').forEach(btn => {
                 btn.classList.remove('active');
-                if (parseInt(btn.dataset.size) === newSize) {
+                if (btn.dataset.size === `${newRows}x${newCols}`) {
                     btn.classList.add('active');
                 }
             });
-            
+
             // Recreate board and start new game
             createBoard();
             newGame();
-            
-            console.log(`✅ Board size changed to ${newSize}x${newSize}`);
+
+            console.log(`✅ Board size changed to ${newRows}x${newCols}`);
         }
         
         // Start new game (Based on your working code)
@@ -1337,7 +1510,7 @@
             console.log('🎮 Starting new game...');
             
             // Reset game state
-            const totalSquares = gameState.boardSize * gameState.boardSize;
+            const totalSquares = gameState.boardRows * gameState.boardCols;
             gameState.board = Array(totalSquares).fill(null);
             gameState.visitedSquares.clear();
             gameState.moveHistory = [];
@@ -1367,7 +1540,7 @@
             // Play start sound
             playSound('start');
             
-            console.log(`🚀 New game started on ${gameState.boardSize}x${gameState.boardSize} board`);
+            console.log(`🚀 New game started on ${gameState.boardRows}x${gameState.boardCols} board`);
         }
         
         // Make a move (FIXED - proper validation)
@@ -1375,7 +1548,7 @@
             console.log(`🎯 Attempting move to square ${targetIndex}`);
             
             const squares = document.querySelectorAll('.square');
-            const totalSquares = gameState.boardSize * gameState.boardSize;
+            const totalSquares = gameState.boardRows * gameState.boardCols;
             
             // Validate index
             if (targetIndex < 0 || targetIndex >= totalSquares) {
@@ -1439,69 +1612,127 @@
         
         // Check if knight move is valid (Same logic as your working code)
         function isValidKnightMove(from, to) {
-            const fromRow = Math.floor(from / gameState.boardSize);
-            const fromCol = from % gameState.boardSize;
-            const toRow = Math.floor(to / gameState.boardSize);
-            const toCol = to % gameState.boardSize;
-            
+            const cols = gameState.boardCols;
+            const fromRow = Math.floor(from / cols);
+            const fromCol = from % cols;
+            const toRow = Math.floor(to / cols);
+            const toCol = to % cols;
+
             const rowDiff = Math.abs(toRow - fromRow);
             const colDiff = Math.abs(toCol - fromCol);
-            
+
             return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
         }
         
         // Get possible moves for current position (FIXED for all board sizes)
         function getPossibleMoves(pos) {
             if (pos === null) return [];
-            
-            const row = Math.floor(pos / gameState.boardSize);
-            const col = pos % gameState.boardSize;
+
+            const rows = gameState.boardRows;
+            const cols = gameState.boardCols;
+            const row = Math.floor(pos / cols);
+            const col = pos % cols;
             const moves = [];
-            
+
             knightMoves.forEach(([dRow, dCol]) => {
                 const newRow = row + dRow;
                 const newCol = col + dCol;
-                
-                if (newRow >= 0 && newRow < gameState.boardSize && newCol >= 0 && newCol < gameState.boardSize) {
-                    const newPos = newRow * gameState.boardSize + newCol;
+
+                if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+                    const newPos = newRow * cols + newCol;
                     if (!gameState.visitedSquares.has(newPos)) {
                         moves.push(newPos);
                     }
                 }
             });
-            
+
             return moves;
         }
         
-        // Update display (ENHANCED version of your working code)
+        /**
+         * ========================================
+         * ACTUALIZAR DISPLAY DEL TABLERO
+         * ========================================
+         * Se llama cada vez que cambia el estado del juego.
+         * Actualiza las casillas visitadas, posición actual, etc.
+         *
+         * IMPORTANTE: Debe PRESERVAR las coordenadas que están en el HTML.
+         * No usar innerHTML = '' porque borra las coordenadas también.
+         */
         function updateDisplay() {
             const squares = document.querySelectorAll('.square');
-            const totalSquares = gameState.boardSize * gameState.boardSize;
-            
-            // Clear all special classes
+            const totalSquares = gameState.boardRows * gameState.boardCols;
+
+            // ==========================================
+            // LIMPIAR CLASES ESPECIALES Y CONTENIDO
+            // ==========================================
             squares.forEach(square => {
-                square.className = square.className.split(' ').filter(c => 
+                // Limpiar solo las clases de estado (visited, current, possible)
+                // PRESERVAR las clases base: 'square', 'light', 'dark'
+                square.className = square.className.split(' ').filter(c =>
                     c === 'square' || c === 'light' || c === 'dark'
                 ).join(' ');
+
+                // ==========================================
+                // LIMPIAR CONTENIDO PERO PRESERVAR COORDENADAS
+                // ==========================================
+                // NO usar: square.innerHTML = '';  ← Esto borra las coordenadas
+                //
+                // En su lugar, eliminar solo elementos que NO sean coordenadas:
+                // - Remover .move-number
+                // - Remover .knight-symbol
+                // - MANTENER .coord-file y .coord-rank
+
+                const coordFile = square.querySelector('.coord-file');
+                const coordRank = square.querySelector('.coord-rank');
+
+                // Limpiar todo el contenido
                 square.innerHTML = '';
+
+                // Restaurar coordenadas si existían
+                if (coordFile) square.appendChild(coordFile);
+                if (coordRank) square.appendChild(coordRank);
             });
             
-            // Mark visited squares
+            // ==========================================
+            // MARCAR CASILLAS VISITADAS
+            // ==========================================
+            // IMPORTANTE: NO usar innerHTML porque borra las coordenadas
+            // En su lugar, crear elementos y agregarlos con appendChild
             gameState.visitedSquares.forEach(index => {
                 if (squares[index]) {
                     squares[index].classList.add('visited');
-                    squares[index].innerHTML = `<span class="move-number">${gameState.board[index]}</span>`;
+
+                    // Crear elemento de número de movimiento
+                    const moveNumber = document.createElement('span');
+                    moveNumber.className = 'move-number';
+                    moveNumber.textContent = gameState.board[index];
+
+                    // Agregar el número (las coordenadas ya están ahí si es una casilla del borde)
+                    squares[index].appendChild(moveNumber);
                 }
             });
-            
-            // Mark current position
+
+            // ==========================================
+            // MARCAR POSICIÓN ACTUAL (donde está el caballo)
+            // ==========================================
             if (gameState.currentPos !== null && squares[gameState.currentPos]) {
                 squares[gameState.currentPos].classList.remove('visited');
                 squares[gameState.currentPos].classList.add('current');
-                squares[gameState.currentPos].innerHTML = `
-                    <span class="move-number">${gameState.board[gameState.currentPos]}</span>
-                    <span class="knight-symbol">♘</span>
-                `;
+
+                // Crear elemento de número de movimiento
+                const moveNumber = document.createElement('span');
+                moveNumber.className = 'move-number';
+                moveNumber.textContent = gameState.board[gameState.currentPos];
+
+                // Crear elemento del caballo
+                const knightSymbol = document.createElement('span');
+                knightSymbol.className = 'knight-symbol';
+                knightSymbol.textContent = '♘';
+
+                // Agregar ambos elementos (las coordenadas ya están si es casilla del borde)
+                squares[gameState.currentPos].appendChild(moveNumber);
+                squares[gameState.currentPos].appendChild(knightSymbol);
                 
                 // Show possible moves
                 const possibleMoves = getPossibleMoves(gameState.currentPos);
@@ -1546,7 +1777,7 @@
             
             // Use Warnsdorff's rule to suggest best move
             let bestMove = possibleMoves[0];
-            let fewestOnward = gameState.boardSize * 2; // Max possible onward moves
+            let fewestOnward = Math.max(gameState.boardRows, gameState.boardCols) * 2; // Max possible onward moves
             
             possibleMoves.forEach(move => {
                 const onwardMoves = getPossibleMoves(move).length;
@@ -1618,10 +1849,10 @@
             const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
             const minutes = Math.floor(elapsed / 60);
             const seconds = elapsed % 60;
-            const totalSquares = gameState.boardSize * gameState.boardSize;
+            const totalSquares = gameState.boardRows * gameState.boardCols;
             
             document.getElementById('finalStats').innerHTML = `
-                <p><span class="stat-label">🎯 Board Size:</span> <span class="stat-value">${gameState.boardSize}x${gameState.boardSize} (${totalSquares} squares)</span></p>
+                <p><span class="stat-label">🎯 Board Size:</span> <span class="stat-value">${gameState.boardRows}x${gameState.boardCols} (${totalSquares} squares)</span></p>
                 <p><span class="stat-label">⏱️ Time:</span> <span class="stat-value">${minutes}:${seconds.toString().padStart(2, '0')}</span></p>
                 <p><span class="stat-label">🎮 Moves:</span> <span class="stat-value">${gameState.moveHistory.length}</span></p>
                 <p><span class="stat-label">💡 Hints Used:</span> <span class="stat-value">${3 - gameState.hintsLeft}</span></p>
@@ -1629,17 +1860,17 @@
                     <strong>🐴 You are a Knight Quest Master! ✨</strong>
                 </p>
             `;
-            
+
             showVictoryModal();
             playSound('victory');
             addCoins(500);
-            
+
             // Save best score
-            const scoreKey = `knight-quest-best-${gameState.boardSize}x${gameState.boardSize}`;
+            const scoreKey = `knight-quest-best-${gameState.boardRows}x${gameState.boardCols}`;
             const currentBest = localStorage.getItem(scoreKey);
             if (!currentBest || gameState.moveHistory.length < parseInt(currentBest)) {
                 localStorage.setItem(scoreKey, gameState.moveHistory.length.toString());
-                console.log(`🏆 New best score for ${gameState.boardSize}x${gameState.boardSize}: ${gameState.moveHistory.length} moves`);
+                console.log(`🏆 New best score for ${gameState.boardRows}x${gameState.boardCols}: ${gameState.moveHistory.length} moves`);
             }
         }
         
@@ -1665,7 +1896,7 @@
             console.log('💀 Game Over - No more moves');
             clearInterval(gameState.gameTimer);
             
-            const totalSquares = gameState.boardSize * gameState.boardSize;
+            const totalSquares = gameState.boardRows * gameState.boardCols;
             const percentage = Math.round((gameState.visitedSquares.size / totalSquares) * 100);
             const elapsed = gameState.startTime ? Math.floor((Date.now() - gameState.startTime) / 1000) : 0;
             const minutes = Math.floor(elapsed / 60);
@@ -1673,7 +1904,7 @@
             
             // Update game over stats
             document.getElementById('gameOverStats').innerHTML = `
-                <p><span class="stat-label">🎯 Board Size:</span> <span class="stat-value">${gameState.boardSize}x${gameState.boardSize} (${totalSquares} squares)</span></p>
+                <p><span class="stat-label">🎯 Board Size:</span> <span class="stat-value">${gameState.boardRows}x${gameState.boardCols} (${totalSquares} squares)</span></p>
                 <p><span class="stat-label">⏱️ Time:</span> <span class="stat-value">${minutes}:${seconds.toString().padStart(2, '0')}</span></p>
                 <p><span class="stat-label">🎮 Moves:</span> <span class="stat-value">${gameState.moveHistory.length}</span></p>
                 <p><span class="stat-label">📊 Completed:</span> <span class="stat-value">${gameState.visitedSquares.size}/${totalSquares} squares (${percentage}%)</span></p>
@@ -1860,19 +2091,19 @@
                 newGame();
             } else if (e.key === 'u' || e.key === 'U') {
                 undoMove();
-            } else if (e.key === '4') {
-                changeBoardSize(4);
+            } else if (e.key === '3') {
+                changeBoardSize(3, 4);
             } else if (e.key === '6') {
-                changeBoardSize(6);
+                changeBoardSize(6, 6);
             } else if (e.key === '8') {
-                changeBoardSize(8);
+                changeBoardSize(8, 8);
             } else if (e.key === '0' || e.key === '1' && e.shiftKey) { // 1 with shift = ! but we use 0 or shift+1
-                changeBoardSize(10);
+                changeBoardSize(10, 10);
             }
         });
         
         console.log('🎮 Knight Quest Enhanced loaded successfully!');
-        console.log('🎯 Keyboard shortcuts: Space=Hint, R=New Game, U=Undo, 4/6/8/0=Board Size');
+        console.log('🎯 Keyboard shortcuts: Space=Hint, R=New Game, U=Undo, 3/6/8/0=Board Size');
         
     </script>
     

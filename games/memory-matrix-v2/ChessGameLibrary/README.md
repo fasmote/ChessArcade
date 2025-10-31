@@ -19,7 +19,42 @@ Una librería modular, ligera y reutilizable para crear juegos basados en ajedre
 
 ## 📦 Módulos Disponibles
 
-### 1. **Utils.js** ✨ NEW
+### 1. **BoardCoordinates.js** 🚕 NEW - "Coordenadas Taxi"
+Sistema de coordenadas estilo taxi (amarillo/negro) para tableros
+
+**Características:**
+- Alta visibilidad con fondo amarillo y texto negro
+- Letras en columnas (a-h), números en filas (1-8)
+- Adaptable a cualquier tamaño de tablero
+- Preserva coordenadas al actualizar contenido
+- Totalmente responsive
+
+**Funciones:**
+- `addTaxiCoordinates(config)` - Agrega coordenadas al tablero
+- `clearSquareContent(square)` - Limpia casilla preservando coordenadas
+- `addContentToSquare(square, ...elements)` - Agrega contenido sin borrar coordenadas
+- `removeTaxiCoordinates(boardSelector)` - Elimina coordenadas
+- `injectTaxiCoordinatesCSS()` - Inyecta estilos CSS
+
+**Ejemplo:**
+```javascript
+// Agregar coordenadas a tablero 8x8
+addTaxiCoordinates({
+    rows: 8,
+    cols: 8,
+    boardSelector: '#chessboard',
+    useLetters: true  // a-h en columnas
+});
+
+// Actualizar casilla preservando coordenadas
+const moveNumber = document.createElement('span');
+moveNumber.className = 'move-number';
+moveNumber.textContent = '5';
+
+addContentToSquare(square, moveNumber);
+```
+
+### 2. **Utils.js**
 Utilidades generales para juegos de ajedrez
 
 **Funciones:**
@@ -35,7 +70,7 @@ Utilidades generales para juegos de ajedrez
 - `isValidSquare(square)` - Valida coordenada de ajedrez
 - `isValidPiece(piece)` - Valida código de pieza
 
-### 2. **PieceAnimations.js**
+### 3. **PieceAnimations.js**
 Animaciones de piezas de ajedrez
 
 **Funciones:**
@@ -43,7 +78,7 @@ Animaciones de piezas de ajedrez
 - `animatePieceFromBank(bankSlot, toSquare, piece, options)` - Pieza vuela desde banco
 - `hidePiecesWithAnimation(squares, options)` - Oculta múltiples piezas con stagger
 
-### 3. **DragDrop.js** ✨ NEW
+### 4. **DragDrop.js**
 Sistema de drag & drop para piezas
 
 **Funciones:**
@@ -138,15 +173,13 @@ animatePieceMove('e5', 'f7', 'wN', {
 ```
 ChessGameLibrary/
 ├── README.md                  # Este archivo
+├── API_REFERENCE.md           # Documentación detallada de API
+├── BoardCoordinates.js        # 🚕 Coordenadas tipo "taxi" (NEW)
 ├── PieceAnimations.js         # Animaciones de piezas
-├── BoardUtils.js              # Utilidades de tablero
-├── PieceBank.js               # Sistema de banco
+├── Utils.js                   # Utilidades generales
 ├── DragDrop.js                # Drag & drop
-├── PositionManager.js         # Gestión de posiciones
-└── examples/
-    ├── memory-game.html       # Ejemplo: Memory Matrix
-    ├── puzzle-game.html       # Ejemplo: Puzzle
-    └── basic-usage.html       # Ejemplo básico
+├── LevelTransition.js         # Transiciones entre niveles
+└── TAP_VS_DRAG_SYSTEM.md      # Sistema de interacción táctil
 ```
 
 ---

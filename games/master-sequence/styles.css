@@ -139,6 +139,24 @@ body::before {
         padding: 0.6rem 1rem;
         font-size: 0.85rem;
     }
+
+    .btn-replay {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.8rem;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .btn-replay .btn-text {
+        font-size: 0.75rem;
+    }
+
+    /* Todos los botones secundarios en mobile con mismo ancho */
+    .btn-secondary {
+        width: 100%;
+        max-width: 500px;
+        padding: 0.75rem 1rem;
+    }
 }
 
 .btn-icon {
@@ -206,6 +224,12 @@ body::before {
     cursor: pointer;
     transition: all 0.3s ease;
     text-transform: uppercase;
+
+    /* Flexbox para alinear icono + texto */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
 .btn-secondary:hover {
@@ -536,6 +560,34 @@ body::before {
 
     /* Posición relativa para coordenadas absolutas */
     position: relative;
+
+    /* Transición suave para efectos de replay */
+    transition: filter 0.5s ease, box-shadow 0.5s ease;
+}
+
+/* Efecto VINTAGE para modo REPLAY */
+.chessboard.replay-mode {
+    /* Filtro vintage: sepia + desaturación + contraste reducido */
+    filter: sepia(0.3) saturate(0.6) contrast(0.9);
+
+    /* Animación de grain/noise sutil (parpadeo de opacidad) */
+    animation: vintageGrain 0.15s infinite alternate;
+
+    /* Borde más oscuro durante replay */
+    border-color: rgba(0, 255, 255, 0.4);
+    box-shadow:
+        0 0 20px rgba(0, 255, 255, 0.3),
+        inset 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Animación de grain/noise (simula película vieja) */
+@keyframes vintageGrain {
+    0% {
+        opacity: 0.97;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 /* Responsive: Tablero más grande en tablets */
@@ -1720,18 +1772,18 @@ body::before {
    ============================================ */
 .replay-camera-badge {
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: 95px;  /* Más cerca del tablero */
+    left: 15px;
     display: flex;
     align-items: center;
     gap: 8px;
     background: rgba(255, 0, 0, 0.15);
     border: 2px solid #ff0000;
     border-radius: 4px;
-    padding: 8px 16px;
+    padding: 6px 12px;  /* Más compacto */
     font-family: 'Orbitron', monospace;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 12px;
     color: #ff0000;
     text-shadow: 0 0 10px #ff0000;
     box-shadow: 0 0 20px rgba(255, 0, 0, 0.5), inset 0 0 10px rgba(255, 0, 0, 0.2);
@@ -1775,7 +1827,7 @@ body::before {
 }
 
 /* ============================================
-   MARCO RETRO (4 esquinas que no se tocan - estilo CRT)
+   MARCO RETRO (Estilo VHS/Cámara antigua - líneas continuas)
    ============================================ */
 .retro-frame {
     position: fixed;
@@ -1785,49 +1837,57 @@ body::before {
     height: 100%;
     pointer-events: none;
     z-index: 999;
+    display: none; /* Oculto por defecto, se muestra en replay */
 }
 
+/* Marco continuo alrededor del área de juego */
 .frame-corner {
     position: absolute;
-    width: 60px;
-    height: 60px;
-    border: 3px solid var(--neon-cyan);
-    box-shadow: 0 0 10px var(--neon-cyan), inset 0 0 10px rgba(0, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
 }
 
-/* Esquina superior izquierda */
+/* Línea superior horizontal (con esquina izquierda) */
 .frame-top-left {
-    top: 100px;
-    left: 20px;
+    top: 90px;
+    left: 10px;
+    width: 200px;
+    height: 40px;
     border-right: none;
     border-bottom: none;
 }
 
-/* Esquina superior derecha */
+/* Línea superior horizontal (con esquina derecha) */
 .frame-top-right {
-    top: 100px;
-    right: 20px;
+    top: 90px;
+    right: 10px;
+    width: 200px;
+    height: 40px;
     border-left: none;
     border-bottom: none;
 }
 
-/* Esquina inferior izquierda */
+/* Línea inferior horizontal (con esquina izquierda) */
 .frame-bottom-left {
-    bottom: 100px;
-    left: 20px;
+    bottom: 60px;
+    left: 10px;
+    width: 200px;
+    height: 40px;
     border-right: none;
     border-top: none;
 }
 
-/* Esquina inferior derecha */
+/* Línea inferior horizontal (con esquina derecha) */
 .frame-bottom-right {
-    bottom: 100px;
-    right: 20px;
+    bottom: 60px;
+    right: 10px;
+    width: 200px;
+    height: 40px;
     border-left: none;
     border-top: none;
 }
 
-/* Responsive - Esquinas más pequeñas en mobile */
+/* Responsive - Marco más pequeño en mobile */
 @media (max-width: 768px) {
     .replay-camera-badge {
         top: 10px;
@@ -1851,28 +1911,30 @@ body::before {
     }
 
     .frame-corner {
-        width: 40px;
-        height: 40px;
-        border-width: 2px;
+        border-width: 1.5px;
     }
 
     .frame-top-left,
     .frame-top-right {
         top: 70px;
+        width: 100px;
+        height: 30px;
     }
 
     .frame-bottom-left,
     .frame-bottom-right {
-        bottom: 70px;
+        bottom: 50px;
+        width: 100px;
+        height: 30px;
     }
 
     .frame-top-left,
     .frame-bottom-left {
-        left: 10px;
+        left: 5px;
     }
 
     .frame-top-right,
     .frame-bottom-right {
-        right: 10px;
+        right: 5px;
     }
 }

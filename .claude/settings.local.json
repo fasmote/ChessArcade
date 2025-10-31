@@ -1,30 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git commit:*)",
-      "Read(//c/Users/clau/Documents/**)",
-      "Bash(curl:*)",
-      "Read(//c/Users/clau/**)",
-      "Bash(for file in index.html games/knight-quest/index.html games/memory-matrix-v2/index.html)",
-      "Bash(do if ! grep -q \"G-N3EKXHPD5Y\" \"$file\")",
-      "Bash(then echo \"❌ $file\")",
-      "Bash(fi)",
-      "Bash(done)",
-      "Bash(for file in index.html games/knight-quest/index.html games/memory-matrix-v2/index.html games/square-rush/index.html games/vision-blitz/index.html)",
-      "Bash(do if grep -q \"G-N3EKXHPD5Y\" \"$file\")",
-      "Bash(then echo \"✅ $file\")",
-      "Bash(else echo \"❌ $file\")",
-      "Bash(git checkout:*)",
-      "Bash(node:*)",
-      "Bash(for:*)",
-      "Bash(do if [ -f \"$file\" ])",
-      "Bash(then if grep -q \"G-N3EKXHPD5Y\" \"$file\")",
-      "Bash(git merge:*)",
-      "Bash(git stash:*)",
-      "Bash(git mv:*)",
-      "Bash(robocopy:*)",
-      "Bash(git rm:*)",
-      "Bash(git pull:*)"
+      "Bash(git add games/chessfive/docs/AI_DESIGN.md)",
+      "Bash(git add games/chessfive/docs/CONTINUACION_PROXIMA_SESION.md)",
+      "Bash(start chrome \"file:///C:/Users/clau/Documents/Multiajedrez%202025/games/chessfive/index.html\")",
+      "Bash(git add .)"
     ],
     "deny": [],
     "ask": []

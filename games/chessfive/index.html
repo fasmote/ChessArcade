@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChessFive - Place. Move. Align Five. Win.</title>
+
+    <!-- Meta Tags SEO -->
+    <meta name="description" content="ChessFive: Un juego híbrido que combina Connect Four con Ajedrez. Coloca piezas con gravedad, muévelas estratégicamente y alinea 5 para ganar.">
+    <meta name="keywords" content="ajedrez, chess, connect four, estrategia, juego de mesa, ChessFive">
+
+    <!-- Favicon -->
+    <link rel="icon" href="../../assets/images/favicon.ico">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <!-- NeonChess Design System -->
+    <link rel="stylesheet" href="../../assets/css/neonchess-style.css">
+
+    <!-- ChessFive Styles -->
+    <link rel="stylesheet" href="css/chessfive.css">
+
+    <!-- Howler.js for Sound -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N3EKXHPD5Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-N3EKXHPD5Y');
+    </script>
+</head>
+<body class="neon-theme">
+
+    <!-- Header -->
+    <header class="game-header">
+        <button id="btnHome" class="btn-home" title="Volver al inicio">
+            <span class="icon-home">🏠</span>
+            <span class="btn-text">HOME</span>
+        </button>
+        <div class="header-title-container">
+            <h1 class="game-title">
+                <span class="icon">⚔️</span>
+                ChessFive
+            </h1>
+            <p class="game-subtitle">Place. Move. Align Five. Win.</p>
+        </div>
+        <button id="soundToggle" class="btn-icon" title="Toggle Sound">
+            <span class="icon-sound-on">🔊</span>
+            <span class="icon-sound-off" style="display: none;">🔇</span>
+        </button>
+    </header>
+
+    <!-- Main Game Container -->
+    <main class="game-container">
+
+        <!-- Top Panel: Solo Phase Indicator (FLECHA AZUL - ARRIBA) -->
+        <div class="top-panel">
+            <!-- Phase Indicator -->
+            <div class="phase-indicator">
+                <h2 id="phaseTitle">PHASE 1: GRAVITY PLACEMENT</h2>
+                <p id="phaseDescription">Click on a column to drop your piece</p>
+            </div>
+        </div>
+
+        <!-- Middle Row: Players + Board -->
+        <div class="middle-row">
+            <!-- Left: Cyan Player (FLECHA AMARILLA - IZQUIERDA) -->
+            <aside class="player-panel player-panel-left">
+                <!-- Player Info Box (header + pieces left + inventory) -->
+                <div class="player-info" id="playerCyan">
+                    <div class="player-header">
+                        <span class="player-icon">⚔️</span>
+                        <h3>CYAN PLAYER</h3>
+                    </div>
+                    <div class="player-stats">
+                        <div class="stat">
+                            <span class="label">Pieces Left:</span>
+                            <span id="cyanPiecesLeft" class="value">8</span>
+                        </div>
+                        <div class="pieces-inventory" id="cyanInventory">
+                            <!-- Pieces will be shown here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Turn Indicator (Fase 2 mobile only) -->
+                <div class="mobile-turn-indicator">
+                    <h3 class="player-name-display">CYAN PLAYER</h3>
+                    <p>YOUR TURN - Select a piece to move</p>
+                </div>
+
+                <!-- Piece Selector for Cyan (SEPARADO - Gravity Phase only) -->
+                <div class="piece-selector" id="pieceSelector">
+                    <h3>SELECT PIECE</h3>
+                    <div class="piece-options">
+                        <button class="piece-option" data-piece="rook">
+                            <span class="piece-symbol" id="selectedRook"></span>
+                            <span class="piece-name">ROOK</span>
+                            <span class="piece-count" id="countRook">2</span>
+                        </button>
+                        <button class="piece-option" data-piece="knight">
+                            <span class="piece-symbol" id="selectedKnight"></span>
+                            <span class="piece-name">KNIGHT</span>
+                            <span class="piece-count" id="countKnight">2</span>
+                        </button>
+                        <button class="piece-option" data-piece="bishop">
+                            <span class="piece-symbol" id="selectedBishop"></span>
+                            <span class="piece-name">BISHOP</span>
+                            <span class="piece-count" id="countBishop">2</span>
+                        </button>
+                        <button class="piece-option" data-piece="queen">
+                            <span class="piece-symbol" id="selectedQueen"></span>
+                            <span class="piece-name">QUEEN</span>
+                            <span class="piece-count" id="countQueen">1</span>
+                        </button>
+                        <button class="piece-option" data-piece="king">
+                            <span class="piece-symbol" id="selectedKing"></span>
+                            <span class="piece-name">KING</span>
+                            <span class="piece-count" id="countKing">1</span>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center: Chess Board -->
+            <div class="board-container">
+                <div id="chessBoard" class="chess-board">
+                    <!-- Board will be generated by JavaScript -->
+                </div>
+
+                <!-- Desktop Turn Indicator (debajo del tablero) -->
+                <div class="turn-indicator desktop-turn">
+                    <p>Current Turn:</p>
+                    <h3 id="currentTurnText">CYAN PLAYER</h3>
+                </div>
+            </div>
+
+            <!-- Right: Magenta Player (FLECHA AMARILLA - DERECHA) -->
+            <aside class="player-panel player-panel-right">
+                <!-- Player Info Box (header + pieces left + inventory) -->
+                <div class="player-info" id="playerMagenta">
+                    <div class="player-header">
+                        <span class="player-icon">⚔️</span>
+                        <h3>MAGENTA PLAYER</h3>
+                    </div>
+                    <div class="player-stats">
+                        <div class="stat">
+                            <span class="label">Pieces Left:</span>
+                            <span id="magentaPiecesLeft" class="value">8</span>
+                        </div>
+                        <div class="pieces-inventory" id="magentaInventory">
+                            <!-- Pieces will be shown here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Turn Indicator (Fase 2 mobile only) -->
+                <div class="mobile-turn-indicator">
+                    <h3 class="player-name-display">MAGENTA PLAYER</h3>
+                    <p>YOUR TURN - Select a piece to move</p>
+                </div>
+
+                <!-- Piece Selector for Magenta (SEPARADO - Gravity Phase only) -->
+                <div class="piece-selector piece-selector-magenta" id="pieceSelectorMagenta">
+                    <h3>SELECT PIECE</h3>
+                    <div class="piece-options">
+                        <button class="piece-option" data-piece="rook">
+                            <span class="piece-symbol" id="selectedRookMagenta"></span>
+                            <span class="piece-name">ROOK</span>
+                            <span class="piece-count" id="countRookMagenta">2</span>
+                        </button>
+                        <button class="piece-option" data-piece="knight">
+                            <span class="piece-symbol" id="selectedKnightMagenta"></span>
+                            <span class="piece-name">KNIGHT</span>
+                            <span class="piece-count" id="countKnightMagenta">2</span>
+                        </button>
+                        <button class="piece-option" data-piece="bishop">
+                            <span class="piece-symbol" id="selectedBishopMagenta"></span>
+                            <span class="piece-name">BISHOP</span>
+                            <span class="piece-count" id="countBishopMagenta">2</span>
+                        </button>
+                        <button class="piece-option" data-piece="queen">
+                            <span class="piece-symbol" id="selectedQueenMagenta"></span>
+                            <span class="piece-name">QUEEN</span>
+                            <span class="piece-count" id="countQueenMagenta">1</span>
+                        </button>
+                        <button class="piece-option" data-piece="king">
+                            <span class="piece-symbol" id="selectedKingMagenta"></span>
+                            <span class="piece-name">KING</span>
+                            <span class="piece-count" id="countKingMagenta">1</span>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Bottom Panel: Controls Only (FLECHA ROJA - ABAJO) -->
+        <div class="bottom-panel">
+            <!-- Game Controls -->
+            <div class="game-controls">
+                <button id="btnNewGame" class="btn-primary">NEW GAME</button>
+                <button id="btnUndo" class="btn-secondary" disabled>UNDO MOVE</button>
+                <button id="btnHelp" class="btn-secondary">HELP</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Game Over Modal -->
+    <div id="gameOverModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2 id="winnerTitle">CYAN PLAYER WINS!</h2>
+            <p id="winnerMessage">Five pieces aligned!</p>
+            <div class="modal-actions">
+                <button id="btnPlayAgain" class="btn-primary">PLAY AGAIN</button>
+                <button id="btnBackHome" class="btn-secondary">BACK TO HOME</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <button class="modal-close" id="btnCloseHelp">✕</button>
+            <h2>HOW TO PLAY CHESSFIVE</h2>
+
+            <div class="help-section">
+                <h3>⚔️ Concept</h3>
+                <p>ChessFive is a hybrid strategy game combining <strong>Connect Four</strong> gravity mechanics with <strong>Chess</strong> tactical movement.</p>
+            </div>
+
+            <div class="help-section">
+                <h3>🪂 Phase 1: Gravity Placement</h3>
+                <ul>
+                    <li>Each player has <strong>8 pieces</strong>: 2 Rooks, 2 Knights, 2 Bishops, 1 Queen, 1 King</li>
+                    <li>Click on a column to drop your piece (gravity applies)</li>
+                    <li>Pieces fall until they hit the bottom or another piece</li>
+                    <li>Players alternate turns until all 16 pieces are placed</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>♟️ Phase 2: Chess Movement</h3>
+                <ul>
+                    <li>Move your pieces according to <strong>chess rules</strong></li>
+                    <li><strong>NO CAPTURES</strong> - occupied squares are blocked</li>
+                    <li><strong>NO CHECK</strong> - the king is just another piece</li>
+                    <li>Only the <strong>Knight can jump</strong> over other pieces</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>🏆 Victory</h3>
+                <p>First player to align <strong>5 or more pieces</strong> in a row (horizontal, vertical, or diagonal) wins!</p>
+            </div>
+
+            <div class="help-section">
+                <h3>♟️ Piece Movements</h3>
+                <ul>
+                    <li><strong>♖ Rook:</strong> Horizontal or vertical, blocked by pieces</li>
+                    <li><strong>♘ Knight:</strong> L-shape (2+1), CAN JUMP over pieces</li>
+                    <li><strong>♗ Bishop:</strong> Diagonal, blocked by pieces</li>
+                    <li><strong>♕ Queen:</strong> Any direction, blocked by pieces</li>
+                    <li><strong>♔ King:</strong> 1 square any direction, blocked by pieces</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ChessFive JavaScript Modules -->
+    <script src="js/game-state.js"></script>
+    <script src="js/piece-manager.js"></script>
+    <script src="js/board-renderer.js"></script>
+    <script src="js/gravity-phase.js"></script>
+    <script src="js/chess-phase.js"></script>
+    <script src="js/win-detection.js"></script>
+    <script src="js/sound-manager.js"></script>
+    <script src="js/ui-controller.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

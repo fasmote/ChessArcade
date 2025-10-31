@@ -11,7 +11,7 @@ let gameState = {
     gameStarted: false,
     showCoordinates: true,
     timerInterval: null,
-    soundEnabled: true // New sound state
+    soundEnabled: true
 };
 
 // Level configuration
@@ -20,7 +20,12 @@ const levels = {
     2: { name: "BABY STEPS", targets: 5, time: 10.0, theme: "retro" },
     3: { name: "BABY STEPS", targets: 5, time: 8.0, theme: "retro" },
     4: { name: "LITTLE MASTER", targets: 8, time: 7.0, theme: "neon" },
-    5: { name: "LITTLE MASTER", targets: 8, time: 6.0, theme: "neon" }
+    5: { name: "LITTLE MASTER", targets: 8, time: 6.0, theme: "neon" },
+    6: { name: "SPEED DEMON", targets: 10, time: 5.5, theme: "neon" },
+    7: { name: "SPEED DEMON", targets: 10, time: 5.0, theme: "neon" },
+    8: { name: "GRANDMASTER", targets: 12, time: 4.5, theme: "neon" },
+    9: { name: "GRANDMASTER", targets: 12, time: 4.0, theme: "neon" },
+    10: { name: "LEGENDARY", targets: 15, time: 3.5, theme: "neon" }
 };
 
 // Audio setup
@@ -127,7 +132,7 @@ function createBoard() {
 // Handle square click
 function handleSquareClick(coordinate) {
     const square = document.getElementById(coordinate);
-    
+
     // Game can start by clicking correct square in ALL levels
     if (!gameState.gameStarted) {
         if (coordinate === gameState.currentTarget) {
@@ -137,18 +142,18 @@ function handleSquareClick(coordinate) {
             startTimer();
             document.getElementById('startBtn').disabled = true;
             document.getElementById('pauseBtn').disabled = false;
-            
+
             // Handle this as first correct answer
             square.classList.add('correct');
             playSound('correct');
-            
+
             gameState.targetFound++;
             gameState.score += 100 * gameState.combo;
-            
+
             if (gameState.combo < 3) {
                 gameState.combo++;
             }
-            
+
             // Check if level complete
             if (gameState.targetFound >= gameState.targetsNeeded) {
                 completeLevel();
@@ -156,9 +161,9 @@ function handleSquareClick(coordinate) {
                 generateNewTarget();
                 resetTimer();
             }
-            
+
             updateUI();
-            
+
             // Track game start
             gtag('event', 'game_start_by_click', {
                 'level': gameState.level,
@@ -168,23 +173,23 @@ function handleSquareClick(coordinate) {
         // If wrong square clicked before game starts, do nothing
         return;
     }
-    
+
     // Normal game logic (after game has started)
     if (!gameState.gameActive) return;
-    
+
     if (coordinate === gameState.currentTarget) {
         // Correct answer
         square.classList.add('correct');
         playSound('correct');
-        
+
         gameState.targetFound++;
         gameState.score += 100 * gameState.combo;
-        
+
         // Update combo
         if (gameState.combo < 3) {
             gameState.combo++;
         }
-        
+
         // Check if level complete
         if (gameState.targetFound >= gameState.targetsNeeded) {
             completeLevel();
@@ -192,20 +197,20 @@ function handleSquareClick(coordinate) {
             generateNewTarget();
             resetTimer();
         }
-        
+
         // Track event
         gtag('event', 'correct_answer', {
             'level': gameState.level,
             'coordinate': coordinate
         });
-        
+
     } else {
         // Wrong answer
         square.classList.add('wrong');
         playSound('wrong');
         gameState.combo = 1;
         gameOver();
-        
+
         // Track event
         gtag('event', 'wrong_answer', {
             'level': gameState.level,
@@ -213,7 +218,7 @@ function handleSquareClick(coordinate) {
             'target': gameState.currentTarget
         });
     }
-    
+
     updateUI();
 }
 
@@ -326,17 +331,19 @@ function startGame() {
     gameState.gameActive = true;
     gameState.targetFound = 0;
     gameState.combo = 1;
-    gameState.targetsNeeded = levels[gameState.level].targets;
-    
+
+    const levelConfig = levels[gameState.level];
+    gameState.targetsNeeded = levelConfig.targets;
+
     // NEVER generate new target - always keep the current one shown!
     // This prevents confusion when pressing START GAME
-    
+
     resetTimer();
     updateUI();
-    
+
     document.getElementById('startBtn').disabled = true;
     document.getElementById('pauseBtn').disabled = false;
-    
+
     // Track game start
     gtag('event', 'game_start_button', {
         'level': gameState.level
@@ -375,16 +382,50 @@ function nextLevel() {
         document.getElementById('gameOverScreen').style.display = 'none';
         document.getElementById('startBtn').disabled = false;
         document.getElementById('pauseBtn').disabled = true;
-        
+
         // Generate new target for next level
         generateNewTarget();
         gameState.timeLeft = levels[gameState.level].time;
         updateUI();
+    } else {
+        // Juego completado - todos los niveles terminados
+        showGameCompleted();
     }
+}
+
+// Mostrar pantalla de juego completado
+function showGameCompleted() {
+    clearInterval(gameState.timerInterval);
+    gameState.gameActive = false;
+
+    document.getElementById('gameOverTitle').textContent = '🏆 GAME COMPLETED! 🏆';
+    document.getElementById('finalScore').textContent = `Final Score: ${gameState.score}`;
+    document.getElementById('gameOverScreen').style.display = 'flex';
+
+    // Cambiar texto del botón "Next Level" a "Play Again"
+    const nextLevelBtn = document.getElementById('nextLevelBtn');
+    if (nextLevelBtn) {
+        nextLevelBtn.textContent = 'PLAY AGAIN';
+        nextLevelBtn.style.display = 'none'; // Ocultar botón "Next Level"
+    }
+
+    // Mostrar solo "Play Again"
+    const playAgainBtn = document.getElementById('playAgainBtn');
+    if (playAgainBtn) {
+        playAgainBtn.style.display = 'block';
+    }
+
+    // Track game completion
+    gtag('event', 'game_completed', {
+        'score': gameState.score,
+        'final_level': gameState.level
+    });
 }
 
 // Play again
 function playAgain() {
+    // Resetear al nivel 1
+    gameState.level = 1;
     gameState.targetFound = 0;
     gameState.score = 0;
     gameState.combo = 1;
@@ -393,7 +434,14 @@ function playAgain() {
     document.getElementById('gameOverScreen').style.display = 'none';
     document.getElementById('startBtn').disabled = false;
     document.getElementById('pauseBtn').disabled = true;
-    
+
+    // Restaurar botón "Next Level" si estaba oculto
+    const nextLevelBtn = document.getElementById('nextLevelBtn');
+    if (nextLevelBtn) {
+        nextLevelBtn.textContent = 'NEXT LEVEL';
+        nextLevelBtn.style.display = 'block';
+    }
+
     // Generate new target for fresh start
     generateNewTarget();
     gameState.timeLeft = levels[gameState.level].time;
