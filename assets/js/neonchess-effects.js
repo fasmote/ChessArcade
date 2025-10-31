@@ -534,12 +534,12 @@ class NeonChessEffects {
     setupFloatingAsteroids() {
         this.asteroids = [];
 
-        // Crear asteroides periódicamente
+        // Crear asteroides periódicamente (más frecuentes!)
         setInterval(() => {
-            if (Math.random() < 0.3) { // 30% de probabilidad cada 3 segundos
+            if (Math.random() < 0.7) { // 70% de probabilidad cada 1.5 segundos
                 this.createAsteroid();
             }
-        }, 3000);
+        }, 1500);
 
         // Animar asteroides
         this.animateAsteroids();
