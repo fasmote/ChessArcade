@@ -555,15 +555,38 @@ class NeonChessEffects {
         asteroid.textContent = pieces[Math.floor(Math.random() * pieces.length)];
         asteroid.className = 'floating-asteroid';
 
-        // Posición inicial aleatoria (arriba o a la izquierda)
-        const startSide = Math.random() < 0.5 ? 'top' : 'left';
+        // Posición inicial aleatoria desde los 4 lados
+        const sides = ['top', 'bottom', 'left', 'right'];
+        const startSide = sides[Math.floor(Math.random() * sides.length)];
 
-        if (startSide === 'top') {
-            asteroid.style.left = Math.random() * 100 + '%';
-            asteroid.style.top = '-50px';
-        } else {
-            asteroid.style.left = '-50px';
-            asteroid.style.top = Math.random() * 100 + '%';
+        let vx, vy;
+        const speed = Math.random() * 1.5 + 0.8;
+
+        switch(startSide) {
+            case 'top':
+                asteroid.style.left = Math.random() * 100 + '%';
+                asteroid.style.top = '-50px';
+                vx = (Math.random() - 0.5) * speed;
+                vy = speed;
+                break;
+            case 'bottom':
+                asteroid.style.left = Math.random() * 100 + '%';
+                asteroid.style.top = window.innerHeight + 50 + 'px';
+                vx = (Math.random() - 0.5) * speed;
+                vy = -speed;
+                break;
+            case 'left':
+                asteroid.style.left = '-50px';
+                asteroid.style.top = Math.random() * 100 + '%';
+                vx = speed;
+                vy = (Math.random() - 0.5) * speed;
+                break;
+            case 'right':
+                asteroid.style.left = window.innerWidth + 50 + 'px';
+                asteroid.style.top = Math.random() * 100 + '%';
+                vx = -speed;
+                vy = (Math.random() - 0.5) * speed;
+                break;
         }
 
         // Estilo del asteroide
@@ -574,13 +597,10 @@ class NeonChessEffects {
         asteroid.style.pointerEvents = 'none';
         asteroid.style.zIndex = '1';
         asteroid.style.filter = `drop-shadow(0 0 10px ${asteroid.style.color})`;
-        asteroid.style.animation = 'floatAsteroid ' + (Math.random() * 15 + 10) + 's linear';
 
         // Velocidad y dirección
-        const speed = Math.random() * 2 + 1;
-        const angle = Math.random() * Math.PI / 2 + Math.PI / 4; // 45-135 grados
-        asteroid.dataset.vx = Math.cos(angle) * speed;
-        asteroid.dataset.vy = Math.sin(angle) * speed;
+        asteroid.dataset.vx = vx;
+        asteroid.dataset.vy = vy;
         asteroid.dataset.rotation = Math.random() * 360;
         asteroid.dataset.rotationSpeed = (Math.random() - 0.5) * 3;
 
