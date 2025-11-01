@@ -25,70 +25,78 @@
 
     <!-- AI Toggle Styles -->
     <style>
-        /* AI Toggle Button (NEW - inline with game controls) */
-        .ai-toggle-btn {
+        /* AI Toggle per Player (NEW - inside player panels) */
+        .player-ai-toggle {
+            padding: 8px 12px;
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .ai-player-toggle-label {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 20px;
-            background: rgba(0, 188, 212, 0.15);
-            border: 2px solid rgba(0, 188, 212, 0.4);
-            border-radius: 10px;
+            gap: 8px;
             cursor: pointer;
-            transition: all 0.3s;
             user-select: none;
         }
 
-        .ai-toggle-btn:hover {
-            background: rgba(0, 188, 212, 0.25);
-            border-color: rgba(0, 188, 212, 0.6);
-            box-shadow: 0 0 15px rgba(0, 188, 212, 0.3);
-        }
-
-        #ai-toggle {
+        .ai-player-checkbox {
             display: none;
         }
 
-        .ai-toggle-slider {
+        .ai-player-slider {
             position: relative;
-            width: 50px;
-            height: 26px;
+            width: 44px;
+            height: 22px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 13px;
-            border: 2px solid rgba(0, 188, 212, 0.5);
+            border-radius: 11px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             transition: all 0.3s;
         }
 
-        .ai-toggle-slider::before {
+        .ai-player-slider::before {
             content: '';
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             background: #fff;
             top: 1px;
             left: 2px;
             transition: all 0.3s;
-            box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
         }
 
-        #ai-toggle:checked + .ai-toggle-slider {
-            background: rgba(0, 188, 212, 0.5);
+        .ai-player-checkbox:checked + .ai-player-slider {
+            background: rgba(0, 188, 212, 0.4);
             border-color: #00bcd4;
         }
 
-        #ai-toggle:checked + .ai-toggle-slider::before {
-            left: 24px;
+        .ai-player-checkbox:checked + .ai-player-slider::before {
+            left: 22px;
             background: #00ffff;
-            box-shadow: 0 0 15px #00ffff;
+            box-shadow: 0 0 12px #00ffff;
         }
 
-        .ai-toggle-label {
+        .ai-player-text {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.95rem;
-            color: #00bcd4;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8);
             font-weight: bold;
-            min-width: 100px;
+            min-width: 80px;
+        }
+
+        /* Cyan player specific color when AI enabled */
+        #ai-toggle-cyan:checked ~ .ai-player-text {
+            color: var(--cyan-primary);
+        }
+
+        /* Magenta player specific color when AI enabled */
+        #ai-toggle-magenta:checked ~ .ai-player-text {
+            color: var(--magenta-primary);
         }
 
         @keyframes pulse {
@@ -160,6 +168,16 @@
                         <span class="player-icon">⚔️</span>
                         <h3>CYAN PLAYER</h3>
                     </div>
+
+                    <!-- AI Toggle for Cyan Player -->
+                    <div class="player-ai-toggle">
+                        <label class="ai-player-toggle-label">
+                            <input type="checkbox" id="ai-toggle-cyan" class="ai-player-checkbox" />
+                            <span class="ai-player-slider"></span>
+                            <span class="ai-player-text" id="ai-status-cyan">👤 Human</span>
+                        </label>
+                    </div>
+
                     <div class="player-stats">
                         <div class="stat">
                             <span class="label">Pieces Left:</span>
@@ -231,6 +249,16 @@
                         <span class="player-icon">⚔️</span>
                         <h3>MAGENTA PLAYER</h3>
                     </div>
+
+                    <!-- AI Toggle for Magenta Player -->
+                    <div class="player-ai-toggle">
+                        <label class="ai-player-toggle-label">
+                            <input type="checkbox" id="ai-toggle-magenta" class="ai-player-checkbox" />
+                            <span class="ai-player-slider"></span>
+                            <span class="ai-player-text" id="ai-status-magenta">👤 Human</span>
+                        </label>
+                    </div>
+
                     <div class="player-stats">
                         <div class="stat">
                             <span class="label">Pieces Left:</span>
@@ -287,14 +315,6 @@
             <!-- Game Controls -->
             <div class="game-controls">
                 <button id="btnNewGame" class="btn-primary">NEW GAME</button>
-
-                <!-- AI Toggle -->
-                <label class="ai-toggle-btn" title="Play vs AI or vs Human">
-                    <input type="checkbox" id="ai-toggle" />
-                    <span class="ai-toggle-slider"></span>
-                    <span class="ai-toggle-label" id="ai-status">👥 vs Human</span>
-                </label>
-
                 <button id="btnUndo" class="btn-secondary" disabled>UNDO MOVE</button>
                 <button id="btnHelp" class="btn-secondary">HELP</button>
             </div>

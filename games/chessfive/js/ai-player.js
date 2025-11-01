@@ -18,7 +18,6 @@ const ChessFiveAI = {
     // CONFIGURATION
     // ==========================================
 
-    player: 'magenta', // AI plays as magenta by default
     thinkingTime: 800, // ms delay to simulate "thinking" (UX)
 
     // Scoring weights (inspired by Gomoku engines)
@@ -53,7 +52,8 @@ const ChessFiveAI = {
      * Returns: Promise that resolves when move is complete
      */
     async makeMove(gameState) {
-        console.log(`🤖 AI (${this.player}) is thinking...`);
+        const aiPlayer = gameState.currentPlayer; // AI plays as current player
+        console.log(`🤖 AI (${aiPlayer}) is thinking...`);
 
         // Add thinking delay for better UX
         await this.delay(this.thinkingTime);
@@ -102,7 +102,7 @@ const ChessFiveAI = {
      * Strategy: Prioritize pieces with good mobility for Phase 2
      */
     choosePieceType(gameState) {
-        const inv = gameState.inventory[this.player];
+        const inv = gameState.inventory[gameState.currentPlayer];
 
         // Priority order (best mobility first)
         const priority = ['queen', 'rook', 'bishop', 'knight', 'king'];
@@ -171,18 +171,18 @@ const ChessFiveAI = {
 
         // Simulate placing piece
         const board = gameState.board;
-        board[row][col] = { player: this.player, type: pieceType };
+        board[row][col] = { player: gameState.currentPlayer, type: pieceType };
 
         // 1. Check if this creates 5 in a row (instant win in gravity phase)
-        if (this.checkLineAt(board, row, col, this.player) >= 5) {
+        if (this.checkLineAt(board, row, col, gameState.currentPlayer) >= 5) {
             score += this.WEIGHTS.WIN_NOW;
         }
 
         // 2. Count potential lines (sets up for Phase 2)
-        score += this.countPotentialLines(board, row, col, this.player) * this.WEIGHTS.POTENTIAL_LINE;
+        score += this.countPotentialLines(board, row, col, gameState.currentPlayer) * this.WEIGHTS.POTENTIAL_LINE;
 
         // 3. Check if blocks opponent's potential 5
-        const opponentPlayer = (this.player === 'cyan') ? 'magenta' : 'cyan';
+        const opponentPlayer = (gameState.currentPlayer === 'cyan') ? 'magenta' : 'cyan';
         const opponentThreat = this.checkOpponentThreat(board, col, opponentPlayer);
         if (opponentThreat) {
             score += this.WEIGHTS.BLOCK_OPPONENT_DROP;
@@ -288,7 +288,7 @@ const ChessFiveAI = {
         let bestScore = -Infinity;
 
         // Get all AI pieces
-        const aiPieces = this.getAllPieces(gameState.board, this.player);
+        const aiPieces = this.getAllPieces(gameState.board, gameState.currentPlayer);
 
         // For each piece, try all legal moves
         for (const piece of aiPieces) {
@@ -331,12 +331,12 @@ const ChessFiveAI = {
         board[toRow][toCol] = piece;
 
         // PRIORITY 1: Does this win immediately?
-        const myLine = this.checkLineAt(board, toRow, toCol, this.player);
+        const myLine = this.checkLineAt(board, toRow, toCol, gameState.currentPlayer);
         if (myLine >= 5) {
             score = this.WEIGHTS.WIN_NOW;
         } else {
             // PRIORITY 2: Does this block opponent's winning move?
-            const opponentPlayer = (this.player === 'cyan') ? 'magenta' : 'cyan';
+            const opponentPlayer = (gameState.currentPlayer === 'cyan') ? 'magenta' : 'cyan';
             const opponentCanWin = this.canOpponentWinNextTurn(board, opponentPlayer);
 
             if (opponentCanWin) {
@@ -348,7 +348,7 @@ const ChessFiveAI = {
                 }
             } else {
                 // PRIORITY 3: Evaluate threats and position
-                score += this.evaluateThreats(board, toRow, toCol, this.player);
+                score += this.evaluateThreats(board, toRow, toCol, gameState.currentPlayer);
                 score -= this.evaluateThreats(board, toRow, toCol, opponentPlayer) * 0.5; // Penalize leaving threats
                 score += this.evaluateMobility(board, toRow, toCol);
             }

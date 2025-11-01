@@ -8,9 +8,11 @@
  */
 
 const AIController = {
-    enabled: false,          // Is AI opponent enabled?
-    aiPlayer: 'magenta',     // AI plays as magenta
-    isThinking: false,       // Prevent multiple simultaneous AI moves
+    aiEnabled: {
+        cyan: false,      // Is Cyan controlled by AI?
+        magenta: false    // Is Magenta controlled by AI?
+    },
+    isThinking: false,    // Prevent multiple simultaneous AI moves
 
     /**
      * Initialize AI controller
@@ -21,22 +23,35 @@ const AIController = {
     },
 
     /**
-     * Attach event listeners for AI toggle
+     * Attach event listeners for AI toggles (one per player)
      */
     attachUIListeners() {
-        // Toggle button for vs AI / vs Human
-        const aiToggle = document.getElementById('ai-toggle');
-        if (aiToggle) {
-            aiToggle.addEventListener('change', (e) => {
-                this.enabled = e.target.checked;
-                console.log(`🤖 AI ${this.enabled ? 'enabled' : 'disabled'}`);
+        // Cyan AI Toggle
+        const aiToggleCyan = document.getElementById('ai-toggle-cyan');
+        if (aiToggleCyan) {
+            aiToggleCyan.addEventListener('change', (e) => {
+                this.aiEnabled.cyan = e.target.checked;
+                console.log(`🤖 Cyan AI ${this.aiEnabled.cyan ? 'enabled' : 'disabled'}`);
+                this.updateAIIndicator('cyan');
 
-                // Update UI
-                this.updateAIIndicator();
+                // If AI is enabled and it's cyan's turn, make move
+                if (this.aiEnabled.cyan && GameState.currentPlayer === 'cyan' && !GameState.gameOver) {
+                    setTimeout(() => this.makeAIMove(), 500);
+                }
+            });
+        }
 
-                // If AI is enabled and it's AI's turn, make move
-                if (this.enabled && this.isAITurn()) {
-                    this.makeAIMove();
+        // Magenta AI Toggle
+        const aiToggleMagenta = document.getElementById('ai-toggle-magenta');
+        if (aiToggleMagenta) {
+            aiToggleMagenta.addEventListener('change', (e) => {
+                this.aiEnabled.magenta = e.target.checked;
+                console.log(`🤖 Magenta AI ${this.aiEnabled.magenta ? 'enabled' : 'disabled'}`);
+                this.updateAIIndicator('magenta');
+
+                // If AI is enabled and it's magenta's turn, make move
+                if (this.aiEnabled.magenta && GameState.currentPlayer === 'magenta' && !GameState.gameOver) {
+                    setTimeout(() => this.makeAIMove(), 500);
                 }
             });
         }
@@ -46,9 +61,8 @@ const AIController = {
      * Check if it's AI's turn
      */
     isAITurn() {
-        return this.enabled &&
-               GameState.currentPlayer === this.aiPlayer &&
-               !GameState.gameOver;
+        const currentPlayer = GameState.currentPlayer;
+        return this.aiEnabled[currentPlayer] && !GameState.gameOver;
     },
 
     /**
@@ -67,11 +81,10 @@ const AIController = {
      * Make AI move
      */
     async makeAIMove() {
-        if (!this.enabled || this.isThinking || GameState.gameOver) {
-            return;
-        }
+        const currentPlayer = GameState.currentPlayer;
 
-        if (GameState.currentPlayer !== this.aiPlayer) {
+        // Check if current player is AI-controlled
+        if (!this.aiEnabled[currentPlayer] || this.isThinking || GameState.gameOver) {
             return;
         }
 
@@ -79,7 +92,7 @@ const AIController = {
         this.showThinkingIndicator(true);
 
         try {
-            console.log('🤖 AI is making a move...');
+            console.log(`🤖 AI (${currentPlayer}) is making a move...`);
 
             // Get AI decision
             const move = await ChessFiveAI.makeMove(GameState);
@@ -234,12 +247,12 @@ const AIController = {
     },
 
     /**
-     * Update AI indicator in UI
+     * Update AI indicator in UI for a specific player
      */
-    updateAIIndicator() {
-        const indicator = document.getElementById('ai-status');
+    updateAIIndicator(player) {
+        const indicator = document.getElementById(`ai-status-${player}`);
         if (indicator) {
-            indicator.textContent = this.enabled ? '🤖 vs AI' : '👥 vs Human';
+            indicator.textContent = this.aiEnabled[player] ? '🤖 AI' : '👤 Human';
         }
     }
 };
