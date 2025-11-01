@@ -113,6 +113,8 @@ const AIController = {
 
         } catch (error) {
             console.error('🤖 AI error:', error);
+            this.isThinking = false;
+            this.showThinkingIndicator(false);
         } finally {
             this.isThinking = false;
             this.showThinkingIndicator(false);
@@ -176,6 +178,9 @@ const AIController = {
             UIController.updatePlayerInfo();
             UIController.updatePieceSelector(); // This auto-selects a piece for the new player
 
+            // Check if next player is also AI (delayed to avoid race condition)
+            setTimeout(() => this.checkAndMakeAIMove(), 100);
+
         } else {
             console.error('🤖 AI tried invalid gravity move!');
             SoundManager.play('invalid');
@@ -204,6 +209,9 @@ const AIController = {
             // Update board visuals
             BoardRenderer.renderBoard();
 
+            // Highlight last move (from/to squares)
+            BoardRenderer.highlightLastMove();
+
             // Play sound
             SoundManager.play('move');
 
@@ -220,6 +228,9 @@ const AIController = {
             // Update UI
             UIController.updateTurnIndicator();
             UIController.updatePlayerInfo();
+
+            // Check if next player is also AI (delayed to avoid race condition)
+            setTimeout(() => this.checkAndMakeAIMove(), 100);
 
         } else {
             console.error('🤖 AI chess move failed!');

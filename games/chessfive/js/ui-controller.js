@@ -79,6 +79,11 @@ const UIController = {
             window.location.href = '../../index.html';
         });
 
+        // Close game over modal (X button) - allows analyzing the game
+        document.getElementById('btnCloseGameOver').addEventListener('click', () => {
+            this.hideGameOver();
+        });
+
         // Undo button (future implementation)
         document.getElementById('btnUndo').addEventListener('click', () => {
             console.log('⏮️ Undo not implemented yet');
@@ -512,5 +517,13 @@ const UIController = {
      */
     hideHelp() {
         document.getElementById('helpModal').style.display = 'none';
+    },
+
+    /**
+     * Hide game over modal (allows user to analyze the game)
+     */
+    hideGameOver() {
+        document.getElementById('gameOverModal').style.display = 'none';
+        console.log('📊 Game over modal closed - analyzing game');
     }
 };

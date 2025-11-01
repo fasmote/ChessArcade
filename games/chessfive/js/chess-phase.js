@@ -121,6 +121,9 @@ const ChessPhase = {
             // Update board visuals
             BoardRenderer.renderBoard();
 
+            // Highlight last move (from/to squares)
+            BoardRenderer.highlightLastMove();
+
             // Play sound
             SoundManager.play('move');
 

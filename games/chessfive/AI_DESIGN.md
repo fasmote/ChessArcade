@@ -402,6 +402,60 @@ async function handleTurn() {
 
 ---
 
+## ✅ Implemented Features (v1.0 - Production Ready)
+
+### Core AI Features
+✅ **Two-Phase AI Strategy** - Separate evaluation for Gravity and Chess phases
+✅ **Gomoku-Inspired Threat Detection** - Pattern matching for 2-5 in-a-row formations
+✅ **Unstoppable Threat Detection** - Recognizes 4-in-a-row with multiple open ends
+✅ **Enhanced Blocking** - Detects and blocks 3-in-a-row and 4-in-a-row threats in Phase 1
+✅ **Per-Player AI Toggle** - Individual AI controls for Cyan and Magenta players
+✅ **AI vs AI Mode** - Two AIs can play against each other automatically
+✅ **Mid-Game AI Switching** - Enable/disable AI during active gameplay
+
+### UX Enhancements
+✅ **Last Move Highlighting** - Visual feedback showing piece origin (subtle) and destination (brighter)
+✅ **Winning Line Highlight** - Golden glow animation on winning 5-in-a-row
+✅ **Closeable Victory Modal** - X button allows game analysis after victory
+✅ **AI Thinking Indicator** - Visual feedback during AI decision-making
+✅ **Auto-Piece Selection** - Smooth piece selector updates after each move
+
+### Technical Improvements
+✅ **Race Condition Fix** - Resolved AI vs AI blocking in Phase 2 with setTimeout delays
+✅ **Null-Safe UI Updates** - Defensive programming for DOM element access
+✅ **Persistent Win Highlights** - Winning lines remain visible during game analysis
+
+### Bug Fixes
+- Fixed: AI not detecting 3-in-a-row threats in Gravity Phase
+- Fixed: Winning line not highlighting in Phase 1 (gameOver flag check)
+- Fixed: AI blocking when both players are AI-controlled
+- Fixed: SELECT PIECE panel sync issues after AI moves
+- Fixed: Modal close button positioning (relative positioning)
+
+---
+
+## 🔮 Planned Features (v2.0)
+
+### Priority: High
+🎯 **Game Notation System** - Record moves in algebraic notation
+🎯 **Game Replay** - Replay past games move-by-move with controls
+🎯 **Smooth Animations** - Piece movement transitions (CSS animations)
+
+### Priority: Medium
+- **Difficulty Levels** - Easy, Medium, Hard AI settings
+- **Game History** - Save games to localStorage
+- **Undo/Redo** - Take back moves during gameplay
+- **Sound Effects** - Enhanced audio feedback
+
+### Priority: Low
+- **Opening Book** - Pre-computed optimal Gravity Phase drops
+- **AI Personality** - Aggressive vs Defensive play styles
+- **Statistics Dashboard** - Win/loss records, average game time
+- **Online Multiplayer** - WebSocket-based real-time play
+
+---
+
 *Documento creado: 2025-11-01*
 *Última actualización: 2025-11-01*
+*Versión: 1.0 - Production Ready*
 *Autor: Claude & Clau*

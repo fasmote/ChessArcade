@@ -124,7 +124,7 @@ const GravityPhase = {
      */
     handleSquareHover(e) {
         if (GameState.phase !== 'gravity') return;
-        if (GameState.gameOver) return;
+        if (GameState.gameOver) return; // Don't show hover effects if game is over
 
         const square = e.currentTarget;
         const col = parseInt(square.dataset.col);
@@ -143,6 +143,7 @@ const GravityPhase = {
      */
     handleSquareLeave() {
         if (GameState.phase !== 'gravity') return;
+        if (GameState.gameOver) return; // Don't clear highlights if game is over
 
         BoardRenderer.clearHighlights();
         BoardRenderer.removeGhosts();

@@ -178,21 +178,58 @@ const ChessFiveAI = {
             score += this.WEIGHTS.WIN_NOW;
         }
 
-        // 2. Count potential lines (sets up for Phase 2)
-        score += this.countPotentialLines(board, row, col, gameState.currentPlayer) * this.WEIGHTS.POTENTIAL_LINE;
-
-        // 3. Check if blocks opponent's potential 5
-        const opponentPlayer = (gameState.currentPlayer === 'cyan') ? 'magenta' : 'cyan';
-        const opponentThreat = this.checkOpponentThreat(board, col, opponentPlayer);
-        if (opponentThreat) {
-            score += this.WEIGHTS.BLOCK_OPPONENT_DROP;
+        // 2. Check if this creates 4 in a row (very strong)
+        if (this.checkLineAt(board, row, col, gameState.currentPlayer) === 4) {
+            score += this.WEIGHTS.FOUR;
         }
 
-        // 4. Prefer center columns (better mobility in Phase 2)
+        // 3. Check if this creates 3 in a row (threatening)
+        if (this.checkLineAt(board, row, col, gameState.currentPlayer) === 3) {
+            score += this.WEIGHTS.THREE;
+        }
+
+        // 4. Count potential lines (sets up for Phase 2)
+        score += this.countPotentialLines(board, row, col, gameState.currentPlayer) * this.WEIGHTS.POTENTIAL_LINE;
+
+        // Undo simulation temporarily to check opponent threats
+        board[row][col] = null;
+
+        // 5. Check if blocks opponent's threats (IMPROVED)
+        const opponentPlayer = (gameState.currentPlayer === 'cyan') ? 'magenta' : 'cyan';
+
+        // Simulate opponent dropping in this column
+        const opponentRow = this.getDropRow(board, col);
+        if (opponentRow >= 0) {
+            board[opponentRow][col] = { player: opponentPlayer, type: pieceType };
+
+            const opponentLine = this.checkLineAt(board, opponentRow, col, opponentPlayer);
+
+            // Block 4-in-a-row (critical!)
+            if (opponentLine >= 4) {
+                score += this.WEIGHTS.BLOCK_WIN;
+                console.log(`  🛡️ Blocking opponent's 4-in-a-row at column ${col}`);
+            }
+            // Block 3-in-a-row (important!)
+            else if (opponentLine === 3) {
+                score += this.WEIGHTS.OPEN_THREE;
+                console.log(`  🛡️ Blocking opponent's 3-in-a-row at column ${col}`);
+            }
+            // Block 2-in-a-row (preventive)
+            else if (opponentLine === 2) {
+                score += this.WEIGHTS.TWO;
+            }
+
+            board[opponentRow][col] = null;
+        }
+
+        // Restore our piece for remaining evaluations
+        board[row][col] = { player: gameState.currentPlayer, type: pieceType };
+
+        // 6. Prefer center columns (better mobility in Phase 2)
         const centerBonus = this.getCenterBonus(col);
         score += centerBonus * this.WEIGHTS.CENTER;
 
-        // 5. Evaluate mobility for Phase 2
+        // 7. Evaluate mobility for Phase 2
         const mobility = this.evaluateFutureMobility(board, row, col, pieceType);
         score += mobility * this.WEIGHTS.MOBILITY;
 
