@@ -399,16 +399,22 @@ const UIController = {
         const turnText = document.getElementById('currentTurnText');
         const turnContainer = document.querySelector('.turn-indicator');
 
-        // 2. Actualizar el texto del turno
+        // 2. Validar que los elementos existen (null-safe)
+        if (!turnText || !turnContainer) {
+            console.warn('⚠️ Turn indicator elements not found in DOM');
+            return;
+        }
+
+        // 3. Actualizar el texto del turno
         turnText.textContent = GameState.currentPlayer.toUpperCase() + ' PLAYER';
 
-        // 3. Cambiar color del texto según jugador
+        // 4. Cambiar color del texto según jugador
         // Operador ternario: condición ? valor_si_true : valor_si_false
         turnText.style.color = GameState.currentPlayer === 'cyan'
             ? 'var(--cyan-primary)'  // Si es cyan, usar color cyan
             : 'var(--magenta-primary)'; // Si es magenta, usar color magenta
 
-        // 4. Cambiar el borde y glow del contenedor
+        // 5. Cambiar el borde y glow del contenedor
         // Primero removemos ambas clases (limpieza)
         turnContainer.classList.remove('turn-cyan', 'turn-magenta');
         // Luego agregamos la clase correspondiente al jugador actual

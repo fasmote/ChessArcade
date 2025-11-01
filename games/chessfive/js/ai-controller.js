@@ -114,9 +114,20 @@ const AIController = {
 
         console.log(`🤖 AI drops ${pieceType} in column ${col}`);
 
-        // Select the piece type
+        // Select the piece type (both in state and UI)
         GameState.selectedPieceType = pieceType;
+        UIController.selectPiece(pieceType); // Mark visually in AI's selector
 
+        // Small delay to show the selection
+        setTimeout(() => {
+            this.executePlacement(pieceType, col);
+        }, 300);
+    },
+
+    /**
+     * Execute the actual placement after showing selection
+     */
+    executePlacement(pieceType, col) {
         // Place the piece
         const result = GameState.placePiece(col, pieceType);
 

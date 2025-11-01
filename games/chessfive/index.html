@@ -25,42 +25,45 @@
 
     <!-- AI Toggle Styles -->
     <style>
-        .header-controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .ai-toggle-container {
-            background: rgba(0, 188, 212, 0.1);
-            padding: 8px 15px;
-            border-radius: 25px;
-            border: 2px solid rgba(0, 188, 212, 0.3);
-        }
-
-        .toggle-label {
+        /* AI Toggle Button (NEW - inline with game controls) */
+        .ai-toggle-btn {
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 10px 20px;
+            background: rgba(0, 188, 212, 0.15);
+            border: 2px solid rgba(0, 188, 212, 0.4);
+            border-radius: 10px;
             cursor: pointer;
+            transition: all 0.3s;
             user-select: none;
         }
 
-        .toggle-slider {
+        .ai-toggle-btn:hover {
+            background: rgba(0, 188, 212, 0.25);
+            border-color: rgba(0, 188, 212, 0.6);
+            box-shadow: 0 0 15px rgba(0, 188, 212, 0.3);
+        }
+
+        #ai-toggle {
+            display: none;
+        }
+
+        .ai-toggle-slider {
             position: relative;
             width: 50px;
-            height: 24px;
+            height: 26px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            border-radius: 13px;
             border: 2px solid rgba(0, 188, 212, 0.5);
             transition: all 0.3s;
         }
 
-        .toggle-slider::before {
+        .ai-toggle-slider::before {
             content: '';
             position: absolute;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             background: #fff;
             top: 1px;
@@ -69,24 +72,20 @@
             box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
         }
 
-        #ai-toggle {
-            display: none;
-        }
-
-        #ai-toggle:checked + .toggle-slider {
+        #ai-toggle:checked + .ai-toggle-slider {
             background: rgba(0, 188, 212, 0.5);
             border-color: #00bcd4;
         }
 
-        #ai-toggle:checked + .toggle-slider::before {
-            left: 26px;
+        #ai-toggle:checked + .ai-toggle-slider::before {
+            left: 24px;
             background: #00ffff;
             box-shadow: 0 0 15px #00ffff;
         }
 
-        .toggle-text {
+        .ai-toggle-label {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: #00bcd4;
             font-weight: bold;
             min-width: 100px;
@@ -126,17 +125,6 @@
             <p class="game-subtitle">Place. Move. Align Five. Win.</p>
         </div>
         <div class="header-controls">
-            <!-- AI Toggle -->
-            <div class="ai-toggle-container" title="Play vs AI or vs Human">
-                <label class="toggle-label">
-                    <input type="checkbox" id="ai-toggle" />
-                    <span class="toggle-slider"></span>
-                    <span class="toggle-text">
-                        <span id="ai-status">👥 vs Human</span>
-                    </span>
-                </label>
-            </div>
-
             <!-- Sound Toggle -->
             <button id="soundToggle" class="btn-icon" title="Toggle Sound">
                 <span class="icon-sound-on">🔊</span>
@@ -299,6 +287,14 @@
             <!-- Game Controls -->
             <div class="game-controls">
                 <button id="btnNewGame" class="btn-primary">NEW GAME</button>
+
+                <!-- AI Toggle -->
+                <label class="ai-toggle-btn" title="Play vs AI or vs Human">
+                    <input type="checkbox" id="ai-toggle" />
+                    <span class="ai-toggle-slider"></span>
+                    <span class="ai-toggle-label" id="ai-status">👥 vs Human</span>
+                </label>
+
                 <button id="btnUndo" class="btn-secondary" disabled>UNDO MOVE</button>
                 <button id="btnHelp" class="btn-secondary">HELP</button>
             </div>
