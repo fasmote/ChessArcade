@@ -393,11 +393,63 @@ const ChessFiveAI = {
 
     /**
      * Check if this position blocks opponent's win
+     * Returns true if placing a piece at (row, col) blocks a 4-in-a-row threat
      */
     blocksOpponentWin(board, row, col, opponentPlayer) {
-        // This is a simplification - would need deeper analysis for perfect blocking
-        // For now, check if this position is on opponent's longest line
-        return true; // Assume any move is potentially blocking (conservative)
+        // Check if this position interrupts any of opponent's dangerous lines
+        const directions = [
+            [0, 1],   // horizontal
+            [1, 0],   // vertical
+            [1, 1],   // diagonal \
+            [1, -1]   // diagonal /
+        ];
+
+        for (const [dr, dc] of directions) {
+            // Check line in both directions from this position
+            let count = 0;
+            let emptySpaces = 0;
+
+            // Count opponent pieces in positive direction
+            for (let i = 1; i <= 4; i++) {
+                const r = row + (dr * i);
+                const c = col + (dc * i);
+                if (r < 0 || r >= 8 || c < 0 || c >= 8) break;
+
+                const piece = board[r][c];
+                if (piece && piece.player === opponentPlayer) {
+                    count++;
+                } else if (piece === null) {
+                    emptySpaces++;
+                    break;
+                } else {
+                    break; // Hit enemy piece
+                }
+            }
+
+            // Count opponent pieces in negative direction
+            for (let i = 1; i <= 4; i++) {
+                const r = row - (dr * i);
+                const c = col - (dc * i);
+                if (r < 0 || r >= 8 || c < 0 || c >= 8) break;
+
+                const piece = board[r][c];
+                if (piece && piece.player === opponentPlayer) {
+                    count++;
+                } else if (piece === null) {
+                    emptySpaces++;
+                    break;
+                } else {
+                    break; // Hit enemy piece
+                }
+            }
+
+            // If opponent has 4 in a row on this line, blocking here prevents win
+            if (count >= 4) {
+                return true;
+            }
+        }
+
+        return false;
     },
 
     /**
