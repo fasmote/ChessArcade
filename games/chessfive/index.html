@@ -23,6 +23,81 @@
     <!-- ChessFive Styles -->
     <link rel="stylesheet" href="css/chessfive.css">
 
+    <!-- AI Toggle Styles -->
+    <style>
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .ai-toggle-container {
+            background: rgba(0, 188, 212, 0.1);
+            padding: 8px 15px;
+            border-radius: 25px;
+            border: 2px solid rgba(0, 188, 212, 0.3);
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-slider {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            border: 2px solid rgba(0, 188, 212, 0.5);
+            transition: all 0.3s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            top: 1px;
+            left: 2px;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+        }
+
+        #ai-toggle {
+            display: none;
+        }
+
+        #ai-toggle:checked + .toggle-slider {
+            background: rgba(0, 188, 212, 0.5);
+            border-color: #00bcd4;
+        }
+
+        #ai-toggle:checked + .toggle-slider::before {
+            left: 26px;
+            background: #00ffff;
+            box-shadow: 0 0 15px #00ffff;
+        }
+
+        .toggle-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: #00bcd4;
+            font-weight: bold;
+            min-width: 100px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.05); }
+        }
+    </style>
+
     <!-- Howler.js for Sound -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 
@@ -50,11 +125,30 @@
             </h1>
             <p class="game-subtitle">Place. Move. Align Five. Win.</p>
         </div>
-        <button id="soundToggle" class="btn-icon" title="Toggle Sound">
-            <span class="icon-sound-on">🔊</span>
-            <span class="icon-sound-off" style="display: none;">🔇</span>
-        </button>
+        <div class="header-controls">
+            <!-- AI Toggle -->
+            <div class="ai-toggle-container" title="Play vs AI or vs Human">
+                <label class="toggle-label">
+                    <input type="checkbox" id="ai-toggle" />
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-text">
+                        <span id="ai-status">👥 vs Human</span>
+                    </span>
+                </label>
+            </div>
+
+            <!-- Sound Toggle -->
+            <button id="soundToggle" class="btn-icon" title="Toggle Sound">
+                <span class="icon-sound-on">🔊</span>
+                <span class="icon-sound-off" style="display: none;">🔇</span>
+            </button>
+        </div>
     </header>
+
+    <!-- AI Thinking Indicator -->
+    <div id="ai-thinking" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); color: #00ffff; padding: 20px 40px; border-radius: 15px; border: 2px solid #00ffff; z-index: 10000; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; box-shadow: 0 0 30px rgba(0,255,255,0.5); animation: pulse 1.5s infinite;">
+        🤖 AI is thinking...
+    </div>
 
     <!-- Main Game Container -->
     <main class="game-container">
@@ -282,6 +376,8 @@
     <script src="js/win-detection.js"></script>
     <script src="js/sound-manager.js"></script>
     <script src="js/ui-controller.js"></script>
+    <script src="js/ai-player.js"></script>
+    <script src="js/ai-controller.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

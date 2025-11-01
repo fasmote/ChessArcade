@@ -110,6 +110,9 @@ const GravityPhase = {
             UIController.updatePlayerInfo(); // Now updates with the NEW current player
             UIController.updatePieceSelector(); // Update selector for new player
 
+            // Check if AI should move next
+            AIController.checkAndMakeAIMove();
+
         } else {
             console.warn('⚠️ Column', col, 'is full');
             SoundManager.play('invalid');
@@ -166,6 +169,9 @@ const GravityPhase = {
 
         // Initialize chess phase
         ChessPhase.init();
+
+        // Check if AI should make first move in chess phase
+        AIController.checkAndMakeAIMove();
     },
 
     /**

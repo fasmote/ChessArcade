@@ -140,6 +140,9 @@ const ChessPhase = {
             // Update UI (turn indicator, player panels, board border)
             UIController.updateTurnIndicator();
             UIController.updatePlayerInfo();
+
+            // Check if AI should move next
+            AIController.checkAndMakeAIMove();
         }
     },
 

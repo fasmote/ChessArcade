@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     BoardRenderer.init();
     UIController.init();
     GravityPhase.init();
+    AIController.init(); // Initialize AI controller
 
     console.log('✅ Game ready!');
 
