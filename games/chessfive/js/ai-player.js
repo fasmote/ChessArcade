@@ -337,14 +337,24 @@ const ChessFiveAI = {
         } else {
             // PRIORITY 2: Does this block opponent's winning move?
             const opponentPlayer = (gameState.currentPlayer === 'cyan') ? 'magenta' : 'cyan';
-            const opponentCanWin = this.canOpponentWinNextTurn(board, opponentPlayer);
+            const opponentHasImmediateWin = this.canOpponentWinNextTurn(board, opponentPlayer);
 
-            if (opponentCanWin) {
-                // Check if this move blocks it
-                if (this.blocksOpponentWin(board, toRow, toCol, opponentPlayer)) {
-                    score = this.WEIGHTS.BLOCK_WIN;
+            if (opponentHasImmediateWin) {
+                // Check if threat is unstoppable
+                const isUnstoppable = this.hasUnstoppableThreat(board, opponentPlayer);
+
+                if (isUnstoppable) {
+                    // Threat is unstoppable - try to win first!
+                    // Prioritize moves that create our own threats
+                    score = this.evaluateThreats(board, toRow, toCol, gameState.currentPlayer) * 2;
+                    console.log(`⚠️ Detected unstoppable threat from ${opponentPlayer}! Going for win.`);
                 } else {
-                    score = -this.WEIGHTS.WIN_NOW; // Bad move, doesn't block
+                    // Threat is stoppable - try to block it
+                    if (this.blocksOpponentWin(board, toRow, toCol, opponentPlayer)) {
+                        score = this.WEIGHTS.BLOCK_WIN;
+                    } else {
+                        score = -this.WEIGHTS.WIN_NOW; // Bad move, doesn't block
+                    }
                 }
             } else {
                 // PRIORITY 3: Evaluate threats and position
@@ -365,6 +375,7 @@ const ChessFiveAI = {
      * Check if opponent can win on next turn
      */
     canOpponentWinNextTurn(board, opponentPlayer) {
+        // First check for immediate win (5 in a row possible)
         const opponentPieces = this.getAllPieces(board, opponentPlayer);
 
         for (const piece of opponentPieces) {
@@ -388,7 +399,98 @@ const ChessFiveAI = {
             }
         }
 
+        // Check for unstoppable threats (4 in a row with multiple open ends)
+        if (this.hasUnstoppableThreat(board, opponentPlayer)) {
+            return true;
+        }
+
         return false;
+    },
+
+    /**
+     * Detect unstoppable threats: 4 in a row with 2+ ways to complete
+     * These are threats that cannot be blocked (e.g., _XXXX_ or knight jumps)
+     */
+    hasUnstoppableThreat(board, player) {
+        const directions = [
+            [0, 1],   // horizontal
+            [1, 0],   // vertical
+            [1, 1],   // diagonal \
+            [1, -1]   // diagonal /
+        ];
+
+        // Check every position on the board
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                const piece = board[row][col];
+                if (!piece || piece.player !== player) continue;
+
+                // Check each direction from this piece
+                for (const [dr, dc] of directions) {
+                    const lineInfo = this.analyzeLineFromPosition(board, row, col, dr, dc, player);
+
+                    // Unstoppable if: 4 pieces + 2 or more open spots
+                    if (lineInfo.count === 4 && lineInfo.openEnds >= 2) {
+                        return true;
+                    }
+
+                    // Also unstoppable if: 4 pieces + 1 open end + that piece can reach it (knight jump)
+                    if (lineInfo.count === 4 && lineInfo.openEnds >= 1 && lineInfo.hasKnight) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    },
+
+    /**
+     * Analyze a line from a position to count pieces and open ends
+     */
+    analyzeLineFromPosition(board, row, col, dr, dc, player) {
+        let count = 0;
+        let openEnds = 0;
+        let hasKnight = false;
+        let positions = [];
+
+        // Count in positive direction
+        for (let i = 0; i < 5; i++) {
+            const r = row + (dr * i);
+            const c = col + (dc * i);
+            if (r < 0 || r >= 8 || c < 0 || c >= 8) break;
+
+            const piece = board[r][c];
+            if (piece && piece.player === player) {
+                count++;
+                if (piece.type === 'knight') hasKnight = true;
+                positions.push({row: r, col: c});
+            } else if (piece === null) {
+                openEnds++;
+            } else {
+                break; // Hit opponent piece
+            }
+        }
+
+        // Count in negative direction (skip starting position to avoid double count)
+        for (let i = 1; i < 5; i++) {
+            const r = row - (dr * i);
+            const c = col - (dc * i);
+            if (r < 0 || r >= 8 || c < 0 || c >= 8) break;
+
+            const piece = board[r][c];
+            if (piece && piece.player === player) {
+                count++;
+                if (piece.type === 'knight') hasKnight = true;
+                positions.push({row: r, col: c});
+            } else if (piece === null) {
+                openEnds++;
+            } else {
+                break; // Hit opponent piece
+            }
+        }
+
+        return { count, openEnds, hasKnight, positions };
     },
 
     /**
