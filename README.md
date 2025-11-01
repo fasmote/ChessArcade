@@ -17,7 +17,7 @@
 - **🐴 Knight Quest** - Master the knight's tour across pixel-perfect boards *(Available Now!)*
 - **🧠 Memory Matrix** - Train positional memory with progressive levels *(Available Now!)*
 - **🟦 Master Sequence** - Simon Says meets chess! Memorize growing patterns *(Available Now!)*
-- **⚔️ ChessFive** - Connect Four meets Chess! Two-player tactical strategy *(Available Now!)*
+- **⚔️ ChessFive** - Connect Four meets Chess! Two-player tactical strategy **+ AI Opponent!** *(Available Now!)*
 
 #### 🎯 **Features:**
 - **Responsive Design**: Optimized for desktop and mobile
@@ -38,7 +38,7 @@
 - **🐴 Knight Quest** - Domina el recorrido del caballo en tableros perfectos *(¡Disponible Ahora!)*
 - **🧠 Memory Matrix** - Entrena la memoria posicional con niveles progresivos *(¡Disponible Ahora!)*
 - **🟦 Master Sequence** - ¡Simon Says encuentra el ajedrez! Memoriza patrones crecientes *(¡Disponible Ahora!)*
-- **⚔️ ChessFive** - ¡Conecta Cuatro conoce al Ajedrez! Estrategia táctica para dos jugadores *(¡Disponible Ahora!)*
+- **⚔️ ChessFive** - ¡Conecta Cuatro conoce al Ajedrez! Estrategia táctica para dos jugadores **+ ¡Oponente IA!** *(¡Disponible Ahora!)*
 
 #### 🎯 **Características:**
 - **Diseño Responsivo**: Optimizado para escritorio y móvil
@@ -50,7 +50,18 @@
 
 ---
 
-## 🆕 Recent Updates (Octubre 2025)
+## 🆕 Recent Updates (Noviembre 2025)
+
+### ChessFive AI v1.0 - Production Ready! 🤖
+- ✅ **AI Opponent System** - Complete Gomoku-inspired AI implementation
+- ✅ **Two-Phase Strategy** - Different AI tactics for Gravity and Chess phases
+- ✅ **Enhanced Threat Detection** - Blocks 3-in-a-row and 4-in-a-row in Phase 1
+- ✅ **Unstoppable Recognition** - AI detects and counters unstoppable formations
+- ✅ **Per-Player AI Toggles** - Independent AI controls for both players
+- ✅ **AI vs AI Mode** - Watch two AIs compete autonomously
+- ✅ **Last Move Highlighting** - Visual feedback (origin subtle, destination bright)
+- ✅ **Closeable Victory Modal** - Analyze the game after winning
+- ✅ **Production Documentation** - Complete AI_DESIGN.md with v2.0 roadmap
 
 ### Knight Quest - Coordenadas "Taxi" 🚕
 - ✅ **Coordenadas visuales** en todos los tableros (a-h, 1-10)
@@ -162,22 +173,36 @@
 
 ---
 
-## ⚔️ ChessFive - NEW! Connect Four Meets Chess
+## ⚔️ ChessFive - NEW! Connect Four Meets Chess + AI Opponent!
+
+![ChessFive Screenshot](./screenshots/chessfive-preview.png)
 
 ### 🎮 **What is ChessFive?**
-**ChessFive** is a unique two-player strategy game that brilliantly combines Connect Four's gravity-drop mechanics with chess piece movement! Drop your pieces onto the board during Phase 1, then strategically move them using authentic chess rules in Phase 2 to align 5 in a row. First to get five wins!
+**ChessFive** is a unique two-player strategy game that brilliantly combines Connect Four's gravity-drop mechanics with chess piece movement! Drop your pieces onto the board during Phase 1, then strategically move them using authentic chess rules in Phase 2 to align 5 in a row. **Now featuring a challenging AI opponent powered by Gomoku algorithms!**
 
 ### ✨ **Game Features:**
 - **🎲 Two-Phase Gameplay**: Gravity placement + Chess movement
+- **🤖 AI Opponent (NEW!)**: Challenge a smart AI with Gomoku-inspired threat detection
+- **👥 Multiple Game Modes**:
+  - Human vs Human (local multiplayer)
+  - Human vs AI (cyan or magenta)
+  - AI vs AI (watch two AIs battle!)
 - **♟️ Authentic Chess Rules**: Each piece moves as in real chess (NO captures)
 - **🎯 Strategic Depth**: Plan ahead during placement for tactical advantages
-- **👥 Local Multiplayer**: Two players on the same device
-- **🎨 Dynamic UI**: Color-coded turns and visual feedback
+- **🎨 Enhanced UX**: Last move highlighting, closeable victory modal
 - **📱 Fully Responsive**: Optimized for desktop and mobile play
+
+### 🤖 **AI Features:**
+- **Intelligent Threat Detection**: Recognizes 2-5 in-a-row patterns
+- **Phase 1 Strategy**: Blocks opponent's 3-in-a-row and 4-in-a-row formations
+- **Phase 2 Tactics**: Gomoku-style pattern matching and unstoppable threat recognition
+- **Mid-Game AI Toggle**: Switch AI on/off for either player during gameplay
+- **Visual Feedback**: "AI is thinking..." indicator and move highlights
 
 ### 🎪 **Perfect For:**
 - **Strategic Thinking**: Combines positional planning with tactical execution
 - **Chess Training**: Practice piece movement and tactical vision
+- **AI Challenge**: Test your skills against a Gomoku-trained opponent
 - **Social Gaming**: Fun competitive game for friends and family
 - **All Skill Levels**: Easy to learn, challenging to master
 
@@ -187,13 +212,22 @@
 - Take turns dropping pieces into columns
 - Pieces fall to the lowest available square
 - Each player has 8 pieces: 2 Rooks, 2 Knights, 2 Bishops, 1 Queen, 1 King
+- AI detects and blocks threatening formations
 
 ♟️ Phase 2: CHESS MOVEMENT
 - Move your pieces using authentic chess rules
 - NO captures - occupied squares block movement
 - Only knights can jump over other pieces
+- AI uses Gomoku patterns to create winning formations
 - First to align 5 pieces in a row wins!
+
+🤖 AI Controls:
+- Toggle AI for Cyan player (left panel)
+- Toggle AI for Magenta player (right panel)
+- Enable both for AI vs AI spectator mode!
 ```
+
+### 🔗 **[▶️ Play ChessFive Now!](https://fasmote.github.io/ChessArcade/games/chessfive/index.html)**
 
 ---
 
