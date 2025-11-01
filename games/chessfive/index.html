@@ -23,6 +23,88 @@
     <!-- ChessFive Styles -->
     <link rel="stylesheet" href="css/chessfive.css">
 
+    <!-- AI Toggle Styles -->
+    <style>
+        /* AI Toggle per Player (NEW - inside player panels) */
+        .player-ai-toggle {
+            padding: 8px 12px;
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .ai-player-toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .ai-player-checkbox {
+            display: none;
+        }
+
+        .ai-player-slider {
+            position: relative;
+            width: 44px;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 11px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .ai-player-slider::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #fff;
+            top: 1px;
+            left: 2px;
+            transition: all 0.3s;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+        }
+
+        .ai-player-checkbox:checked + .ai-player-slider {
+            background: rgba(0, 188, 212, 0.4);
+            border-color: #00bcd4;
+        }
+
+        .ai-player-checkbox:checked + .ai-player-slider::before {
+            left: 22px;
+            background: #00ffff;
+            box-shadow: 0 0 12px #00ffff;
+        }
+
+        .ai-player-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: bold;
+            min-width: 80px;
+        }
+
+        /* Cyan player specific color when AI enabled */
+        #ai-toggle-cyan:checked ~ .ai-player-text {
+            color: var(--cyan-primary);
+        }
+
+        /* Magenta player specific color when AI enabled */
+        #ai-toggle-magenta:checked ~ .ai-player-text {
+            color: var(--magenta-primary);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.05); }
+        }
+    </style>
+
     <!-- Howler.js for Sound -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 
@@ -50,11 +132,19 @@
             </h1>
             <p class="game-subtitle">Place. Move. Align Five. Win.</p>
         </div>
-        <button id="soundToggle" class="btn-icon" title="Toggle Sound">
-            <span class="icon-sound-on">🔊</span>
-            <span class="icon-sound-off" style="display: none;">🔇</span>
-        </button>
+        <div class="header-controls">
+            <!-- Sound Toggle -->
+            <button id="soundToggle" class="btn-icon" title="Toggle Sound">
+                <span class="icon-sound-on">🔊</span>
+                <span class="icon-sound-off" style="display: none;">🔇</span>
+            </button>
+        </div>
     </header>
+
+    <!-- AI Thinking Indicator -->
+    <div id="ai-thinking" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); color: #00ffff; padding: 20px 40px; border-radius: 15px; border: 2px solid #00ffff; z-index: 10000; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; box-shadow: 0 0 30px rgba(0,255,255,0.5); animation: pulse 1.5s infinite;">
+        🤖 AI is thinking...
+    </div>
 
     <!-- Main Game Container -->
     <main class="game-container">
@@ -78,6 +168,16 @@
                         <span class="player-icon">⚔️</span>
                         <h3>CYAN PLAYER</h3>
                     </div>
+
+                    <!-- AI Toggle for Cyan Player -->
+                    <div class="player-ai-toggle">
+                        <label class="ai-player-toggle-label">
+                            <input type="checkbox" id="ai-toggle-cyan" class="ai-player-checkbox" />
+                            <span class="ai-player-slider"></span>
+                            <span class="ai-player-text" id="ai-status-cyan">👤 Human</span>
+                        </label>
+                    </div>
+
                     <div class="player-stats">
                         <div class="stat">
                             <span class="label">Pieces Left:</span>
@@ -149,6 +249,16 @@
                         <span class="player-icon">⚔️</span>
                         <h3>MAGENTA PLAYER</h3>
                     </div>
+
+                    <!-- AI Toggle for Magenta Player -->
+                    <div class="player-ai-toggle">
+                        <label class="ai-player-toggle-label">
+                            <input type="checkbox" id="ai-toggle-magenta" class="ai-player-checkbox" />
+                            <span class="ai-player-slider"></span>
+                            <span class="ai-player-text" id="ai-status-magenta">👤 Human</span>
+                        </label>
+                    </div>
+
                     <div class="player-stats">
                         <div class="stat">
                             <span class="label">Pieces Left:</span>
@@ -215,6 +325,7 @@
     <!-- Game Over Modal -->
     <div id="gameOverModal" class="modal" style="display: none;">
         <div class="modal-content">
+            <button class="modal-close" id="btnCloseGameOver">✕</button>
             <h2 id="winnerTitle">CYAN PLAYER WINS!</h2>
             <p id="winnerMessage">Five pieces aligned!</p>
             <div class="modal-actions">
@@ -320,6 +431,8 @@
     <script src="js/win-detection.js"></script>
     <script src="js/sound-manager.js"></script>
     <script src="js/ui-controller.js"></script>
+    <script src="js/ai-player.js"></script>
+    <script src="js/ai-controller.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

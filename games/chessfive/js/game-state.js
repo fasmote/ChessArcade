@@ -84,6 +84,9 @@ const GameState = {
     gameOver: false,
     winner: null,
 
+    // Last move (for highlighting)
+    lastMove: null, // { fromRow, fromCol, toRow, toCol }
+
     /**
      * Initialize or reset game state
      */
@@ -103,6 +106,7 @@ const GameState = {
         this.moveHistory = [];
         this.gameOver = false;
         this.winner = null;
+        this.lastMove = null;
 
         console.log('🎮 Game state initialized');
     },
@@ -171,6 +175,14 @@ const GameState = {
         // Move piece
         this.board[toRow][toCol] = piece;
         this.board[fromRow][fromCol] = null;
+
+        // Store last move for highlighting
+        this.lastMove = {
+            fromRow: fromRow,
+            fromCol: fromCol,
+            toRow: toRow,
+            toCol: toCol
+        };
 
         // Record move
         this.moveHistory.push({

@@ -110,6 +110,9 @@ const GravityPhase = {
             UIController.updatePlayerInfo(); // Now updates with the NEW current player
             UIController.updatePieceSelector(); // Update selector for new player
 
+            // Check if AI should move next
+            AIController.checkAndMakeAIMove();
+
         } else {
             console.warn('⚠️ Column', col, 'is full');
             SoundManager.play('invalid');
@@ -121,7 +124,7 @@ const GravityPhase = {
      */
     handleSquareHover(e) {
         if (GameState.phase !== 'gravity') return;
-        if (GameState.gameOver) return;
+        if (GameState.gameOver) return; // Don't show hover effects if game is over
 
         const square = e.currentTarget;
         const col = parseInt(square.dataset.col);
@@ -140,6 +143,7 @@ const GravityPhase = {
      */
     handleSquareLeave() {
         if (GameState.phase !== 'gravity') return;
+        if (GameState.gameOver) return; // Don't clear highlights if game is over
 
         BoardRenderer.clearHighlights();
         BoardRenderer.removeGhosts();
@@ -166,6 +170,9 @@ const GravityPhase = {
 
         // Initialize chess phase
         ChessPhase.init();
+
+        // Check if AI should make first move in chess phase
+        AIController.checkAndMakeAIMove();
     },
 
     /**

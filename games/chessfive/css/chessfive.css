@@ -718,6 +718,18 @@ button:disabled {
     background: rgba(255, 0, 255, 0.3);
 }
 
+/* From Square Highlight (where piece moved from) - subtle like chess.com */
+.square.from-square {
+    background: rgba(255, 255, 100, 0.15);
+    box-shadow: inset 0 0 10px rgba(255, 255, 100, 0.2);
+}
+
+/* To Square Highlight (where piece moved to) - slightly brighter */
+.square.to-square {
+    background: rgba(255, 255, 100, 0.35);
+    box-shadow: inset 0 0 20px rgba(255, 255, 100, 0.4);
+}
+
 /* Valid Move Highlight */
 .square.valid-move {
     background: rgba(0, 255, 0, 0.2);
@@ -774,6 +786,7 @@ button:disabled {
 }
 
 .modal-content {
+    position: relative;
     background: linear-gradient(135deg, #1a1a2e 0%, #0a0a1a 100%);
     border: 3px solid var(--cyan-primary);
     border-radius: 15px;

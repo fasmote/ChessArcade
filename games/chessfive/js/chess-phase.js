@@ -121,6 +121,9 @@ const ChessPhase = {
             // Update board visuals
             BoardRenderer.renderBoard();
 
+            // Highlight last move (from/to squares)
+            BoardRenderer.highlightLastMove();
+
             // Play sound
             SoundManager.play('move');
 
@@ -140,6 +143,9 @@ const ChessPhase = {
             // Update UI (turn indicator, player panels, board border)
             UIController.updateTurnIndicator();
             UIController.updatePlayerInfo();
+
+            // Check if AI should move next
+            AIController.checkAndMakeAIMove();
         }
     },
 

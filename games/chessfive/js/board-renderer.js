@@ -140,7 +140,7 @@ const BoardRenderer = {
     clearHighlights() {
         const squares = this.boardElement.querySelectorAll('.square');
         squares.forEach(sq => {
-            sq.classList.remove('column-hover', 'selected', 'valid-move', 'winning');
+            sq.classList.remove('column-hover', 'selected', 'valid-move', 'winning', 'from-square', 'to-square');
         });
     },
 
@@ -207,5 +207,33 @@ const BoardRenderer = {
     removeGhosts() {
         const ghosts = this.boardElement.querySelectorAll('.ghost');
         ghosts.forEach(g => g.remove());
+    },
+
+    /**
+     * Highlight last move (chess phase)
+     * Shows where piece moved from (origin) and to (destination)
+     */
+    highlightLastMove() {
+        // Clear previous move highlights
+        const squares = this.boardElement.querySelectorAll('.square');
+        squares.forEach(sq => {
+            sq.classList.remove('from-square', 'to-square');
+        });
+
+        // Highlight new move if exists
+        if (GameState.lastMove) {
+            const { fromRow, fromCol, toRow, toCol } = GameState.lastMove;
+
+            const fromSquare = this.getSquare(fromRow, fromCol);
+            const toSquare = this.getSquare(toRow, toCol);
+
+            if (fromSquare) {
+                fromSquare.classList.add('from-square');
+            }
+
+            if (toSquare) {
+                toSquare.classList.add('to-square');
+            }
+        }
     }
 };
