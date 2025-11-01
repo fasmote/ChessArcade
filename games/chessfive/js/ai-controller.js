@@ -171,13 +171,10 @@ const AIController = {
             // Switch player
             GameState.switchPlayer();
 
-            // Update UI
+            // Update UI (updatePieceSelector will auto-select first available piece)
             UIController.updateTurnIndicator();
             UIController.updatePlayerInfo();
-            UIController.updatePieceSelector();
-
-            // Reset piece selection
-            GameState.selectedPieceType = null;
+            UIController.updatePieceSelector(); // This auto-selects a piece for the new player
 
         } else {
             console.error('🤖 AI tried invalid gravity move!');
