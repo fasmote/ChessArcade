@@ -317,6 +317,9 @@ ChessArcade uses a custom **NeonChess Design System** featuring:
 ### Master Sequence
 ![Master Sequence Gameplay](./screenshots/master-sequence-preview.png)
 
+### ChessFive
+![ChessFive Gameplay](./screenshots/chessfive-preview.png)
+
 ---
 
 ## 🚀 **Roadmap y Planes Futuros**
@@ -385,11 +388,11 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ### 🎮 **Ready to Level Up Your Chess Game?**
 
-[![Play Square Rush](https://img.shields.io/badge/🎯_Play_Square_Rush-FF8000?style=for-the-badge)](./games/square-rush/index.html)
-[![Play Knight Quest](https://img.shields.io/badge/🐴_Play_Knight_Quest-FF0080?style=for-the-badge)](./games/knight-quest/index.html)
-[![Play Memory Matrix](https://img.shields.io/badge/🧠_Play_Memory_Matrix-00FF80?style=for-the-badge)](./games/memory-matrix-v2/index.html)
-[![Play Master Sequence](https://img.shields.io/badge/🟦_Play_Master_Sequence-8000FF?style=for-the-badge)](./games/master-sequence/index.html)
-[![Play ChessFive](https://img.shields.io/badge/⚔️_Play_ChessFive-FF00FF?style=for-the-badge)](./games/chessfive/index.html)
+[![Play Square Rush](https://img.shields.io/badge/🎯_Play_Square_Rush-FF8000?style=for-the-badge)](https://fasmote.github.io/ChessArcade/games/square-rush/index.html)
+[![Play Knight Quest](https://img.shields.io/badge/🐴_Play_Knight_Quest-FF0080?style=for-the-badge)](https://fasmote.github.io/ChessArcade/games/knight-quest/index.html)
+[![Play Memory Matrix](https://img.shields.io/badge/🧠_Play_Memory_Matrix-00FF80?style=for-the-badge)](https://fasmote.github.io/ChessArcade/games/memory-matrix-v2/index.html)
+[![Play Master Sequence](https://img.shields.io/badge/🟦_Play_Master_Sequence-8000FF?style=for-the-badge)](https://fasmote.github.io/ChessArcade/games/master-sequence/index.html)
+[![Play ChessFive](https://img.shields.io/badge/⚔️_Play_ChessFive-FF00FF?style=for-the-badge)](https://fasmote.github.io/ChessArcade/games/chessfive/index.html)
 [![GitHub](https://img.shields.io/badge/⭐_Star_on_GitHub-00FFFF?style=for-the-badge&logo=github)](https://github.com/fasmote/ChessArcade)
 
 **Made with ⚡ by ChessArcade | Powered by NeonChess Design System**
