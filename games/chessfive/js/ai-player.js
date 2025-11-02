@@ -72,6 +72,14 @@ const ChessFiveAI = {
         return new Promise(resolve => setTimeout(resolve, ms));
     },
 
+    /**
+     * Choose random element from array
+     * Used to add variety when multiple moves have same score
+     */
+    randomChoice(array) {
+        return array[Math.floor(Math.random() * array.length)];
+    },
+
     // ==========================================
     // GRAVITY PHASE AI
     // ==========================================
@@ -118,9 +126,10 @@ const ChessFiveAI = {
 
     /**
      * Choose best column to drop piece in
+     * WITH RANDOMIZATION: If multiple columns have same score, pick randomly
      */
     chooseBestColumn(gameState, pieceType) {
-        let bestCol = -1;
+        let bestCols = [];
         let bestScore = -Infinity;
 
         // Evaluate each column
@@ -136,12 +145,19 @@ const ChessFiveAI = {
             console.log(`  Column ${col}: score ${score}`);
 
             if (score > bestScore) {
+                // Found better move, reset list
                 bestScore = score;
-                bestCol = col;
+                bestCols = [col];
+            } else if (score === bestScore) {
+                // Found equal move, add to list
+                bestCols.push(col);
             }
         }
 
-        return bestCol;
+        // Pick random column from best options
+        const chosenCol = this.randomChoice(bestCols);
+        console.log(`  🎲 Best columns: [${bestCols}], chosen: ${chosenCol}`);
+        return chosenCol;
     },
 
     /**
@@ -319,9 +335,10 @@ const ChessFiveAI = {
 
     /**
      * Find best chess move using Gomoku-inspired evaluation
+     * WITH RANDOMIZATION: If multiple moves have same score, pick randomly
      */
     findBestChessMove(gameState) {
-        let bestMove = null;
+        let bestMoves = [];
         let bestScore = -Infinity;
 
         // Get all AI pieces
@@ -339,20 +356,32 @@ const ChessFiveAI = {
                 );
 
                 if (score > bestScore) {
+                    // Found better move, reset list
                     bestScore = score;
-                    bestMove = {
+                    bestMoves = [{
                         fromRow: piece.row,
                         fromCol: piece.col,
                         toRow: move.row,
                         toCol: move.col,
                         score: score
-                    };
+                    }];
+                } else if (score === bestScore) {
+                    // Found equal move, add to list
+                    bestMoves.push({
+                        fromRow: piece.row,
+                        fromCol: piece.col,
+                        toRow: move.row,
+                        toCol: move.col,
+                        score: score
+                    });
                 }
             }
         }
 
-        console.log(`🤖 Best move score: ${bestScore}`);
-        return bestMove;
+        // Pick random move from best options
+        const chosenMove = this.randomChoice(bestMoves);
+        console.log(`🤖 Best move score: ${bestScore}, ${bestMoves.length} options, chosen: (${chosenMove.fromRow},${chosenMove.fromCol})→(${chosenMove.toRow},${chosenMove.toCol})`);
+        return chosenMove;
     },
 
     /**

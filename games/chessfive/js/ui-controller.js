@@ -459,6 +459,12 @@ const UIController = {
         // Hide game over modal
         document.getElementById('gameOverModal').style.display = 'none';
 
+        // Remove game-over class to hide NEW GAME button in mobile Phase 2
+        const gameContainer = document.querySelector('.game-container');
+        if (gameContainer) {
+            gameContainer.classList.remove('game-over');
+        }
+
         // Reset game state
         GameState.init();
 
@@ -487,10 +493,16 @@ const UIController = {
         const modal = document.getElementById('gameOverModal');
         const title = document.getElementById('winnerTitle');
         const message = document.getElementById('winnerMessage');
+        const gameContainer = document.querySelector('.game-container');
 
         title.textContent = winner.toUpperCase() + ' PLAYER WINS!';
         title.style.color = winner === 'cyan' ? 'var(--cyan-primary)' : 'var(--magenta-primary)';
         message.textContent = 'Five pieces aligned!';
+
+        // Add game-over class to show NEW GAME button in mobile
+        if (gameContainer) {
+            gameContainer.classList.add('game-over');
+        }
 
         // Delay de 2 segundos para que el usuario disfrute la victoria
         setTimeout(() => {
