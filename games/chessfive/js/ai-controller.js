@@ -239,12 +239,21 @@ const AIController = {
     },
 
     /**
-     * Show/hide "AI is thinking..." indicator (small, below turn indicator)
+     * Show/hide "AI is thinking..." hourglass indicator in player panel
      */
-    showThinkingIndicator(show) {
-        const smallIndicator = document.getElementById('aiThinkingSmall');
-        if (smallIndicator) {
-            smallIndicator.style.display = show ? 'block' : 'none';
+    showThinkingIndicator(show, player = null) {
+        // Use current player if not specified
+        const targetPlayer = player || GameState.currentPlayer;
+
+        // Show/hide hourglass in the correct player panel
+        const hourglassCyan = document.getElementById('aiThinkingCyan');
+        const hourglassMagenta = document.getElementById('aiThinkingMagenta');
+
+        if (hourglassCyan) {
+            hourglassCyan.style.display = (show && targetPlayer === 'cyan') ? 'inline-block' : 'none';
+        }
+        if (hourglassMagenta) {
+            hourglassMagenta.style.display = (show && targetPlayer === 'magenta') ? 'inline-block' : 'none';
         }
     },
 
