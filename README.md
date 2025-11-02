@@ -298,7 +298,8 @@ ChessArcade uses a custom **NeonChess Design System** featuring:
 │   ├── 📁 knight-quest/             # ✅ Knight's Tour game
 │   ├── 📁 square-rush/              # ✅ Coordinate training
 │   ├── 📁 memory-matrix-v2/         # ✅ Visual memory training
-│   └── 📁 master-sequence/          # ✅ Master Sequence (Simon Says)
+│   ├── 📁 master-sequence/          # ✅ Master Sequence (Simon Says)
+│   └── 📁 chessfive/                # ✅ ChessFive + AI Opponent (Gomoku-inspired)
 ├── 📁 screenshots/                  # Game screenshots
 └── 📁 docs/                         # Documentation
 ```
@@ -326,6 +327,7 @@ ChessArcade uses a custom **NeonChess Design System** featuring:
 
 ### 🎮 Mejoras Planificadas para Juegos Actuales
 Todos los juegos existentes recibirán mejoras continuas:
+- **ChessFive**: Sistema de notación de partidas y replay, niveles de dificultad AI (Easy/Medium/Hard), opening book
 - **Knight Quest**: Más modos de juego, tableros personalizados
 - **Square Rush**: Nuevos desafíos y power-ups
 - **Memory Matrix**: Niveles adicionales, temas visuales
