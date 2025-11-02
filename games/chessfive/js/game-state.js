@@ -87,6 +87,9 @@ const GameState = {
     // Last move (for highlighting)
     lastMove: null, // { fromRow, fromCol, toRow, toCol }
 
+    // Position history (for loop detection)
+    positionHistory: [], // Array of board hashes
+
     /**
      * Initialize or reset game state
      */
@@ -107,6 +110,7 @@ const GameState = {
         this.gameOver = false;
         this.winner = null;
         this.lastMove = null;
+        this.positionHistory = [];
 
         console.log('🎮 Game state initialized');
     },
@@ -193,6 +197,9 @@ const GameState = {
             piece: piece.type
         });
 
+        // Record position for loop detection
+        this.recordPosition();
+
         console.log(`♟️ ${this.currentPlayer} moved ${piece.type} from (${fromRow}, ${fromCol}) to (${toRow}, ${toCol})`);
         return true;
     },
@@ -253,5 +260,45 @@ const GameState = {
             }
             console.log(rowStr);
         }
+    },
+
+    /**
+     * Generate hash of current board position
+     * Used for loop detection
+     */
+    getBoardHash() {
+        let hash = '';
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                const piece = this.board[row][col];
+                if (piece) {
+                    hash += `${piece.player[0]}${piece.type[0]}`;
+                } else {
+                    hash += '--';
+                }
+            }
+        }
+        return hash;
+    },
+
+    /**
+     * Record current position in history
+     */
+    recordPosition() {
+        const hash = this.getBoardHash();
+        this.positionHistory.push(hash);
+
+        // Keep only last 20 positions to avoid memory issues
+        if (this.positionHistory.length > 20) {
+            this.positionHistory.shift();
+        }
+    },
+
+    /**
+     * Count how many times current position has occurred
+     */
+    getPositionCount(hash) {
+        if (!hash) hash = this.getBoardHash();
+        return this.positionHistory.filter(h => h === hash).length;
     }
 };

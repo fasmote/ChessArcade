@@ -386,6 +386,7 @@ const ChessFiveAI = {
 
     /**
      * Evaluate a chess move (Gomoku-style)
+     * WITH LOOP DETECTION: Penalizes moves that create repeated positions
      */
     evaluateChessMove(gameState, fromRow, fromCol, toRow, toCol) {
         let score = 0;
@@ -395,6 +396,19 @@ const ChessFiveAI = {
         const piece = board[fromRow][fromCol];
         board[fromRow][fromCol] = null;
         board[toRow][toCol] = piece;
+
+        // LOOP DETECTION: Check if this position has been seen before
+        const positionHash = gameState.getBoardHash();
+        const repetitionCount = gameState.getPositionCount(positionHash);
+
+        if (repetitionCount >= 2) {
+            // Position will occur for 3rd time - heavily penalize to break loop
+            console.log(`🔁 Loop detected! Position repeated ${repetitionCount} times - PENALIZING`);
+            score -= 100000; // Massive penalty to force different move
+        } else if (repetitionCount === 1) {
+            // Position will occur for 2nd time - small penalty to discourage
+            score -= 5000;
+        }
 
         // PRIORITY 1: Does this win immediately?
         const myLine = this.checkLineAt(board, toRow, toCol, gameState.currentPlayer);
