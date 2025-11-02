@@ -519,6 +519,24 @@ button:disabled {
     animation: textGlow 1.5s ease-in-out infinite;
 }
 
+/* AI Thinking Hourglass Animation */
+.ai-thinking-hourglass {
+    font-size: 2rem;
+    margin-top: 8px;
+    display: inline-block;
+    animation: spin 1.5s linear infinite;
+    filter: drop-shadow(0 0 10px #00ffff);
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 /* Desktop Turn Indicator (debajo del tablero) */
 .desktop-turn {
     margin-top: 20px;
