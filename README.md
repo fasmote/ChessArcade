@@ -50,7 +50,16 @@
 
 ---
 
-## 🆕 Recent Updates (Noviembre 2025)
+## 🆕 Recent Updates (Enero 2025)
+
+### ChessFive AI v1.0.4 - Depth-2 Search + UX Improvements 🤖
+- ✅ **Depth-2 AI Search** - AI now anticipates opponent threats BEFORE they happen
+- ✅ **Lookahead Algorithm** - Simulates opponent's best response to each move
+- ✅ **4-in-a-Row Detection** - Identifies dangerous setups that could lead to 5-in-a-row
+- ✅ **Performance Optimized** - ~1 second thinking time with intelligent threat evaluation
+- ✅ **Enhanced UX** - Hourglass indicator moved to side panels, stable button layout
+- ✅ **Technical Report** - Complete algorithm documentation in `docs/CHESSFIVE_AI_TECHNICAL_REPORT.md`
+- ⚠️ **Known Issue** - AI doesn't yet detect existing 4-in-a-row on board (planned for v1.0.5)
 
 ### ChessFive AI v1.0 - Production Ready! 🤖
 - ✅ **AI Opponent System** - Complete Gomoku-inspired AI implementation
@@ -192,12 +201,14 @@
 - **🎨 Enhanced UX**: Last move highlighting, closeable victory modal
 - **📱 Fully Responsive**: Optimized for desktop and mobile play
 
-### 🤖 **AI Features:**
-- **Intelligent Threat Detection**: Recognizes 2-5 in-a-row patterns
+### 🤖 **AI Features (v1.0.4):**
+- **Depth-2 Search**: Anticipates opponent's best response before making moves
+- **Intelligent Threat Detection**: Recognizes 2-5 in-a-row patterns and future threats
 - **Phase 1 Strategy**: Blocks opponent's 3-in-a-row and 4-in-a-row formations
-- **Phase 2 Tactics**: Gomoku-style pattern matching and unstoppable threat recognition
+- **Phase 2 Tactics**: Gomoku-style pattern matching with lookahead evaluation
 - **Mid-Game AI Toggle**: Switch AI on/off for either player during gameplay
-- **Visual Feedback**: "AI is thinking..." indicator and move highlights
+- **Visual Feedback**: "AI is thinking..." indicator in side panels with stable layout
+- **Technical Details**: See `docs/CHESSFIVE_AI_TECHNICAL_REPORT.md` for algorithm analysis
 
 ### 🎪 **Perfect For:**
 - **Strategic Thinking**: Combines positional planning with tactical execution

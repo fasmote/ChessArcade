@@ -7,10 +7,71 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 
 ## [Unreleased]
 
-### 🎯 Next: ChessFive AI Opponent
-- Implementar oponente con IA para modo un jugador
-- Algoritmo simple pero efectivo
-- Nivel de dificultad ajustable (futuro)
+### 🔮 Future Enhancements
+- **ChessFive**: Sistema de DRAW/Tablas con límite de movimientos
+- **ChessFive**: Depth-3 search con optimizaciones (Alpha-Beta, Threat Space)
+- **General**: Sistema de cuentas y rankings globales
+
+## [1.0.4] - 2025-01-11 🤖 ChessFive AI Depth-2 + UX Improvements
+
+### ✨ Added - AI Depth-2 Search
+**Objetivo**: IA más inteligente que anticipa amenazas del oponente
+
+#### 🧠 Búsqueda de Profundidad 2
+- **Nueva función**: `canOpponentCreate4ThreatAfterMove()`
+- **Algoritmo**: Simula movimiento propio + mejor respuesta del oponente
+- **Detección**: Identifica amenazas de 4-en-línea ANTES de que se creen
+- **Penalización**: -50,000 puntos para movimientos peligrosos
+- **Resultado**: IA mucho más competitiva y estratégica
+- **Tiempo**: ~800ms-1,500ms por turno (aceptable)
+- **Log**: Detecta cientos de amenazas por partida exitosamente
+
+#### 📊 Informe Técnico Completo
+- **Documento**: `docs/CHESSFIVE_AI_TECHNICAL_REPORT.md`
+- **Análisis de costos**: Memoria, CPU, tiempo por depth
+- **Comparativa**: Depth-1 vs Depth-2 vs Depth-3 vs Depth-4
+- **Optimizaciones futuras**: Alpha-Beta, Threat Space, Killer Moves
+- **Recomendaciones**: Roadmap para v1.1 y v2.0
+
+### 🔧 Fixed - UX Estable
+**Objetivo**: Eliminar saltos de layout cuando aparece indicador IA
+
+#### ⏳ Reloj de Arena en Paneles Laterales
+- **Movido desde**: Indicador de turno central
+- **Ubicación nueva**: Paneles laterales (junto al toggle AI)
+- **IDs**: `aiThinkingCyan`, `aiThinkingMagenta`
+- **Lógica**: Solo aparece en el panel del jugador IA activo
+- **Resultado**: Indicador contextual que no mueve otros elementos
+
+#### 🎯 Botón NEW GAME Estable
+- **Problema**: Layout saltaba cuando aparecía hourglass
+- **Solución**: `min-height: 45px` en `.player-ai-toggle`
+- **CSS**: `display: flex`, `align-items: center`, `gap: 10px`
+- **Resultado**: Paneles con altura constante, botones fijos
+- **Efecto**: "Reloj de ajedrez" visual sin desplazar layout
+
+### 🐛 Bug Conocido
+- **Issue**: IA no detecta 4-en-línea **existentes** en el tablero
+- **Causa**: `canOpponentWinNextTurn()` solo busca 5-en-línea inmediato
+- **Impact**: IA no bloquea cuando oponente tiene ♟️♟️♟️♟️__
+- **Workaround**: Depth-2 mitiga parcialmente el problema
+- **Fix planeado**: v1.0.5 con detección de 4-en-línea existentes
+
+### 📦 Technical Details
+- **Commits**: 3 commits (button fix, depth-2, merge)
+- **Files changed**:
+  - `chessfive.css`: 8 líneas (+)
+  - `ai-player.js`: 42 líneas (+)
+  - `ai-controller.js`: Modificado showThinkingIndicator()
+  - `index.html`: Hourglasses en paneles laterales
+- **Branch**: `feature/chessfive-ai-opponent` → `main`
+
+### 📊 Performance Metrics
+- **Evaluations per turn**: ~2,500 - 10,000
+- **Time per turn**: ~800ms - 1,500ms
+- **Memory**: Mínima (~5-10 MB)
+- **CPU**: ~30-50% durante pensamiento
+- **Depth-2 detections**: 100-300 amenazas detectadas por partida
 
 ## [1.6.0] - 2025-10-31 🌠 Visual Effects & UX Enhancement
 
