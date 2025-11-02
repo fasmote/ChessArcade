@@ -483,6 +483,12 @@ button:disabled {
     animation: turnPulse 2s ease-in-out infinite;
     /* Transición suave al cambiar de color */
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    /* CRITICAL: Fixed min-height to prevent buttons jumping when AI thinking indicator appears */
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 /**

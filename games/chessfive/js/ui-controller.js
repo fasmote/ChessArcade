@@ -471,6 +471,14 @@ const UIController = {
         // Update UI
         this.updateAll();
 
+        // CRITICAL: Check if AI is enabled and start AI move if it's Cyan's turn
+        // This fixes the bug where AI doesn't activate on New Game if toggles are already ON
+        if (AIController.isAITurn()) {
+            setTimeout(() => {
+                AIController.checkAndMakeAIMove();
+            }, 500);
+        }
+
         // Note: GravityPhase listeners are already attached (done once on page load)
         console.log('🆕 New game started');
 

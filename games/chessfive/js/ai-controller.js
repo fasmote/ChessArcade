@@ -239,18 +239,12 @@ const AIController = {
     },
 
     /**
-     * Show/hide "AI is thinking..." indicator
+     * Show/hide "AI is thinking..." indicator (small, below turn indicator)
      */
     showThinkingIndicator(show) {
-        const indicator = document.getElementById('ai-thinking');
-        if (indicator) {
-            indicator.style.display = show ? 'block' : 'none';
-        }
-
-        // Also update turn indicator
-        const turnIndicator = document.querySelector('.turn-indicator');
-        if (turnIndicator && show) {
-            turnIndicator.textContent = '🤖 AI is thinking...';
+        const smallIndicator = document.getElementById('aiThinkingSmall');
+        if (smallIndicator) {
+            smallIndicator.style.display = show ? 'block' : 'none';
         }
     },
 
