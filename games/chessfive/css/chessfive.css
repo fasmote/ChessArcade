@@ -1127,6 +1127,11 @@ button:disabled {
         display: none !important;
     }
 
+    /* GAME OVER: Mostrar bottom-panel incluso en Fase 2 mobile para botón NEW GAME */
+    .game-over .bottom-panel {
+        display: flex !important;
+    }
+
     #playerMagenta .pieces-inventory {
         background: rgba(255, 0, 255, 0.15);
         border-color: var(--magenta-primary);
