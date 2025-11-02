@@ -441,6 +441,14 @@ const ChessFiveAI = {
                 score += this.evaluateThreats(board, toRow, toCol, gameState.currentPlayer);
                 score -= this.evaluateThreats(board, toRow, toCol, opponentPlayer) * 0.5; // Penalize leaving threats
                 score += this.evaluateMobility(board, toRow, toCol);
+
+                // DEPTH 2: Look ahead - can opponent create 4-in-a-row threat after our move?
+                const opponentThreatAfterMove = this.canOpponentCreate4ThreatAfterMove(board, opponentPlayer);
+                if (opponentThreatAfterMove) {
+                    // Opponent can create a dangerous 4-in-a-row after our move - penalize heavily
+                    score -= 50000; // Heavy penalty to avoid allowing opponent setup
+                    console.log(`⚠️ DEPTH 2: Move (${fromRow},${fromCol})→(${toRow},${toCol}) allows opponent 4-threat!`);
+                }
             }
         }
 
@@ -571,6 +579,40 @@ const ChessFiveAI = {
         }
 
         return { count, openEnds, hasKnight, positions };
+    },
+
+    /**
+     * DEPTH 2 SEARCH: Check if opponent can create 4-in-a-row threat after our move
+     * This looks 1 move ahead to see if opponent can set up a dangerous position
+     */
+    canOpponentCreate4ThreatAfterMove(board, opponentPlayer) {
+        const opponentPieces = this.getAllPieces(board, opponentPlayer);
+
+        // Try each opponent piece's possible moves
+        for (const piece of opponentPieces) {
+            const moves = PieceManager.getValidMoves(piece.row, piece.col);
+
+            for (const move of moves) {
+                // Simulate opponent move
+                const temp = board[piece.row][piece.col];
+                board[piece.row][piece.col] = null;
+                board[move.row][move.col] = temp;
+
+                // Check if this creates a 4-in-a-row threat (not yet winning, but dangerous)
+                const lineLength = this.checkLineAt(board, move.row, move.col, opponentPlayer);
+
+                // Undo simulation
+                board[move.row][move.col] = null;
+                board[piece.row][piece.col] = temp;
+
+                // If opponent can create 4-in-a-row (one away from win), return true
+                if (lineLength >= 4) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     },
 
     /**

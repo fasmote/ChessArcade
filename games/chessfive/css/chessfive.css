@@ -220,6 +220,14 @@ button:disabled {
     box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
 }
 
+/* AI Toggle Section - Fixed height to prevent layout shifts */
+.player-ai-toggle {
+    min-height: 45px; /* Reserve space for toggle + hourglass */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .phase-indicator {
     background: rgba(0, 255, 255, 0.1);
     border: 2px solid var(--cyan-primary);
