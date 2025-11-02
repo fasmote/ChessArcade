@@ -2,7 +2,7 @@
 
 ![ChessArcade Banner](./assets/images/chessarcade-banner.png)
 
-## 🚀 [Play Now!](https://fasmote.github.io/ChessArcade/) | [🎯 Square Rush](./games/square-rush/index.html) | [🐴 Knight Quest](./games/knight-quest/index.html) | [🧠 Memory Matrix](./games/memory-matrix-v2/index.html) | [🟦 Master Sequence](./games/master-sequence/index.html) | [⚔️ ChessFive](./games/chessfive/index.html)
+## 🚀 [Play Now!](https://fasmote.github.io/ChessArcade/) | [🎯 Square Rush](https://fasmote.github.io/ChessArcade/games/square-rush/index.html) | [🐴 Knight Quest](https://fasmote.github.io/ChessArcade/games/knight-quest/index.html) | [🧠 Memory Matrix](https://fasmote.github.io/ChessArcade/games/memory-matrix-v2/index.html) | [🟦 Master Sequence](https://fasmote.github.io/ChessArcade/games/master-sequence/index.html) | [⚔️ ChessFive](https://fasmote.github.io/ChessArcade/games/chessfive/index.html)
 
 ---
 
