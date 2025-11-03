@@ -4,10 +4,10 @@
 ---
 
 **Proyecto:** ChessInFive
-**Versión:** 1.0.0
-**Fecha:** Octubre 2025
+**Versión:** 1.0.6
+**Fecha:** Noviembre 2025
 **Autor:** ChessArcade Team
-**Estado:** En Desarrollo
+**Estado:** Producción
 
 ---
 
@@ -898,7 +898,10 @@ Ver archivo: `wireframes/chessinfive-mockups.png`
 | Versión | Fecha | Autor | Cambios |
 |---------|-------|-------|---------|
 | 1.0.0 | 2025-10-20 | ChessArcade Team | Versión inicial completa |
-| 1.1.0 | 2025-10-25 | ChessArcade Team | Actualización RF-008: Layout final implementado con dual piece selectors, 3 paneles (top/middle/bottom), header centrado con CSS Grid, indicador visual de turno en Fase 2 |
+| 1.0.1 | 2025-10-25 | ChessArcade Team | Actualización RF-008: Layout final implementado con dual piece selectors, 3 paneles (top/middle/bottom), header centrado con CSS Grid, indicador visual de turno en Fase 2 |
+| 1.0.4 | 2025-11-03 | ChessArcade Team | IA Depth-2: Algoritmo de búsqueda profunda que simula respuesta del oponente. Detecta amenazas futuras de 4-en-línea. UX: Hourglass en paneles laterales, botón NEW GAME estabilizado |
+| 1.0.5 | 2025-11-03 | ChessArcade Team | Bug fix: Añadida función hasExisting4InARowThreat() para detectar 4-en-línea existentes. Integrada en canOpponentWinNextTurn() |
+| 1.0.6 | 2025-11-03 | ChessArcade Team | Detección Proactiva: Escaneo de tablero ANTES de cada movimiento. findCritical4InRowThreat() identifica amenazas críticas. findMoveToSquare() encuentra bloqueos. IA bloquea 4-en-línea inmediatamente. Gameplay significativamente más difícil |
 
 ---
 
