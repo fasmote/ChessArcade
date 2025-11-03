@@ -38,7 +38,7 @@
 - **🐴 Knight Quest** - Domina el recorrido del caballo en tableros perfectos *(¡Disponible Ahora!)*
 - **🧠 Memory Matrix** - Entrena la memoria posicional con niveles progresivos *(¡Disponible Ahora!)*
 - **🟦 Master Sequence** - ¡Simon Says encuentra el ajedrez! Memoriza patrones crecientes *(¡Disponible Ahora!)*
-- **⚔️ ChessFive** - ¡Conecta Cuatro conoce al Ajedrez! Estrategia táctica para dos jugadores **+ ¡Oponente IA!** *(¡Disponible Ahora!)*
+- **⚔️ ChessInFive** - ¡Conecta Cuatro conoce al Ajedrez! Estrategia táctica para dos jugadores **+ ¡Oponente IA!** *(¡Disponible Ahora!)*
 
 #### 🎯 **Características:**
 - **Diseño Responsivo**: Optimizado para escritorio y móvil
@@ -182,12 +182,12 @@
 
 ---
 
-## ⚔️ ChessFive - NEW! Connect Four Meets Chess + AI Opponent!
+## ⚔️ ChessInFive - NEW! Connect Four Meets Chess + AI Opponent!
 
-![ChessFive Screenshot](./screenshots/chessfive-preview.png)
+![ChessInFive Screenshot](./screenshots/chessinfive-preview.png)
 
-### 🎮 **What is ChessFive?**
-**ChessFive** is a unique two-player strategy game that brilliantly combines Connect Four's gravity-drop mechanics with chess piece movement! Drop your pieces onto the board during Phase 1, then strategically move them using authentic chess rules in Phase 2 to align 5 in a row. **Now featuring a challenging AI opponent powered by Gomoku algorithms!**
+### 🎮 **What is ChessInFive?**
+**ChessInFive** is a unique two-player strategy game that brilliantly combines Connect Four's gravity-drop mechanics with chess piece movement! Drop your pieces onto the board during Phase 1, then strategically move them using authentic chess rules in Phase 2 to align 5 in a row. **Now featuring a challenging AI opponent powered by Gomoku algorithms!**
 
 ### ✨ **Game Features:**
 - **🎲 Two-Phase Gameplay**: Gravity placement + Chess movement
@@ -208,7 +208,7 @@
 - **Phase 2 Tactics**: Gomoku-style pattern matching with lookahead evaluation
 - **Mid-Game AI Toggle**: Switch AI on/off for either player during gameplay
 - **Visual Feedback**: "AI is thinking..." indicator in side panels with stable layout
-- **Technical Details**: See `docs/CHESSFIVE_AI_TECHNICAL_REPORT.md` for algorithm analysis
+- **Technical Details**: See `docs/CHESSINFIVE_AI_TECHNICAL_REPORT.md` for algorithm analysis
 
 ### 🎪 **Perfect For:**
 - **Strategic Thinking**: Combines positional planning with tactical execution
@@ -238,7 +238,7 @@
 - Enable both for AI vs AI spectator mode!
 ```
 
-### 🔗 **[▶️ Play ChessFive Now!](https://fasmote.github.io/ChessArcade/games/chessfive/index.html)**
+### 🔗 **[▶️ Play ChessInFive Now!](https://fasmote.github.io/ChessArcade/games/chessinfive/index.html)**
 
 ---
 
@@ -247,7 +247,7 @@
 - **🐴 [Play Knight Quest](./games/knight-quest/index.html)** - Conquer the knight's tour!
 - **🧠 [Play Memory Matrix](./games/memory-matrix-v2/index.html)** - Train your visual memory!
 - **🟦 [Play Master Sequence](./games/master-sequence/index.html)** - Master growing patterns!
-- **⚔️ [Play ChessFive](./games/chessfive/index.html)** - Connect Four meets Chess!
+- **⚔️ [Play ChessInFive](./games/chessinfive/index.html)** - Connect Four meets Chess!
 - **📁 [View Source Code](https://github.com/fasmote/ChessArcade)**
 - **🐛 [Report Issues](https://github.com/fasmote/ChessArcade/issues)**
 
@@ -310,7 +310,7 @@ ChessArcade uses a custom **NeonChess Design System** featuring:
 │   ├── 📁 square-rush/              # ✅ Coordinate training
 │   ├── 📁 memory-matrix-v2/         # ✅ Visual memory training
 │   ├── 📁 master-sequence/          # ✅ Master Sequence (Simon Says)
-│   └── 📁 chessfive/                # ✅ ChessFive + AI Opponent (Gomoku-inspired)
+│   └── 📁 chessinfive/               # ✅ ChessInFive + AI Opponent (Gomoku-inspired)
 ├── 📁 screenshots/                  # Game screenshots
 └── 📁 docs/                         # Documentation
 ```
@@ -329,8 +329,8 @@ ChessArcade uses a custom **NeonChess Design System** featuring:
 ### Master Sequence
 ![Master Sequence Gameplay](./screenshots/master-sequence-preview.png)
 
-### ChessFive
-![ChessFive Gameplay](./screenshots/chessfive-preview.png)
+### ChessInFive
+![ChessInFive Gameplay](./screenshots/chessinfive-preview.png)
 
 ---
 
@@ -338,7 +338,7 @@ ChessArcade uses a custom **NeonChess Design System** featuring:
 
 ### 🎮 Mejoras Planificadas para Juegos Actuales
 Todos los juegos existentes recibirán mejoras continuas:
-- **ChessFive**: Sistema de notación de partidas y replay, niveles de dificultad AI (Easy/Medium/Hard), opening book
+- **ChessInFive**: Sistema de notación de partidas y replay, niveles de dificultad AI (Easy/Medium/Hard), opening book
 - **Knight Quest**: Más modos de juego, tableros personalizados
 - **Square Rush**: Nuevos desafíos y power-ups
 - **Memory Matrix**: Niveles adicionales, temas visuales
@@ -389,7 +389,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ## 🏅 **Achievements & Stats**
 
-- **🎯 Games Released**: 5 (Square Rush, Knight Quest, Memory Matrix, Master Sequence, ChessFive)
+- **🎯 Games Released**: 5 (Square Rush, Knight Quest, Memory Matrix, Master Sequence, ChessInFive)
 - **⭐ GitHub Stars**: Growing!
 - **🔧 Last Updated**: October 2025
 - **📱 Mobile Support**: 100%
@@ -405,7 +405,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 [![Play Knight Quest](https://img.shields.io/badge/🐴_Play_Knight_Quest-FF0080?style=for-the-badge)](https://fasmote.github.io/ChessArcade/games/knight-quest/index.html)
 [![Play Memory Matrix](https://img.shields.io/badge/🧠_Play_Memory_Matrix-00FF80?style=for-the-badge)](https://fasmote.github.io/ChessArcade/games/memory-matrix-v2/index.html)
 [![Play Master Sequence](https://img.shields.io/badge/🟦_Play_Master_Sequence-8000FF?style=for-the-badge)](https://fasmote.github.io/ChessArcade/games/master-sequence/index.html)
-[![Play ChessFive](https://img.shields.io/badge/⚔️_Play_ChessFive-FF00FF?style=for-the-badge)](https://fasmote.github.io/ChessArcade/games/chessfive/index.html)
+[![Play ChessInFive](https://img.shields.io/badge/⚔️_Play_ChessInFive-FF00FF?style=for-the-badge)](https://fasmote.github.io/ChessArcade/games/chessinfive/index.html)
 [![GitHub](https://img.shields.io/badge/⭐_Star_on_GitHub-00FFFF?style=for-the-badge&logo=github)](https://github.com/fasmote/ChessArcade)
 
 **Made with ⚡ by ChessArcade | Powered by NeonChess Design System**
