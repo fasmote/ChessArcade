@@ -492,6 +492,88 @@ const ChessInFiveAI = {
             return true;
         }
 
+        // NEW: Check for existing 4-in-a-row on the board that can become 5
+        if (this.hasExisting4InARowThreat(board, opponentPlayer)) {
+            return true;
+        }
+
+        return false;
+    },
+
+    /**
+     * NEW: Check for existing 4-in-a-row patterns on the board
+     * Detects patterns like: XXXX_ or _XXXX where opponent can move a piece to complete 5
+     */
+    hasExisting4InARowThreat(board, player) {
+        const directions = [
+            [0, 1],   // horizontal
+            [1, 0],   // vertical
+            [1, 1],   // diagonal \
+            [1, -1]   // diagonal /
+        ];
+
+        // Check every position on the board
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                // Check each direction from this position
+                for (const [dr, dc] of directions) {
+                    // Count consecutive pieces in this direction
+                    let count = 0;
+                    let emptySpots = [];
+
+                    // Check 5 squares in this direction (needed for XXXX_ pattern)
+                    for (let i = 0; i < 5; i++) {
+                        const r = row + (dr * i);
+                        const c = col + (dc * i);
+
+                        // Out of bounds
+                        if (r < 0 || r >= 8 || c < 0 || c >= 8) break;
+
+                        const piece = board[r][c];
+
+                        if (piece && piece.player === player) {
+                            count++;
+                        } else if (piece === null) {
+                            emptySpots.push({row: r, col: c});
+                        } else {
+                            // Hit opponent piece - line is blocked
+                            break;
+                        }
+                    }
+
+                    // Found 4 pieces + at least 1 empty spot = potential threat
+                    if (count === 4 && emptySpots.length >= 1) {
+                        // Check if any opponent piece can reach the empty spot
+                        for (const emptySpot of emptySpots) {
+                            if (this.canPlayerReachSquare(board, player, emptySpot.row, emptySpot.col)) {
+                                console.log(`🚨 EXISTING 4-IN-A-ROW THREAT detected for ${player} at (${row},${col}) direction (${dr},${dc})`);
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    },
+
+    /**
+     * Check if a player has any piece that can move to a specific square
+     */
+    canPlayerReachSquare(board, player, targetRow, targetCol) {
+        const playerPieces = this.getAllPieces(board, player);
+
+        for (const piece of playerPieces) {
+            const moves = PieceManager.getValidMoves(piece.row, piece.col);
+
+            for (const move of moves) {
+                if (move.row === targetRow && move.col === targetCol) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     },
 
