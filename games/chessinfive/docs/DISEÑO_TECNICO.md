@@ -1,9 +1,9 @@
-# 🔧 Diseño Técnico - ChessFive
+# 🔧 Diseño Técnico - ChessInFive
 ## Arquitectura y Especificaciones de Implementación
 
 ---
 
-**Proyecto:** ChessFive
+**Proyecto:** ChessInFive
 **Versión:** 1.0.0
 **Fecha:** Octubre 2025
 **Autor:** ChessArcade Team
@@ -82,13 +82,13 @@
 ### 1.2 Estructura de Archivos
 
 ```
-games/chessfive/
+games/chessinfive/
 │
 ├── index.html                          # Página principal
 │
 ├── assets/
 │   ├── css/
-│   │   ├── chessfive-style.css         # Estilos específicos del juego
+│   │   ├── chessinfive-style.css         # Estilos específicos del juego
 │   │   └── animations.css              # Animaciones separadas
 │   │
 │   └── js/
@@ -418,13 +418,13 @@ export function generateId() {
  */
 export const logger = {
     log: (msg, ...args) => {
-        if (window.DEBUG) console.log(`[ChessFive] ${msg}`, ...args);
+        if (window.DEBUG) console.log(`[ChessInFive] ${msg}`, ...args);
     },
     error: (msg, ...args) => {
-        console.error(`[ChessFive ERROR] ${msg}`, ...args);
+        console.error(`[ChessInFive ERROR] ${msg}`, ...args);
     },
     warn: (msg, ...args) => {
-        console.warn(`[ChessFive WARN] ${msg}`, ...args);
+        console.warn(`[ChessInFive WARN] ${msg}`, ...args);
     }
 };
 ```
@@ -1197,12 +1197,12 @@ export const BoardRenderer = {
 
 ### 5.2 CSS Estructura
 
-**Archivo:** `chessfive-style.css`
+**Archivo:** `chessinfive-style.css`
 
 ```css
 /**
  * ============================================
- * CHESSFIVE STYLES
+ * CHESSINFIVE STYLES
  * ============================================
  */
 
@@ -1358,7 +1358,7 @@ export const SoundManager = {
      * Carga configuración desde localStorage
      */
     loadSettings() {
-        const settings = localStorage.getItem('chessfive-audio');
+        const settings = localStorage.getItem('chessinfive-audio');
         if (settings) {
             const { enabled, volume } = JSON.parse(settings);
             this.enabled = enabled;
@@ -1452,7 +1452,7 @@ export const SoundManager = {
      * Guarda configuración
      */
     saveSettings() {
-        localStorage.setItem('chessfive-audio', JSON.stringify({
+        localStorage.setItem('chessinfive-audio', JSON.stringify({
             enabled: this.enabled,
             volume: this.volume
         }));
@@ -1491,7 +1491,7 @@ Next Player / End Game
 ```javascript
 {
     // Configuración
-    'chessfive-settings': {
+    'chessinfive-settings': {
         soundEnabled: true,
         volume: 0.5,
         showTutorial: true,
@@ -1499,7 +1499,7 @@ Next Player / End Game
     },
 
     // Estadísticas
-    'chessfive-stats': {
+    'chessinfive-stats': {
         gamesPlayed: 0,
         cyanWins: 0,
         magentaWins: 0,
@@ -1509,7 +1509,7 @@ Next Player / End Game
     },
 
     // Última partida (opcional - para resume game)
-    'chessfive-last-game': {
+    'chessinfive-last-game': {
         gameState: { /* estado completo */ },
         timestamp: Date
     }
@@ -1662,7 +1662,7 @@ describe('WinDetection', () => {
 
 ```bash
 # 1. Minificar CSS
-npx csso chessfive-style.css -o chessfive-style.min.css
+npx csso chessinfive-style.css -o chessinfive-style.min.css
 
 # 2. Minificar JS (opcional, solo en producción)
 npx terser main.js -o main.min.js
@@ -1676,9 +1676,9 @@ cp -r assets/ dist/assets/
 
 ### 11.2 Hosting en Hostinger
 
-- Subir carpeta `games/chessfive/` completa
+- Subir carpeta `games/chessinfive/` completa
 - Verificar permisos: 644 para archivos, 755 para carpetas
-- Probar en: `https://chessarcade.com.ar/games/chessfive/index.html`
+- Probar en: `https://chessarcade.com.ar/games/chessinfive/index.html`
 - Actualizar card en homepage para quitar "PRÓXIMAMENTE"
 
 ---

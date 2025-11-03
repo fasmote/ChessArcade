@@ -1,4 +1,4 @@
-# ChessFive Workflow - Reglas Importantes
+# ChessInFive Workflow - Reglas Importantes
 
 ## 🚫 REGLA CRÍTICA: NO MERGE SIN AUTORIZACIÓN
 
@@ -7,7 +7,7 @@
 ### Reglas de Branching
 
 1. **Siempre trabajar en la rama del juego actual**
-   - ChessFive: `feature/chessfive-implementation`
+   - ChessInFive: `feature/chessinfive-implementation`
    - Otros juegos: `feature/[nombre-juego]`
 
 2. **NO merge automático**
@@ -19,10 +19,10 @@
    - Mantener la rama actualizada en GitHub
    - Documentar todos los cambios en BUGFIXES.md
 
-### Flujo de Trabajo ChessFive
+### Flujo de Trabajo ChessInFive
 
 ```
-feature/chessfive-implementation
+feature/chessinfive-implementation
   ↓ (trabajo continuo)
   ↓ commits frecuentes
   ↓ push a GitHub
@@ -36,13 +36,13 @@ master (merge)
 
 ```bash
 # Trabajo normal (siempre):
-git add games/chessfive/
+git add games/chessinfive/
 git commit -m "..."
-git push origin feature/chessfive-implementation
+git push origin feature/chessinfive-implementation
 
 # Merge (SOLO cuando usuario lo pida):
 git checkout master
-git merge feature/chessfive-implementation
+git merge feature/chessinfive-implementation
 git push origin master
 ```
 

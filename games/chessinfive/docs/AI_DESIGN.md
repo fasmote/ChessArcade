@@ -1,8 +1,8 @@
-# ChessFive - Diseño de Inteligencia Artificial
+# ChessInFive - Diseño de Inteligencia Artificial
 
 ## 📋 Resumen
 
-Este documento describe el diseño del sistema de IA para ChessFive, que permitirá:
+Este documento describe el diseño del sistema de IA para ChessInFive, que permitirá:
 1. Jugar vs CPU (single-player)
 2. Diferentes niveles de dificultad
 3. Base para futuro multiplayer online
@@ -58,7 +58,7 @@ función minimax(posición, profundidad, esMaximizador):
         retornar mejorValor
 ```
 
-### Aplicación a ChessFive
+### Aplicación a ChessInFive
 
 **Complejidad del juego:**
 - **Fase Gravity**: 8 columnas × 8 piezas por jugador = ~64 posibilidades por turno
@@ -200,7 +200,7 @@ function alphaBeta(position, depth, alpha, beta, isMaximizing) {
 ### Estructura de Archivos
 
 ```
-games/chessfive/js/
+games/chessinfive/js/
 ├── game-state.js           # Estado del juego
 ├── gravity-phase.js        # Fase gravedad
 ├── chess-phase.js          # Fase ajedrez
@@ -617,11 +617,11 @@ socket.on('move-made', (move) => {
 |-------|------------------------|----------------------|-------------|
 | Tic-Tac-Toe | 3-5 | 9 | Baja (resuelta) |
 | Connect Four | 7 | 42 | Media |
-| **ChessFive** | **50-100** | **30-40** | **Media-Alta** |
+| **ChessInFive** | **50-100** | **30-40** | **Media-Alta** |
 | Ajedrez | 35 | 80 | Muy Alta |
 | Go | 250 | 150 | Extrema |
 
-ChessFive está entre Connect Four y Ajedrez en complejidad.
+ChessInFive está entre Connect Four y Ajedrez en complejidad.
 
 ---
 

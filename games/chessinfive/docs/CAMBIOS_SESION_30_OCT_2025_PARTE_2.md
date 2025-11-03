@@ -4,11 +4,11 @@
 
 ### 1. Documentación Workflow
 
-**Archivo Nuevo:** `.claude/WORKFLOW_CHESSFIVE.md`
+**Archivo Nuevo:** `.claude/WORKFLOW_CHESSINFIVE.md`
 
 **Regla Crítica:** NO hacer merge con master sin autorización explícita del usuario
 
-- Siempre trabajar en `feature/chessfive-implementation`
+- Siempre trabajar en `feature/chessinfive-implementation`
 - Commits frecuentes
 - Solo merge cuando usuario lo pida
 
@@ -33,7 +33,7 @@
 
 ### 3. Tablero Deformado Corregido
 
-**Archivo:** `css/chessfive.css` (líneas 595-611, 587-594)
+**Archivo:** `css/chessinfive.css` (líneas 595-611, 587-594)
 
 **Problema:** Tablero rectangular en desktop (no cuadrado)
 
@@ -59,7 +59,7 @@
 
 ### 4. Pulse Animation Revertida
 
-**Archivo:** `css/chessfive.css` (líneas 540-548)
+**Archivo:** `css/chessinfive.css` (líneas 540-548)
 
 **Feedback Usuario:** "me gustaba como antes, no me gusta asi, se frena"
 
@@ -84,7 +84,7 @@
 
 ### 5. Hover/Highlight Dinámico por Color de Jugador
 
-**Archivo:** `css/chessfive.css` (líneas 634-643, 701-708, 710-719)
+**Archivo:** `css/chessinfive.css` (líneas 634-643, 701-708, 710-719)
 
 **Feedback Usuario:** "podrias hacer que la sombra sobre el tablero cuando estoy moviendo el cursor, sea del color del jugador que le toca el turno? actualmente siempre es cyan"
 
@@ -138,7 +138,7 @@
 
 ### 6. Hover Selectivo - NO sobre Piezas Contrarias
 
-**Archivo:** `css/chessfive.css` (líneas 634-643, 710-719)
+**Archivo:** `css/chessinfive.css` (líneas 634-643, 710-719)
 
 **Feedback Usuario:** "te pido que el higlight no se haga si pasas por una pieza contraria, o sea que si es el turno de magenta en fase 2, y pasa el mouse por una pieza cyan, que no haga nada"
 

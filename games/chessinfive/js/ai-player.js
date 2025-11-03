@@ -1,9 +1,9 @@
 /**
  * ==========================================
- * CHESSFIVE AI OPPONENT
+ * CHESSINFIVE AI OPPONENT
  * ==========================================
  *
- * Implementación de IA para ChessFive usando estrategia inspirada en Gomoku.
+ * Implementación de IA para ChessInFive usando estrategia inspirada en Gomoku.
  * La IA funciona en ambas fases del juego con diferentes estrategias.
  *
  * ARQUITECTURA:
@@ -13,7 +13,7 @@
  * ALGORITMO: Minimax simplificado (1 nivel) con evaluación heurística
  */
 
-const ChessFiveAI = {
+const ChessInFiveAI = {
     // ==========================================
     // CONFIGURATION
     // ==========================================
@@ -897,4 +897,4 @@ const ChessFiveAI = {
     }
 };
 
-console.log('🤖 ChessFive AI loaded');
+console.log('🤖 ChessInFive AI loaded');

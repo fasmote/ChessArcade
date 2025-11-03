@@ -69,9 +69,9 @@ const ChessPhase = {
             if (GameState.isEmpty(row, col)) {
                 this.attemptMove(selectedRow, selectedCol, row, col);
             } else {
-                // Square is occupied by opponent (no capture in ChessFive)
+                // Square is occupied by opponent (no capture in ChessInFive)
                 SoundManager.play('invalid');
-                console.warn('⚠️ Cannot capture pieces in ChessFive');
+                console.warn('⚠️ Cannot capture pieces in ChessInFive');
             }
         }
     },

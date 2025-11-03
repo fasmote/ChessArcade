@@ -1,11 +1,11 @@
 /**
  * MAIN ENTRY POINT
- * Initializes the ChessFive game
+ * Initializes the ChessInFive game
  */
 
 // Wait for DOM to be ready
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('⚔️ ChessFive - Place. Move. Align Five. Win.');
+    console.log('⚔️ ChessInFive - Place. Move. Align Five. Win.');
     console.log('🎮 Initializing game...');
 
     // Initialize all modules
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Track page view
     gtag('event', 'page_view', {
-        'page_title': 'ChessFive',
+        'page_title': 'ChessInFive',
         'page_location': window.location.href
     });
 });
@@ -59,4 +59,4 @@ window.addEventListener('error', (e) => {
     });
 });
 
-console.log('📜 ChessFive scripts loaded');
+console.log('📜 ChessInFive scripts loaded');

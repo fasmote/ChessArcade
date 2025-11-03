@@ -1,4 +1,4 @@
-# ChessFive - Bug Fixes Documentation
+# ChessInFive - Bug Fixes Documentation
 
 Este documento registra los problemas encontrados durante las pruebas y cómo se resolvieron.
 
@@ -80,7 +80,7 @@ Al terminar la fase de gravedad (después de colocar las 16 piezas), el turno en
 
 **Evidencia:**
 - Screenshot: `cf_07.png` - Console log muestra "Turn: magenta" al inicio de Chess Phase
-- Log: `084_chessfive.log` - Confirma que Magenta juega primero incorrectamente
+- Log: `084_chessinfive.log` - Confirma que Magenta juega primero incorrectamente
 
 ### 🔍 Causa Raíz
 En `gravity-phase.js`, cuando se detectaba que la fase de gravedad estaba completa, se hacía `return` sin cambiar de jugador:
@@ -134,12 +134,12 @@ transitionToChessPhase() {
 ## Archivos Modificados
 
 ### Bug #1 (Ghost Pieces)
-- `games/chessfive/js/board-renderer.js`
+- `games/chessinfive/js/board-renderer.js`
   - `renderPiece()`: Cambiar `querySelector` a `querySelectorAll`
   - `renderBoard()`: Agregar `removeGhosts()` antes de limpiar piezas
 
 ### Bug #2 (Orden de Turnos)
-- `games/chessfive/js/gravity-phase.js`
+- `games/chessinfive/js/gravity-phase.js`
   - `transitionToChessPhase()`: Forzar `currentPlayer = 'cyan'`
   - `transitionToChessPhase()`: Agregar `updateTurnIndicator()`
 
@@ -157,10 +157,10 @@ transitionToChessPhase() {
 
 ### Comandos Git
 ```bash
-git add games/chessfive/js/board-renderer.js
-git add games/chessfive/js/gravity-phase.js
-git add games/chessfive/docs/BUGFIXES.md
-git commit -m "fix(chessfive): Ghost pieces duplicadas y turno incorrecto"
+git add games/chessinfive/js/board-renderer.js
+git add games/chessinfive/js/gravity-phase.js
+git add games/chessinfive/docs/BUGFIXES.md
+git commit -m "fix(chessinfive): Ghost pieces duplicadas y turno incorrecto"
 ```
 
 ---
@@ -199,7 +199,7 @@ Además, el SELECT PIECE debía estar dentro de cada panel de jugador, no centra
 
 ### ✅ Solución Implementada
 
-**1. Reorganización HTML (games/chessfive/index.html):**
+**1. Reorganización HTML (games/chessinfive/index.html):**
 ```html
 <main class="game-container">
     <!-- Top Panel: Solo Phase Indicator -->
@@ -230,7 +230,7 @@ Además, el SELECT PIECE debía estar dentro de cada panel de jugador, no centra
 </main>
 ```
 
-**2. CSS Layout (games/chessfive/css/chessfive.css):**
+**2. CSS Layout (games/chessinfive/css/chessinfive.css):**
 ```css
 .game-container {
     display: flex;
@@ -267,7 +267,7 @@ Al tener dos SELECT PIECE (uno para Cyan y otro para Magenta), compartían los m
 
 **Evidencia:**
 - Screenshot: `cf_16_desktop.png` - Muestra selectores superpuestos
-- Log: `086_chessfive.log` - Errores de IDs duplicados
+- Log: `086_chessinfive.log` - Errores de IDs duplicados
 
 ### ✅ Solución Implementada
 
@@ -370,7 +370,7 @@ Los paneles de Cyan y Magenta no estaban alineados verticalmente porque:
 25 de Octubre 2025
 
 ### 🐛 Descripción del Problema
-El título "ChessFive" no estaba perfectamente centrado porque los botones HOME y SOUND tenían anchos diferentes.
+El título "ChessInFive" no estaba perfectamente centrado porque los botones HOME y SOUND tenían anchos diferentes.
 
 ### ✅ Solución Implementada
 
@@ -412,13 +412,13 @@ El usuario solicitó eliminar la línea cyan debajo del header (border-bottom).
 ## Archivos Modificados (Sesión Completa)
 
 ### HTML
-- `games/chessfive/index.html`
+- `games/chessinfive/index.html`
   - Reorganización completa del layout (top/middle/bottom)
   - Duplicación de SELECT PIECE con IDs únicos
   - Separación de player-info y piece-selector
 
 ### CSS
-- `games/chessfive/css/chessfive.css`
+- `games/chessinfive/css/chessinfive.css`
   - Layout de 3 paneles (top-panel, middle-row, bottom-panel)
   - Grid para header simétrico
   - Estilos para .disabled, .active
@@ -426,7 +426,7 @@ El usuario solicitó eliminar la línea cyan debajo del header (border-bottom).
   - Borde brillante para turno activo
 
 ### JavaScript
-- `games/chessfive/js/ui-controller.js`
+- `games/chessinfive/js/ui-controller.js`
   - `updatePieceSelector()`: Actualiza ambos selectores
   - `updatePlayerSelector()`: Nueva función para manejar cada selector
   - Lógica para habilitar/deshabilitar según turno
@@ -558,7 +558,7 @@ En mobile Fase 1, el panel de selector de piezas no cambiaba correctamente entre
 
 **Evidencia:**
 - Screenshot: `cf_25_mobile.png` - Panel magenta visible pero "CURRENT TURN: CYAN PLAYER"
-- Log: `090_chessfive.log` línea 1578-1581 - Turnos correctos pero UI desincronizada
+- Log: `090_chessinfive.log` línea 1578-1581 - Turnos correctos pero UI desincronizada
 - Comentario usuario: "el primer movimiento del jugador cyan esta bien, luego cuando le toca al magenta no cambia y luego cambia cuando le vuelve a tocar al cyan"
 
 ### 🔍 Causa Raíz
@@ -576,7 +576,7 @@ Esto causaba que la UI se actualizara con el jugador que acababa de mover, no co
 
 ### ✅ Solución Implementada
 
-**Archivo:** `games/chessfive/js/gravity-phase.js`
+**Archivo:** `games/chessinfive/js/gravity-phase.js`
 
 Reordenar las llamadas para actualizar UI DESPUÉS de cambiar jugador:
 
@@ -654,7 +654,7 @@ Después de implementar el turn indicator en Fase 2 mobile, se detectaron dos pr
 
 **Evidencia:**
 - Screenshot: `cf_27_mobile.png` - "YOUR TURN" permanece cyan para ambos jugadores
-- Log: `092_chessfive.log` - Cambios de turno pero sin cambio de color
+- Log: `092_chessinfive.log` - Cambios de turno pero sin cambio de color
 - Feedback usuario: "volvio a quedarse en 'you turn' color cyan en la fase 2 en mobile"
 
 ### Root Cause (Análisis)
@@ -697,7 +697,7 @@ if (isMobile) {
 
 #### 2. Implementar Borde de Tablero como Indicador de Turno
 
-**CSS (chessfive.css líneas 564-590):**
+**CSS (chessinfive.css líneas 564-590):**
 ```css
 .chess-board {
     border: 3px solid var(--cyan-primary);
@@ -743,7 +743,7 @@ if (GameState.currentPlayer === 'cyan') {
 
 #### 3. Ajustar Opacidad Phase Indicator
 
-**CSS (chessfive.css línea ~862):**
+**CSS (chessinfive.css línea ~862):**
 ```css
 /* ANTES: */
 background: rgba(10, 10, 26, 0.98);
@@ -754,7 +754,7 @@ background: rgba(10, 10, 26, 0.75); /* Más traslúcido */
 
 #### 4. Prevenir Animación en Desktop
 
-**CSS (chessfive.css líneas 823-839):**
+**CSS (chessinfive.css líneas 823-839):**
 ```css
 @media (min-width: 1025px) {
     .top-panel {
@@ -785,7 +785,7 @@ background: rgba(10, 10, 26, 0.75); /* Más traslúcido */
 
 ### Archivos Modificados
 
-1. **css/chessfive.css** (+27 líneas)
+1. **css/chessinfive.css** (+27 líneas)
    - Líneas 564-590: Border styling con clases .turn-cyan / .turn-magenta
    - Líneas 823-839: Media query desktop para prevenir animación
    - Línea ~862: Opacidad phase indicator ajustada a 0.75
@@ -827,7 +827,7 @@ Tres problemas relacionados con la Fase 2 (Chess Movement):
 3. **Phase Indicator solo Mobile**: El indicador de fase solo aparecía en mobile, no en desktop
 
 **Evidencia:**
-- Log: `093_chessfive.log` - Turnos cambian pero UI no se actualiza en Fase 2
+- Log: `093_chessinfive.log` - Turnos cambian pero UI no se actualiza en Fase 2
 - Feedback usuario: "en la fase 2, sigue sin cambiar el cartel del turno"
 - Feedback usuario: "también que en la fase 2, cambie el color de borde como en la fase 1"
 - Feedback usuario: "El cartel de fase 1 y fase 2, esta bueno que aparezca en desktop tambien"
@@ -879,7 +879,7 @@ El borde del tablero se actualiza en `updatePlayerInfo()`, pero `chess-phase.js`
 
 #### 1. Arreglar CSS Selector (mobile-turn-indicator)
 
-**Archivo:** `css/chessfive.css` líneas 1044-1065
+**Archivo:** `css/chessinfive.css` líneas 1044-1065
 
 ```css
 /* ANTES - Selector hijo (no funcionaba) */
@@ -925,7 +925,7 @@ UIController.updatePlayerInfo(); // ← AGREGADO
 
 #### 3. Phase Indicator Cross-Device
 
-**Archivo:** `css/chessfive.css` líneas 835-877
+**Archivo:** `css/chessinfive.css` líneas 835-877
 
 **ANTES:**
 - Desktop: `position: relative`, sin animación
@@ -1018,7 +1018,7 @@ if (phaseIndicator) {
 
 ### Archivos Modificados
 
-1. **css/chessfive.css** (+42 líneas, -51 líneas)
+1. **css/chessinfive.css** (+42 líneas, -51 líneas)
    - Líneas 266: Duración 3s → 2s
    - Líneas 835-877: Phase indicator cross-device (movido fuera de media queries)
    - Líneas 1044-1065: Selector CSS mobile-turn-indicator arreglado
@@ -1071,7 +1071,7 @@ Dos problemas en la vista desktop:
 
 **Evidencia:**
 - Screenshot: `2025-10-30 15_21_38-Greenshot.png` - Turn indicator abajo, borde magenta cuando debería ser cyan
-- Log: `094_chessfive.log`
+- Log: `094_chessinfive.log`
 - Feedback usuario: "puedes subir (acercar al tablero) el cartel del turno?"
 - Feedback usuario: "le toca al cyan y el borde del tablero es magenta, tienes que solucionar eso"
 
@@ -1137,7 +1137,7 @@ Esto podría causar que se aplicaran AMBAS clases al mismo tiempo, o que hubiera
 
 #### 2. CSS para Desktop Turn Indicator
 
-**Archivo:** `css/chessfive.css` líneas 522-527
+**Archivo:** `css/chessinfive.css` líneas 522-527
 
 ```css
 /* Desktop Turn Indicator (debajo del tablero) */
@@ -1210,7 +1210,7 @@ init() {
    - Líneas 137-141: Turn indicator movido a `.board-container` con clase `.desktop-turn`
    - Líneas 203-211: Removido turn-indicator del `.bottom-panel`
 
-2. **css/chessfive.css** (+9 líneas)
+2. **css/chessinfive.css** (+9 líneas)
    - Líneas 522-527: Estilos para `.desktop-turn`
    - Líneas 902-905: Ocultar `.desktop-turn` en mobile
 
@@ -1303,7 +1303,7 @@ Animación simple (un solo "latido"). Un heartbeat real tiene dos latidos rápid
 
 #### 1. Ocultar mobile-turn-indicator en Desktop
 
-**Archivo:** `css/chessfive.css` líneas 529-532
+**Archivo:** `css/chessinfive.css` líneas 529-532
 
 ```css
 /* Mobile Turn Indicator - oculto por defecto (solo mobile Fase 2) */
@@ -1316,7 +1316,7 @@ Animación simple (un solo "latido"). Un heartbeat real tiene dos latidos rápid
 
 #### 2. Ocultar piece-selector en Fase 2
 
-**Archivo:** `css/chessfive.css` líneas 534-538
+**Archivo:** `css/chessinfive.css` líneas 534-538
 
 ```css
 /* Ocultar piece selector en Fase 2 (solo visible en Fase 1: Gravity) */
@@ -1360,7 +1360,7 @@ transitionToChessPhase() {
 
 #### 4. Mejorar Pulse Animation (Heartbeat Effect)
 
-**Archivo:** `css/chessfive.css` líneas 540-560
+**Archivo:** `css/chessinfive.css` líneas 540-560
 
 ```css
 /* Heartbeat animation - dos latidos rápidos seguidos de pausa */
@@ -1407,7 +1407,7 @@ transitionToChessPhase() {
 
 ### Archivos Modificados
 
-1. **css/chessfive.css** (+23 líneas, -5 líneas)
+1. **css/chessinfive.css** (+23 líneas, -5 líneas)
    - Líneas 529-532: Ocultar .mobile-turn-indicator en desktop
    - Líneas 534-538: Ocultar .piece-selector en Fase 2
    - Líneas 540-560: Heartbeat animation mejorada

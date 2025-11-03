@@ -1,9 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add games/chessfive/docs/AI_DESIGN.md)",
-      "Bash(git add games/chessfive/docs/CONTINUACION_PROXIMA_SESION.md)",
-      "Bash(start chrome \"file:///C:/Users/clau/Documents/Multiajedrez%202025/games/chessfive/index.html\")",
+      "Bash(git add games/chessinfive/docs/AI_DESIGN.md)",
+      "Bash(git add games/chessinfive/docs/CONTINUACION_PROXIMA_SESION.md)",
+      "Bash(start chrome \"file:///C:/Users/clau/Documents/Multiajedrez%202025/games/chessinfive/index.html\")",
       "Bash(git add .)"
     ],
     "deny": [],

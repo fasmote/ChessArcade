@@ -1,8 +1,8 @@
-# ChessFive - Sesión de Desarrollo 25 de Octubre 2025
+# ChessInFive - Sesión de Desarrollo 25 de Octubre 2025
 
 ## 📋 Resumen de la Sesión
 
-Esta sesión se enfocó en mejorar el UX/UI del juego ChessFive, reorganizando completamente el layout y solucionando problemas de usabilidad y alineación visual.
+Esta sesión se enfocó en mejorar el UX/UI del juego ChessInFive, reorganizando completamente el layout y solucionando problemas de usabilidad y alineación visual.
 
 ---
 
@@ -35,8 +35,8 @@ BOTTOM PANEL
 ```
 
 **Archivos modificados:**
-- `games/chessfive/index.html`: Reestructurado completamente
-- `games/chessfive/css/chessfive.css`: Nuevos layouts (top-panel, middle-row, bottom-panel)
+- `games/chessinfive/index.html`: Reestructurado completamente
+- `games/chessinfive/css/chessinfive.css`: Nuevos layouts (top-panel, middle-row, bottom-panel)
 
 ---
 
@@ -168,7 +168,7 @@ updatePlayerSelector(player, isActive) {
 
 ### 6. Header Centrado Perfectamente
 
-**Problema:** El título "ChessFive" no estaba centrado porque los botones HOME y SOUND tenían anchos diferentes.
+**Problema:** El título "ChessInFive" no estaba centrado porque los botones HOME y SOUND tenían anchos diferentes.
 
 **Solución CSS Grid:**
 ```css
@@ -224,7 +224,7 @@ updatePlayerSelector(player, isActive) {
 
 ### Archivos Modificados
 - **HTML**: 1 archivo (index.html) - Reorganización completa
-- **CSS**: 1 archivo (chessfive.css) - ~150 líneas modificadas/agregadas
+- **CSS**: 1 archivo (chessinfive.css) - ~150 líneas modificadas/agregadas
 - **JavaScript**: 1 archivo (ui-controller.js) - Nueva función `updatePlayerSelector()`
 
 ### Bugs Solucionados
@@ -281,10 +281,10 @@ El usuario mencionó que testeará después. Puntos a verificar:
 ## 📝 Código Educativo
 
 Durante esta sesión se agregaron comentarios educativos en:
-- `games/chessfive/js/game-state.js` - Patrón State Object
-- `games/chessfive/js/gravity-phase.js` - Event-Driven Programming
-- `games/chessfive/js/piece-manager.js` - Algoritmos de movimiento
-- `games/chessfive/js/ui-controller.js` - Actualización de UI
+- `games/chessinfive/js/game-state.js` - Patrón State Object
+- `games/chessinfive/js/gravity-phase.js` - Event-Driven Programming
+- `games/chessinfive/js/piece-manager.js` - Algoritmos de movimiento
+- `games/chessinfive/js/ui-controller.js` - Actualización de UI
 
 Ejemplo de comentario educativo:
 ```javascript

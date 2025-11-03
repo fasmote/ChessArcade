@@ -1,19 +1,19 @@
-# 📋 Resumen de Sesión - ChessFive
+# 📋 Resumen de Sesión - ChessInFive
 ## Para Continuidad con Otro Claude IA
 
 ---
 
 **Fecha de Creación:** 20 de Octubre 2025
-**Proyecto:** ChessArcade - ChessFive
+**Proyecto:** ChessArcade - ChessInFive
 **Estado:** Diseño Completado - Pendiente de Desarrollo
 
 ---
 
 ## 🎯 CONTEXTO INMEDIATO
 
-### ¿Qué es ChessFive?
+### ¿Qué es ChessInFive?
 
-**ChessFive** es un juego híbrido de estrategia que combina:
+**ChessInFive** es un juego híbrido de estrategia que combina:
 1. **Connect Four** (4 en línea) - Mecánica de gravedad
 2. **Ajedrez** - Movimiento táctico de piezas
 
@@ -47,7 +47,7 @@
 
 ### Estructura de Carpetas:
 ```
-games/chessfive/
+games/chessinfive/
 ├── docs/
 │   ├── ERS_REQUERIMIENTOS.md      ← Especificación completa (12 secciones)
 │   ├── SESION_RESUMEN.md          ← Este documento
@@ -111,7 +111,7 @@ games/chessfive/
 ### Card en Homepage:
 - Ya creada en `index.html:159-171`
 - Estado: "PRÓXIMAMENTE" (coming-soon)
-- Redirige a: `games/chessfive/index.html` (cuando exista)
+- Redirige a: `games/chessinfive/index.html` (cuando exista)
 
 ---
 
@@ -123,8 +123,8 @@ games/chessfive/
 3. Crear `DISEÑO_TECNICO.md` con arquitectura detallada
 
 ### Fase 2: Estructura Base (1-2 horas)
-1. Crear `games/chessfive/index.html`
-2. Crear `assets/css/chessfive-style.css`
+1. Crear `games/chessinfive/index.html`
+2. Crear `assets/css/chessinfive-style.css`
 3. Crear `assets/js/` con módulos:
    - `game-state.js`
    - `gravity-phase.js`
@@ -273,10 +273,10 @@ games/chessfive/
 5. **`ERRORES_Y_SOLUCIONES.md`** - Lecciones aprendidas
 
 ### Archivos Pendientes de Crear:
-1. `games/chessfive/docs/DISEÑO_TECNICO.md`
-2. `games/chessfive/index.html`
-3. `games/chessfive/assets/css/chessfive-style.css`
-4. `games/chessfive/assets/js/*.js` (módulos)
+1. `games/chessinfive/docs/DISEÑO_TECNICO.md`
+2. `games/chessinfive/index.html`
+3. `games/chessinfive/assets/css/chessinfive-style.css`
+4. `games/chessinfive/assets/js/*.js` (módulos)
 
 ---
 
@@ -298,7 +298,7 @@ games/chessfive/
 ### Proyecto General:
 - **ChessArcade:** Colección de juegos de entrenamiento de ajedrez
 - **4 juegos activos:** Square Rush, Knight Quest, Memory Matrix, Master Sequence
-- **1 juego en desarrollo:** ChessFive (este)
+- **1 juego en desarrollo:** ChessInFive (este)
 - **Hosting:** Hostinger (chessarcade.com.ar)
 - **Stack:** Vanilla JS, sin frameworks
 
@@ -309,7 +309,7 @@ games/chessfive/
 ### 🚨 NO HACER:
 1. ❌ NO usar `innerHTML = ''` (borra coordenadas tipo taxi)
 2. ❌ NO crear nuevos sistemas de diseño (usar NeonChess)
-3. ❌ NO implementar captura de piezas (NO existe en ChessFive)
+3. ❌ NO implementar captura de piezas (NO existe en ChessInFive)
 4. ❌ NO implementar jaque/jaque mate (NO existe aquí)
 5. ❌ NO usar frameworks (React, Vue, etc.) - Es Vanilla JS
 
@@ -351,11 +351,11 @@ Antes de escribir código, el próximo Claude debería:
 
 - [ ] Leer `ERS_REQUERIMIENTOS.md` completo
 - [ ] Leer `SESION_RESUMEN.md` (este documento)
-- [ ] Revisar `index.html` (card de ChessFive)
+- [ ] Revisar `index.html` (card de ChessInFive)
 - [ ] Revisar `games/knight-quest/index.html` (referencia)
 - [ ] Entender sistema de coordenadas taxi
 - [ ] Confirmar con usuario el plan de trabajo
-- [ ] Crear branch git `chessfive-development`
+- [ ] Crear branch git `chessinfive-development`
 - [ ] Crear `DISEÑO_TECNICO.md`
 
 ---
@@ -387,7 +387,7 @@ Antes de escribir código, el próximo Claude debería:
 
 Hola Claude del futuro 👋
 
-Vas a continuar el desarrollo de **ChessFive**, un juego muy interesante que combina Connect Four con ajedrez.
+Vas a continuar el desarrollo de **ChessInFive**, un juego muy interesante que combina Connect Four con ajedrez.
 
 **Lo más importante:**
 1. Lee el `ERS_REQUERIMIENTOS.md` COMPLETO (es largo pero vale la pena)

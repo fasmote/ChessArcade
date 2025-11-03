@@ -1,9 +1,9 @@
 # ERS - Especificación de Requerimientos del Sistema
-## ChessFive - "Place. Move. Align Five. Win."
+## ChessInFive - "Place. Move. Align Five. Win."
 
 ---
 
-**Proyecto:** ChessFive
+**Proyecto:** ChessInFive
 **Versión:** 1.0.0
 **Fecha:** Octubre 2025
 **Autor:** ChessArcade Team
@@ -14,10 +14,10 @@
 ## 1. INTRODUCCIÓN
 
 ### 1.1 Propósito del Documento
-Este documento especifica los requerimientos funcionales y no funcionales para el desarrollo del juego **ChessFive**, un híbrido innovador entre Connect Four (4 en línea) y ajedrez estratégico.
+Este documento especifica los requerimientos funcionales y no funcionales para el desarrollo del juego **ChessInFive**, un híbrido innovador entre Connect Four (4 en línea) y ajedrez estratégico.
 
 ### 1.2 Alcance del Proyecto
-ChessFive es un juego web de estrategia para dos jugadores que combina:
+ChessInFive es un juego web de estrategia para dos jugadores que combina:
 - Mecánica de **gravedad** (estilo Connect Four) en la fase de colocación
 - Movimiento de **piezas de ajedrez** en la fase táctica
 - Objetivo de **alinear 5 piezas** en línea para ganar
@@ -41,7 +41,7 @@ ChessFive es un juego web de estrategia para dos jugadores que combina:
 ## 2. DESCRIPCIÓN GENERAL
 
 ### 2.1 Perspectiva del Producto
-ChessFive es parte del ecosistema **ChessArcade**, una colección de juegos de entrenamiento de ajedrez con estética retro-futurista neón.
+ChessInFive es parte del ecosistema **ChessArcade**, una colección de juegos de entrenamiento de ajedrez con estética retro-futurista neón.
 
 **Integración con:**
 - Sistema de diseño NeonChess
@@ -252,7 +252,7 @@ Después de cada movimiento, escanear:
 #### Estructura Desktop (3 Paneles):
 ```
 ┌─────────────────────────────────────────────────┐
-│  🏠 HOME    ⚔️ CHESSFIVE              🔊       │
+│  🏠 HOME    ⚔️ CHESSINFIVE              🔊       │
 │             Place. Move. Align Five. Win.       │
 ├─────────────────────────────────────────────────┤
 │                                                 │
@@ -508,7 +508,7 @@ Después de cada movimiento, escanear:
 ### CU-001: Iniciar Nueva Partida
 **Actor:** Jugador
 **Flujo Principal:**
-1. Usuario navega a ChessFive
+1. Usuario navega a ChessInFive
 2. Sistema muestra pantalla principal
 3. Usuario click "Play Now"
 4. Sistema inicializa tablero 8x8 vacío
@@ -657,12 +657,12 @@ Después de cada movimiento, escanear:
 
 ```javascript
 {
-    'chessfive-settings': {
+    'chessinfive-settings': {
         soundEnabled: boolean,
         volume: 0-100,
         showTutorial: boolean
     },
-    'chessfive-stats': {
+    'chessinfive-stats': {
         gamesPlayed: number,
         cyanWins: number,
         magentaWins: number,
@@ -698,11 +698,11 @@ Después de cada movimiento, escanear:
 ### 7.2 Arquitectura de Módulos
 
 ```
-chessfive/
+chessinfive/
 ├── index.html                 # Página principal
 ├── assets/
 │   ├── css/
-│   │   ├── chessfive-style.css      # Estilos específicos
+│   │   ├── chessinfive-style.css      # Estilos específicos
 │   │   └── neonchess-base.css       # Sistema de diseño compartido
 │   ├── js/
 │   │   ├── game-state.js            # Gestión de estado
@@ -866,7 +866,7 @@ UI Update + Sound Effects
 ## 12. APÉNDICES
 
 ### Apéndice A: Wireframes
-Ver archivo: `wireframes/chessfive-mockups.png`
+Ver archivo: `wireframes/chessinfive-mockups.png`
 
 ### Apéndice B: Paleta de Colores
 ```css

@@ -490,7 +490,7 @@ const UIController = {
 
         // Track in analytics
         gtag('event', 'new_game', {
-            'game_name': 'chessfive'
+            'game_name': 'chessinfive'
         });
     },
 
@@ -519,7 +519,7 @@ const UIController = {
 
         // Track in analytics
         gtag('event', 'game_complete', {
-            'game_name': 'chessfive',
+            'game_name': 'chessinfive',
             'winner': winner,
             'phase': GameState.phase
         });

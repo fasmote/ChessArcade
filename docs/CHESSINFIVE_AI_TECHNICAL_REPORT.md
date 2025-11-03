@@ -1,4 +1,4 @@
-# ChessFive AI - Informe Técnico del Algoritmo
+# ChessInFive AI - Informe Técnico del Algoritmo
 
 ## 📅 Fecha: 2025-01-11
 ## 🤖 Versión IA: v1.0.4 (Depth-2 Search)
@@ -7,7 +7,7 @@
 
 ## 📊 Resumen Ejecutivo
 
-La IA de ChessFive implementa un algoritmo de búsqueda **Depth-2** con evaluación heurística tipo Gomoku. El algoritmo simula:
+La IA de ChessInFive implementa un algoritmo de búsqueda **Depth-2** con evaluación heurística tipo Gomoku. El algoritmo simula:
 1. **Mi movimiento** (depth 1)
 2. **Mejor respuesta del oponente** (depth 2)
 
