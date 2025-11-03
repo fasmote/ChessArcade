@@ -44,7 +44,7 @@ const SoundManager = {
         };
 
         // Load sound preference from localStorage
-        const savedPref = localStorage.getItem('chessfiveSound');
+        const savedPref = localStorage.getItem('chessinfiveSound');
         if (savedPref === 'disabled') {
             this.enabled = false;
         }
@@ -72,7 +72,7 @@ const SoundManager = {
         this.enabled = !this.enabled;
 
         // Save preference
-        localStorage.setItem('chessfiveSound', this.enabled ? 'enabled' : 'disabled');
+        localStorage.setItem('chessinfiveSound', this.enabled ? 'enabled' : 'disabled');
 
         console.log('🔊 Sound', this.enabled ? 'enabled' : 'disabled');
 

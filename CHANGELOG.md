@@ -8,11 +8,11 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 ## [Unreleased]
 
 ### 🔮 Future Enhancements
-- **ChessFive**: Sistema de DRAW/Tablas con límite de movimientos
-- **ChessFive**: Depth-3 search con optimizaciones (Alpha-Beta, Threat Space)
+- **ChessInFive**: Sistema de DRAW/Tablas con límite de movimientos
+- **ChessInFive**: Depth-3 search con optimizaciones (Alpha-Beta, Threat Space)
 - **General**: Sistema de cuentas y rankings globales
 
-## [1.0.4] - 2025-01-11 🤖 ChessFive AI Depth-2 + UX Improvements
+## [1.0.4] - 2025-01-11 🤖 ChessInFive AI Depth-2 + UX Improvements
 
 ### ✨ Added - AI Depth-2 Search
 **Objetivo**: IA más inteligente que anticipa amenazas del oponente
@@ -27,7 +27,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - **Log**: Detecta cientos de amenazas por partida exitosamente
 
 #### 📊 Informe Técnico Completo
-- **Documento**: `docs/CHESSFIVE_AI_TECHNICAL_REPORT.md`
+- **Documento**: `docs/CHESSINFIVE_AI_TECHNICAL_REPORT.md`
 - **Análisis de costos**: Memoria, CPU, tiempo por depth
 - **Comparativa**: Depth-1 vs Depth-2 vs Depth-3 vs Depth-4
 - **Optimizaciones futuras**: Alpha-Beta, Threat Space, Killer Moves
@@ -60,11 +60,11 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 ### 📦 Technical Details
 - **Commits**: 3 commits (button fix, depth-2, merge)
 - **Files changed**:
-  - `chessfive.css`: 8 líneas (+)
+  - `chessinfive.css`: 8 líneas (+)
   - `ai-player.js`: 42 líneas (+)
   - `ai-controller.js`: Modificado showThinkingIndicator()
   - `index.html`: Hourglasses en paneles laterales
-- **Branch**: `feature/chessfive-ai-opponent` → `main`
+- **Branch**: `feature/chessinfive-ai-opponent` → `main`
 
 ### 📊 Performance Metrics
 - **Evaluations per turn**: ~2,500 - 10,000

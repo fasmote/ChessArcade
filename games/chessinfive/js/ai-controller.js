@@ -95,7 +95,7 @@ const AIController = {
             console.log(`🤖 AI (${currentPlayer}) is making a move...`);
 
             // Get AI decision
-            const move = await ChessFiveAI.makeMove(GameState);
+            const move = await ChessInFiveAI.makeMove(GameState);
 
             if (!move) {
                 console.error('🤖 AI returned no move!');

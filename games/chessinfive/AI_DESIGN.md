@@ -1,8 +1,8 @@
-# 🤖 ChessFive AI Opponent - Design Document
+# 🤖 ChessInFive AI Opponent - Design Document
 
 ## 📋 Overview
 
-Diseño de un oponente de IA para ChessFive que funcione en ambas fases del juego. La IA debe ser **simple pero efectiva**, proporcionando un desafío razonable sin ser invencible.
+Diseño de un oponente de IA para ChessInFive que funcione en ambas fases del juego. La IA debe ser **simple pero efectiva**, proporcionando un desafío razonable sin ser invencible.
 
 ---
 
@@ -170,7 +170,7 @@ function classifyPattern(line, threats) {
 
 ## 🧠 Algoritmo de Decisión (Minimax Simplificado)
 
-No necesitamos un Minimax completo. Para ChessFive, una evaluación de 1 nivel es suficiente:
+No necesitamos un Minimax completo. Para ChessInFive, una evaluación de 1 nivel es suficiente:
 
 ```javascript
 function findBestMove() {
@@ -263,10 +263,10 @@ const WEIGHTS = {
 ## 🚀 Implementation Plan
 
 ### Fase 1: Core AI Module
-**Archivo**: `games/chessfive/js/ai-player.js`
+**Archivo**: `games/chessinfive/js/ai-player.js`
 
 ```javascript
-const ChessFiveAI = {
+const ChessInFiveAI = {
     // Config
     difficulty: 'medium', // 'easy', 'medium', 'hard'
     thinkingTime: 500,    // ms (simular "pensamiento")
@@ -311,7 +311,7 @@ const ChessFiveAI = {
 ```
 
 ### Fase 2: Integration
-**Modificar**: `games/chessfive/js/main.js`
+**Modificar**: `games/chessinfive/js/main.js`
 
 ```javascript
 // Add AI toggle
@@ -322,7 +322,7 @@ let aiPlayer = 'magenta'; // AI plays as magenta
 async function handleTurn() {
     if (vsAI && GameState.currentPlayer === aiPlayer) {
         // AI's turn
-        const aiMove = await ChessFiveAI.makeMove(GameState)
+        const aiMove = await ChessInFiveAI.makeMove(GameState)
         executeMove(aiMove)
     } else {
         // Human's turn (existing code)

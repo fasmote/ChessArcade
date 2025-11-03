@@ -21,7 +21,7 @@
  *    - Knight: saltos en forma de L (puede saltar)
  *    - King: 1 casilla en cualquier dirección
  *
- * 3. NO HAY CAPTURA en ChessFive
+ * 3. NO HAY CAPTURA en ChessInFive
  *    - Casillas ocupadas = bloqueadas
  *    - Solo se valida si el destino está vacío
  */
@@ -179,7 +179,7 @@ const PieceManager = {
                 newRow += dr;
                 newCol += dc;
             } else {
-                // Blocked by a piece (no capture in ChessFive)
+                // Blocked by a piece (no capture in ChessInFive)
                 break;
             }
         }

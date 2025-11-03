@@ -2,7 +2,7 @@
 
 ![ChessArcade Banner](./assets/images/chessarcade-banner.png)
 
-## 🚀 [Play Now!](https://fasmote.github.io/ChessArcade/) | [🎯 Square Rush](https://fasmote.github.io/ChessArcade/games/square-rush/index.html) | [🐴 Knight Quest](https://fasmote.github.io/ChessArcade/games/knight-quest/index.html) | [🧠 Memory Matrix](https://fasmote.github.io/ChessArcade/games/memory-matrix-v2/index.html) | [🟦 Master Sequence](https://fasmote.github.io/ChessArcade/games/master-sequence/index.html) | [⚔️ ChessFive](https://fasmote.github.io/ChessArcade/games/chessfive/index.html)
+## 🚀 [Play Now!](https://fasmote.github.io/ChessArcade/) | [🎯 Square Rush](https://fasmote.github.io/ChessArcade/games/square-rush/index.html) | [🐴 Knight Quest](https://fasmote.github.io/ChessArcade/games/knight-quest/index.html) | [🧠 Memory Matrix](https://fasmote.github.io/ChessArcade/games/memory-matrix-v2/index.html) | [🟦 Master Sequence](https://fasmote.github.io/ChessArcade/games/master-sequence/index.html) | [⚔️ ChessInFive](https://fasmote.github.io/ChessArcade/games/chessinfive/index.html)
 
 ---
 
@@ -17,7 +17,7 @@
 - **🐴 Knight Quest** - Master the knight's tour across pixel-perfect boards *(Available Now!)*
 - **🧠 Memory Matrix** - Train positional memory with progressive levels *(Available Now!)*
 - **🟦 Master Sequence** - Simon Says meets chess! Memorize growing patterns *(Available Now!)*
-- **⚔️ ChessFive** - Connect Four meets Chess! Two-player tactical strategy **+ AI Opponent!** *(Available Now!)*
+- **⚔️ ChessInFive** - Connect Four meets Chess! Two-player tactical strategy **+ AI Opponent!** *(Available Now!)*
 
 #### 🎯 **Features:**
 - **Responsive Design**: Optimized for desktop and mobile
@@ -52,16 +52,16 @@
 
 ## 🆕 Recent Updates (Enero 2025)
 
-### ChessFive AI v1.0.4 - Depth-2 Search + UX Improvements 🤖
+### ChessInFive AI v1.0.4 - Depth-2 Search + UX Improvements 🤖
 - ✅ **Depth-2 AI Search** - AI now anticipates opponent threats BEFORE they happen
 - ✅ **Lookahead Algorithm** - Simulates opponent's best response to each move
 - ✅ **4-in-a-Row Detection** - Identifies dangerous setups that could lead to 5-in-a-row
 - ✅ **Performance Optimized** - ~1 second thinking time with intelligent threat evaluation
 - ✅ **Enhanced UX** - Hourglass indicator moved to side panels, stable button layout
-- ✅ **Technical Report** - Complete algorithm documentation in `docs/CHESSFIVE_AI_TECHNICAL_REPORT.md`
+- ✅ **Technical Report** - Complete algorithm documentation in `docs/CHESSINFIVE_AI_TECHNICAL_REPORT.md`
 - ⚠️ **Known Issue** - AI doesn't yet detect existing 4-in-a-row on board (planned for v1.0.5)
 
-### ChessFive AI v1.0 - Production Ready! 🤖
+### ChessInFive AI v1.0 - Production Ready! 🤖
 - ✅ **AI Opponent System** - Complete Gomoku-inspired AI implementation
 - ✅ **Two-Phase Strategy** - Different AI tactics for Gravity and Chess phases
 - ✅ **Enhanced Threat Detection** - Blocks 3-in-a-row and 4-in-a-row in Phase 1

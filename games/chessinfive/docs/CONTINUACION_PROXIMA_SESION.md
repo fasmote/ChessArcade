@@ -1,10 +1,10 @@
-# ChessFive - Continuación para Próxima Sesión
+# ChessInFive - Continuación para Próxima Sesión
 
 ## 🎯 ESTADO ACTUAL DEL PROYECTO
 
 **Fecha de última sesión:** 25 de Octubre 2025
-**Branch actual:** `feature/chessfive-implementation`
-**Último commit:** `ed9929b` - docs(chessfive): Agregar diseño de IA con algoritmo Minimax
+**Branch actual:** `feature/chessinfive-implementation`
+**Último commit:** `ed9929b` - docs(chessinfive): Agregar diseño de IA con algoritmo Minimax
 
 ---
 
@@ -32,9 +32,9 @@ BOTTOM PANEL
 ```
 
 **Archivos modificados:**
-- `games/chessfive/index.html` - Reorganizado completamente
-- `games/chessfive/css/chessfive.css` - Layout de 3 paneles
-- `games/chessfive/js/ui-controller.js` - updatePlayerSelector()
+- `games/chessinfive/index.html` - Reorganizado completamente
+- `games/chessinfive/css/chessinfive.css` - Layout de 3 paneles
+- `games/chessinfive/js/ui-controller.js` - updatePlayerSelector()
 
 **Características implementadas:**
 - ✅ Dual Piece Selectors (IDs únicos: `selectedRook` vs `selectedRookMagenta`)
@@ -47,7 +47,7 @@ BOTTOM PANEL
 
 **Módulos existentes:**
 ```
-games/chessfive/js/
+games/chessinfive/js/
 ├── game-state.js           # Estado del juego (board, players, phase)
 ├── piece-manager.js        # Movimientos de piezas de ajedrez
 ├── board-renderer.js       # Renderizado del tablero
@@ -85,14 +85,14 @@ games/chessfive/js/
 ### 🔴 CRÍTICO: Mobile Layout NO Funciona Correctamente
 
 **Problema reportado por el usuario:**
-> "En mobile (en el celular) que se vea el tablero primero y los laterales abajo. [...] al iniciar chessfive, sigo sin ver el tablero primero"
+> "En mobile (en el celular) que se vea el tablero primero y los laterales abajo. [...] al iniciar chessinfive, sigo sin ver el tablero primero"
 
 **Evidencia:**
 - Screenshot: `screenshot_errores/cf_08.png` - Tablero NO visible en mobile
 
 **Estado actual del código:**
 
-**HTML (games/chessfive/index.html):**
+**HTML (games/chessinfive/index.html):**
 ```html
 <main class="game-container">
     <!-- Top Panel (primero en HTML) -->
@@ -110,7 +110,7 @@ games/chessfive/js/
 </main>
 ```
 
-**CSS actual (games/chessfive/css/chessfive.css líneas ~762-820):**
+**CSS actual (games/chessinfive/css/chessinfive.css líneas ~762-820):**
 ```css
 @media (max-width: 1024px) {
     .game-container {
@@ -186,7 +186,7 @@ El orden está mal configurado. En mobile debería ser:
 
 ### TAREA 1: Arreglar Mobile Layout (CRÍTICO)
 
-**Archivo:** `games/chessfive/css/chessfive.css`
+**Archivo:** `games/chessinfive/css/chessinfive.css`
 
 **Ubicación:** Líneas ~762-820 (media query `@media (max-width: 1024px)`)
 
@@ -263,7 +263,7 @@ El orden está mal configurado. En mobile debería ser:
 
 ### TAREA 2: Ajustes Finales Desktop (MEDIA PRIORIDAD)
 
-**Archivo:** `games/chessfive/css/chessfive.css`
+**Archivo:** `games/chessinfive/css/chessinfive.css`
 
 **Ajustes sugeridos:**
 
@@ -351,7 +351,7 @@ El orden está mal configurado. En mobile debería ser:
    python -m http.server 8000
 
    # Luego abrir:
-   http://localhost:8000/games/chessfive/index.html
+   http://localhost:8000/games/chessinfive/index.html
    ```
 
 ### Git Commands:
@@ -367,13 +367,13 @@ git log --oneline -5
 git diff
 
 # Stage changes
-git add games/chessfive/
+git add games/chessinfive/
 
 # Commit
-git commit -m "fix(chessfive): Arreglar mobile layout - tablero primero"
+git commit -m "fix(chessinfive): Arreglar mobile layout - tablero primero"
 
 # Push to GitHub
-git push origin feature/chessfive-implementation
+git push origin feature/chessinfive-implementation
 ```
 
 ---
@@ -381,10 +381,10 @@ git push origin feature/chessfive-implementation
 ## 📁 ESTRUCTURA DE ARCHIVOS - REFERENCIA RÁPIDA
 
 ```
-games/chessfive/
+games/chessinfive/
 ├── index.html                      # HTML principal
 ├── css/
-│   └── chessfive.css               # ESTILOS (ajustar media queries)
+│   └── chessinfive.css               # ESTILOS (ajustar media queries)
 ├── js/
 │   ├── game-state.js               # Estado del juego
 │   ├── piece-manager.js            # Movimientos de piezas
@@ -460,7 +460,7 @@ git log --oneline -3
 
 ### Paso 3: Arreglar Mobile Layout (PRIORIDAD 1)
 
-**Archivo:** `games/chessfive/css/chessfive.css`
+**Archivo:** `games/chessinfive/css/chessinfive.css`
 **Líneas:** ~762-820
 
 **Objetivo:** Que el tablero se vea PRIMERO en mobile
@@ -478,8 +478,8 @@ Usar el checklist de testing (TAREA 3)
 ### Paso 5: Documentar y Commitear
 
 ```bash
-git add games/chessfive/css/chessfive.css
-git commit -m "fix(chessfive): Arreglar mobile layout - tablero visible primero
+git add games/chessinfive/css/chessinfive.css
+git commit -m "fix(chessinfive): Arreglar mobile layout - tablero visible primero
 
 MOBILE FIX:
 - Reorganizado flexbox order en media query
@@ -489,7 +489,7 @@ MOBILE FIX:
 
 RESOLVES: cf_08.png issue"
 
-git push origin feature/chessfive-implementation
+git push origin feature/chessinfive-implementation
 ```
 
 ### Paso 6: Actualizar Documentación
@@ -531,7 +531,7 @@ git stash list
 git reset --soft HEAD~1
 
 # Revertir cambios en archivo específico:
-git checkout -- games/chessfive/css/chessfive.css
+git checkout -- games/chessinfive/css/chessinfive.css
 ```
 
 ### Problema 3: No encuentras dónde está el bug
@@ -559,16 +559,16 @@ git branch -v
 
 ### Abrir juego en navegador:
 ```
-file:///C:/Users/clau/Documents/Multiajedrez%202025/games/chessfive/index.html
+file:///C:/Users/clau/Documents/Multiajedrez%202025/games/chessinfive/index.html
 ```
 
 ### Buscar en código:
 ```bash
 # Buscar "order:" en CSS
-grep -n "order:" games/chessfive/css/chessfive.css
+grep -n "order:" games/chessinfive/css/chessinfive.css
 
 # Buscar "@media" en CSS
-grep -n "@media" games/chessfive/css/chessfive.css
+grep -n "@media" games/chessinfive/css/chessinfive.css
 ```
 
 ---
@@ -591,7 +591,7 @@ Antes de empezar a codear:
 
 - [ ] Leí CONTINUACION_PROXIMA_SESION.md completo
 - [ ] Entiendo el problema de mobile (cf_08.png)
-- [ ] Ubiqué el archivo a modificar (chessfive.css línea ~762)
+- [ ] Ubiqué el archivo a modificar (chessinfive.css línea ~762)
 - [ ] Tengo claro el objetivo (tablero primero en mobile)
 - [ ] Sé cómo testear (DevTools F12)
 - [ ] Sé qué commitear cuando termine
