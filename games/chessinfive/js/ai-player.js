@@ -336,8 +336,31 @@ const ChessInFiveAI = {
     /**
      * Find best chess move using Gomoku-inspired evaluation
      * WITH RANDOMIZATION: If multiple moves have same score, pick randomly
+     * WITH PROACTIVE THREAT DETECTION: Scans board before moving
      */
     findBestChessMove(gameState) {
+        const opponentPlayer = (gameState.currentPlayer === 'cyan') ? 'magenta' : 'cyan';
+
+        // STEP 1: PROACTIVE SCAN - Check for critical threats BEFORE evaluating moves
+        console.log(`🔍 Scanning board for existing threats from ${opponentPlayer}...`);
+        const critical4Threat = this.findCritical4InRowThreat(gameState.board, opponentPlayer);
+
+        if (critical4Threat) {
+            console.log(`🚨 CRITICAL 4-IN-A-ROW: Found at (${critical4Threat.row},${critical4Threat.col}) going (${critical4Threat.dr},${critical4Threat.dc})`);
+            console.log(`🚨 MUST BLOCK: Empty space at (${critical4Threat.blockRow},${critical4Threat.blockCol})`);
+
+            // Try to find a move that blocks this threat
+            const blockingMove = this.findMoveToSquare(gameState, critical4Threat.blockRow, critical4Threat.blockCol);
+            if (blockingMove) {
+                console.log(`✅ BLOCKING MOVE FOUND: (${blockingMove.fromRow},${blockingMove.fromCol})→(${blockingMove.toRow},${blockingMove.toCol})`);
+                return blockingMove;
+            } else {
+                console.log(`❌ NO BLOCKING MOVE AVAILABLE! Cannot reach (${critical4Threat.blockRow},${critical4Threat.blockCol})`);
+                console.log(`⚠️ Attempting to win on this turn instead...`);
+            }
+        }
+
+        // STEP 2: Standard evaluation if no critical threat or couldn't block
         let bestMoves = [];
         let bestScore = -Infinity;
 
@@ -498,6 +521,94 @@ const ChessInFiveAI = {
         }
 
         return false;
+    },
+
+    /**
+     * NEW: Find CRITICAL 4-in-a-row threat that needs immediate blocking
+     * Returns the position that must be blocked, or null if none found
+     */
+    findCritical4InRowThreat(board, player) {
+        const directions = [
+            [0, 1],   // horizontal
+            [1, 0],   // vertical
+            [1, 1],   // diagonal \
+            [1, -1]   // diagonal /
+        ];
+
+        // Check every position on the board
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                // Check each direction from this position
+                for (const [dr, dc] of directions) {
+                    // Count consecutive pieces in this direction
+                    let count = 0;
+                    let emptySpots = [];
+
+                    // Check 5 squares in this direction (needed for XXXX_ pattern)
+                    for (let i = 0; i < 5; i++) {
+                        const r = row + (dr * i);
+                        const c = col + (dc * i);
+
+                        // Out of bounds
+                        if (r < 0 || r >= 8 || c < 0 || c >= 8) break;
+
+                        const piece = board[r][c];
+
+                        if (piece && piece.player === player) {
+                            count++;
+                        } else if (piece === null) {
+                            emptySpots.push({row: r, col: c});
+                        } else {
+                            // Hit opponent piece - line is blocked
+                            break;
+                        }
+                    }
+
+                    // Found 4 pieces + exactly 1 empty spot = CRITICAL THREAT
+                    if (count === 4 && emptySpots.length === 1) {
+                        const blockSpot = emptySpots[0];
+                        // Verify this spot is actually reachable by opponent
+                        if (this.canPlayerReachSquare(board, player, blockSpot.row, blockSpot.col)) {
+                            return {
+                                row: row,
+                                col: col,
+                                dr: dr,
+                                dc: dc,
+                                blockRow: blockSpot.row,
+                                blockCol: blockSpot.col
+                            };
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    },
+
+    /**
+     * NEW: Find a move that allows reaching a specific square
+     * Returns {fromRow, fromCol, toRow, toCol} or null
+     */
+    findMoveToSquare(gameState, targetRow, targetCol) {
+        const myPieces = this.getAllPieces(gameState.board, gameState.currentPlayer);
+
+        for (const piece of myPieces) {
+            const validMoves = PieceManager.getValidMoves(piece.row, piece.col);
+
+            for (const move of validMoves) {
+                if (move.row === targetRow && move.col === targetCol) {
+                    return {
+                        fromRow: piece.row,
+                        fromCol: piece.col,
+                        toRow: targetRow,
+                        toCol: targetCol
+                    };
+                }
+            }
+        }
+
+        return null;
     },
 
     /**
