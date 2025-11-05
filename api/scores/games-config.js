@@ -1,0 +1,79 @@
+/**
+ * ChessArcade - Game Limits Configuration
+ *
+ * Define maximum scores and time limits for each game
+ * Used for anti-cheat validation
+ */
+
+export const GAME_LIMITS = {
+  'square-rush': {
+    name: 'Square Rush',
+    max_score: 100000,      // Máximo teórico posible
+    max_time_ms: 3600000,   // 1 hora máximo (60 min)
+    score_type: 'points',
+    has_levels: true,
+    has_time: true
+  },
+
+  'knight-quest': {
+    name: 'Knight Quest',
+    max_score: 50000,       // Basado en tablero 8x8 y puntos
+    max_time_ms: 1800000,   // 30 minutos máximo
+    score_type: 'points',
+    has_levels: true,
+    has_time: true
+  },
+
+  'memory-matrix': {
+    name: 'Memory Matrix',
+    max_score: 50,          // Nivel máximo alcanzable
+    max_time_ms: 3600000,   // 1 hora máximo
+    score_type: 'level_reached',
+    has_levels: true,
+    has_time: false
+  },
+
+  'master-sequence': {
+    name: 'Master Sequence',
+    max_score: 100,         // Secuencia máxima
+    max_time_ms: 3600000,   // 1 hora máximo
+    score_type: 'sequence_length',
+    has_levels: false,
+    has_time: false
+  },
+
+  'chessinfive': {
+    name: 'ChessInFive',
+    max_score: 1,           // Solo victoria (1) o derrota (0)
+    max_time_ms: 7200000,   // 2 horas máximo
+    score_type: 'wins',
+    has_levels: false,
+    has_time: true
+  }
+};
+
+/**
+ * Validate if a game ID exists
+ * @param {string} gameId - Game identifier
+ * @returns {boolean}
+ */
+export function isValidGame(gameId) {
+  return gameId in GAME_LIMITS;
+}
+
+/**
+ * Get game configuration
+ * @param {string} gameId - Game identifier
+ * @returns {object|null} Game config or null if not found
+ */
+export function getGameConfig(gameId) {
+  return GAME_LIMITS[gameId] || null;
+}
+
+/**
+ * Get all game IDs
+ * @returns {string[]} Array of game IDs
+ */
+export function getAllGameIds() {
+  return Object.keys(GAME_LIMITS);
+}
