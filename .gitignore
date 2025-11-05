@@ -82,6 +82,12 @@ local.properties
 dev-settings.json
 personal-config.json
 
+# Supabase screenshots con credenciales sensibles
+*049_supabase*
+*_supabase*.png
+*_supabase*.jpg
+*_supabase*.jpeg
+
 # ===========================================
 # ARCHIVOS GENERADOS Y TEMPORALES
 # ===========================================
