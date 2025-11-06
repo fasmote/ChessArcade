@@ -279,8 +279,14 @@
 
                 log(outputId, 'SUCCESS!', 'success');
                 log(outputId, `Found: ${data.found} scores`, 'info');
-                log(outputId, `Best score: ${data.stats.best_score}`, 'info');
-                log(outputId, `Average score: ${data.stats.avg_score}`, 'info');
+
+                // Verificar si stats existe antes de acceder a sus propiedades
+                if (data.stats && data.found > 0) {
+                    log(outputId, `Best score: ${data.stats.best_score}`, 'info');
+                    log(outputId, `Average score: ${data.stats.avg_score}`, 'info');
+                } else {
+                    log(outputId, 'No scores found for this search', 'info');
+                }
 
                 data.scores.forEach((score, index) => {
                     log(outputId,
