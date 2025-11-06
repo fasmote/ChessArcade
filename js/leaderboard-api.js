@@ -165,17 +165,34 @@ async function submitScore(game, playerName, score, options = {}) {
     }
 
     // Construir el payload (datos que enviamos)
+    // IMPORTANTE: Solo incluimos campos opcionales si tienen un valor válido
+    // Si enviamos null o undefined, el backend los rechaza en la validación
     const payload = {
       game,
       player_name: playerName,
-      score,
-      // Opcionales: solo incluir si están presentes
-      level: options.level || null,
-      time_ms: options.time_ms || null,
-      country_code: options.country_code || null,
-      country_name: options.country_name || null,
-      metadata: options.metadata || {}
+      score
     };
+
+    // Agregar campos opcionales solo si están presentes y no son null/undefined
+    if (options.level) {
+      payload.level = options.level;
+    }
+
+    if (options.time_ms !== undefined && options.time_ms !== null) {
+      payload.time_ms = options.time_ms;
+    }
+
+    if (options.country_code) {
+      payload.country_code = options.country_code;
+    }
+
+    if (options.country_name) {
+      payload.country_name = options.country_name;
+    }
+
+    if (options.metadata && Object.keys(options.metadata).length > 0) {
+      payload.metadata = options.metadata;
+    }
 
     // Hacer POST request a /api/scores
     const response = await fetchWithTimeout(API_BASE_URL, {
