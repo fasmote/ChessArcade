@@ -1,42 +1,8 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/scores/leaderboard",
-      "dest": "/api/scores/leaderboard.js"
-    },
-    {
-      "src": "/api/scores/search",
-      "dest": "/api/scores/search.js"
-    },
-    {
-      "src": "/api/scores/recent",
-      "dest": "/api/scores/recent.js"
-    },
-    {
-      "src": "/api/scores",
-      "dest": "/api/scores/index.js",
-      "methods": ["POST"]
-    }
-  ],
   "functions": {
     "api/**/*.js": {
       "maxDuration": 10,
       "memory": 1024
     }
-  },
-  "env": {
-    "POSTGRES_URL": "@postgres_url",
-    "POSTGRES_PRISMA_URL": "@postgres_prisma_url",
-    "POSTGRES_URL_NON_POOLING": "@postgres_url_non_pooling",
-    "KV_URL": "@kv_url",
-    "KV_REST_API_URL": "@kv_rest_api_url",
-    "KV_REST_API_TOKEN": "@kv_rest_api_token"
   }
 }

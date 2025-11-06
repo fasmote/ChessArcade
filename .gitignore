@@ -82,6 +82,16 @@ local.properties
 dev-settings.json
 personal-config.json
 
+# Supabase screenshots con credenciales sensibles
+*049_supabase*
+*_supabase*.png
+*_supabase*.jpg
+*_supabase*.jpeg
+
+# Documentación con datos sensibles (passwords, connection strings)
+*_PRIVADO.md
+ESTADO_BACKEND_*.md
+
 # ===========================================
 # ARCHIVOS GENERADOS Y TEMPORALES
 # ===========================================
@@ -210,3 +220,4 @@ passwords.txt
 # Este archivo está configurado para un proyecto
 # de desarrollo web frontend con HTML, CSS y JavaScript.
 # Se actualiza según las necesidades del proyecto ChessArcade.
+.vercel
