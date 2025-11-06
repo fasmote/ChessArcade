@@ -216,3 +216,4 @@ passwords.txt
 # Este archivo está configurado para un proyecto
 # de desarrollo web frontend con HTML, CSS y JavaScript.
 # Se actualiza según las necesidades del proyecto ChessArcade.
+.vercel
