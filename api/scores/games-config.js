@@ -44,8 +44,8 @@ export const GAME_LIMITS = {
 
   'chessinfive': {
     name: 'ChessInFive',
-    max_score: 1,           // Solo victoria (1) o derrota (0)
-    max_time_ms: 7200000,   // 2 horas máximo
+    max_score: 50000,       // Puntaje máximo basado en victorias y combos
+    max_time_ms: 2700000,   // 45 minutos máximo
     score_type: 'wins',
     has_levels: false,
     has_time: true
