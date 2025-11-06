@@ -88,6 +88,10 @@ personal-config.json
 *_supabase*.jpg
 *_supabase*.jpeg
 
+# Documentación con datos sensibles (passwords, connection strings)
+*_PRIVADO.md
+ESTADO_BACKEND_*.md
+
 # ===========================================
 # ARCHIVOS GENERADOS Y TEMPORALES
 # ===========================================
