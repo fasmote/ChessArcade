@@ -28,7 +28,7 @@
  * IMPORTANTE: Los usuarios NUNCA ven esta URL. JavaScript la usa
  * "detrás de escena" para comunicarse con el backend.
  */
-const API_BASE_URL = 'https://chessarcade-ka1ycvulb-claudios-projects.vercel.app/api/scores';
+const API_BASE_URL = 'https://chessarcade-4tikx1z1a-claudios-projects.vercel.app/api/scores';
 
 /**
  * Timeout para requests (15 segundos)

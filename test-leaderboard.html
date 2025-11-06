@@ -195,6 +195,70 @@
     <script>
         console.log('Test page loaded');
 
+        // Configuración de rangos de score por juego
+        // IMPORTANTE: Cada juego tiene diferentes tipos de score!
+        const GAME_SCORE_CONFIGS = {
+            'square-rush': {
+                placeholder: '15000',
+                defaultValue: '15000',
+                hint: 'Puntos (0-1000000)'
+            },
+            'knight-quest': {
+                placeholder: '8000',
+                defaultValue: '8000',
+                hint: 'Puntos (0-50000)'
+            },
+            'memory-matrix': {
+                placeholder: '10',
+                defaultValue: '10',
+                hint: 'Nivel alcanzado (1-50)'
+            },
+            'master-sequence': {
+                placeholder: '8',
+                defaultValue: '8',
+                hint: 'Longitud de secuencia (1-100)'
+            },
+            'chessinfive': {
+                placeholder: '5000',
+                defaultValue: '5000',
+                hint: 'Puntos (0-50000)'
+            }
+        };
+
+        // Actualizar el input de score cuando cambia el juego
+        function updateScoreInput() {
+            const game = document.getElementById('submit-game').value;
+            const scoreInput = document.getElementById('submit-score');
+            const config = GAME_SCORE_CONFIGS[game];
+
+            if (config) {
+                scoreInput.placeholder = config.placeholder;
+                scoreInput.value = config.defaultValue;
+
+                // Actualizar o crear hint text
+                let hintElement = document.getElementById('score-hint');
+                if (!hintElement) {
+                    hintElement = document.createElement('small');
+                    hintElement.id = 'score-hint';
+                    hintElement.style.color = '#888';
+                    hintElement.style.fontSize = '12px';
+                    hintElement.style.display = 'block';
+                    hintElement.style.marginTop = '5px';
+                    scoreInput.parentNode.appendChild(hintElement);
+                }
+                hintElement.textContent = config.hint;
+            }
+        }
+
+        // Event listener para cambio de juego
+        document.addEventListener('DOMContentLoaded', function() {
+            const gameSelect = document.getElementById('submit-game');
+            if (gameSelect) {
+                gameSelect.addEventListener('change', updateScoreInput);
+                updateScoreInput(); // Inicializar
+            }
+        });
+
         function log(outputId, message, type = 'info') {
             const output = document.getElementById(outputId);
             output.style.display = 'block';
