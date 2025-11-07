@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard Integration Test</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="arcade-shared.css">
+    <link rel="stylesheet" href="css/leaderboard.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Orbitron', monospace;
+            background: #0a0a0a;
+            color: #ffffff;
+        }
+
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #00ffff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .test-section {
+            background: rgba(0, 255, 255, 0.05);
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .test-section h2 {
+            margin: 0 0 15px 0;
+            color: #00ffff;
+            font-size: 18px;
+        }
+
+        .test-btn {
+            padding: 12px 24px;
+            background: transparent;
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            border-radius: 8px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .test-btn:hover {
+            background: #00ffff;
+            color: #0a0a0a;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .test-output {
+            background: #1a0033;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success { color: #00ff40; }
+        .error { color: #ff4040; }
+        .info { color: #00ffff; }
+
+        .input-group {
+            margin: 10px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #cccccc;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            background: #1a0033;
+            border: 2px solid #333;
+            border-radius: 4px;
+            color: #ffffff;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #00ffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Leaderboard Integration Test</h1>
+
+        <!-- Test 1: Submit Score -->
+        <div class="test-section">
+            <h2>1️⃣ Test: Submit Score</h2>
+            <div class="input-group">
+                <label>Game:</label>
+                <select id="submit-game" style="width: 100%; padding: 10px; background: #1a0033; border: 2px solid #333; border-radius: 4px; color: #ffffff; font-family: 'Orbitron', monospace;">
+                    <option value="square-rush">Square Rush</option>
+                    <option value="knight-quest">Knight Quest</option>
+                    <option value="memory-matrix">Memory Matrix</option>
+                    <option value="master-sequence">Master Sequence</option>
+                    <option value="chessinfive">ChessFive</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Player Name:</label>
+                <input type="text" id="submit-name" placeholder="TESTUSER" value="TESTUSER">
+            </div>
+            <div class="input-group">
+                <label>Score:</label>
+                <input type="number" id="submit-score" placeholder="15000" value="15000">
+            </div>
+            <button class="test-btn" onclick="testSubmitScore()">Submit Score</button>
+            <div id="submit-output" class="test-output" style="display: none;"></div>
+        </div>
+
+        <!-- Test 2: Get Leaderboard -->
+        <div class="test-section">
+            <h2>2️⃣ Test: Get Leaderboard</h2>
+            <div class="input-group">
+                <label>Game:</label>
+                <select id="leaderboard-game" style="width: 100%; padding: 10px; background: #1a0033; border: 2px solid #333; border-radius: 4px; color: #ffffff; font-family: 'Orbitron', monospace;">
+                    <option value="square-rush">Square Rush</option>
+                    <option value="knight-quest">Knight Quest</option>
+                    <option value="memory-matrix">Memory Matrix</option>
+                    <option value="master-sequence">Master Sequence</option>
+                    <option value="chessinfive">ChessFive</option>
+                </select>
+            </div>
+            <button class="test-btn" onclick="testGetLeaderboard()">Get Leaderboard</button>
+            <div id="leaderboard-output" class="test-output" style="display: none;"></div>
+        </div>
+
+        <!-- Test 3: Show Modal -->
+        <div class="test-section">
+            <h2>3️⃣ Test: Show Leaderboard Modal</h2>
+            <button class="test-btn" onclick="showLeaderboardModal()">Show Full Modal</button>
+        </div>
+
+        <!-- Test 4: Toast Notifications -->
+        <div class="test-section">
+            <h2>4️⃣ Test: Toast Notifications</h2>
+            <button class="test-btn" onclick="showToast('Test success message', 'success')">Success Toast</button>
+            <button class="test-btn" onclick="showToast('Test error message', 'error')">Error Toast</button>
+            <button class="test-btn" onclick="showToast('Test info message', 'info')">Info Toast</button>
+            <button class="test-btn" onclick="showToast('Test warning message', 'warning')">Warning Toast</button>
+        </div>
+
+        <!-- Test 5: Search Player -->
+        <div class="test-section">
+            <h2>5️⃣ Test: Search Player</h2>
+            <div class="input-group">
+                <label>Game:</label>
+                <select id="search-game" style="width: 100%; padding: 10px; background: #1a0033; border: 2px solid #333; border-radius: 4px; color: #ffffff; font-family: 'Orbitron', monospace;">
+                    <option value="square-rush">Square Rush</option>
+                    <option value="knight-quest">Knight Quest</option>
+                    <option value="memory-matrix">Memory Matrix</option>
+                    <option value="master-sequence">Master Sequence</option>
+                    <option value="chessinfive">ChessFive</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Player Name:</label>
+                <input type="text" id="search-name" placeholder="TEST" value="TEST">
+            </div>
+            <button class="test-btn" onclick="testSearchPlayer()">Search Player</button>
+            <div id="search-output" class="test-output" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/leaderboard-api.js"></script>
+    <script src="js/leaderboard-ui.js"></script>
+
+    <script>
+        console.log('Test page loaded');
+
+        // Configuración de rangos de score por juego
+        // IMPORTANTE: Cada juego tiene diferentes tipos de score!
+        const GAME_SCORE_CONFIGS = {
+            'square-rush': {
+                placeholder: '15000',
+                defaultValue: '15000',
+                hint: 'Puntos (0-1000000)'
+            },
+            'knight-quest': {
+                placeholder: '8000',
+                defaultValue: '8000',
+                hint: 'Puntos (0-50000)'
+            },
+            'memory-matrix': {
+                placeholder: '10',
+                defaultValue: '10',
+                hint: 'Nivel alcanzado (1-50)'
+            },
+            'master-sequence': {
+                placeholder: '8',
+                defaultValue: '8',
+                hint: 'Longitud de secuencia (1-100)'
+            },
+            'chessinfive': {
+                placeholder: '5000',
+                defaultValue: '5000',
+                hint: 'Puntos (0-50000)'
+            }
+        };
+
+        // Actualizar el input de score cuando cambia el juego
+        function updateScoreInput() {
+            const game = document.getElementById('submit-game').value;
+            const scoreInput = document.getElementById('submit-score');
+            const config = GAME_SCORE_CONFIGS[game];
+
+            if (config) {
+                scoreInput.placeholder = config.placeholder;
+                scoreInput.value = config.defaultValue;
+
+                // Actualizar o crear hint text
+                let hintElement = document.getElementById('score-hint');
+                if (!hintElement) {
+                    hintElement = document.createElement('small');
+                    hintElement.id = 'score-hint';
+                    hintElement.style.color = '#888';
+                    hintElement.style.fontSize = '12px';
+                    hintElement.style.display = 'block';
+                    hintElement.style.marginTop = '5px';
+                    scoreInput.parentNode.appendChild(hintElement);
+                }
+                hintElement.textContent = config.hint;
+            }
+        }
+
+        // Event listener para cambio de juego
+        document.addEventListener('DOMContentLoaded', function() {
+            const gameSelect = document.getElementById('submit-game');
+            if (gameSelect) {
+                gameSelect.addEventListener('change', updateScoreInput);
+                updateScoreInput(); // Inicializar
+            }
+        });
+
+        function log(outputId, message, type = 'info') {
+            const output = document.getElementById(outputId);
+            output.style.display = 'block';
+
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            const line = `<span class="${className}">[${timestamp}] ${message}</span><br>`;
+
+            output.innerHTML += line;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        async function testSubmitScore() {
+            const outputId = 'submit-output';
+            document.getElementById(outputId).innerHTML = '';
+
+            const game = document.getElementById('submit-game').value;
+            const name = document.getElementById('submit-name').value;
+            const score = parseInt(document.getElementById('submit-score').value);
+
+            log(outputId, `Testing submitScore('${game}', '${name}', ${score})...`, 'info');
+
+            try {
+                const result = await submitScore(game, name, score);
+
+                log(outputId, 'SUCCESS!', 'success');
+                log(outputId, `Result: ${JSON.stringify(result, null, 2)}`, 'info');
+                log(outputId, `Rank: #${result.rank} of ${result.totalPlayers}`, 'success');
+                log(outputId, `Message: ${result.message}`, 'success');
+
+                // Mostrar toast
+                showToast(`Score submitted! Rank #${result.rank}`, 'success');
+
+            } catch (error) {
+                log(outputId, `ERROR: ${error.message}`, 'error');
+                log(outputId, `Stack: ${error.stack}`, 'error');
+
+                showToast(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testGetLeaderboard() {
+            const outputId = 'leaderboard-output';
+            document.getElementById(outputId).innerHTML = '';
+
+            const game = document.getElementById('leaderboard-game').value;
+
+            log(outputId, `Testing getLeaderboard('${game}', {limit: 10})...`, 'info');
+
+            try {
+                const data = await getLeaderboard(game, { limit: 10 });
+
+                log(outputId, 'SUCCESS!', 'success');
+                log(outputId, `Game: ${data.game}`, 'info');
+                log(outputId, `Total scores: ${data.pagination.total}`, 'info');
+                log(outputId, `Scores returned: ${data.scores.length}`, 'info');
+
+                data.scores.forEach((score, index) => {
+                    log(outputId,
+                        `${index + 1}. Rank #${score.rank}: ${score.player_name} - ${score.score}`,
+                        'success'
+                    );
+                });
+
+            } catch (error) {
+                log(outputId, `ERROR: ${error.message}`, 'error');
+                log(outputId, `Stack: ${error.stack}`, 'error');
+            }
+        }
+
+        async function testSearchPlayer() {
+            const outputId = 'search-output';
+            document.getElementById(outputId).innerHTML = '';
+
+            const game = document.getElementById('search-game').value;
+            const name = document.getElementById('search-name').value;
+
+            log(outputId, `Testing searchPlayer('${game}', '${name}')...`, 'info');
+
+            try {
+                const data = await searchPlayer(game, name);
+
+                log(outputId, 'SUCCESS!', 'success');
+                log(outputId, `Found: ${data.found} scores`, 'info');
+
+                // Verificar si stats existe antes de acceder a sus propiedades
+                if (data.stats && data.found > 0) {
+                    log(outputId, `Best score: ${data.stats.best_score}`, 'info');
+                    log(outputId, `Average score: ${data.stats.avg_score}`, 'info');
+                } else {
+                    log(outputId, 'No scores found for this search', 'info');
+                }
+
+                data.scores.forEach((score, index) => {
+                    log(outputId,
+                        `${index + 1}. Rank #${score.rank}: ${score.player_name} - ${score.score}`,
+                        'success'
+                    );
+                });
+
+            } catch (error) {
+                log(outputId, `ERROR: ${error.message}`, 'error');
+                log(outputId, `Stack: ${error.stack}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

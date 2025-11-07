@@ -65,11 +65,11 @@ export function validateScoreSubmission(data) {
   }
 
   // 6. Validate time if provided
-  if (time_ms !== undefined) {
+  if (time_ms !== undefined && time_ms !== null) {
     if (!Number.isInteger(time_ms) || time_ms < 0) {
       return {
         valid: false,
-        error: 'time_ms must be a positive integer'
+        error: 'time_ms must be a non-negative integer or null'
       };
     }
 

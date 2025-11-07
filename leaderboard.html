@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>Leaderboard - ChessArcade Global Rankings</title>
+    <meta name="description" content="Global leaderboard rankings for all ChessArcade games. See the top players from around the world!">
+    <meta name="keywords" content="leaderboard, rankings, top players, chess arcade, high scores">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏆</text></svg>">
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N3EKXHPD5Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-N3EKXHPD5Y');
+    </script>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2472413468382197"
+            crossorigin="anonymous"></script>
+
+    <!-- Styles -->
+    <!-- Usar arcade-shared.css que tiene las variables CSS base -->
+    <link rel="stylesheet" href="arcade-shared.css">
+    <link rel="stylesheet" href="css/leaderboard.css">
+
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* Estilos específicos para esta página */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family, 'Orbitron', monospace);
+            background: var(--bg-primary, #0a0a0a);
+            color: var(--text-primary, #ffffff);
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--bg-secondary, #1a0033), var(--bg-tertiary, #330066));
+            border-bottom: 3px solid var(--text-accent, #00ffff);
+            box-shadow: 0 0 30px var(--border-glow, rgba(0, 255, 255, 0.3));
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--text-accent, #00ffff);
+            text-shadow: 0 0 20px var(--border-glow, rgba(0, 255, 255, 0.5));
+        }
+
+        .header p {
+            margin: 0;
+            font-size: 16px;
+            color: var(--text-secondary, #cccccc);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 30px;
+            padding: 10px 20px;
+            background: transparent;
+            border: 2px solid var(--text-accent, #00ffff);
+            color: var(--text-accent, #00ffff);
+            text-decoration: none;
+            border-radius: var(--border-radius, 8px);
+            font-family: var(--font-family, 'Orbitron', monospace);
+            font-weight: 600;
+            transition: var(--transition, all 0.3s ease);
+        }
+
+        .back-link:hover {
+            background: var(--text-accent, #00ffff);
+            color: var(--bg-primary, #0a0a0a);
+            box-shadow: 0 0 15px var(--border-glow, rgba(0, 255, 255, 0.5));
+            transform: translateY(-2px);
+        }
+
+        .instructions {
+            background: rgba(0, 255, 255, 0.05);
+            border: 2px solid var(--border-color, #333333);
+            border-radius: var(--border-radius, 8px);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .instructions h2 {
+            margin: 0 0 15px 0;
+            font-size: 20px;
+            color: var(--text-accent, #00ffff);
+        }
+
+        .instructions p {
+            margin: 0;
+            line-height: 1.6;
+            color: var(--text-secondary, #cccccc);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            border-top: 2px solid var(--border-color, #333333);
+            color: var(--text-secondary, #cccccc);
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: var(--text-accent, #00ffff);
+            text-decoration: none;
+            transition: var(--transition, all 0.3s ease);
+        }
+
+        .footer a:hover {
+            text-shadow: 0 0 10px var(--border-glow, rgba(0, 255, 255, 0.5));
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .container {
+                padding: 20px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>🏆 Global Leaderboard</h1>
+        <p>Compete with players from around the world!</p>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Back Link -->
+        <a href="index.html" class="back-link">← Back to Home</a>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <h2>📊 How it Works</h2>
+            <p>
+                Welcome to the ChessArcade Global Leaderboard! Here you can view the top scores
+                for all games. Use the tabs below to switch between different games and see who
+                the top players are. Rankings are updated in real-time!
+            </p>
+        </div>
+
+        <!-- Leaderboard Content (populated by JavaScript) -->
+        <div id="leaderboard-root">
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary, #cccccc);">
+                <p style="font-size: 18px; margin-bottom: 20px;">Loading leaderboard...</p>
+                <div style="font-size: 48px;">⏳</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>
+            &copy; 2025 ChessArcade - Level Up Your Chess Game<br>
+            <a href="index.html">Home</a> |
+            <a href="about.html">About</a> |
+            <a href="privacy-policy.html">Privacy Policy</a>
+        </p>
+    </div>
+
+    <!-- JavaScript -->
+    <!-- Cargar primero la API (porque UI depende de ella) -->
+    <script src="js/leaderboard-api.js"></script>
+    <!-- Luego cargar la UI -->
+    <script src="js/leaderboard-ui.js"></script>
+
+    <!-- Script principal para esta página -->
+    <script>
+        /**
+         * Script principal de leaderboard.html
+         *
+         * Este script inicializa el leaderboard automáticamente cuando
+         * la página carga. Muestra el modal de leaderboard dentro del
+         * contenedor #leaderboard-root.
+         */
+
+        // Variable global para mantener track del estado
+        let currentState = {
+            game: 'square-rush',
+            offset: 0,
+            limit: 50,
+            loading: false
+        };
+
+        /**
+         * Renderiza el leaderboard completo en el root
+         */
+        async function renderLeaderboard() {
+            const root = document.getElementById('leaderboard-root');
+
+            // Crear contenedor
+            const container = document.createElement('div');
+            container.className = 'leaderboard-modal-content';
+
+            // Crear tabs
+            const tabsContainer = document.createElement('div');
+            tabsContainer.className = 'leaderboard-tabs';
+
+            const games = {
+                'square-rush': { emoji: '⚡', name: 'Square Rush' },
+                'knight-quest': { emoji: '♞', name: 'Knight Quest' },
+                'memory-matrix': { emoji: '🧠', name: 'Memory Matrix' },
+                'master-sequence': { emoji: '🎯', name: 'Master Sequence' },
+                'chessinfive': { emoji: '♟️', name: 'ChessFive' }
+            };
+
+            Object.keys(games).forEach(gameKey => {
+                const tab = document.createElement('button');
+                tab.className = 'leaderboard-tab';
+                tab.dataset.game = gameKey;
+                tab.innerHTML = `${games[gameKey].emoji} ${games[gameKey].name}`;
+
+                if (gameKey === currentState.game) {
+                    tab.classList.add('active');
+                }
+
+                tab.addEventListener('click', async () => {
+                    if (currentState.loading || gameKey === currentState.game) return;
+
+                    currentState.game = gameKey;
+                    currentState.offset = 0;
+
+                    // Update tabs
+                    tabsContainer.querySelectorAll('.leaderboard-tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    tab.classList.add('active');
+
+                    await loadLeaderboard();
+                });
+
+                tabsContainer.appendChild(tab);
+            });
+
+            // Crear área de contenido
+            const contentArea = document.createElement('div');
+            contentArea.className = 'leaderboard-content';
+            contentArea.id = 'leaderboard-content-area';
+
+            // Crear paginación
+            const paginationContainer = document.createElement('div');
+            paginationContainer.className = 'leaderboard-pagination';
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'pagination-btn';
+            prevBtn.id = 'prev-btn';
+            prevBtn.innerHTML = '← Previous';
+            prevBtn.disabled = true;
+
+            const pageInfo = document.createElement('span');
+            pageInfo.className = 'page-info';
+            pageInfo.id = 'page-info';
+            pageInfo.textContent = 'Page 1';
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'pagination-btn';
+            nextBtn.id = 'next-btn';
+            nextBtn.innerHTML = 'Next →';
+
+            prevBtn.addEventListener('click', async () => {
+                if (currentState.loading || currentState.offset === 0) return;
+                currentState.offset -= currentState.limit;
+                await loadLeaderboard();
+            });
+
+            nextBtn.addEventListener('click', async () => {
+                if (currentState.loading) return;
+                currentState.offset += currentState.limit;
+                await loadLeaderboard();
+            });
+
+            paginationContainer.appendChild(prevBtn);
+            paginationContainer.appendChild(pageInfo);
+            paginationContainer.appendChild(nextBtn);
+
+            // Ensamblar
+            container.appendChild(tabsContainer);
+            container.appendChild(contentArea);
+            container.appendChild(paginationContainer);
+
+            root.innerHTML = '';
+            root.appendChild(container);
+
+            // Cargar inicial
+            await loadLeaderboard();
+        }
+
+        /**
+         * Carga el leaderboard del juego actual
+         */
+        async function loadLeaderboard() {
+            if (currentState.loading) return;
+
+            currentState.loading = true;
+
+            const contentArea = document.getElementById('leaderboard-content-area');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const pageInfo = document.getElementById('page-info');
+
+            contentArea.innerHTML = '<div class="loading">Loading leaderboard... ⏳</div>';
+
+            try {
+                // Llamar a la API
+                const data = await getLeaderboard(currentState.game, {
+                    limit: currentState.limit,
+                    offset: currentState.offset
+                });
+
+                // Renderizar tabla
+                const table = renderLeaderboardTable(data.scores, true);
+                contentArea.innerHTML = '';
+                contentArea.appendChild(table);
+
+                // Update pagination
+                const currentPage = Math.floor(currentState.offset / currentState.limit) + 1;
+                pageInfo.textContent = `Page ${currentPage}`;
+
+                prevBtn.disabled = currentState.offset === 0;
+                nextBtn.disabled = !data.pagination.hasMore;
+
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+                contentArea.innerHTML = `
+                    <div class="error">
+                        <p>❌ Error loading leaderboard</p>
+                        <p class="error-message">${error.message}</p>
+                        <button class="retry-btn" onclick="loadLeaderboard()">Retry</button>
+                    </div>
+                `;
+            } finally {
+                currentState.loading = false;
+            }
+        }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('[leaderboard.html] Page loaded, initializing...');
+            renderLeaderboard();
+        });
+    </script>
+</body>
+</html>

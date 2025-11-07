@@ -104,9 +104,9 @@ export default async function handler(req, res) {
 
     const rank = parseInt(rankResult[0].rank);
 
-    // 6. Get total players for this game
+    // 6. Get total scores for this game
     const totalResult = await sql`
-      SELECT COUNT(DISTINCT player_name) as total
+      SELECT COUNT(*) as total
       FROM scores
       WHERE game = ${game}
     `;
