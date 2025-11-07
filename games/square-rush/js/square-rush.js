@@ -471,3 +471,83 @@ document.addEventListener('animationend', (e) => {
         e.target.classList.remove('correct', 'wrong');
     }
 });
+
+// ========================================
+// LEADERBOARD INTEGRATION
+// ========================================
+
+/**
+ * Cargar nombre del jugador desde localStorage al iniciar
+ */
+window.addEventListener('DOMContentLoaded', () => {
+    const savedName = localStorage.getItem('squareRushPlayerName');
+    const playerInput = document.getElementById('playerNameInput');
+    if (savedName && playerInput) {
+        playerInput.value = savedName;
+    }
+});
+
+/**
+ * Botón "Submit Score" - Enviar score al leaderboard
+ */
+document.getElementById('submitScoreBtn')?.addEventListener('click', async () => {
+    const playerNameInput = document.getElementById('playerNameInput');
+    const playerName = playerNameInput.value.trim() || 'PLAYER';
+
+    // Guardar nombre para futuras sesiones
+    localStorage.setItem('squareRushPlayerName', playerName);
+
+    const finalScore = gameState.score;
+
+    try {
+        // Deshabilitar botón mientras se envía
+        const submitBtn = document.getElementById('submitScoreBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'SUBMITTING...';
+
+        // Enviar score al backend
+        const result = await submitScore(
+            'square-rush',
+            playerName,
+            finalScore,
+            {
+                level: gameState.level
+            }
+        );
+
+        // Mostrar toast de éxito
+        showToast(`Score submitted! Rank #${result.rank} of ${result.totalPlayers}`, 'success');
+
+        // Rehabilitar botón
+        submitBtn.disabled = false;
+        submitBtn.textContent = '✅ SUBMITTED!';
+
+        // Después de 2 segundos, volver al texto original
+        setTimeout(() => {
+            submitBtn.textContent = '🏆 SUBMIT SCORE';
+        }, 2000);
+
+    } catch (error) {
+        console.error('Error submitting score:', error);
+        showToast(`Error: ${error.message}`, 'error');
+
+        // Rehabilitar botón
+        const submitBtn = document.getElementById('submitScoreBtn');
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🏆 SUBMIT SCORE';
+    }
+});
+
+/**
+ * Botón "View Leaderboard" - Mostrar modal del leaderboard
+ */
+document.getElementById('viewLeaderboardBtn')?.addEventListener('click', () => {
+    showLeaderboardModal('square-rush');
+});
+
+/**
+ * Botón "Leaderboard" del header - Mostrar modal
+ */
+document.getElementById('btnLeaderboard')?.addEventListener('click', () => {
+    showLeaderboardModal('square-rush');
+});

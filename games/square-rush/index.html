@@ -44,6 +44,17 @@
             <span class="btn-label">SOUND</span>
         </button>
 
+        <!-- Leaderboard Button -->
+        <button class="btn-icon btn-leaderboard" id="btnLeaderboard" title="View Leaderboard" style="top: 140px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <line x1="20" y1="8" x2="20" y2="14"></line>
+                <line x1="23" y1="11" x2="17" y2="11"></line>
+            </svg>
+            <span class="btn-label">LEADER</span>
+        </button>
+
         <!-- Header -->
         <div class="game-header">
             <div class="game-title">🎯 SQUARE RUSH</div>
@@ -98,6 +109,16 @@
             <div class="game-over-content">
                 <div class="game-over-title" id="gameOverTitle">LEVEL COMPLETE!</div>
                 <div class="final-score" id="finalScore">Score: 0</div>
+
+                <!-- Player Name Input for Leaderboard -->
+                <div class="player-name-section" style="margin: 20px 0;">
+                    <label for="playerNameInput" style="display: block; margin-bottom: 8px; color: var(--neon-cyan); font-weight: bold;">Enter Your Name:</label>
+                    <input type="text" id="playerNameInput" maxlength="20" placeholder="Your Name"
+                           style="width: 100%; padding: 10px; background: rgba(0, 255, 255, 0.1); border: 2px solid var(--neon-cyan); border-radius: 8px; color: white; font-family: 'Orbitron', monospace; font-size: 16px; text-align: center;">
+                </div>
+
+                <button class="btn btn-primary" id="submitScoreBtn" style="margin-bottom: 10px;">🏆 SUBMIT SCORE</button>
+                <button class="btn btn-secondary" id="viewLeaderboardBtn" style="margin-bottom: 10px;">👁️ VIEW LEADERBOARD</button>
                 <button class="btn btn-primary" id="nextLevelBtn">NEXT LEVEL</button>
                 <button class="btn btn-secondary" id="playAgainBtn">PLAY AGAIN</button>
             </div>
@@ -138,6 +159,12 @@
 
     <!-- Howler.js for audio -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+
+    <!-- Leaderboard Integration -->
+    <link rel="stylesheet" href="../../css/leaderboard.css">
+    <script src="../../js/leaderboard-api.js"></script>
+    <script src="../../js/leaderboard-ui.js"></script>
+
     <!-- Level Transition Library -->
     <script src="js/LevelTransition.js"></script>
     <script src="js/square-rush.js"></script>
