@@ -18,10 +18,12 @@
  * - Logs de todas las acciones
  */
 
-import { neon } from '@neondatabase/serverless';
+import postgres from 'postgres';
 
 // Conexión a la base de datos
-const sql = neon(process.env.DATABASE_URL);
+const sql = postgres(process.env.DATABASE_URL, {
+  ssl: 'require'
+});
 
 export default async function handler(req, res) {
   // ========================================
