@@ -65,6 +65,17 @@
                 <span class="btn-label">SONIDO</span>
             </button>
 
+            <!-- Botón LEADERBOARD: Ver ranking global -->
+            <button class="btn-icon btn-leaderboard" id="btnLeaderboard" aria-label="Ver tabla de líderes">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <line x1="20" y1="8" x2="20" y2="14"></line>
+                    <line x1="23" y1="11" x2="17" y2="11"></line>
+                </svg>
+                <span class="btn-label">LEADER</span>
+            </button>
+
             <!-- Separador invisible para forzar nueva fila en desktop -->
             <div class="header-break"></div>
 
@@ -293,6 +304,12 @@
 
     <!-- Lógica del juego -->
     <script src="game.js"></script>
+
+    <!-- Leaderboard Integration -->
+    <link rel="stylesheet" href="../../css/leaderboard.css">
+    <script src="../../js/leaderboard-api.js"></script>
+    <script src="../../js/leaderboard-ui.js"></script>
+    <script src="leaderboard-integration.js"></script>
 
     <!-- Footer -->
     <footer style="background: rgba(26, 0, 51, 0.9); padding: 2rem 1rem; margin-top: 4rem; border-top: 2px solid var(--neon-cyan); text-align: center;">
