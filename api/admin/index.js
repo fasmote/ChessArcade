@@ -76,6 +76,9 @@ export default async function handler(req, res) {
   // Si el password no coincide, rechazar y loguear el intento
   if (admin_password !== ADMIN_PASSWORD) {
     console.warn(`⚠️ Unauthorized admin access attempt. Action: ${action}`);
+    console.warn(`Received password length: ${admin_password ? admin_password.length : 'undefined'}`);
+    console.warn(`Expected password length: ${ADMIN_PASSWORD.length}`);
+    console.warn(`Passwords match: ${admin_password === ADMIN_PASSWORD}`);
     return res.status(403).json({
       success: false,
       error: 'Unauthorized. Invalid admin password.'
