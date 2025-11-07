@@ -27,6 +27,22 @@
 - **Local Storage**: Save your best scores and progress
 - **Modern CSS**: Smooth animations and neon visual effects
 
+#### 📁 **Project Structure:**
+```
+ChessArcade/
+├── games/           # 5 playable chess arcade games
+├── api/             # Serverless backend (Vercel + Supabase)
+│   ├── scores/     # Leaderboard API endpoints
+│   └── admin/      # Admin panel + backups
+├── js/              # Shared JavaScript utilities
+├── css/             # NeonChess design system
+├── testing/         # Test pages for development
+├── docs/            # Complete documentation
+│   ├── admin/      # Admin system guides
+│   └── leaderboard/# Leaderboard documentation
+└── sql/             # Database schemas
+```
+
 ---
 
 ### 🇪🇸 **Descripción en Español**
