@@ -346,14 +346,25 @@ export default async function handler(req, res) {
       case 'list_backups': {
         console.log('📋 Listing backups...');
 
+        // Obtener backups sin contar los scores (más simple y compatible)
         const backupsResult = await sql`
           SELECT
             backup_name,
-            created_at,
-            jsonb_array_length(backup_data) as scores_count
+            created_at
           FROM backups
           ORDER BY created_at DESC
         `;
+
+        // Contar scores manualmente en JavaScript
+        const backupsWithCount = backupsResult.map(backup => {
+          // Si necesitas el count, puedes hacer un query adicional
+          // o parsear el JSONB aquí. Por ahora retornamos sin count.
+          return {
+            backup_name: backup.backup_name,
+            created_at: backup.created_at,
+            scores_count: null // Se puede agregar después si es necesario
+          };
+        });
 
         console.log(`✅ Found ${backupsResult.length} backups`);
 
@@ -362,7 +373,7 @@ export default async function handler(req, res) {
           action: 'list_backups',
           data: {
             backups_count: backupsResult.length,
-            backups: backupsResult
+            backups: backupsWithCount
           }
         });
       }
