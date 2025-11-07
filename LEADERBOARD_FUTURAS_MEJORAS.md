@@ -24,7 +24,244 @@
 
 ## 🎯 Mejoras Futuras - Prioridad Alta
 
-### 1. 👥 Sistema de Grupos/Clanes (Idea Original de Claudio)
+### 1. 📱 Leaderboard Local/Sesión (Idea Original de Claudio)
+
+**Concepto**:
+Tener una tabla de ranking LOCAL que muestre solo los scores de la sesión actual del dispositivo, además de la tabla global persistente.
+
+**Casos de Uso**:
+- Ver todos tus intentos de la sesión actual
+- Amigos pasándose el dispositivo: "¡Ahora vos, Juan!"
+- Familia jugando en el mismo celular/PC
+- Competencia local sin persistencia
+- Comparar tu progreso de HOY vs tu mejor histórico
+
+**Características**:
+- 🔄 **Temporal**: Se borra cuando:
+  - Se cierra el navegador (sessionStorage)
+  - Se apaga el dispositivo
+  - Se limpia la caché
+  - El usuario decide "Clear Session"
+- 💾 **Almacenamiento**: localStorage/sessionStorage (no DB)
+- 👥 **Multi-jugador local**: Si juegan varios en el mismo dispositivo, todos los scores aparecen
+- 📊 **Dual View**: Ver tabla local Y global al mismo tiempo
+
+**Implementación Propuesta**:
+
+#### JavaScript - Almacenamiento Local:
+```javascript
+// js/local-leaderboard.js
+
+/**
+ * Guardar score en leaderboard local (sessionStorage)
+ * Solo existe mientras la sesión esté activa
+ */
+function saveLocalScore(game, playerName, score, timeMs = null, level = null) {
+  // Obtener scores locales del juego
+  const storageKey = `local_scores_${game}`;
+  let localScores = JSON.parse(sessionStorage.getItem(storageKey) || '[]');
+
+  // Agregar nuevo score
+  localScores.push({
+    player_name: playerName,
+    score: score,
+    time_ms: timeMs,
+    level: level,
+    timestamp: new Date().toISOString(),
+    device_session_id: getSessionId() // ID único de la sesión
+  });
+
+  // Ordenar por score (descendente)
+  localScores.sort((a, b) => b.score - a.score);
+
+  // Guardar
+  sessionStorage.setItem(storageKey, JSON.stringify(localScores));
+
+  return localScores;
+}
+
+/**
+ * Obtener leaderboard local
+ */
+function getLocalLeaderboard(game) {
+  const storageKey = `local_scores_${game}`;
+  return JSON.parse(sessionStorage.getItem(storageKey) || '[]');
+}
+
+/**
+ * Limpiar leaderboard local
+ */
+function clearLocalLeaderboard(game) {
+  const storageKey = `local_scores_${game}`;
+  sessionStorage.removeItem(storageKey);
+}
+
+/**
+ * Obtener ID único de sesión (se mantiene durante la sesión)
+ */
+function getSessionId() {
+  let sessionId = sessionStorage.getItem('session_id');
+  if (!sessionId) {
+    sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    sessionStorage.setItem('session_id', sessionId);
+  }
+  return sessionId;
+}
+```
+
+#### UI - Dual Leaderboard View:
+```javascript
+// Mostrar ambas tablas side-by-side o con tabs
+
+function showDualLeaderboard(game) {
+  const modal = createModal();
+
+  modal.innerHTML = `
+    <div class="dual-leaderboard">
+      <!-- Toggle entre vistas -->
+      <div class="view-toggle">
+        <button class="active" data-view="local">
+          📱 This Device (${getLocalLeaderboard(game).length})
+        </button>
+        <button data-view="global">
+          🌍 Global Leaderboard
+        </button>
+      </div>
+
+      <!-- Tabla Local -->
+      <div class="local-board active">
+        <h3>📱 Your Session Scores</h3>
+        <p class="session-info">
+          Session started: ${getSessionStartTime()}<br>
+          <button onclick="clearLocalLeaderboard('${game}')">Clear Session</button>
+        </p>
+        <div id="local-scores-table"></div>
+      </div>
+
+      <!-- Tabla Global -->
+      <div class="global-board">
+        <h3>🌍 Global Leaderboard</h3>
+        <div id="global-scores-table"></div>
+      </div>
+    </div>
+  `;
+
+  renderLocalScores(game);
+  renderGlobalScores(game);
+}
+```
+
+#### Flujo al Finalizar Partida:
+```javascript
+async function onGameEnd(game, playerName, score, timeMs, level) {
+  // 1. Guardar en leaderboard LOCAL (inmediato)
+  const localScores = saveLocalScore(game, playerName, score, timeMs, level);
+  const localRank = localScores.findIndex(s =>
+    s.player_name === playerName &&
+    s.score === score &&
+    s.timestamp === localScores[localScores.length - 1].timestamp
+  ) + 1;
+
+  // 2. Guardar en leaderboard GLOBAL (API call)
+  try {
+    const globalResult = await submitScore(game, playerName, score, {
+      time_ms: timeMs,
+      level: level
+    });
+
+    // 3. Mostrar resultado con AMBOS rankings
+    showVictoryModal({
+      score: score,
+      localRank: localRank,
+      localTotal: localScores.length,
+      globalRank: globalResult.rank,
+      globalTotal: globalResult.totalPlayers
+    });
+
+  } catch (error) {
+    // Si falla el global, al menos mostrar el local
+    showVictoryModal({
+      score: score,
+      localRank: localRank,
+      localTotal: localScores.length,
+      globalRank: null, // No disponible
+      globalTotal: null,
+      error: 'Could not connect to global leaderboard'
+    });
+  }
+}
+```
+
+#### Modal de Victoria con Dual Ranking:
+```html
+<div class="victory-modal">
+  <h2>🎉 Score Submitted!</h2>
+
+  <div class="score-display">
+    <span class="score-value">15,000</span> points
+  </div>
+
+  <!-- Local Ranking -->
+  <div class="local-ranking">
+    <h3>📱 This Device</h3>
+    <p class="rank-display">
+      Rank <span class="rank-number">#2</span>
+      of <span class="total-number">5</span> attempts
+    </p>
+    <small>🏆 Your best today: 18,000</small>
+  </div>
+
+  <!-- Global Ranking -->
+  <div class="global-ranking">
+    <h3>🌍 Worldwide</h3>
+    <p class="rank-display">
+      Rank <span class="rank-number">#156</span>
+      of <span class="total-number">2,847</span> players
+    </p>
+  </div>
+
+  <button onclick="showDualLeaderboard('square-rush')">
+    View Full Leaderboards
+  </button>
+</div>
+```
+
+**Ventajas**:
+1. ✅ **Offline-first**: Funciona sin conexión
+2. ✅ **Feedback inmediato**: No espera API call
+3. ✅ **Contexto local**: "Soy el mejor de mis amigos aquí"
+4. ✅ **Motivación**: Ver progreso de la sesión
+5. ✅ **Privacy**: No persiste si no quieren
+6. ✅ **Fallback**: Si falla API global, al menos hay local
+
+**Opciones de Configuración**:
+```javascript
+const LOCAL_LEADERBOARD_OPTIONS = {
+  storage: 'sessionStorage', // o 'localStorage' para persistir más tiempo
+  maxScores: 100,            // Máximo de scores a guardar
+  showBestOnly: false,       // Solo mostrar mejor score por jugador
+  enableStats: true          // Calcular estadísticas de sesión
+};
+```
+
+**Estadísticas de Sesión**:
+```javascript
+function getSessionStats(game) {
+  const scores = getLocalLeaderboard(game);
+
+  return {
+    totalGames: scores.length,
+    bestScore: Math.max(...scores.map(s => s.score)),
+    averageScore: scores.reduce((sum, s) => sum + s.score, 0) / scores.length,
+    improvement: calculateImprovement(scores),
+    playersInSession: [...new Set(scores.map(s => s.player_name))].length
+  };
+}
+```
+
+---
+
+### 2. 👥 Sistema de Grupos/Clanes (Idea Original de Claudio)
 
 **Concepto**:
 Permitir que varios jugadores formen un "grupo" o "clan" y tengan su propia tabla de ranking privada/compartida.
