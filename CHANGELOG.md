@@ -8,9 +8,69 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 ## [Unreleased]
 
 ### 🔮 Future Enhancements
+- **Leaderboard**: Local/session leaderboard (dual-table system)
+- **Leaderboard**: Sistema de grupos/clanes con rankings privados
+- **Leaderboard**: Player ID simple (device-based identity)
 - **ChessInFive**: Sistema de DRAW/Tablas con límite de movimientos
 - **ChessInFive**: Depth-3 search con optimizaciones (Alpha-Beta, Threat Space)
 - **General**: Sistema de cuentas y rankings globales
+
+## [2.1.0] - 2025-11-07 🔐 Admin Endpoint + Backup System
+
+### ✨ Added - Sistema de Administración
+**Objetivo**: Control administrativo del leaderboard con backups y estadísticas
+
+#### 🔒 Admin Endpoint (`/api/admin`)
+- **6 Acciones protegidas por password**:
+  - `stats` - Estadísticas completas de la base de datos
+  - `list_backups` - Listar backups disponibles
+  - `backup` - Crear backup completo en JSONB
+  - `restore` - Restaurar desde backup específico
+  - `reset_game` - Borrar scores de un juego
+  - `reset_all` - Borrar TODOS los scores (doble confirmación)
+
+#### 💾 Sistema de Backups
+- **Tabla `backups`** en Supabase PostgreSQL
+- **Formato JSONB** para almacenamiento eficiente
+- **Restauración completa** de todos los scores
+- **Timestamps automáticos** para tracking
+
+#### 🧪 Interfaz de Testing Admin
+- **Sección completa en `test-leaderboard.html`**
+- **6 tests interactivos** para cada acción admin
+- **Confirmaciones de seguridad** para operaciones destructivas
+- **Toast notifications** para feedback inmediato
+- **Logs detallados** de cada operación
+
+#### 📚 Documentación
+- `ADMIN_SETUP.md` - Guía paso a paso de configuración
+- `.private/CONFIGURACION_REAL.md` - Configuración sensible (no se sube a GitHub)
+- `.gitignore` actualizado con protección de `.private/`
+
+### 🔒 Security
+- **Password obligatorio** en todas las operaciones admin
+- **Validación server-side** (no cliente)
+- **Logs de intentos no autorizados**
+- **CORS configurado** correctamente
+
+### 🐛 Fixed
+- Import cambiado de `@neondatabase/serverless` a `postgres`
+- Removido `jsonb_array_length()` para compatibilidad PostgreSQL
+- Debug logging agregado para troubleshooting
+
+### 📦 Files Added/Modified
+- `api/admin/index.js` (380 líneas) - Admin endpoint completo
+- `sql/create_backups_table.sql` - Schema de tabla backups
+- `ADMIN_SETUP.md` (316 líneas) - Guía de configuración
+- `test-leaderboard.html` - Sección admin agregada (+350 líneas)
+- `.private/CONFIGURACION_REAL.md` - Configuración sensible
+- `.gitignore` - Protección de carpeta `.private/`
+
+### 🎯 Testing Results
+- ✅ Todas las 6 acciones admin funcionando
+- ✅ 2 backups creados exitosamente
+- ✅ Stats mostrando datos correctos
+- ✅ Password authentication funcionando
 
 ## [1.0.4] - 2025-01-11 🤖 ChessInFive AI Depth-2 + UX Improvements
 
