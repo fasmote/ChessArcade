@@ -136,6 +136,11 @@ pids
 # ===========================================
 # ARCHIVOS PERSONALES Y PRIVADOS
 # ===========================================
+# Carpeta con configuraciones sensibles (passwords, URLs reales, etc.)
+.private/
+*.private/
+*_private/
+
 # Notas personales del desarrollador
 notas_personales.md
 TODO_personal.md

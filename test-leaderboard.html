@@ -186,6 +186,48 @@
             <button class="test-btn" onclick="testSearchPlayer()">Search Player</button>
             <div id="search-output" class="test-output" style="display: none;"></div>
         </div>
+
+        <!-- Test 6: Admin Actions -->
+        <div class="test-section" style="border-color: #ff4040;">
+            <h2>⚠️ 6️⃣ Admin Actions (Requires Password)</h2>
+            <div class="input-group">
+                <label>Admin Password:</label>
+                <input type="password" id="admin-password" placeholder="Enter admin password">
+            </div>
+
+            <h3 style="color: #00ffff; font-size: 14px; margin-top: 20px;">Stats & Info</h3>
+            <button class="test-btn" onclick="testAdminStats()">📊 Get Stats</button>
+            <button class="test-btn" onclick="testListBackups()">📋 List Backups</button>
+
+            <h3 style="color: #00ffff; font-size: 14px; margin-top: 20px;">Backup Operations</h3>
+            <div class="input-group">
+                <label>Backup Name (optional):</label>
+                <input type="text" id="backup-name" placeholder="Leave empty for auto-name">
+            </div>
+            <button class="test-btn" onclick="testCreateBackup()">💾 Create Backup</button>
+
+            <div class="input-group" style="margin-top: 10px;">
+                <label>Restore From:</label>
+                <input type="text" id="restore-name" placeholder="Enter backup name">
+            </div>
+            <button class="test-btn" onclick="testRestoreBackup()" style="border-color: #ff8800; color: #ff8800;">♻️ Restore Backup</button>
+
+            <h3 style="color: #ff4040; font-size: 14px; margin-top: 20px;">⚠️ Danger Zone</h3>
+            <div class="input-group">
+                <label>Game to Reset:</label>
+                <select id="reset-game" style="width: 100%; padding: 10px; background: #1a0033; border: 2px solid #333; border-radius: 4px; color: #ffffff; font-family: 'Orbitron', monospace;">
+                    <option value="square-rush">Square Rush</option>
+                    <option value="knight-quest">Knight Quest</option>
+                    <option value="memory-matrix">Memory Matrix</option>
+                    <option value="master-sequence">Master Sequence</option>
+                    <option value="chessinfive">ChessFive</option>
+                </select>
+            </div>
+            <button class="test-btn" onclick="testResetGame()" style="border-color: #ff4040; color: #ff4040;">🗑️ Reset Game</button>
+            <button class="test-btn" onclick="testResetAll()" style="border-color: #ff0000; color: #ff0000;">☠️ Reset ALL</button>
+
+            <div id="admin-output" class="test-output" style="display: none;"></div>
+        </div>
     </div>
 
     <!-- JavaScript -->
@@ -362,6 +404,314 @@
             } catch (error) {
                 log(outputId, `ERROR: ${error.message}`, 'error');
                 log(outputId, `Stack: ${error.stack}`, 'error');
+            }
+        }
+
+        // ========================================
+        // ADMIN FUNCTIONS
+        // ========================================
+
+        /**
+         * Función helper para hacer requests al admin endpoint
+         */
+        async function callAdminEndpoint(action, extraParams = {}) {
+            const password = document.getElementById('admin-password').value;
+
+            if (!password) {
+                throw new Error('Please enter admin password first');
+            }
+
+            // URL del admin endpoint (actualizada - fixed list_backups)
+            const ADMIN_API_URL = 'https://chessarcade-ccwcszqbh-claudios-projects.vercel.app/api/admin';
+
+            const payload = {
+                action: action,
+                admin_password: password,
+                ...extraParams
+            };
+
+            const response = await fetch(ADMIN_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || `HTTP ${response.status}`);
+            }
+
+            return data;
+        }
+
+        /**
+         * Test: Get Stats
+         */
+        async function testAdminStats() {
+            const outputId = 'admin-output';
+            document.getElementById(outputId).innerHTML = '';
+
+            log(outputId, `Testing admin action: stats...`, 'info');
+
+            try {
+                const result = await callAdminEndpoint('stats');
+
+                log(outputId, 'SUCCESS!', 'success');
+                log(outputId, `Total scores: ${result.data.total_scores}`, 'info');
+                log(outputId, `Total players: ${result.data.total_players}`, 'info');
+                log(outputId, `Total backups: ${result.data.total_backups}`, 'info');
+
+                log(outputId, '\n📊 Game Stats:', 'info');
+                result.data.game_stats.forEach(game => {
+                    log(outputId,
+                        `  ${game.game}: ${game.scores_count} scores, ${game.unique_players} players, best: ${game.highest_score}`,
+                        'success'
+                    );
+                });
+
+                if (result.data.latest_score) {
+                    log(outputId, '\n🆕 Latest Score:', 'info');
+                    log(outputId,
+                        `  ${result.data.latest_score.player_name} - ${result.data.latest_score.game} - ${result.data.latest_score.score}`,
+                        'success'
+                    );
+                }
+
+                showToast('Stats retrieved successfully!', 'success');
+
+            } catch (error) {
+                log(outputId, `ERROR: ${error.message}`, 'error');
+                showToast(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        /**
+         * Test: List Backups
+         */
+        async function testListBackups() {
+            const outputId = 'admin-output';
+            document.getElementById(outputId).innerHTML = '';
+
+            log(outputId, `Testing admin action: list_backups...`, 'info');
+
+            try {
+                const result = await callAdminEndpoint('list_backups');
+
+                log(outputId, 'SUCCESS!', 'success');
+                log(outputId, `Total backups: ${result.data.backups_count}`, 'info');
+
+                if (result.data.backups_count === 0) {
+                    log(outputId, 'No backups found. Create one first!', 'info');
+                } else {
+                    log(outputId, '\n📋 Available Backups:', 'info');
+                    result.data.backups.forEach((backup, index) => {
+                        log(outputId,
+                            `${index + 1}. ${backup.backup_name} - ${backup.scores_count} scores - ${new Date(backup.created_at).toLocaleString()}`,
+                            'success'
+                        );
+                    });
+                }
+
+                showToast(`Found ${result.data.backups_count} backups`, 'success');
+
+            } catch (error) {
+                log(outputId, `ERROR: ${error.message}`, 'error');
+                showToast(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        /**
+         * Test: Create Backup
+         */
+        async function testCreateBackup() {
+            const outputId = 'admin-output';
+            document.getElementById(outputId).innerHTML = '';
+
+            const backupName = document.getElementById('backup-name').value || undefined;
+
+            log(outputId, `Testing admin action: backup...`, 'info');
+            if (backupName) {
+                log(outputId, `Backup name: ${backupName}`, 'info');
+            } else {
+                log(outputId, `Backup name: (auto-generated)`, 'info');
+            }
+
+            try {
+                const result = await callAdminEndpoint('backup', {
+                    backup_name: backupName
+                });
+
+                log(outputId, 'SUCCESS!', 'success');
+                log(outputId, `Message: ${result.message}`, 'success');
+                log(outputId, `Backup name: ${result.data.backup_name}`, 'info');
+                log(outputId, `Scores saved: ${result.data.scores_count}`, 'info');
+                log(outputId, `Created at: ${new Date(result.data.created_at).toLocaleString()}`, 'info');
+
+                showToast(`Backup created: ${result.data.backup_name}`, 'success');
+
+                // Limpiar el input
+                document.getElementById('backup-name').value = '';
+
+            } catch (error) {
+                log(outputId, `ERROR: ${error.message}`, 'error');
+                showToast(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        /**
+         * Test: Restore Backup
+         */
+        async function testRestoreBackup() {
+            const outputId = 'admin-output';
+            document.getElementById(outputId).innerHTML = '';
+
+            const restoreName = document.getElementById('restore-name').value;
+
+            if (!restoreName) {
+                log(outputId, 'ERROR: Please enter a backup name to restore', 'error');
+                showToast('Please enter backup name', 'error');
+                return;
+            }
+
+            // Confirmación de seguridad
+            const confirmed = confirm(
+                `⚠️ WARNING!\n\n` +
+                `This will DELETE all current scores and restore from backup: ${restoreName}\n\n` +
+                `This action CANNOT be undone!\n\n` +
+                `Are you sure you want to continue?`
+            );
+
+            if (!confirmed) {
+                log(outputId, 'Restore cancelled by user', 'info');
+                return;
+            }
+
+            log(outputId, `Testing admin action: restore...`, 'info');
+            log(outputId, `Restoring from: ${restoreName}`, 'info');
+
+            try {
+                const result = await callAdminEndpoint('restore', {
+                    backup_name: restoreName
+                });
+
+                log(outputId, 'SUCCESS!', 'success');
+                log(outputId, `Message: ${result.message}`, 'success');
+                log(outputId, `Backup name: ${result.data.backup_name}`, 'info');
+                log(outputId, `Backup created: ${new Date(result.data.backup_created_at).toLocaleString()}`, 'info');
+                log(outputId, `Scores restored: ${result.data.restored_count}`, 'info');
+
+                showToast(`Restored ${result.data.restored_count} scores!`, 'success');
+
+                // Limpiar el input
+                document.getElementById('restore-name').value = '';
+
+            } catch (error) {
+                log(outputId, `ERROR: ${error.message}`, 'error');
+                showToast(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        /**
+         * Test: Reset Game
+         */
+        async function testResetGame() {
+            const outputId = 'admin-output';
+            document.getElementById(outputId).innerHTML = '';
+
+            const game = document.getElementById('reset-game').value;
+
+            // Confirmación de seguridad
+            const confirmed = confirm(
+                `⚠️ WARNING!\n\n` +
+                `This will DELETE all scores for game: ${game}\n\n` +
+                `This action CANNOT be undone!\n\n` +
+                `💡 TIP: Create a backup first!\n\n` +
+                `Are you sure you want to continue?`
+            );
+
+            if (!confirmed) {
+                log(outputId, 'Reset cancelled by user', 'info');
+                return;
+            }
+
+            log(outputId, `Testing admin action: reset_game...`, 'info');
+            log(outputId, `Game: ${game}`, 'info');
+
+            try {
+                const result = await callAdminEndpoint('reset_game', {
+                    game: game
+                });
+
+                log(outputId, 'SUCCESS!', 'success');
+                log(outputId, `Message: ${result.message}`, 'success');
+                log(outputId, `Game: ${result.data.game}`, 'info');
+                log(outputId, `Scores deleted: ${result.data.deleted_count}`, 'error');
+
+                showToast(`Deleted ${result.data.deleted_count} scores from ${game}`, 'warning');
+
+            } catch (error) {
+                log(outputId, `ERROR: ${error.message}`, 'error');
+                showToast(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        /**
+         * Test: Reset ALL
+         */
+        async function testResetAll() {
+            const outputId = 'admin-output';
+            document.getElementById(outputId).innerHTML = '';
+
+            // Confirmación DOBLE de seguridad
+            const confirmed1 = confirm(
+                `☠️ DANGER! RESET ALL SCORES!\n\n` +
+                `This will DELETE ALL SCORES from ALL GAMES!\n\n` +
+                `This action CANNOT be undone!\n\n` +
+                `💡 IMPORTANT: Create a backup first!\n\n` +
+                `Do you want to continue?`
+            );
+
+            if (!confirmed1) {
+                log(outputId, 'Reset ALL cancelled by user', 'info');
+                return;
+            }
+
+            // Segunda confirmación
+            const confirmed2 = confirm(
+                `Are you ABSOLUTELY SURE?\n\n` +
+                `Type the word "DELETE" in the next prompt to confirm.`
+            );
+
+            if (!confirmed2) {
+                log(outputId, 'Reset ALL cancelled by user', 'info');
+                return;
+            }
+
+            const confirmText = prompt('Type "DELETE" to confirm:');
+            if (confirmText !== 'DELETE') {
+                log(outputId, 'Reset ALL cancelled - incorrect confirmation', 'info');
+                showToast('Reset cancelled', 'info');
+                return;
+            }
+
+            log(outputId, `Testing admin action: reset_all...`, 'info');
+            log(outputId, `⚠️ DELETING ALL SCORES FROM ALL GAMES...`, 'error');
+
+            try {
+                const result = await callAdminEndpoint('reset_all');
+
+                log(outputId, 'SUCCESS!', 'success');
+                log(outputId, `Message: ${result.message}`, 'success');
+                log(outputId, `Total scores deleted: ${result.data.deleted_count}`, 'error');
+
+                showToast(`Deleted ${result.data.deleted_count} scores from ALL games!`, 'warning');
+
+            } catch (error) {
+                log(outputId, `ERROR: ${error.message}`, 'error');
+                showToast(`Error: ${error.message}`, 'error');
             }
         }
     </script>
