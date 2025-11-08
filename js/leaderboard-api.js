@@ -23,15 +23,45 @@
 
 /**
  * URL base del backend API
- * Usa ruta relativa para que funcione automáticamente en cualquier deployment
- * (localhost, Vercel preview, producción, etc.)
  *
- * IMPORTANTE: Los usuarios NUNCA ven esta URL. JavaScript la usa
- * "detrás de escena" para comunicarse con el backend.
+ * ARQUITECTURA ACTUAL:
+ * - Frontend: Hostinger (chessarcade.com.ar)
+ * - Backend: Vercel (chessarcade.vercel.app)
+ *
+ * Lógica:
+ * - localhost:3000 (vercel dev) → http://localhost:3000/api/scores
+ * - chessarcade.com.ar (Hostinger) → https://chessarcade.vercel.app/api/scores
+ * - Cualquier dominio de Vercel → /api/scores (ruta relativa)
+ *
+ * NOTA: Ver DEPLOYMENT_PLAN.md para más detalles sobre la arquitectura
  */
-const API_BASE_URL = window.location.hostname === 'localhost'
-    ? 'http://localhost:3000/api/scores'
-    : '/api/scores';
+const API_BASE_URL = (() => {
+    const hostname = window.location.hostname;
+    const port = window.location.port;
+
+    // Desarrollo local con vercel dev
+    if (hostname === 'localhost' && port === '3000') {
+        return 'http://localhost:3000/api/scores';
+    }
+
+    // Producción en Hostinger → apuntar a Vercel
+    if (hostname === 'chessarcade.com.ar' || hostname === 'www.chessarcade.com.ar') {
+        return 'https://chessarcade.vercel.app/api/scores';
+    }
+
+    // Si estamos en Vercel (preview o producción) → ruta relativa
+    if (hostname.includes('vercel.app')) {
+        return '/api/scores';
+    }
+
+    // Localhost en cualquier otro puerto (http-server, etc.) → apuntar a Vercel
+    if (hostname === 'localhost') {
+        return 'https://chessarcade.vercel.app/api/scores';
+    }
+
+    // Default: ruta relativa
+    return '/api/scores';
+})();
 
 /**
  * Timeout para requests (15 segundos)
