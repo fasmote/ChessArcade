@@ -5,40 +5,17 @@
 ### **Frontend → Hostinger**
 - **Dominio**: `chessarcade.com.ar`
 - **Servidor**: Hostinger (archivos estáticos)
-- **IP**: 31.170.160.184
 - **Contenido**: HTML, CSS, JavaScript, assets
-- **Razón**: Hosting ya pagado, quiero usar el dominio
 
 ### **Backend → Vercel**
 - **Framework**: Node.js Serverless Functions
 - **Database**: Supabase (PostgreSQL)
 - **API Endpoints**: `/api/scores/*`
 - **URL Producción**: Ver sección de URLs más abajo
-- **Razón**: Gratis, fácil deployment, integra bien con Supabase
 
 ### **Comunicación Frontend ↔ Backend**
 - Frontend (Hostinger) hace requests CORS a Backend (Vercel)
 - URLs hardcodeadas en `js/leaderboard-api.js`
-
----
-
-## 🔮 **Plan Futuro** (Cuando haya presupuesto)
-
-### **Servidor Privado VPS**
-- **Objetivo**: Migrar TODO (frontend + backend + DB) a un servidor privado
-- **Razón**: Mayor control, mejor rendimiento, un solo lugar
-- **Estado**: **Pendiente** - Esperando presupuesto
-- **Nota**: Aunque es barato, actualmente no hay presupuesto disponible
-
----
-
-## 💰 **Monetización**
-
-### **Google AdSense**
-- **Estado**: **Pendiente Aprobación** (Enero 2025)
-- **Objetivo**: Agregar publicidad al sitio
-- **Acción Requerida**: Esperar aprobación de Google
-- **Nota para Claude**: NO eliminar espacios reservados para ads en el HTML/CSS
 
 ---
 
@@ -178,15 +155,14 @@ vercel logs chessarcade
 
 ### **Contexto Importante:**
 1. **Arquitectura es INTENCIONAL** (Frontend + Backend separados)
-2. **NO sugerir mover todo a Vercel** (ya se discutió, se prefiere Hostinger por ahora)
-3. **Plan futuro es VPS privado** (cuando haya presupuesto)
-4. **Google AdSense pendiente** (no eliminar espacios para ads)
-5. **URL de Vercel es `chessarcade.vercel.app`** (usar esta en producción)
+2. **NO sugerir mover todo a Vercel** (ya se discutió, se prefiere Hostinger)
+3. **URL de Vercel es `chessarcade.vercel.app`** (usar esta en producción)
+4. **Información adicional**: Ver `.private/DEPLOYMENT_NOTES.md` (no está en Git)
 
 ### **Si el usuario pregunta sobre deployment:**
-- Leer este archivo primero
-- Respetar la decisión de arquitectura actual
-- Solo sugerir VPS si el usuario menciona presupuesto
+- Leer este archivo primero para info técnica
+- Leer `.private/DEPLOYMENT_NOTES.md` para contexto adicional (si existe)
+- Respetar decisiones de arquitectura ya tomadas
 
 ---
 
