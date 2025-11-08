@@ -23,12 +23,15 @@
 
 /**
  * URL base del backend API
- * Esta es la URL de Vercel donde está deployed nuestro backend
+ * Usa ruta relativa para que funcione automáticamente en cualquier deployment
+ * (localhost, Vercel preview, producción, etc.)
  *
  * IMPORTANTE: Los usuarios NUNCA ven esta URL. JavaScript la usa
  * "detrás de escena" para comunicarse con el backend.
  */
-const API_BASE_URL = 'https://chessarcade-1ieuxlf7d-claudios-projects.vercel.app/api/scores';
+const API_BASE_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:3000/api/scores'
+    : '/api/scores';
 
 /**
  * Timeout para requests (15 segundos)
