@@ -26,19 +26,19 @@ export const GAME_LIMITS = {
 
   'memory-matrix': {
     name: 'Memory Matrix',
-    max_score: 50,          // Nivel máximo alcanzable
+    max_score: 50000,       // Formula: (exitosos × 1000) - penalizaciones
     max_time_ms: 3600000,   // 1 hora máximo
-    score_type: 'level_reached',
+    score_type: 'points',   // Puntos acumulativos, no nivel alcanzado
     has_levels: true,
     has_time: false
   },
 
   'master-sequence': {
     name: 'Master Sequence',
-    max_score: 100,         // Secuencia máxima
+    max_score: 100000,      // Score acumulativo con base + bonos + multiplicadores
     max_time_ms: 3600000,   // 1 hora máximo
-    score_type: 'sequence_length',
-    has_levels: false,
+    score_type: 'points',   // Puntos acumulativos, no sequence_length
+    has_levels: true,       // Tiene niveles progresivos
     has_time: false
   },
 
