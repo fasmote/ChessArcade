@@ -172,11 +172,15 @@
         // Get game stats from global variables (defined in game.js)
         const totalSuccessful = window.successfulAttempts || 0;
         const totalFailed = window.failedAttempts || 0;
-        const totalHintsUsed = (window.HINTS_PER_LEVEL * 8) - (window.hintsLeft || 0);
+        const hintsPerLevel = window.HINTS_PER_LEVEL || 3;
+        const hintsLeft = window.hintsLeft || 0;
+        const totalHintsUsed = (hintsPerLevel * 8) - hintsLeft;
 
         // Calculate score: more successes and fewer failures = better score
         // Formula: (successful * 1000) - (failed * 100) - (hints * 50)
-        const finalScore = Math.max(0, (totalSuccessful * 1000) - (totalFailed * 100) - (totalHintsUsed * 50));
+        // Minimum score of 1 (backend requires positive integer)
+        const calculatedScore = (totalSuccessful * 1000) - (totalFailed * 100) - (totalHintsUsed * 50);
+        const finalScore = Math.max(1, calculatedScore);
 
         console.log('📊 Submitting score:', {
             playerName,
@@ -221,6 +225,256 @@
             submitBtn.disabled = false;
             submitBtn.textContent = '🏆 SUBMIT SCORE';
         }
+    }
+
+    // ========================================
+    // CREAR MODAL DE GAME OVER
+    // ========================================
+
+    function createGameOverModal() {
+        // Check if modal already exists
+        if (document.getElementById('leaderboardGameOverModal')) {
+            return;
+        }
+
+        const modalHTML = `
+            <div id="leaderboardGameOverModal" class="victory-modal" style="display: none;">
+                <div class="victory-modal-content" style="
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+                    padding: 2.5rem;
+                    border-radius: 20px;
+                    border: 3px solid var(--neon-cyan, #00ffff);
+                    box-shadow: 0 0 30px rgba(0, 255, 255, 0.4), 0 0 60px rgba(0, 255, 255, 0.2), inset 0 0 30px rgba(0, 0, 0, 0.4);
+                    z-index: 10000;
+                    text-align: center;
+                    min-width: 400px;
+                    max-width: 600px;
+                    font-family: 'Orbitron', monospace;
+                    color: white;
+                ">
+                    <button class="modal-close" onclick="closeLeaderboardGameOverModal()" style="
+                        position: absolute;
+                        top: 15px;
+                        right: 20px;
+                        background: none;
+                        border: none;
+                        color: white;
+                        font-size: 2rem;
+                        cursor: pointer;
+                        width: 40px;
+                        height: 40px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border-radius: 50%;
+                        transition: all 0.3s ease;
+                    ">&times;</button>
+
+                    <div style="font-size: 2.5rem; margin-bottom: 1.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; color: var(--neon-red, #ff6b6b); animation: victoryGlow 1s ease-in-out infinite alternate;">
+                        💀 GAME OVER 💀
+                    </div>
+
+                    <div id="gameOverStats" style="font-size: 1.2rem; color: #e0e0e0; line-height: 1.8; margin-bottom: 2rem; background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);"></div>
+
+                    <div style="margin: 20px 0;">
+                        <label for="gameOverPlayerNameInput" style="display: block; margin-bottom: 8px; color: var(--neon-cyan, #00ffff); font-weight: bold;">Enter Your Name:</label>
+                        <input type="text" id="gameOverPlayerNameInput" maxlength="20" placeholder="Your Name"
+                               style="width: 100%; padding: 10px; background: rgba(0, 255, 255, 0.1); border: 2px solid var(--neon-cyan, #00ffff); border-radius: 8px; color: white; font-family: 'Orbitron', monospace; font-size: 16px; text-align: center;">
+                    </div>
+
+                    <button id="gameOverSubmitScoreBtn" class="btn btn-primary" style="margin-bottom: 10px; padding: 1rem 2rem; font-size: 1.1rem; font-weight: 700; border: none; border-radius: 25px; cursor: pointer; font-family: 'Orbitron', monospace; text-transform: uppercase; letter-spacing: 0.1em; background: linear-gradient(to bottom, #ff8a80 0%, #ff6b6b 30%, #ff5252 70%, #d32f2f 100%); color: white;">🏆 SUBMIT SCORE</button>
+
+                    <button id="gameOverViewLeaderboardBtn" class="btn btn-secondary" style="margin-bottom: 10px; padding: 1rem 2rem; font-size: 1.1rem; font-weight: 700; border-radius: 25px; cursor: pointer; font-family: 'Orbitron', monospace; text-transform: uppercase; letter-spacing: 0.1em; background: rgba(0, 255, 255, 0.1); border: 2px solid var(--neon-cyan, #00ffff); color: var(--neon-cyan, #00ffff);">👁️ VIEW LEADERBOARD</button>
+
+                    <button onclick="closeLeaderboardGameOverModal()" class="btn btn-primary" style="margin-top: 1rem; padding: 1rem 2rem; font-size: 1.1rem; font-weight: 700; border: none; border-radius: 25px; cursor: pointer; font-family: 'Orbitron', monospace; text-transform: uppercase; letter-spacing: 0.1em; background: linear-gradient(to bottom, #ff8a80 0%, #ff6b6b 30%, #ff5252 70%, #d32f2f 100%); color: white;">🔄 RESTART GAME</button>
+                </div>
+
+                <div class="victory-modal-backdrop" style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.8);
+                    z-index: 9999;
+                " onclick="closeLeaderboardGameOverModal()"></div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        // Add event listeners
+        document.getElementById('gameOverSubmitScoreBtn').addEventListener('click', submitGameOverScore);
+        document.getElementById('gameOverViewLeaderboardBtn').addEventListener('click', () => {
+            showLeaderboardModal('memory-matrix');
+        });
+    }
+
+    // ========================================
+    // MOSTRAR MODAL DE GAME OVER
+    // ========================================
+
+    function showGameOverModal(stats) {
+        console.log('💀 Showing game over modal with stats:', stats);
+
+        createGameOverModal();
+
+        const modal = document.getElementById('leaderboardGameOverModal');
+        const statsDiv = document.getElementById('gameOverStats');
+        const playerInput = document.getElementById('gameOverPlayerNameInput');
+
+        // Load saved name
+        const savedName = localStorage.getItem(STORAGE_KEY);
+        if (savedName && playerInput) {
+            playerInput.value = savedName;
+        }
+
+        // Display stats
+        if (statsDiv && stats) {
+            statsDiv.innerHTML = `
+                <p><span style="color: #e0e0e0;">🎯 Level Reached:</span> <span style="color: var(--neon-cyan, #00ffff); font-weight: 900;">${stats.levelReached || 1}</span></p>
+                <p><span style="color: #e0e0e0;">✅ Successful Attempts:</span> <span style="color: var(--neon-cyan, #00ffff); font-weight: 900;">${stats.successfulAttempts || 0}</span></p>
+                <p><span style="color: #e0e0e0;">❌ Failed Attempts:</span> <span style="color: var(--neon-cyan, #00ffff); font-weight: 900;">${stats.failedAttempts || 0}</span></p>
+                <p><span style="color: #e0e0e0;">💡 Hints Used:</span> <span style="color: var(--neon-cyan, #00ffff); font-weight: 900;">${stats.hintsUsed || 0}</span></p>
+                <p style="color: var(--neon-yellow, #ffd700); margin-top: 1rem; font-size: 1.2rem; text-align: center;">
+                    <strong>🧠 You reached level ${stats.levelReached}!</strong>
+                </p>
+            `;
+        }
+
+        modal.style.display = 'block';
+    }
+
+    // ========================================
+    // CERRAR MODAL DE GAME OVER
+    // ========================================
+
+    window.closeLeaderboardGameOverModal = function() {
+        const modal = document.getElementById('leaderboardGameOverModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+
+        // Reset the game after closing modal
+        resetGameAfterGameOver();
+    };
+
+    // ========================================
+    // ENVIAR SCORE AL LEADERBOARD (GAME OVER)
+    // ========================================
+
+    async function submitGameOverScore() {
+        const playerInput = document.getElementById('gameOverPlayerNameInput');
+        const playerName = playerInput.value.trim() || 'MEMORY';
+
+        // Save name for future sessions
+        localStorage.setItem(STORAGE_KEY, playerName);
+
+        // Get game stats from global variables (defined in game.js)
+        const totalSuccessful = window.successfulAttempts || 0;
+        const totalFailed = window.failedAttempts || 0;
+        const levelReached = window.currentLevel || 1;
+        const hintsPerLevel = window.HINTS_PER_LEVEL || 3;
+        const hintsLeft = window.hintsLeft || 0;
+        const totalHintsUsed = (hintsPerLevel * 8) - hintsLeft;
+
+        // Calculate score: more successes and fewer failures = better score
+        // Formula: (successful * 1000) - (failed * 100) - (hints * 50)
+        // Minimum score of 1 (backend requires positive integer)
+        const calculatedScore = (totalSuccessful * 1000) - (totalFailed * 100) - (totalHintsUsed * 50);
+        const finalScore = Math.max(1, calculatedScore);
+
+        console.log('📊 Submitting game over score:', {
+            playerName,
+            finalScore,
+            totalSuccessful,
+            totalFailed,
+            levelReached,
+            totalHintsUsed
+        });
+
+        try {
+            const submitBtn = document.getElementById('gameOverSubmitScoreBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'SUBMITTING...';
+
+            // Submit to leaderboard API
+            const result = await submitScore(
+                'memory-matrix',
+                playerName,
+                finalScore,
+                {
+                    successful_attempts: totalSuccessful,
+                    failed_attempts: totalFailed,
+                    hints_used: totalHintsUsed,
+                    level_reached: levelReached
+                }
+            );
+
+            showToast(`Score submitted! Rank #${result.rank} of ${result.totalPlayers}`, 'success');
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = '✅ SUBMITTED!';
+
+            setTimeout(() => {
+                submitBtn.textContent = '🏆 SUBMIT SCORE';
+            }, 2000);
+
+        } catch (error) {
+            console.error('Error submitting score:', error);
+            showToast(`Error: ${error.message}`, 'error');
+
+            const submitBtn = document.getElementById('gameOverSubmitScoreBtn');
+            submitBtn.disabled = false;
+            submitBtn.textContent = '🏆 SUBMIT SCORE';
+        }
+    }
+
+    // Make showGameOverModal available globally so game.js can call it
+    window.showGameOverModal = showGameOverModal;
+
+    // Function to reset game state after closing game over modal
+    function resetGameAfterGameOver() {
+        console.log('🔄 Resetting game after game over modal closed');
+
+        // Clear board
+        if (window.clearBoard) window.clearBoard();
+        if (window.clearBankPieces) window.clearBankPieces();
+
+        // Reset global variables
+        window.placedPieces = [];
+        window.moveHistory = [];
+        window.currentLevel = 1;
+        window.currentAttempt = 1;
+        window.successfulAttempts = 0;
+        window.failedAttempts = 0;
+        window.hintsLeft = window.HINTS_PER_LEVEL || 3;
+
+        // Reset timer
+        if (window.resetGlobalTimer) window.resetGlobalTimer();
+
+        // Update UI
+        if (window.updateStatus) window.updateStatus('Game Over. Reiniciando desde Nivel 1...');
+
+        // Re-enable start button
+        const btnStart = document.getElementById('btnStart');
+        if (btnStart) {
+            btnStart.classList.remove('disabled');
+            btnStart.style.opacity = '1';
+            btnStart.style.cursor = 'pointer';
+            btnStart.textContent = '▶ Comenzar';
+        }
+
+        // Update buttons
+        if (window.updateHintButton) window.updateHintButton();
+        if (window.updateUndoClearButtons) window.updateUndoClearButtons();
+
+        window.gameState = 'idle';
+        window.isPaused = false;
     }
 
     // ========================================

@@ -30,12 +30,15 @@ let startTime = null; // Tiempo de inicio del intento
 let hintsLeft = 6; // Hints disponibles por nivel
 const HINTS_PER_LEVEL = 6; // Hints que se otorgan al comenzar un nivel
 
+// Export to window for leaderboard integration
+window.HINTS_PER_LEVEL = HINTS_PER_LEVEL;
+
 // SISTEMA DE DESHACER/LIMPIAR
 // Stack de movimientos para poder deshacer
 let moveHistory = []; // Array de {square, piece, bankSlot}
 
 // LÍMITE DE ERRORES
-const MAX_FAILED_ATTEMPTS = 10; // Game Over a los 10 errores
+const MAX_FAILED_ATTEMPTS = 5; // Game Over a los 5 errores
 
 // TIMER
 let timerInterval = null; // Intervalo del contador
@@ -657,7 +660,7 @@ function onAttemptFailed(incorrectPieces) {
     const levelConfig = window.MemoryMatrixLevels.getLevelConfig(currentLevel);
 
     // ==========================================
-    // VERIFICAR GAME OVER (10 errores)
+    // VERIFICAR GAME OVER (5 errores)
     // ==========================================
     if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
         showErrorOverlay(
@@ -766,47 +769,65 @@ function onAttemptFailed(incorrectPieces) {
 }
 
 /**
- * Game Over - 10 errores alcanzados
+ * Game Over - 5 errores alcanzados
  * Reinicia el juego desde el nivel 1
  */
 function onGameOver() {
-    console.log('💀 GAME OVER - 10 errores alcanzados');
+    console.log('💀 GAME OVER - 5 errores alcanzados');
 
-    // Limpiar todo
-    clearBoard();
-    clearBankPieces();
-    placedPieces = [];
-    moveHistory = [];
+    // Show game over modal with current stats
+    if (window.showGameOverModal) {
+        const totalHintsUsed = (HINTS_PER_LEVEL * 8) - hintsLeft;
 
-    // Resetear contadores
-    currentLevel = 1;
-    currentAttempt = 1;
-    successfulAttempts = 0;
-    failedAttempts = 0; // ← RESETEAR CONTADOR DE ERRORES
-    hintsLeft = HINTS_PER_LEVEL; // ← RESETEAR HINTS en Game Over
+        window.showGameOverModal({
+            levelReached: currentLevel,
+            successfulAttempts: successfulAttempts,
+            failedAttempts: failedAttempts,
+            hintsUsed: totalHintsUsed
+        });
 
-    // Resetear timer global
-    resetGlobalTimer();
+        // The modal will handle the game reset when closed
+        // via resetGameAfterGameOver() in leaderboard-integration.js
+    } else {
+        // Fallback: reset immediately if modal not available
+        console.warn('⚠️ Game over modal not available, resetting immediately');
 
-    updateStatus('Game Over. Reiniciando desde Nivel 1...');
+        // Limpiar todo
+        clearBoard();
+        clearBankPieces();
+        placedPieces = [];
+        moveHistory = [];
 
-    // Re-habilitar botón
-    const btnStart = document.getElementById('btnStart');
-    if (btnStart) {
-        btnStart.classList.remove('disabled');
-        btnStart.style.opacity = '1';
-        btnStart.style.cursor = 'pointer';
-        btnStart.textContent = '▶ Comenzar';
+        // Resetear contadores
+        currentLevel = 1;
+        currentAttempt = 1;
+        successfulAttempts = 0;
+        failedAttempts = 0;
+        hintsLeft = HINTS_PER_LEVEL;
+
+        // Resetear timer global
+        resetGlobalTimer();
+
+        updateStatus('Game Over. Reiniciando desde Nivel 1...');
+
+        // Re-habilitar botón
+        const btnStart = document.getElementById('btnStart');
+        if (btnStart) {
+            btnStart.classList.remove('disabled');
+            btnStart.style.opacity = '1';
+            btnStart.style.cursor = 'pointer';
+            btnStart.textContent = '▶ Comenzar';
+        }
+
+        // Actualizar botón de hints
+        updateHintButton();
+        updateUndoClearButtons();
+
+        gameState = 'idle';
+        isPaused = false;
+
+        console.log('🔄 Juego reiniciado - Nivel 1');
     }
-
-    // Actualizar botón de hints
-    updateHintButton();
-    updateUndoClearButtons();
-
-    gameState = 'idle';
-    isPaused = false;
-
-    console.log('🔄 Juego reiniciado - Nivel 1');
 }
 
 /**
