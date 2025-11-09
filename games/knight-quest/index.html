@@ -2164,15 +2164,23 @@
             // Guardar nombre para futuras sesiones
             localStorage.setItem('knightQuestPlayerName', playerName);
 
-            // Usar la función calculateScore() que ya considera:
-            // - Puntos por casillas visitadas
-            // - Bonus por tiempo
-            // - Penalty por hints y undos
-            // - Multiplicador por dificultad
-            const finalScore = calculateScore();
+            // Calcular score basado en:
+            // - Casillas visitadas (más casillas = mejor)
+            // - Tiempo (menos tiempo = mejor)
+            // - Movimientos (menos movimientos = mejor)
+            const visited = gameState.visitedSquares.size;
+            const totalSquares = gameState.boardRows * gameState.boardCols;
             const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
-            const boardSize = `${gameState.boardRows}x${gameState.boardCols}`;
             const moves = gameState.moveHistory.length;
+            const boardSize = `${gameState.boardRows}x${gameState.boardCols}`;
+
+            // Fórmula: visitadas * 1000 + bonus tiempo - penalty movimientos
+            // Completar el board da +5000 bonus
+            const baseScore = visited * 1000;
+            const timeBonus = Math.max(0, (300 - elapsed) * 10); // Hasta 3000 puntos
+            const movePenalty = moves * 50;
+            const completionBonus = (visited === totalSquares) ? 5000 : 0;
+            const finalScore = Math.max(0, baseScore + timeBonus - movePenalty + completionBonus);
 
             try {
                 const submitBtn = document.getElementById('submitScoreBtn');
