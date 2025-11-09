@@ -506,12 +506,14 @@ document.getElementById('submitScoreBtn')?.addEventListener('click', async () =>
         submitBtn.textContent = 'SUBMITTING...';
 
         // Enviar score al backend
+        // No enviamos level porque Square Rush usa niveles numéricos (1-10)
+        // y el backend espera strings específicos (NOVICE, INTERMEDIATE, etc.)
         const result = await submitScore(
             'square-rush',
             playerName,
             finalScore,
             {
-                level: gameState.level
+                // level: gameState.level  // Removed - incompatible format
             }
         );
 
