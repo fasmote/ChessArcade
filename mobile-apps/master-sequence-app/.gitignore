@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Android
+android/app/build/
+android/app/.cxx/
+android/build/
+android/.gradle/
+android/local.properties
+android/gradle.properties
+android/key.properties
+*.keystore
+*.jks
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Capacitor
+.capacitor/
