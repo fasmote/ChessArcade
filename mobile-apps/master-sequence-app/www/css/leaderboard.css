@@ -1,0 +1,721 @@
+/**
+ * ChessArcade - Leaderboard Styles
+ *
+ * Estilos para el sistema de leaderboard con tema NeonChess.
+ * Usa las variables CSS definidas en arcade-shared.css para mantener
+ * consistencia visual con el resto del sitio.
+ *
+ * Componentes incluidos:
+ * - Toast notifications
+ * - Modals
+ * - Leaderboard tables
+ * - Tabs
+ * - Pagination
+ * - Score results
+ *
+ * @version 2.0.0
+ */
+
+/* ===========================================================================
+   TOAST NOTIFICATIONS
+   Mensajes temporales que aparecen y desaparecen
+   =========================================================================== */
+
+.toast {
+  /* Posicionamiento fijo en la parte superior */
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000; /* Por encima de todo */
+
+  /* Tamaño y padding */
+  min-width: 250px;
+  max-width: 400px;
+  padding: 16px 20px;
+
+  /* Estilo NeonChess */
+  background: var(--bg-secondary, #1a0033);
+  border: 2px solid var(--text-accent, #00ffff);
+  border-radius: var(--border-radius, 8px);
+  box-shadow:
+    0 0 20px var(--border-glow, rgba(0, 255, 255, 0.3)),
+    0 4px 6px var(--shadow-color, rgba(0, 0, 0, 0.5));
+
+  /* Tipografía */
+  font-family: var(--font-family, 'Orbitron', monospace);
+  font-size: 14px;
+  color: var(--text-primary, #ffffff);
+  text-align: center;
+
+  /* Animación inicial: oculto y desplazado */
+  opacity: 0;
+  transform: translateX(100px);
+  transition: var(--transition, all 0.3s ease);
+
+  /* Puntero */
+  cursor: pointer;
+}
+
+/* Toast visible (se agrega clase 'show' via JavaScript) */
+.toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Variantes de toast según tipo */
+.toast-success {
+  border-color: var(--success-color, #00ff40);
+  box-shadow:
+    0 0 20px rgba(0, 255, 64, 0.4),
+    0 4px 6px var(--shadow-color, rgba(0, 0, 0, 0.5));
+}
+
+.toast-error {
+  border-color: var(--error-color, #ff4040);
+  box-shadow:
+    0 0 20px rgba(255, 64, 64, 0.4),
+    0 4px 6px var(--shadow-color, rgba(0, 0, 0, 0.5));
+}
+
+.toast-warning {
+  border-color: var(--warning-color, #ffff00);
+  box-shadow:
+    0 0 20px rgba(255, 255, 0, 0.4),
+    0 4px 6px var(--shadow-color, rgba(0, 0, 0, 0.5));
+}
+
+.toast-info {
+  border-color: var(--text-accent, #00ffff);
+}
+
+/* Responsive: en mobile, centrar en la parte superior */
+@media (max-width: 768px) {
+  .toast {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%) translateY(-100px);
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ===========================================================================
+   MODALS
+   Ventanas emergentes superpuestas
+   =========================================================================== */
+
+/* Overlay: fondo oscuro que cubre toda la pantalla */
+.modal-overlay {
+  /* Posicionamiento fijo que cubre todo el viewport */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+
+  /* Fondo oscuro semi-transparente */
+  background: rgba(0, 0, 0, 0.85);
+
+  /* Flexbox para centrar el modal */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Animación de entrada */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  /* Padding para que no toque los bordes en mobile */
+  padding: 20px;
+
+  /* Scroll si el contenido es muy alto */
+  overflow-y: auto;
+}
+
+/* Modal visible */
+.modal-overlay.show {
+  opacity: 1;
+}
+
+/* Container del modal */
+.modal-container {
+  /* Tamaño */
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+
+  /* Estilo NeonChess */
+  background: var(--bg-primary, #0a0a0a);
+  border: 3px solid var(--text-accent, #00ffff);
+  border-radius: var(--border-radius, 8px);
+  box-shadow:
+    0 0 30px var(--border-glow, rgba(0, 255, 255, 0.3)),
+    0 10px 25px var(--shadow-color, rgba(0, 0, 0, 0.5));
+
+  /* Scroll interno si el contenido es muy alto */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  /* Animación de entrada (escalado) */
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.show .modal-container {
+  transform: scale(1);
+}
+
+/* Header del modal */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 2px solid var(--border-color, #333333);
+  background: var(--bg-secondary, #1a0033);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-family: var(--font-family, 'Orbitron', monospace);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-accent, #00ffff);
+  text-shadow: 0 0 10px var(--border-glow, rgba(0, 255, 255, 0.5));
+}
+
+/* Botón close (X) */
+.modal-close {
+  background: transparent;
+  border: 2px solid var(--text-accent, #00ffff);
+  color: var(--text-accent, #00ffff);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  transition: var(--transition, all 0.3s ease);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-close:hover {
+  background: var(--text-accent, #00ffff);
+  color: var(--bg-primary, #0a0a0a);
+  box-shadow: 0 0 15px var(--border-glow, rgba(0, 255, 255, 0.5));
+  transform: rotate(90deg);
+}
+
+/* Body del modal */
+.modal-body {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+
+  /* Custom scrollbar estilo NeonChess */
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-accent, #00ffff) var(--bg-secondary, #1a0033);
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.modal-body::-webkit-scrollbar {
+  width: 10px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: var(--bg-secondary, #1a0033);
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: var(--text-accent, #00ffff);
+  border-radius: 5px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color, #ff0080);
+}
+
+/* ===========================================================================
+   LEADERBOARD TABS
+   Tabs para cambiar entre juegos
+   =========================================================================== */
+
+.leaderboard-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.leaderboard-tab {
+  /* Reset button styles */
+  background: transparent;
+
+  /* Estilo NeonChess */
+  border: 2px solid var(--text-accent, #00ffff);
+  color: var(--text-accent, #00ffff);
+  padding: 12px 20px;
+  border-radius: var(--border-radius, 8px);
+  font-family: var(--font-family, 'Orbitron', monospace);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition, all 0.3s ease);
+
+  /* Flexbox para alinear emoji + text */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.leaderboard-tab:hover {
+  background: rgba(0, 255, 255, 0.1);
+  box-shadow: 0 0 10px var(--border-glow, rgba(0, 255, 255, 0.3));
+  transform: translateY(-2px);
+}
+
+.leaderboard-tab.active {
+  background: var(--text-accent, #00ffff);
+  color: var(--bg-primary, #0a0a0a);
+  box-shadow: 0 0 20px var(--border-glow, rgba(0, 255, 255, 0.5));
+  font-weight: 700;
+}
+
+/* Responsive: tabs en columna en mobile */
+@media (max-width: 768px) {
+  .leaderboard-tabs {
+    flex-direction: column;
+  }
+
+  .leaderboard-tab {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ===========================================================================
+   LEADERBOARD TABLE
+   Tabla de rankings
+   =========================================================================== */
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-family, 'Orbitron', monospace);
+  font-size: 14px;
+}
+
+/* Table header */
+.leaderboard-table thead tr {
+  background: var(--bg-secondary, #1a0033);
+  border-bottom: 3px solid var(--text-accent, #00ffff);
+}
+
+.leaderboard-table th {
+  padding: 15px 10px;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--text-accent, #00ffff);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+/* Alineación de columnas */
+.leaderboard-table th.rank,
+.leaderboard-table td.rank {
+  width: 80px;
+  text-align: center;
+}
+
+.leaderboard-table th.score,
+.leaderboard-table td.score {
+  text-align: right;
+}
+
+.leaderboard-table th.level,
+.leaderboard-table td.level {
+  text-align: center;
+  width: 100px;
+}
+
+.leaderboard-table th.time,
+.leaderboard-table td.time {
+  text-align: center;
+  width: 80px;
+}
+
+.leaderboard-table th.country,
+.leaderboard-table td.country {
+  text-align: center;
+  width: 60px;
+}
+
+/* Table rows */
+.score-row {
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+  transition: var(--transition, all 0.3s ease);
+}
+
+.score-row:hover {
+  background: rgba(0, 255, 255, 0.05);
+}
+
+.score-row td {
+  padding: 12px 10px;
+  color: var(--text-primary, #ffffff);
+}
+
+/* Top 3 highlighting */
+.score-row.top-three {
+  background: rgba(255, 215, 0, 0.05);
+}
+
+.score-row.top-three:hover {
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.score-row.top-three .rank {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.score-row.rank-1 .rank {
+  color: #FFD700; /* Gold */
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.score-row.rank-2 .rank {
+  color: #C0C0C0; /* Silver */
+  text-shadow: 0 0 10px rgba(192, 192, 192, 0.5);
+}
+
+.score-row.rank-3 .rank {
+  color: #CD7F32; /* Bronze */
+  text-shadow: 0 0 10px rgba(205, 127, 50, 0.5);
+}
+
+/* Player name con iniciales destacadas (estilo arcade retro) */
+.player-initials {
+  font-weight: 900;
+  color: var(--primary-color, #ff0080);
+  text-shadow: 0 0 8px rgba(255, 0, 128, 0.5);
+  margin-right: 2px;
+}
+
+/* Score con efecto glow */
+.score-row .score {
+  font-weight: 700;
+  color: var(--success-color, #00ff40);
+  text-shadow: 0 0 5px rgba(0, 255, 64, 0.3);
+}
+
+/* Country flags */
+.country-flag {
+  display: inline-block;
+  vertical-align: middle;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+/* No scores message */
+.no-scores td {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-secondary, #cccccc);
+  font-size: 16px;
+}
+
+/* Loading state */
+.loading {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-accent, #00ffff);
+  font-size: 18px;
+  font-family: var(--font-family, 'Orbitron', monospace);
+}
+
+/* Error state */
+.error {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--error-color, #ff4040);
+}
+
+.error-message {
+  margin: 10px 0;
+  font-size: 14px;
+  color: var(--text-secondary, #cccccc);
+}
+
+.retry-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: transparent;
+  border: 2px solid var(--text-accent, #00ffff);
+  color: var(--text-accent, #00ffff);
+  border-radius: var(--border-radius, 8px);
+  font-family: var(--font-family, 'Orbitron', monospace);
+  cursor: pointer;
+  transition: var(--transition, all 0.3s ease);
+}
+
+.retry-btn:hover {
+  background: var(--text-accent, #00ffff);
+  color: var(--bg-primary, #0a0a0a);
+  box-shadow: 0 0 15px var(--border-glow, rgba(0, 255, 255, 0.5));
+}
+
+/* Responsive: tabla más compacta en mobile */
+@media (max-width: 768px) {
+  .leaderboard-table {
+    font-size: 12px;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 8px 5px;
+  }
+
+  /* Ocultar columna de level en mobile (opcional) */
+  .leaderboard-table th.level,
+  .leaderboard-table td.level {
+    display: none;
+  }
+}
+
+/* ===========================================================================
+   PAGINATION
+   Controles de paginación
+   =========================================================================== */
+
+.leaderboard-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid var(--border-color, #333333);
+}
+
+.pagination-btn {
+  background: transparent;
+  border: 2px solid var(--text-accent, #00ffff);
+  color: var(--text-accent, #00ffff);
+  padding: 10px 20px;
+  border-radius: var(--border-radius, 8px);
+  font-family: var(--font-family, 'Orbitron', monospace);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition, all 0.3s ease);
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: var(--text-accent, #00ffff);
+  color: var(--bg-primary, #0a0a0a);
+  box-shadow: 0 0 15px var(--border-glow, rgba(0, 255, 255, 0.5));
+  transform: translateY(-2px);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-family: var(--font-family, 'Orbitron', monospace);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+}
+
+/* ===========================================================================
+   SCORE RESULT DISPLAY
+   Mostrar resultado después de submit
+   =========================================================================== */
+
+.score-result {
+  text-align: center;
+  padding: 20px;
+}
+
+.result-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+  animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.result-title {
+  font-family: var(--font-family, 'Orbitron', monospace);
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--text-accent, #00ffff);
+  text-shadow: 0 0 20px var(--border-glow, rgba(0, 255, 255, 0.5));
+  margin: 0 0 30px 0;
+  animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 10px var(--border-glow, rgba(0, 255, 255, 0.3)); }
+  to { text-shadow: 0 0 30px var(--border-glow, rgba(0, 255, 255, 0.8)); }
+}
+
+.result-stats {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid var(--border-color, #333333);
+  border-radius: var(--border-radius, 8px);
+  min-width: 120px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-secondary, #cccccc);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-accent, #00ffff);
+  font-family: var(--font-family, 'Orbitron', monospace);
+}
+
+.view-leaderboard-btn {
+  padding: 15px 30px;
+  background: var(--text-accent, #00ffff);
+  border: none;
+  border-radius: var(--border-radius, 8px);
+  color: var(--bg-primary, #0a0a0a);
+  font-family: var(--font-family, 'Orbitron', monospace);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition, all 0.3s ease);
+  box-shadow: 0 0 20px var(--border-glow, rgba(0, 255, 255, 0.5));
+}
+
+.view-leaderboard-btn:hover {
+  background: var(--primary-color, #ff0080);
+  box-shadow: 0 0 30px rgba(255, 0, 128, 0.7);
+  transform: scale(1.05);
+}
+
+/* ===========================================================================
+   UTILITIES
+   Clases utilitarias
+   =========================================================================== */
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+/* ===========================================================================
+   RESPONSIVE ADJUSTMENTS
+   =========================================================================== */
+
+@media (max-width: 768px) {
+  .modal-container {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-header {
+    padding: 15px 20px;
+  }
+
+  .modal-header h2 {
+    font-size: 20px;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .result-icon {
+    font-size: 60px;
+  }
+
+  .result-title {
+    font-size: 24px;
+  }
+
+  .result-stats {
+    gap: 15px;
+  }
+
+  .stat {
+    min-width: 100px;
+  }
+}
+
+/* ===========================================================================
+   ANIMATIONS
+   Animaciones adicionales
+   =========================================================================== */
+
+/* Fade in */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Slide up */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Aplicar animación a filas del leaderboard (opcional) */
+.score-row {
+  animation: slideUp 0.3s ease;
+}
+
+/* Delay incremental para cada fila (efecto cascada) */
+.score-row:nth-child(1) { animation-delay: 0s; }
+.score-row:nth-child(2) { animation-delay: 0.05s; }
+.score-row:nth-child(3) { animation-delay: 0.1s; }
+.score-row:nth-child(4) { animation-delay: 0.15s; }
+.score-row:nth-child(5) { animation-delay: 0.2s; }
+/* ... (continúa hasta N filas, o usar JS para agregar delays dinámicamente) */

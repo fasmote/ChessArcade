@@ -1,0 +1,608 @@
+/**
+ * ChessArcade - Leaderboard UI Components
+ *
+ * Este módulo proporciona componentes UI reutilizables para mostrar
+ * leaderboards, modals, toast notifications, etc.
+ *
+ * Usa el tema NeonChess (variables CSS de arcade-shared.css) para
+ * mantener consistencia visual con el resto del sitio.
+ *
+ * ¿Por qué separar UI de API?
+ * - Separación de responsabilidades (Single Responsibility Principle)
+ * - leaderboard-api.js = comunicación con backend
+ * - leaderboard-ui.js = renderizado y UX
+ * - Más fácil de mantener y testear
+ *
+ * @author ChessArcade Team
+ * @version 2.0.0
+ */
+
+// ===========================================================================
+// CONFIGURACIÓN DE JUEGOS
+// ===========================================================================
+
+/**
+ * Mapeo de nombres de juegos a sus display names
+ * Usado para mostrar nombres amigables en la UI
+ */
+const GAME_NAMES = {
+  'square-rush': 'Square Rush',
+  'knight-quest': 'Knight Quest',
+  'memory-matrix': 'Memory Matrix',
+  'master-sequence': 'Master Sequence',
+  'chessinfive': 'ChessFive'
+};
+
+/**
+ * Emojis por juego para los tabs
+ */
+const GAME_EMOJIS = {
+  'square-rush': '⚡',
+  'knight-quest': '♞',
+  'memory-matrix': '🧠',
+  'master-sequence': '🎯',
+  'chessinfive': '♟️'
+};
+
+// ===========================================================================
+// TOAST NOTIFICATIONS
+// ===========================================================================
+
+/**
+ * Muestra un toast notification temporal
+ *
+ * ¿Qué es un toast?
+ * - Es un mensaje pequeño que aparece temporalmente (como las notificaciones de Android)
+ * - Aparece, se muestra unos segundos, y desaparece automáticamente
+ * - No bloquea la interacción (a diferencia de alert())
+ *
+ * @param {string} message - Mensaje a mostrar
+ * @param {string} type - Tipo: 'success', 'error', 'info', 'warning'
+ * @param {number} duration - Duración en ms (default: 3000)
+ *
+ * @example
+ * showToast('¡Score guardado!', 'success');
+ * showToast('Error al conectar', 'error', 5000);
+ */
+function showToast(message, type = 'info', duration = 3000) {
+  // Crear elemento del toast
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+
+  // Agregar al body
+  document.body.appendChild(toast);
+
+  // Forzar reflow para que la animación funcione
+  // (truco de CSS: cambiar una propiedad para activar transición)
+  toast.offsetHeight;
+
+  // Agregar clase 'show' para animar entrada
+  toast.classList.add('show');
+
+  // Después de 'duration' ms, animar salida y remover
+  setTimeout(() => {
+    toast.classList.remove('show');
+
+    // Esperar a que termine la animación antes de remover del DOM
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300); // 300ms = duración de la transición CSS
+  }, duration);
+}
+
+// ===========================================================================
+// MODAL BASE
+// ===========================================================================
+
+/**
+ * Crea y muestra un modal genérico
+ *
+ * Un modal es una ventana superpuesta que aparece encima del contenido principal.
+ * Bloquea la interacción con el resto de la página hasta que se cierre.
+ *
+ * @param {string} title - Título del modal
+ * @param {string|HTMLElement} content - Contenido (HTML string o elemento DOM)
+ * @param {object} options - Opciones del modal
+ * @param {boolean} options.closeable - Si se puede cerrar (default: true)
+ * @param {function} options.onClose - Callback cuando se cierra
+ * @returns {HTMLElement} - El elemento del modal (para poder cerrarlo programáticamente)
+ *
+ * @example
+ * const modal = showModal('Leaderboard', '<p>Loading...</p>');
+ * // Más tarde: closeModal(modal);
+ */
+function showModal(title, content, options = {}) {
+  // Opciones default
+  const config = {
+    closeable: options.closeable !== undefined ? options.closeable : true,
+    onClose: options.onClose || null
+  };
+
+  // Crear overlay (fondo oscuro semi-transparente)
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+
+  // Crear container del modal
+  const modal = document.createElement('div');
+  modal.className = 'modal-container';
+
+  // Crear header
+  const header = document.createElement('div');
+  header.className = 'modal-header';
+
+  const titleElement = document.createElement('h2');
+  titleElement.textContent = title;
+  header.appendChild(titleElement);
+
+  // Botón close si es closeable
+  if (config.closeable) {
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'modal-close';
+    closeBtn.innerHTML = '&times;'; // × symbol
+    closeBtn.onclick = () => closeModal(overlay);
+    header.appendChild(closeBtn);
+  }
+
+  // Crear body
+  const body = document.createElement('div');
+  body.className = 'modal-body';
+
+  // Si content es string, usar innerHTML, sino appendChild
+  if (typeof content === 'string') {
+    body.innerHTML = content;
+  } else if (content instanceof HTMLElement) {
+    body.appendChild(content);
+  }
+
+  // Ensamblar modal
+  modal.appendChild(header);
+  modal.appendChild(body);
+  overlay.appendChild(modal);
+
+  // Agregar al DOM
+  document.body.appendChild(overlay);
+
+  // Forzar reflow y agregar clase 'show' para animar
+  overlay.offsetHeight;
+  overlay.classList.add('show');
+
+  // Click en overlay (fuera del modal) cierra si es closeable
+  if (config.closeable) {
+    overlay.addEventListener('click', (e) => {
+      // Solo cerrar si el click fue en el overlay, no en el modal
+      if (e.target === overlay) {
+        closeModal(overlay);
+      }
+    });
+
+    // ESC key cierra el modal
+    const escapeHandler = (e) => {
+      if (e.key === 'Escape') {
+        closeModal(overlay);
+        document.removeEventListener('keydown', escapeHandler);
+      }
+    };
+    document.addEventListener('keydown', escapeHandler);
+  }
+
+  // Guardar callback onClose en el overlay (para ejecutarlo al cerrar)
+  overlay._onCloseCallback = config.onClose;
+
+  return overlay;
+}
+
+/**
+ * Cierra un modal
+ *
+ * @param {HTMLElement} modalOverlay - El elemento overlay del modal
+ */
+function closeModal(modalOverlay) {
+  if (!modalOverlay) return;
+
+  // Animar salida
+  modalOverlay.classList.remove('show');
+
+  // Esperar a que termine la animación
+  setTimeout(() => {
+    if (modalOverlay.parentNode) {
+      // Ejecutar callback onClose si existe
+      if (modalOverlay._onCloseCallback) {
+        modalOverlay._onCloseCallback();
+      }
+
+      // Remover del DOM
+      modalOverlay.parentNode.removeChild(modalOverlay);
+    }
+  }, 300);
+}
+
+// ===========================================================================
+// LEADERBOARD RENDERING
+// ===========================================================================
+
+/**
+ * Renderiza una fila de score en el leaderboard
+ *
+ * Cada score tiene:
+ * - rank: posición en el ranking
+ * - player_name: nombre del jugador (primeras 3 letras destacadas)
+ * - score: puntaje
+ * - level: nivel/dificultad (opcional)
+ * - country: {code, name} (opcional)
+ * - created_at: fecha
+ *
+ * @param {object} score - Objeto score del backend
+ * @param {boolean} highlightTop3 - Si destacar el top 3 (default: true)
+ * @returns {string} - HTML string de la fila
+ */
+function renderScoreRow(score, highlightTop3 = true) {
+  // Clases CSS según el rank
+  const rowClasses = ['score-row'];
+  if (highlightTop3 && score.rank <= 3) {
+    rowClasses.push('top-three');
+    rowClasses.push(`rank-${score.rank}`);
+  }
+
+  // Emoji para el top 3
+  let rankDisplay = `#${score.rank}`;
+  if (score.rank === 1) rankDisplay = '🥇 #1';
+  else if (score.rank === 2) rankDisplay = '🥈 #2';
+  else if (score.rank === 3) rankDisplay = '🥉 #3';
+
+  // Player name con primeras 3 letras destacadas (estilo arcade retro)
+  const playerName = score.player_name || 'UNKNOWN';
+  const initials = playerName.substring(0, 3);
+  const rest = playerName.substring(3);
+  const playerNameHTML = `<span class="player-initials">${initials}</span>${rest}`;
+
+  // Country flag (si existe)
+  let countryHTML = '-';
+  if (score.country && score.country.code) {
+    const countryCode = score.country.code.toLowerCase();
+    const countryName = score.country.name || score.country.code;
+
+    // Usar flagcdn.com para las banderas (CDN gratis de flags)
+    countryHTML = `
+      <img
+        src="https://flagcdn.com/16x12/${countryCode}.png"
+        srcset="https://flagcdn.com/32x24/${countryCode}.png 2x,
+                https://flagcdn.com/48x36/${countryCode}.png 3x"
+        width="16"
+        height="12"
+        alt="${countryName}"
+        title="${countryName}"
+        class="country-flag"
+      >
+    `;
+  }
+
+  // Level (si existe)
+  const levelDisplay = score.level || '-';
+
+  // Score formateado con separadores de miles
+  const scoreDisplay = score.score.toLocaleString('en-US');
+
+  // Time (si existe y es relevante)
+  let timeHTML = '';
+  if (score.time_ms) {
+    const seconds = Math.floor(score.time_ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    timeHTML = `<td class="time">${minutes}:${secs.toString().padStart(2, '0')}</td>`;
+  }
+
+  // Construir la fila
+  return `
+    <tr class="${rowClasses.join(' ')}" data-score-id="${score.id}">
+      <td class="rank">${rankDisplay}</td>
+      <td class="player-name">${playerNameHTML}</td>
+      <td class="score">${scoreDisplay}</td>
+      <td class="level">${levelDisplay}</td>
+      ${timeHTML}
+      <td class="country">${countryHTML}</td>
+    </tr>
+  `;
+}
+
+/**
+ * Renderiza una tabla completa de leaderboard
+ *
+ * @param {array} scores - Array de scores del backend
+ * @param {boolean} showTime - Si mostrar columna de tiempo (default: false)
+ * @returns {HTMLElement} - Elemento table
+ */
+function renderLeaderboardTable(scores, showTime = false) {
+  // Crear elemento table
+  const table = document.createElement('table');
+  table.className = 'leaderboard-table';
+
+  // Crear thead
+  const thead = document.createElement('thead');
+  thead.innerHTML = `
+    <tr>
+      <th class="rank">Rank</th>
+      <th class="player-name">Player</th>
+      <th class="score">Score</th>
+      <th class="level">Level</th>
+      ${showTime ? '<th class="time">Time</th>' : ''}
+      <th class="country">Country</th>
+    </tr>
+  `;
+  table.appendChild(thead);
+
+  // Crear tbody
+  const tbody = document.createElement('tbody');
+
+  if (scores.length === 0) {
+    // Si no hay scores, mostrar mensaje
+    tbody.innerHTML = `
+      <tr class="no-scores">
+        <td colspan="${showTime ? 6 : 5}" class="text-center">
+          No scores yet. Be the first! 🏆
+        </td>
+      </tr>
+    `;
+  } else {
+    // Renderizar cada score
+    tbody.innerHTML = scores.map(score => renderScoreRow(score, true)).join('');
+  }
+
+  table.appendChild(tbody);
+
+  return table;
+}
+
+// ===========================================================================
+// LEADERBOARD MODAL
+// ===========================================================================
+
+/**
+ * Muestra el modal de leaderboard con tabs para cada juego
+ *
+ * Este es el componente principal que muestra el leaderboard completo.
+ * Incluye:
+ * - Tabs para cambiar entre juegos
+ * - Tabla de scores
+ * - Paginación
+ * - Filtros (TODO en futuro)
+ *
+ * @param {string} initialGame - Juego inicial a mostrar (default: 'square-rush')
+ */
+async function showLeaderboardModal(initialGame = 'square-rush') {
+  // Crear contenedor del leaderboard
+  const container = document.createElement('div');
+  container.className = 'leaderboard-modal-content';
+
+  // Estado del modal (para mantener track de qué se está mostrando)
+  const state = {
+    currentGame: initialGame,
+    currentOffset: 0,
+    limit: 50,
+    loading: false
+  };
+
+  // Crear tabs para los juegos
+  const tabsContainer = document.createElement('div');
+  tabsContainer.className = 'leaderboard-tabs';
+
+  Object.keys(GAME_NAMES).forEach(gameKey => {
+    const tab = document.createElement('button');
+    tab.className = 'leaderboard-tab';
+    tab.dataset.game = gameKey;
+    tab.innerHTML = `${GAME_EMOJIS[gameKey]} ${GAME_NAMES[gameKey]}`;
+
+    if (gameKey === state.currentGame) {
+      tab.classList.add('active');
+    }
+
+    tab.addEventListener('click', async () => {
+      // Si ya está activo, no hacer nada
+      if (state.loading || gameKey === state.currentGame) return;
+
+      // Actualizar estado
+      state.currentGame = gameKey;
+      state.currentOffset = 0;
+
+      // Actualizar tabs visuales
+      tabsContainer.querySelectorAll('.leaderboard-tab').forEach(t => {
+        t.classList.remove('active');
+      });
+      tab.classList.add('active');
+
+      // Cargar nuevo leaderboard
+      await loadLeaderboard();
+    });
+
+    tabsContainer.appendChild(tab);
+  });
+
+  // Crear área de contenido (donde va la tabla)
+  const contentArea = document.createElement('div');
+  contentArea.className = 'leaderboard-content';
+
+  // Crear controles de paginación
+  const paginationContainer = document.createElement('div');
+  paginationContainer.className = 'leaderboard-pagination';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'pagination-btn';
+  prevBtn.innerHTML = '← Previous';
+  prevBtn.disabled = true;
+
+  const pageInfo = document.createElement('span');
+  pageInfo.className = 'page-info';
+  pageInfo.textContent = 'Page 1';
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'pagination-btn';
+  nextBtn.innerHTML = 'Next →';
+
+  // Event listeners para paginación
+  prevBtn.addEventListener('click', async () => {
+    if (state.loading || state.currentOffset === 0) return;
+    state.currentOffset -= state.limit;
+    await loadLeaderboard();
+  });
+
+  nextBtn.addEventListener('click', async () => {
+    if (state.loading) return;
+    state.currentOffset += state.limit;
+    await loadLeaderboard();
+  });
+
+  paginationContainer.appendChild(prevBtn);
+  paginationContainer.appendChild(pageInfo);
+  paginationContainer.appendChild(nextBtn);
+
+  // Ensamblar container
+  container.appendChild(tabsContainer);
+  container.appendChild(contentArea);
+  container.appendChild(paginationContainer);
+
+  // Función para cargar leaderboard
+  async function loadLeaderboard() {
+    if (state.loading) return;
+
+    state.loading = true;
+
+    // Mostrar loading
+    contentArea.innerHTML = '<div class="loading">Loading leaderboard... ⏳</div>';
+
+    try {
+      // Llamar a la API (función de leaderboard-api.js)
+      const data = await getLeaderboard(state.currentGame, {
+        limit: state.limit,
+        offset: state.currentOffset
+      });
+
+      // Renderizar tabla
+      const table = renderLeaderboardTable(data.scores, true);
+      contentArea.innerHTML = '';
+      contentArea.appendChild(table);
+
+      // Actualizar paginación
+      const currentPage = Math.floor(state.currentOffset / state.limit) + 1;
+      pageInfo.textContent = `Page ${currentPage}`;
+
+      // Habilitar/deshabilitar botones según disponibilidad
+      prevBtn.disabled = state.currentOffset === 0;
+      nextBtn.disabled = !data.pagination.hasMore;
+
+    } catch (error) {
+      console.error('Error loading leaderboard:', error);
+      contentArea.innerHTML = `
+        <div class="error">
+          <p>❌ Error loading leaderboard</p>
+          <p class="error-message">${error.message}</p>
+          <button class="retry-btn" onclick="loadLeaderboard()">Retry</button>
+        </div>
+      `;
+    } finally {
+      state.loading = false;
+    }
+  }
+
+  // Mostrar modal
+  const modal = showModal('🏆 Global Leaderboard', container, {
+    closeable: true
+  });
+
+  // Cargar leaderboard inicial
+  await loadLeaderboard();
+
+  return modal;
+}
+
+// ===========================================================================
+// SCORE RESULT DISPLAY
+// ===========================================================================
+
+/**
+ * Muestra el resultado después de submit un score
+ *
+ * Se llama desde la victory screen después de submitScore().
+ * Muestra un mensaje personalizado según el rank obtenido.
+ *
+ * @param {object} result - Resultado de submitScore()
+ * @param {number} result.rank - Rank obtenido
+ * @param {number} result.totalPlayers - Total de jugadores
+ * @param {number} result.score - Score guardado
+ * @param {string} result.message - Mensaje del backend
+ */
+function showScoreResult(result) {
+  let icon = '🎮';
+  let title = 'Score Saved!';
+  let message = result.message || `Rank #${result.rank} of ${result.totalPlayers}`;
+
+  // Personalizar según rank
+  if (result.rank === 1) {
+    icon = '👑';
+    title = 'NEW #1!';
+    showToast('🎉 You are the CHAMPION!', 'success', 5000);
+  } else if (result.rank <= 3) {
+    icon = '🏆';
+    title = 'TOP 3!';
+    showToast(`${icon} Rank #${result.rank}!`, 'success', 4000);
+  } else if (result.rank <= 10) {
+    icon = '🎯';
+    title = 'TOP 10!';
+    showToast(message, 'success');
+  } else if (result.rank <= 50) {
+    icon = '⭐';
+    title = 'TOP 50!';
+    showToast(message, 'success');
+  } else {
+    showToast(message, 'info');
+  }
+
+  // Crear contenido del modal
+  const content = `
+    <div class="score-result">
+      <div class="result-icon">${icon}</div>
+      <h3 class="result-title">${title}</h3>
+      <div class="result-stats">
+        <div class="stat">
+          <span class="stat-label">Your Score</span>
+          <span class="stat-value">${result.score.toLocaleString()}</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Your Rank</span>
+          <span class="stat-value">#${result.rank}</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Total Players</span>
+          <span class="stat-value">${result.totalPlayers}</span>
+        </div>
+      </div>
+      <button class="view-leaderboard-btn" onclick="closeModal(this.closest('.modal-overlay')); showLeaderboardModal();">
+        View Full Leaderboard 🏆
+      </button>
+    </div>
+  `;
+
+  // Mostrar modal
+  showModal('Score Submitted!', content, {
+    closeable: true
+  });
+}
+
+// ===========================================================================
+// EXPORTS
+// ===========================================================================
+
+/**
+ * Funciones disponibles globalmente:
+ * - showToast(message, type, duration)
+ * - showModal(title, content, options)
+ * - closeModal(overlay)
+ * - renderScoreRow(score, highlightTop3)
+ * - renderLeaderboardTable(scores, showTime)
+ * - showLeaderboardModal(initialGame)
+ * - showScoreResult(result)
+ */
+
+// Log cuando se carga el módulo
+console.log('[leaderboard-ui.js] UI components loaded successfully');
