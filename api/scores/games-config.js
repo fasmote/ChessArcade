@@ -17,7 +17,7 @@ export const GAME_LIMITS = {
 
   'knight-quest': {
     name: 'Knight Quest',
-    max_score: 50000,       // Basado en tablero 8x8 y puntos
+    max_score: 100000,      // Fórmula: casillas×1000 + bonuses (8x8 puede dar ~72,000)
     max_time_ms: 1800000,   // 30 minutos máximo
     score_type: 'points',
     has_levels: true,
