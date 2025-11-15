@@ -1339,7 +1339,27 @@
         <div class="motivational-message">
             🎯 "Every master was once a disaster. Try a different strategy and conquer more squares!"
         </div>
+
+        <!-- Player Name Input (igual que en victory modal) -->
+        <div style="margin-top: 1.5rem;">
+            <label for="playerNameInputGameOver" style="display: block; margin-bottom: 0.5rem; color: var(--text-color);">
+                👤 Player Name:
+            </label>
+            <input
+                type="text"
+                id="playerNameInputGameOver"
+                maxlength="15"
+                placeholder="Enter your name"
+                style="width: 100%; max-width: 300px; padding: 0.5rem; border: 2px solid var(--primary-color); background: var(--bg-dark); color: var(--text-color); border-radius: 4px; text-align: center;"
+            >
+        </div>
+
+        <!-- Botones de acción -->
         <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+            <button class="btn btn-primary" id="submitScoreBtnGameOver">🏆 SUBMIT SCORE</button>
+            <button class="btn btn-secondary" id="viewLeaderboardBtnGameOver">👁️ VIEW LEADERBOARD</button>
+        </div>
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 0.5rem; flex-wrap: wrap;">
             <button class="btn btn-primary" onclick="newGame()">🎮 TRY AGAIN</button>
             <button class="btn btn-secondary" onclick="closeGameOverModal(); changeBoardSize(3, 4);">📉 EASIER</button>
         </div>
@@ -2146,19 +2166,30 @@
          */
         window.addEventListener('DOMContentLoaded', () => {
             const savedName = localStorage.getItem('knightQuestPlayerName');
+
+            // Cargar en victory modal input
             const playerInput = document.getElementById('playerNameInput');
             if (savedName && playerInput) {
                 playerInput.value = savedName;
+            }
+
+            // Cargar en game over modal input
+            const playerInputGameOver = document.getElementById('playerNameInputGameOver');
+            if (savedName && playerInputGameOver) {
+                playerInputGameOver.value = savedName;
+            }
+
+            if (savedName) {
                 console.log('📝 Loaded saved player name:', savedName);
             }
         });
 
         /**
-         * Botón "Submit Score" - Enviar score al leaderboard
-         * Se llama cuando el jugador completa el juego y quiere guardar su score
+         * Función compartida para submit del score
+         * Usada tanto en victory como en game over modal
          */
-        document.getElementById('submitScoreBtn')?.addEventListener('click', async () => {
-            const playerNameInput = document.getElementById('playerNameInput');
+        async function submitKnightScore(playerNameInputId, submitBtnId) {
+            const playerNameInput = document.getElementById(playerNameInputId);
             const playerName = playerNameInput.value.trim() || 'KNIGHT';
 
             // Guardar nombre para futuras sesiones
@@ -2183,7 +2214,7 @@
             const finalScore = Math.max(0, baseScore + timeBonus - movePenalty + completionBonus);
 
             try {
-                const submitBtn = document.getElementById('submitScoreBtn');
+                const submitBtn = document.getElementById(submitBtnId);
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'SUBMITTING...';
 
@@ -2193,10 +2224,16 @@
                     playerName,
                     finalScore,
                     {
-                        board_size: boardSize,
-                        moves: moves,
-                        time_seconds: elapsed,
-                        hints_used: 3 - gameState.hintsLeft
+                        level: boardSize,  // Board size como level para mostrarlo en leaderboard
+                        time_ms: elapsed * 1000,  // Tiempo en milisegundos para columna TIME
+                        metadata: {
+                            board_size: boardSize,
+                            moves: moves,
+                            visited_squares: visited,
+                            total_squares: totalSquares,
+                            completion_percent: Math.round((visited / totalSquares) * 100),
+                            hints_used: 3 - gameState.hintsLeft
+                        }
                     }
                 );
 
@@ -2213,16 +2250,37 @@
                 console.error('Error submitting score:', error);
                 showToast(`Error: ${error.message}`, 'error');
 
-                const submitBtn = document.getElementById('submitScoreBtn');
+                const submitBtn = document.getElementById(submitBtnId);
                 submitBtn.disabled = false;
                 submitBtn.textContent = '🏆 SUBMIT SCORE';
             }
+        }
+
+        /**
+         * Botón "Submit Score" en Victory Modal
+         */
+        document.getElementById('submitScoreBtn')?.addEventListener('click', async () => {
+            await submitKnightScore('playerNameInput', 'submitScoreBtn');
+        });
+
+        /**
+         * Botón "Submit Score" en Game Over Modal
+         */
+        document.getElementById('submitScoreBtnGameOver')?.addEventListener('click', async () => {
+            await submitKnightScore('playerNameInputGameOver', 'submitScoreBtnGameOver');
         });
 
         /**
          * Botón "View Leaderboard" en modal de victoria - Mostrar ranking global
          */
         document.getElementById('viewLeaderboardBtn')?.addEventListener('click', () => {
+            showLeaderboardModal('knight-quest');
+        });
+
+        /**
+         * Botón "View Leaderboard" en modal de game over - Mostrar ranking global
+         */
+        document.getElementById('viewLeaderboardBtnGameOver')?.addEventListener('click', () => {
             showLeaderboardModal('knight-quest');
         });
 
