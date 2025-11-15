@@ -82,6 +82,9 @@ local.properties
 dev-settings.json
 personal-config.json
 
+# Claude Code local settings
+.claude/settings.local.json
+
 # Supabase screenshots con credenciales sensibles
 *049_supabase*
 *_supabase*.png
