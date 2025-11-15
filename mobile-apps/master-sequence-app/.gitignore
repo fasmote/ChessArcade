@@ -1,0 +1,27 @@
+# Node
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Android
+android/build/
+android/app/build/
+android/.gradle/
+android/.idea/
+android/local.properties
+android/app/src/main/assets/public/
+android/capacitor-cordova-android-plugins/build/
+
+# Capacitor
+www/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,20 @@
+{
+  "name": "master-sequence-app",
+  "version": "1.0.0",
+  "description": "Master Sequence Mobile App",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'Copying game files...' && npm run copy-files",
+    "copy-files": "node -e \"require('fs-extra').copySync('../../games/master-sequence', 'www', {overwrite: true})\"",
+    "android": "npx cap open android",
+    "sync": "npx cap sync android"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^7.4.4",
+    "@capacitor/cli": "^7.4.4",
+    "@capacitor/core": "^7.4.4"
+  }
+}
