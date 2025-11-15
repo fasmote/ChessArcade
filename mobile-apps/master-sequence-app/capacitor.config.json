@@ -1,5 +1,6 @@
 {
   "appId": "ar.com.chessarcade.mastersequence",
   "appName": "Master Sequence",
-  "webDir": "www"
+  "webDir": "www",
+  "bundledWebRuntime": false
 }
