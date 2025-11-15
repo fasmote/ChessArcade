@@ -74,6 +74,64 @@ const REQUEST_TIMEOUT = 15000;
 // ===========================================================================
 
 /**
+ * Cache para el país detectado (para no hacer múltiples requests)
+ * Se guarda en memoria durante la sesión del usuario
+ */
+let cachedCountry = null;
+
+/**
+ * Detecta automáticamente el país del usuario usando su IP
+ *
+ * Usa la API gratuita de geojs.io para detectar el país basado en la IP.
+ * El resultado se cachea en memoria para evitar múltiples requests.
+ *
+ * API usada: https://get.geojs.io/v1/ip/country.json
+ * - Gratis
+ * - No requiere API key
+ * - Devuelve: { country_code: "AR", country: "Argentina", ip: "..." }
+ *
+ * @returns {Promise<object|null>} - { code: "AR", name: "Argentina" } o null si falla
+ */
+async function detectUserCountry() {
+  // Si ya detectamos el país antes, usar el cache
+  if (cachedCountry) {
+    return cachedCountry;
+  }
+
+  try {
+    // Timeout corto (3 segundos) para no retrasar el submit
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+    const response = await fetch('https://get.geojs.io/v1/ip/country.json', {
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error('Geolocation API error');
+    }
+
+    const data = await response.json();
+
+    // Cachear el resultado
+    cachedCountry = {
+      code: data.country_code || data.country, // Algunos endpoints usan country_code, otros country
+      name: data.name || data.country // name es el nombre completo
+    };
+
+    console.log('[detectUserCountry] Country detected:', cachedCountry);
+    return cachedCountry;
+
+  } catch (error) {
+    console.warn('[detectUserCountry] Could not detect country:', error.message);
+    // Si falla, devolver null (el score se guardará sin país)
+    return null;
+  }
+}
+
+/**
  * Hace un fetch con timeout
  *
  * ¿Por qué necesitamos timeout?
@@ -152,22 +210,35 @@ async function processResponse(response) {
  * Esta función se llama cuando el jugador completa un juego y queremos
  * guardar su puntaje en el leaderboard global.
  *
+ * DETECCIÓN AUTOMÁTICA DE PAÍS:
+ * - Si no se proporciona country_code/country_name, se detecta automáticamente
+ * - Usa la API gratuita de geojs.io para detectar el país por IP
+ * - El resultado se cachea para evitar múltiples requests
+ * - Si la detección falla, el score se guarda sin país (no bloquea el submit)
+ *
  * Flujo:
  * 1. Usuario termina juego con score X
  * 2. Victory screen llama a submitScore()
- * 3. fetch() envía POST a /api/scores en Vercel
- * 4. Vercel valida, guarda en Supabase, calcula rank
- * 5. Devuelve rank y mensaje
- * 6. Victory screen muestra: "¡Top 10! Rank #3!"
+ * 3. Se detecta automáticamente el país del usuario (si no se proporcionó)
+ * 4. fetch() envía POST a /api/scores en Vercel
+ * 5. Vercel valida, guarda en Supabase, calcula rank
+ * 6. Devuelve rank y mensaje
+ * 7. Victory screen muestra: "¡Top 10! Rank #3!"
  *
  * @param {string} game - Nombre del juego ('square-rush', 'knight-quest', etc)
  * @param {string} playerName - Nombre del jugador (1-15 caracteres)
  * @param {number} score - Puntaje obtenido (debe ser > 0)
- * @param {object} options - Opciones adicionales (level, time_ms, country)
+ * @param {object} options - Opciones adicionales
+ * @param {string} options.level - Nivel/dificultad (opcional)
+ * @param {number} options.time_ms - Tiempo en milisegundos (opcional)
+ * @param {string} options.country_code - Código ISO del país (ej: "AR", "US") - se detecta automáticamente si no se proporciona
+ * @param {string} options.country_name - Nombre del país - se detecta automáticamente si no se proporciona
+ * @param {object} options.metadata - Metadata adicional del juego (opcional)
  * @returns {Promise<object>} - { id, rank, totalPlayers, score, message }
  * @throws {Error} - Si hay error en el request o validación
  *
  * @example
+ * // Ejemplo básico (país se detecta automáticamente)
  * try {
  *   const result = await submitScore('square-rush', 'PLAYER', 15000, {
  *     level: 'MASTER',
@@ -177,6 +248,13 @@ async function processResponse(response) {
  * } catch (error) {
  *   console.error('Error:', error.message);
  * }
+ *
+ * @example
+ * // Ejemplo con país manual (sobrescribe la detección automática)
+ * const result = await submitScore('knight-quest', 'JUAN', 5000, {
+ *   country_code: 'AR',
+ *   country_name: 'Argentina'
+ * });
  */
 async function submitScore(game, playerName, score, options = {}) {
   try {
@@ -195,6 +273,20 @@ async function submitScore(game, playerName, score, options = {}) {
 
     if (playerName.length > 15) {
       throw new Error('Player name no puede tener más de 15 caracteres');
+    }
+
+    // Detectar país automáticamente si no se proporcionó
+    if (!options.country_code || !options.country_name) {
+      const detectedCountry = await detectUserCountry();
+      if (detectedCountry) {
+        // Usar país detectado solo si no se proporcionó manualmente
+        if (!options.country_code) {
+          options.country_code = detectedCountry.code;
+        }
+        if (!options.country_name) {
+          options.country_name = detectedCountry.name;
+        }
+      }
     }
 
     // Construir el payload (datos que enviamos)
